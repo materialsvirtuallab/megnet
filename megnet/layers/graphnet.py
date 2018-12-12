@@ -179,13 +179,13 @@ if __name__ == '__main__':
     import numpy as np
 
     int32 = 'int32'
-    x1 = np.random.rand(1, 100, 10)
-    x2 = np.random.rand(1, 200, 5)
-    x3 = np.random.rand(1, 4, 20)
-    x4 = np.random.choice(100, 150, replace=True)
-    x5 = np.random.choice(200, 400, replace=True)
-    x6 = np.random.choice(4, 150, replace=True)
-    x7 = np.random.choice(4, 400, replace=True)
+    x1 = np.random.rand(1, 5, 10)
+    x2 = np.random.rand(1, 6, 5)
+    x3 = np.random.rand(1, 2, 20)
+    x4 = np.array([0, 1, 2, 3, 3, 4]).reshape([1, -1])
+    x5 = np.array([1, 0, 3, 2, 4, 3]).reshape([1, -1])
+    x6 = np.array([[0, 0, 1, 1, 1]])
+    x7 = np.array([[0, 0, 1, 1, 1, 1]])
     x1_ = Input(shape=(None, 10))
     x2_ = Input(shape=(None, 5))
     x3_ = Input(shape=(None, 20))
@@ -196,4 +196,4 @@ if __name__ == '__main__':
     out = MEGNet([10, 5], [20, 4], [30, 3])([x1_, x2_, x3_, x4_, x5_, x6_, x7_])
     model = Model(inputs=[x1_, x2_, x3_, x4_, x5_, x6_, x7_], outputs=out)
     model.compile('adam', 'mse')
-    model.predict([x1, x2, x3, x4, x5, x6, x7])
+    print('Dummy prediction ', model.predict([x1, x2, x3, x4, x5, x6, x7]))
