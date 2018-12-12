@@ -1,0 +1,6 @@
+numpy>=1.15
+pandas>=0.23
+pymatgen>=2018.11.30
+tensorflow>=1.8.0
+keras>=2.1.4
+scikit-learn>=0.18

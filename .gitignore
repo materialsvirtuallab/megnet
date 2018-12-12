@@ -1,0 +1,13 @@
+matgraph.egg-info
+__pycache__
+.idea
+*.o
+*.so
+*.pyc
+*.swp
+*.swo
+*.pyd
+.cache
+.eggs/
+.coverage
+

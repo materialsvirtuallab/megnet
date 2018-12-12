@@ -1,0 +1,7 @@
+README.md
+setup.py
+megnet.egg-info/PKG-INFO
+megnet.egg-info/SOURCES.txt
+megnet.egg-info/dependency_links.txt
+megnet.egg-info/requires.txt
+megnet.egg-info/top_level.txt
