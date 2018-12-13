@@ -1,12 +1,12 @@
-## MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
+# MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
 
-### Theory
-Graph network[1] is a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
+## Theory
+
+Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
 
 * Global state attributes are added to the node/edge graph representation. These features work as a portal for structure-independent features such as temperature, pressure etc and also are an information exchange placeholder that facilitates information passing across longer spatial domains. 
 * The update function involves the message interchange among all three levels of information, i.e., the node, bond and state information. Thus it is one of the most general model. 
-
 
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
@@ -23,8 +23,8 @@ We then assemble several structures together. For **V**, we directly append the 
 
 In summary the inputs for the model is **V** (1\*N'\*Nv), **E** (1\*M'\*Nm), **u** (1\*Ng\*Nu), `index1` (1\*M'), `index2` (1\*M'), `atom_ind` (1\*N'), and `bond_ind` (1\*M'). For Z-only atomic features, **V** is a (1\*N') vector. 
  
+## Usage
 
-### Usage
 A fast model building tool is in the `megnet.model` submodule, and the corresponding tests explain the usage mechanisms. 
 
 A simple model is as follows. 
@@ -66,6 +66,6 @@ model.compile(loss='mse', optimizer='adam')
 ```
 With less than 20 lines of code, you have built a graph network model that is ready for all material property prediction!
 
-### References
+## References
 
 [1] Battaglia, Peter W., et al. "Relational inductive biases, deep learning, and graph networks." arXiv preprint arXiv:1806.01261 (2018).
