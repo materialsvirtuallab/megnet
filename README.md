@@ -10,7 +10,7 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
-The `MEGNet` model implements two major components: one is the `graph network` layer and the other is the `set2set` layer. The layers are based on `keras` API and is thus compatible with other keras modules. 
+The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[2] The layers are based on `keras` API and is thus compatible with other keras modules. 
 
 Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. 
 
@@ -65,6 +65,10 @@ model.compile(loss='mse', optimizer='adam')
 ```
 With less than 20 lines of code, you have built a graph network model that is ready for all material property prediction!
 
+For model details and benchmark, please visit our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[3] 
+
 ## References
 
-[1] Battaglia, Peter W., et al. "Relational inductive biases, deep learning, and graph networks." arXiv preprint arXiv:1806.01261 (2018).
+1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; Faulkner, R.; et al. Relational inductive biases, deep learning, and graph networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
+2. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
+3. Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals, 2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
