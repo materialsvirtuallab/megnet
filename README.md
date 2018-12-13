@@ -1,6 +1,5 @@
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
-
 ## Theory
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
@@ -11,7 +10,7 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
-The `MEGNet` model implemented two major components: one is the `graph network` layer and the other is the `set2set` layer. The layers are based on `keras` API and is thus compatible with other keras modules. 
+The `MEGNet` model implemented two major components: one is the `graph network` layer and the other is the `set2set` layer[2]. The layers are based on `keras` API and is thus compatible with other keras modules. 
 
 Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. 
 
@@ -66,6 +65,9 @@ model.compile(loss='mse', optimizer='adam')
 ```
 With less than 20 lines of code, you have built a graph network model that is ready for all material property prediction!
 
-## References
+For model details and benchmark, please visit our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[3] 
 
+## References
 [1] Battaglia, Peter W., et al. "Relational inductive biases, deep learning, and graph networks." arXiv preprint arXiv:1806.01261 (2018).
+[2] Vinyals, Oriol, et al. "Order matters: Sequence to sequence for sets." arXiv preprint arXiv:1511.06391 (2015).
+[3] Chen, Chi, et al. "Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals" arXiv preprint arXiv:1812.05055 (2018)
