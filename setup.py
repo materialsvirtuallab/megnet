@@ -9,7 +9,7 @@ setup(
     author_email='chc273@eng.ucsd.edu',
     download_url='https://github.com/materialsvirtuallab/megnet',
     license='BSD',
-    install_requires=['keras', 'numpy', 'tensorflow', "sklearn", 'pymatgen'],
+    install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn", 'pymatgen'],
     extras_require={
         'model_saving': ['h5py'], },
     package_data={'megnet': ['README.md']},
