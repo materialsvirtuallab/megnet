@@ -2,7 +2,7 @@
 
 ## Theory
 
-Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
+Graph networks[1][1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
 
 * Global state attributes are added to the node/edge graph representation. These features work as a portal for structure-independent features such as temperature, pressure etc and also are an information exchange placeholder that facilitates information passing across longer spatial domains. 
 * The update function involves the message interchange among all three levels of information, i.e., the node, bond and state information. Thus it is one of the most general model. 
@@ -10,11 +10,9 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
-The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[2] The layers are based on `keras` API and is thus compatible with other keras modules. 
+The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[2][2] The layers are based on `keras` API and is thus compatible with other keras modules. 
 
-Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. 
-
-`MEGNet` Takes another approach. Instead of make structure batches, we assemble many structures into one 'gaint' structure and this structure has a vector output with each entry being the target value for the corresponding structure. Therefore, the batch number is always `1`. 
+Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. `MEGNet` takes another approach. Instead of making structure batches, we assemble many structures into one giant structure and this structure has a vector output with each entry being the target value for the corresponding structure. Therefore, the batch number is always `1`. 
 
 Assuming a structure has N atoms and M bonds, a structure graph is represented as **V**, **E** and **u**, where **V** is a N\*Nv matrix, **E** comprises of three parts, one for the bond attributes, a M\*Nm matrix and index pairs (rk, sk) for the bonds, and **u** is a vector with length Nu. We vectorize rk and sk to form `index1` and `index2`, both are vectors with length Nm. In summary, the graph is a data structure with **V** (N\*Nv), **E** (M\*Nm), **u** (Nu, ), `index1` (M, ) and `index2` (M, ). 
 
@@ -65,10 +63,10 @@ model.compile(loss='mse', optimizer='adam')
 ```
 With less than 20 lines of code, you have built a graph network model that is ready for all material property prediction!
 
-For model details and benchmark, please visit our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[3] 
+For model details and benchmark, please visit our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[3][3]
 
 ## References
 
-1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; Faulkner, R.; et al. Relational inductive biases, deep learning, and graph networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
-2. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
-3. Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals, 2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
+[1]: Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; Faulkner, R.; et al. Relational inductive biases, deep learning, and graph networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
+[2]: Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
+[3]: Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals, 2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
