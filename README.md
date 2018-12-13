@@ -58,7 +58,7 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 
 
 
-The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[2] The layers are based on [keras](https://keras.io/) API and is thus compatible with other keras modules. 
+The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[3] The layers are based on [keras](https://keras.io/) API and is thus compatible with other keras modules. 
 
 Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. `MEGNet` takes another approach. Instead of making structure batches, we assemble many structures into one giant structure and this structure has a vector output with each entry being the target value for the corresponding structure. Therefore, the batch number is always 1. 
 
