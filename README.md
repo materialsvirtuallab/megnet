@@ -1,6 +1,5 @@
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
-
 ## Theory
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
@@ -11,7 +10,7 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
-The `MEGNet` model implemented two major components: one is the `graph network` layer and the other is the `set2set` layer. The layers are based on `keras` API and is thus compatible with other keras modules. 
+The `MEGNet` model implements two major components: one is the `graph network` layer and the other is the `set2set` layer. The layers are based on `keras` API and is thus compatible with other keras modules. 
 
 Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. 
 
