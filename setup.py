@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(name='megnet',
       version='0.0.1',
-      decription='Graph networks for materials',
+      decription='MatErials Graph Networks for machine learning of molecules and crystals.',
       author='Chi Chen',
       author_email='chc273@eng.ucsd.edu',
       download_url='...',
