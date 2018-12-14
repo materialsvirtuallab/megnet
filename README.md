@@ -14,9 +14,7 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 
 ## Usage
 
-A fast model building tool is in the `megnet.model` submodule, and the corresponding tests explain the usage mechanisms. 
-
-A simple model is as follows. 
+A fast model building tool is in the `megnet.model` module, and the corresponding tests explain the usage. A simple model building example is as follows:
 
 ```python
 from keras.layers import Input, Dense
@@ -52,9 +50,10 @@ out = Dense(1)(out[2])
 model = Model(inputs=xs, outputs=out)
 model.compile(loss='mse', optimizer='adam')
 ```
-With less than 20 lines of code, you have built a graph network model that is ready for all material property prediction!
 
-For model details and benchmark, please visit our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
+With less than 20 lines of code, you have built a graph network model that is ready for materials property prediction!
+
+For model details and benchmarks, please refer to the preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
 
 ## Implementation details
 
@@ -65,7 +64,7 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 
 The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[3] The layers are based on [keras](https://keras.io/) API and is thus compatible with other keras modules. 
 
-Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. `MEGNet` takes another approach. Instead of making structure batches, we assemble many structures into one giant structure and this structure has a vector output with each entry being the target value for the corresponding structure. Therefore, the batch number is always 1. 
+Different crystals/molecules have different number of atoms. Therefore it is impossible to use data batches without padding the structures to make them uniform in atom number. `MEGNet` takes a different approach. Instead of making structure batches, we assemble many structures into one giant structure and this structure has a vector output with each entry being the target value for the corresponding structure. Therefore, the batch number is always 1. 
 
 Assuming a structure has N atoms and M bonds, a structure graph is represented as **V** (nodes/vertices, representing atoms), **E** (edges, representing bonds) and **u** (global state vector). **V** is a N\*Nv matrix. **E** comprises of a M\*Nm matrix for the bond attributes and index pairs (rk, sk) for atoms connected by each bond. **u** is a vector with length Nu. We vectorize rk and sk to form `index1` and `index2`, both are vectors with length M. In summary, the graph is a data structure with **V** (N\*Nv), **E** (M\*Nm), **u** (Nu, ), `index1` (M, ) and `index2` (M, ). 
 
