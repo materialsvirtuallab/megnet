@@ -36,8 +36,7 @@ xs = [x1, x2, x3, x4, x5, x6, x7]
 # Pass the inputs to the MEGNet layer
 # Here the list are the hidden units + the output unit, 
 # you can have others like [n1] or [n1, n2, n3 ...] if you want. 
-out = MEGNet([32, 16], [32, 16], [32, 16], pool_method='mean', 
-activation='relu')(xs)
+out = MEGNet([32, 16], [32, 16], [32, 16], pool_method='mean', activation='relu')(xs)
 
 # the output is a tuple of new graphs V, E and u
 # Since u is a per-structure quantity, 
@@ -85,4 +84,4 @@ The molecule data set used in this work is the QM9 data set 30 processed by Fabe
 3. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
 4. https://figshare.com/articles/Graphs_of_materials_project/7451351
 5. Ong, S. P.; Cholia, S.; Jain, A.; Brafman, M.; Gunter, D.; Ceder, G.; Persson, K. A. The Materials Application Programming Interface (API): A simple, flexible and efficient API for materials data based on REpresentational State Transfer (REST) principles. Comput. Mater. Sci. 2015, 97, 209–215 DOI: [10.1016/j.commatsci.2014.10.037](http://dx.doi.org/10.1016/j.commatsci.2014.10.037).
-6. Faber, F. A.; Hutchison, L.; Huang, B.; Gilmer, J.; Schoenholz, S. S.; Dahl, G. E.; Vinyals, O.; Kearnes, S.; Riley, P. F.; von Lilienfeld, O. A. Prediction errors of molecular machine learning models lower than hybrid DFT error. Journal of Chemical Theory and Computation 2017, 13, 5255–5264. 
+6. Faber, F. A.; Hutchison, L.; Huang, B.; Gilmer, J.; Schoenholz, S. S.; Dahl, G. E.; Vinyals, O.; Kearnes, S.; Riley, P. F.; von Lilienfeld, O. A. Prediction errors of molecular machine learning models lower than hybrid DFT error. Journal of Chemical Theory and Computation 2017, 13, 5255–5264. DOI: [10.1021/acs.jctc.7b00577](http://dx.doi.org/10.1021/acs.jctc.7b00577)
