@@ -4,6 +4,9 @@ MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networ
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
+![](./resources/whole_model.png)
+<div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
+
 ## Usage
 
 A fast model building tool is in the `megnet.model` submodule, and the corresponding tests explain the usage mechanisms. 
