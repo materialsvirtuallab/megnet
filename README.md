@@ -4,7 +4,7 @@ MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networ
 ![](./resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
-![](./resources/whole_model.png)
+![](./resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
 ## Usage
@@ -57,8 +57,6 @@ Graph networks[1] are a superclass of graph-based neural networks. There are a f
 
 * Global state attributes are added to the node/edge graph representation. These features work as a portal for structure-independent features such as temperature, pressure etc and also are an information exchange placeholder that facilitates information passing across longer spatial domains. 
 * The update function involves the message interchange among all three levels of information, i.e., the node, bond and state information. It is therefore a highly general model.
-
-
 
 The `MEGNet` model implements two major components: (a) the `graph network` layer and (b) the `set2set` layer.[3] The layers are based on [keras](https://keras.io/) API and is thus compatible with other keras modules. 
 
