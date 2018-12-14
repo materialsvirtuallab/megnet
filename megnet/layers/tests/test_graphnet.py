@@ -19,7 +19,7 @@ class TestLayer(unittest.TestCase):
             Input(shape=(None, ), dtype='int32'),
         ]
 
-    def test_matgraph(self):
+    def test_megnet(self):
         units_v = [13, 14, 16]
         units_e = [16, 16, 17]
         units_u = [13, 14, 18]
