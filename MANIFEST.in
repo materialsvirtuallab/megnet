@@ -1,0 +1,3 @@
+include *.md requirements*.txt
+recursive-include megnet *.py *.json *.yaml
+#recursive-exclude megnet tests/*.*
