@@ -25,11 +25,11 @@ def set2set_model(n_feature,
     :param n_feature: (int) number of atom features
     :param n_connect: (int) number of bond features
     :param n_global: (int) number of state features
-    :param n_blocks: (int) number of MatGraph block
+    :param n_blocks: (int) number of MEGNet block
     :param lr: (float) learning rate
-    :param n1: (int) number of hidden units in layer 1 in MatGraph
-    :param n2: (int) number of hidden units in layer 2 in MatGraph
-    :param n3: (int) number of hidden units in layer 3 in MatGraph
+    :param n1: (int) number of hidden units in layer 1 in MEGNet
+    :param n2: (int) number of hidden units in layer 2 in MEGNet
+    :param n3: (int) number of hidden units in layer 3 in MEGNet
     :param n_pass: (int) number of recurrent steps in Set2Set layer
     :param n_target: (int) number of output targets
     :param act: (object) activation function
@@ -52,7 +52,7 @@ def set2set_model(n_feature,
             out = Dense(i, activation=act)(out)
         return out
 
-    # a block corresponds to two feedforward layers + one MatGraph layer
+    # a block corresponds to two feedforward layers + one MEGNet layer
     # Note the first block does not contain the feedforward layer since
     # it will be explicitly added before the block
     def one_block(a, b, c, has_ff=True):
@@ -131,11 +131,11 @@ def set2set_with_embedding_mp(n_connect,
     :param n_vocal: (int) number of vocabulary. Max Z number needs to be less than this.
         since we have max Z number 94 in materials project, here the default n_vocal = 95 (the last index is 94)
     :param embedding_dim: (int) embedding vector length
-    :param n_blocks: (int) number of MatGraph block
+    :param n_blocks: (int) number of MEGNet block
     :param lr: (float) learning rate
-    :param n1: (int) number of hidden units in layer 1 in MatGraph
-    :param n2: (int) number of hidden units in layer 2 in MatGraph
-    :param n3: (int) number of hidden units in layer 3 in MatGraph
+    :param n1: (int) number of hidden units in layer 1 in MEGNet
+    :param n2: (int) number of hidden units in layer 2 in MEGNet
+    :param n3: (int) number of hidden units in layer 3 in MEGNet
     :param n_pass: (int) number of recurrent steps in Set2Set layer
     :param n_target: (int) number of output targets
     :param act: (object) activation function
