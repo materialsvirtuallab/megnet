@@ -163,6 +163,7 @@ class FeatureClean(BaseEstimator, TransformerMixin):
             feature labels
         :return: (np.array) converted feature matrix
         """
+        self.c_labels = []
         concated = np.concatenate([np.array(i, dtype=object) for i in X], axis=0)
         if concated.shape[1] != len(self.feature_labels):
             raise ValueError('Feature label dimension does not match data!')
