@@ -16,8 +16,7 @@ jobs:
             source activate test_env
             conda install --quiet --yes numpy scipy matplotlib sympy cython
             conda upgrade --quiet --all
-            pwd
-            ls
+            pip install numpy --upgrade
             pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
       - run:
           command: |
