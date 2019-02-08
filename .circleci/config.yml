@@ -16,6 +16,7 @@ jobs:
             conda install --quiet --yes numpy scipy matplotlib sympy cython
             conda upgrade --quiet --all
             pip install --upgrade pip
+            ls
             pip install --quiet --ignore-installed -r requirements.txt
       - run:
           command: |
