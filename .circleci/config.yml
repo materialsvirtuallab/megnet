@@ -8,6 +8,7 @@ jobs:
           PMG_MAPI_ENDPOINT: https://zola.lbl.gov/rest/v2
     parallelism: 4
     steps:
+      - checkout
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
