@@ -22,9 +22,9 @@ def _repeat(x, n, axis=1):
     xlen = tf.shape(n)[0]
     # create a range with the length of x
     shape = [1] * (x_dim + 1)
-    shape[axis+1] = maxlen
+    shape[axis + 1] = maxlen
     # tile it to the maximum repeat length, it should be of shape [xlen, maxlen] now
-    x_tiled = tf.tile(tf.expand_dims(x, axis+1), tf.stack(shape))
+    x_tiled = tf.tile(tf.expand_dims(x, axis + 1), tf.stack(shape))
 
     new_shape = tf.unstack(x_shape)
     new_shape[axis] = -1
@@ -34,7 +34,7 @@ def _repeat(x, n, axis=1):
     # this will create a boolean matrix of shape [xlen, maxlen]
     # where result[i,j] is true if j < x[i].
     mask = tf.sequence_mask(n, maxlen)
-    mask = tf.reshape(mask, (-1, ))
+    mask = tf.reshape(mask, (-1,))
     # mask the elements based on the sequence mask
     return tf.boolean_mask(x_tiled, mask, axis=axis)
 
@@ -51,6 +51,6 @@ def repeat_with_index(x, index, axis=1):
     :param axis: (int) axis for repetition
     :return: (3d Tensor) tensor after repetition
     """
-    index = tf.reshape(index, (-1, ))
+    index = tf.reshape(index, (-1,))
     _, _, n = tf.unique_with_counts(index)
     return _repeat(x, n, axis)

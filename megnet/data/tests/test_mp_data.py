@@ -5,21 +5,23 @@ from megnet.data.mp import index_rep_from_structure, to_list, graph_to_inputs, \
 import numpy as np
 import os
 
-
 module_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestMP(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.structures = [Structure.from_file(os.path.join(module_dir, "cifs', 'LiFePO4_mp-19017_computed.cif")),
-                          Structure.from_file(os.path.join(module_dir, "cifs, 'BaTiO3_mp-2998_computed.cif"))]
+        cls.structures = [
+            Structure.from_file(os.path.join(module_dir, "cifs", "LiFePO4_mp-19017_computed.cif")),
+            Structure.from_file(os.path.join(module_dir, "cifs", "BaTiO3_mp-2998_computed.cif"))]
 
     def test_index_rep_from_structure(self):
         graph = index_rep_from_structure(self.structures[0])
         self.assertEqual(len(np.unique(graph['node'])), 4)
-        self.assertEqual(len(np.unique(graph['index1'])), len(self.structures[0]))
-        self.assertEqual(len(np.unique(graph['index2'])), len(self.structures[0]))
+        self.assertEqual(len(np.unique(graph['index1'])),
+                         len(self.structures[0]))
+        self.assertEqual(len(np.unique(graph['index2'])),
+                         len(self.structures[0]))
         self.assertEqual(len(graph['distance']), 704)
 
     def test_graph_to_inputs_and_class_generator(self):

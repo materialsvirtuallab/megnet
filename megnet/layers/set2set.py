@@ -75,11 +75,12 @@ class Set2Set(Layer):
     def build(self, input_shape):
 
         feature_shape, index_shape = input_shape
-        self.m_weight = self.add_weight(shape=(feature_shape[-1], self.n_hidden),
-                                        initializer=self.kernel_initializer,
-                                        name="x_to_m_weight",
-                                        regularizer=self.kernel_regularizer,
-                                        constraint=self.kernel_constraint)
+        self.m_weight = self.add_weight(
+            shape=(feature_shape[-1], self.n_hidden),
+            initializer=self.kernel_initializer,
+            name="x_to_m_weight",
+            regularizer=self.kernel_regularizer,
+            constraint=self.kernel_constraint)
         if self.use_bias:
             self.m_bias = self.add_weight(shape=(self.n_hidden,),
                                           initializer=self.bias_initializer,
@@ -89,17 +90,22 @@ class Set2Set(Layer):
         else:
             self.m_bias = None
 
-        self.recurrent_kernel = self.add_weight(shape=(2 * self.n_hidden, 4 * self.n_hidden),
-                                                name='recurrent_kernel',
-                                                initializer=self.recurrent_initializer,
-                                                regularizer=self.recurrent_regularizer,
-                                                constraint=self.recurrent_constraint)
+        self.recurrent_kernel = self.add_weight(
+            shape=(2 * self.n_hidden, 4 * self.n_hidden),
+            name='recurrent_kernel',
+            initializer=self.recurrent_initializer,
+            regularizer=self.recurrent_regularizer,
+            constraint=self.recurrent_constraint)
         if self.use_bias:
             if self.unit_forget_bias:
                 def bias_initializer(_, *args, **kwargs):
-                    return K.concatenate([self.bias_initializer((self.n_hidden,), *args, **kwargs),
-                                          initializers.Ones()((self.n_hidden,), *args, **kwargs),
-                                          self.bias_initializer((self.n_hidden * 2,), *args, **kwargs)])
+                    return K.concatenate([self.bias_initializer(
+                        (self.n_hidden,), *args, **kwargs),
+                                          initializers.Ones()((self.n_hidden,),
+                                                              *args, **kwargs),
+                                          self.bias_initializer(
+                                              (self.n_hidden * 2,), *args,
+                                              **kwargs)])
             else:
                 bias_initializer = self.bias_initializer
             self.recurrent_bias = self.add_weight(shape=(self.n_hidden * 4,),
@@ -123,12 +129,16 @@ class Set2Set(Layer):
         if self.use_bias:
             m += self.m_bias
 
-        self.h = tf.zeros(tf.stack([tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
-        self.c = tf.zeros(tf.stack([tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
-        q_star = tf.zeros(tf.stack([tf.shape(features)[0], tf.shape(count)[0], 2 * self.n_hidden]))
+        self.h = tf.zeros(tf.stack(
+            [tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
+        self.c = tf.zeros(tf.stack(
+            [tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
+        q_star = tf.zeros(tf.stack(
+            [tf.shape(features)[0], tf.shape(count)[0], 2 * self.n_hidden]))
         for i in range(self.T):
             self.h, c = self._lstm(q_star, self.c)
-            e_i_t = tf.reduce_sum(m * repeat_with_index(self.h, feature_graph_index), axis=-1)
+            e_i_t = tf.reduce_sum(
+                m * repeat_with_index(self.h, feature_graph_index), axis=-1)
             exp = tf.exp(e_i_t)
             # print(exp.shape)
             seg_sum = tf.transpose(
@@ -138,10 +148,12 @@ class Set2Set(Layer):
                 [1, 0])
             seg_sum = tf.expand_dims(seg_sum, axis=-1)
             # print(seg_sum.shape)
-            a_i_t = exp / tf.squeeze(repeat_with_index(seg_sum, feature_graph_index))
+            a_i_t = exp / tf.squeeze(
+                repeat_with_index(seg_sum, feature_graph_index))
             # print(a_i_t.shape)
-            r_t = tf.transpose(tf.segment_sum(tf.transpose(tf.multiply(m, a_i_t[:, :, None]), [1, 0, 2]),
-                                              feature_graph_index), [1, 0, 2])
+            r_t = tf.transpose(tf.segment_sum(
+                tf.transpose(tf.multiply(m, a_i_t[:, :, None]), [1, 0, 2]),
+                feature_graph_index), [1, 0, 2])
             q_star = K.concatenate([self.h, r_t], axis=-1)
         return q_star
 
@@ -166,18 +178,28 @@ class Set2Set(Layer):
         config = {"T": self.T,
                   "n_hidden": self.n_hidden,
                   "activation": activations.serialize(self.activation),
-                  "activation_lstm": activations.serialize(self.activation_lstm),
-                  "recurrent_activation": activations.serialize(self.recurrent_activation),
-                  "kernel_initializer": initializers.serialize(self.kernel_initializer),
-                  "recurrent_initializer": initializers.serialize(self.recurrent_initializer),
-                  "bias_initializer": initializers.serialize(self.bias_initializer),
+                  "activation_lstm": activations.serialize(
+                      self.activation_lstm),
+                  "recurrent_activation": activations.serialize(
+                      self.recurrent_activation),
+                  "kernel_initializer": initializers.serialize(
+                      self.kernel_initializer),
+                  "recurrent_initializer": initializers.serialize(
+                      self.recurrent_initializer),
+                  "bias_initializer": initializers.serialize(
+                      self.bias_initializer),
                   "use_bias": self.use_bias,
                   "unit_forget_bias": self.unit_forget_bias,
-                  "kernel_regularizer": regularizers.serialize(self.kernel_regularizer),
-                  "recurrent_regularizer": regularizers.serialize(self.recurrent_regularizer),
-                  "bias_regularizer": regularizers.serialize(self.bias_regularizer),
-                  "kernel_constraint": constraints.serialize(self.kernel_constraint),
-                  "recurrent_constraint": constraints.serialize(self.recurrent_constraint),
+                  "kernel_regularizer": regularizers.serialize(
+                      self.kernel_regularizer),
+                  "recurrent_regularizer": regularizers.serialize(
+                      self.recurrent_regularizer),
+                  "bias_regularizer": regularizers.serialize(
+                      self.bias_regularizer),
+                  "kernel_constraint": constraints.serialize(
+                      self.kernel_constraint),
+                  "recurrent_constraint": constraints.serialize(
+                      self.recurrent_constraint),
                   "bias_constraint": constraints.serialize(self.bias_constraint)
 
                   }
