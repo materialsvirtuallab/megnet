@@ -4,7 +4,6 @@ jobs:
     working_directory: ~/megnet
     docker:
       - image: materialsvirtuallab/circle-ci-pmg-py3:0.0.2
-    parallelism: 4
     steps:
       - checkout
       - run:
@@ -22,7 +21,7 @@ jobs:
             export MPLBACKEND=Agg
             source activate test_env
             pip install --quiet -e .
-            nosetests --config=nose.cfg --processes=4 --process-timeout=600
+            nosetests --config=nose.cfg --process-timeout=600
           no_output_timeout: 3600
 
 workflows:
