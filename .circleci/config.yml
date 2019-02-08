@@ -18,7 +18,7 @@ jobs:
             conda upgrade --quiet --all
             pwd
             ls
-            pip install --quiet --ignore-installed -r requirements.txt
+            pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
