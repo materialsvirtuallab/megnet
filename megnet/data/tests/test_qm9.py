@@ -2,12 +2,16 @@ import unittest
 from unittest.mock import MagicMock
 import json
 from megnet.data.qm9 import load_qm9_faber, ring_to_vector, FeatureClean, Scaler, sublist_from_qm9
+import os
 
 
-class TestQM9(unittest.TestCase):
+module_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+class QM9Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        with open('./qm9/qm9.json', 'r') as f:
+        with open(os.path.join(module_dir, '/qm9/qm9.json'), 'r') as f:
             cls.data = json.load(f)
         cls.db_connection = type("MockTest", (), {})
         cls.db_connection.find = MagicMock(return_value=cls.data)
