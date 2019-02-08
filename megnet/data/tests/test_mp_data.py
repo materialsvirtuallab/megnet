@@ -12,8 +12,8 @@ module_dir = os.path.dirname(os.path.abspath(__file__))
 class TestMP(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.structures = [Structure.from_file(os.path.join(module_dir, "cifs/LiFePO4_mp-19017_computed.cif")),
-                          Structure.from_file(os.path.join(module_dir, "cifs/BaTiO3_mp-2998_computed.cif"))]
+        cls.structures = [Structure.from_file(os.path.join(module_dir, "cifs', 'LiFePO4_mp-19017_computed.cif")),
+                          Structure.from_file(os.path.join(module_dir, "cifs, 'BaTiO3_mp-2998_computed.cif"))]
 
     def test_index_rep_from_structure(self):
         graph = index_rep_from_structure(self.structures[0])
