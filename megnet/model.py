@@ -210,3 +210,20 @@ def set2set_with_embedding_mp(n_connect,
     model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
     model.compile(Adam(lr), loss)
     return model
+
+
+def load_megnet_model(fname):
+    """
+    Customized load_model for MEGNet, which requires some custom objects.
+    :param fname: HDF5 file containing model.
+    :return: Model
+    """
+    from keras.utils import get_custom_objects
+    from keras.models import load_model
+
+    custom_objs = get_custom_objects()
+    custom_objs.update({'mean_squared_error_with_scale': mse_scale,
+                        'softplus2': softplus2,
+                        'MEGNet': MEGNet,
+                        'Set2Set': Set2Set})
+    return load_model(fname, custom_objects=custom_objs)
