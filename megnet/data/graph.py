@@ -3,14 +3,14 @@ import numpy as np
 import threading
 
 
-class GaussianDistance(object):
+class GaussianDistance:
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
-    Args
     :param centers: (np.array)
     :param width: (float)
     """
+
     def __init__(self, centers=np.linspace(0, 4, 20), width=0.5):
         self.centers = centers
         self.width = width
@@ -22,7 +22,8 @@ class GaussianDistance(object):
         :return: (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
-        return np.exp(-(d[:, None] - self.centers[None, :]) ** 2. / self.width ** 2)
+        return np.exp(
+            -(d[:, None] - self.centers[None, :]) ** 2. / self.width ** 2)
 
 
 class ClassGenerator:
@@ -40,7 +41,8 @@ class ClassGenerator:
     :param batch_size: (int) number of samples in a batch
     """
 
-    def __init__(self, feature_list, connection_list, global_list, index1_list, index2_list, targets, batch_size=128):
+    def __init__(self, feature_list, connection_list, global_list, index1_list,
+                 index2_list, targets, batch_size=128):
         self.feature_list = feature_list
         self.connection_list = connection_list
         self.global_list = global_list
@@ -60,7 +62,8 @@ class ClassGenerator:
 
     def __next__(self):
         with self.lock:
-            batch_index = self.mol_index[self.i*self.batch_size:(self.i+1)*self.batch_size]
+            batch_index = self.mol_index[self.i * self.batch_size:(
+                                                                              self.i + 1) * self.batch_size]
 
             it = itemgetter(*batch_index)
             feature_list_temp = it(self.feature_list)
@@ -92,13 +95,12 @@ class ClassGenerator:
                 self.mol_index = np.random.permutation(self.mol_index)
 
             return [expand_1st(feature_list_temp),
-                   expand_1st(connection_list_temp),
-                   expand_1st(global_list_temp),
-                   expand_1st(index1),
-                   expand_1st(index2),
-                   expand_1st(gnode),
-                   expand_1st(gbond)], \
-                  expand_1st(target_temp)
+                    expand_1st(connection_list_temp),
+                    expand_1st(global_list_temp),
+                    expand_1st(index1),
+                    expand_1st(index2),
+                    expand_1st(gnode),
+                    expand_1st(gbond)], expand_1st(target_temp)
 
 
 def expand_1st(x):
