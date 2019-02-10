@@ -1,6 +1,9 @@
+from setuptools import setup
+from setuptools import find_packages
+
 from os.path import dirname, abspath, join
-this_directory = abspath(dirname(__file__))
-with open(join(this_directory, 'README.md'), encoding='utf-8') as f:
+this_dir = abspath(dirname(__file__))
+with open(join(this_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
