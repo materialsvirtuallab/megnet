@@ -4,9 +4,6 @@ import numpy as np
 import os
 import warnings
 
-names = ['mu', 'alpha', 'HOMO', 'LUMO', 'gap', 'R2', 'ZPVE', 'U0', 'U', 'H', 'G', 'Cv', 'omega1']
-units = ['Debye', 'Bohr3', 'eV', 'eV', 'eV', 'Bohr2', 'eV', 'eV', 'eV', 'eV', 'eV'] + ['cal/(mol K)', 'cm-1']
-
 
 class GeneratorLog(Callback):
     """
@@ -28,7 +25,7 @@ class GeneratorLog(Callback):
 
     def __init__(self, train_gen, steps_per_train=None,
                  val_gen=None, steps_per_val=None, y_scaler=None, n_every=5,
-                 val_names=names, val_units=units, is_pa=False):
+                 val_names=None, val_units=None, is_pa=False):
         super(GeneratorLog, self).__init__()
         self.train_gen = train_gen
         self.val_gen = val_gen
@@ -102,7 +99,7 @@ class ModelCheckpointMAE(Callback):
                  filepath='./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
                  monitor='val_mae',
                  verbose=0,
-                 save_best_only=False,
+                 save_best_only=True,
                  save_weights_only=False,
                  val_gen=None,
                  steps_per_val=None,
