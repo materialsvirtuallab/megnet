@@ -2,16 +2,7 @@ import numpy as np
 from operator import itemgetter
 from megnet.data.graph import GaussianDistance, expand_1st
 import threading
-
-
-def to_list(x):
-    """
-    If x is not a list, convert it to list
-    """
-    if isinstance(x, list) or isinstance(x, tuple):
-        return x
-    else:
-        return [x]
+from megnet.utils.general_utils import to_list
 
 
 def index_rep_from_structure(structure, r=4):
@@ -199,7 +190,7 @@ class ClassGenerator:
                     expand_1st(index2),
                     expand_1st(gnode),
                     expand_1st(gbond)], \
-                   expand_1st(target_temp)
+                    expand_1st(target_temp)
 
 
 class _DummyTransformer(object):
