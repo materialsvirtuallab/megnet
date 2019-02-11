@@ -120,10 +120,6 @@ class ClassGenerator:
                  centers=np.linspace(0, 5, 100),
                  width=0.5,
                  expand_class=GaussianDistance):
-        """
-
-
-        """
         self.feature_list = feature_list
         self.bond_list = bond_list
         self.global_list = global_list
@@ -198,8 +194,7 @@ class ClassGenerator:
                     expand_1st(index1),
                     expand_1st(index2),
                     expand_1st(gnode),
-                    expand_1st(gbond)], \
-                   expand_1st(target_temp)
+                    expand_1st(gbond)], expand_1st(target_temp)
 
 
 class _DummyTransformer(object):

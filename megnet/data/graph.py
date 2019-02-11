@@ -22,8 +22,7 @@ class GaussianDistance:
         :return: (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
-        return np.exp(
-            -(d[:, None] - self.centers[None, :]) ** 2. / self.width ** 2)
+        return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
 class ClassGenerator:
@@ -62,8 +61,7 @@ class ClassGenerator:
 
     def __next__(self):
         with self.lock:
-            batch_index = self.mol_index[self.i * self.batch_size:(
-                                                                              self.i + 1) * self.batch_size]
+            batch_index = self.mol_index[self.i * self.batch_size:(self.i + 1) * self.batch_size]
 
             it = itemgetter(*batch_index)
             feature_list_temp = it(self.feature_list)
