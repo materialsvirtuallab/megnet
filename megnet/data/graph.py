@@ -4,7 +4,6 @@ import threading
 from megnet.utils.general_utils import to_list, expand_1st
 from monty.json import MSONable
 
-
 class CrystalGraph(MSONable):
     def __init__(self, r=4):
         self.r = r
@@ -137,10 +136,10 @@ class GaussianDistance(MSONable):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
-    Args
     :param centers: (np.array)
     :param width: (float)
     """
+
     def __init__(self, centers=np.linspace(0, 4, 20), width=0.5):
         self.centers = centers
         self.width = width
@@ -152,7 +151,7 @@ class GaussianDistance(MSONable):
         :return: (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
-        return np.exp(-(d[:, None] - self.centers[None, :]) ** 2. / self.width ** 2)
+        return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
 class ClassGenerator:
@@ -170,7 +169,6 @@ class ClassGenerator:
     :param batch_size: (int) number of samples in a batch
     :param
     """
-
     def __init__(self,
                  atom_features,
                  bond_features,
@@ -207,7 +205,7 @@ class ClassGenerator:
 
     def __next__(self):
         with self.lock:
-            batch_index = self.mol_index[self.i*self.batch_size:(self.i+1)*self.batch_size]
+            batch_index = self.mol_index[self.i * self.batch_size:(self.i + 1) * self.batch_size]
 
             it = itemgetter(*batch_index)
             feature_list_temp = itemgetter_list(self.atom_features, batch_index)
@@ -249,6 +247,5 @@ class ClassGenerator:
                     expand_1st(index1),
                     expand_1st(index2),
                     expand_1st(gnode),
-                    expand_1st(gbond)], \
-                    expand_1st(target_temp)
+                    expand_1st(gbond)], expand_1st(target_temp)
 

@@ -1,14 +1,14 @@
 from setuptools import setup
 from setuptools import find_packages
 
-from os import path
-this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+from os.path import dirname, abspath, join
+this_dir = abspath(dirname(__file__))
+with open(join(this_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='megnet',
-    version='0.0.2',
+    version='0.0.3',
     decription='MatErials Graph Networks for machine learning of molecules and crystals.',
     long_description=long_description,
     long_description_content_type='text/markdown',
