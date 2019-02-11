@@ -1,3 +1,7 @@
+# Preamble
+
+This repository represents the efforts of the Materials Virtual Lab in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
+
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
 MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networks[1] for universal machine learning in materials science. We have demonstrated its success in achieving very low prediction errors in a broad array of properties in both molecules and crystals (see preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]).
