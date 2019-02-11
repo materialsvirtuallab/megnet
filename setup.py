@@ -16,7 +16,7 @@ setup(
     author_email='chc273@eng.ucsd.edu',
     download_url='https://github.com/materialsvirtuallab/megnet',
     license='BSD',
-    install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn", 'pymatgen'],
+    install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn", 'pymatgen', 'monty'],
     extras_require={
         'model_saving': ['h5py'], },
     package=find_packages(),

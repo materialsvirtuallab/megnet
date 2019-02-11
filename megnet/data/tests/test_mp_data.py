@@ -1,7 +1,7 @@
 import unittest
 from pymatgen.core import Structure
-from megnet.data.mp import index_rep_from_structure, to_list, graph_to_inputs, \
-    ClassGenerator, _DummyTransformer
+from megnet.data.mp import index_rep_from_structure, graph_to_inputs
+from megnet.data.graph import GraphBatchDistanceConvert, GaussianDistance
 import numpy as np
 import os
 
@@ -30,7 +30,7 @@ class TestMP(unittest.TestCase):
         targets = [0.1, 0.2] * 5
         out = graph_to_inputs(mp_ids, graphs, targets)
         self.assertEqual(len(out), 7)
-        gen = ClassGenerator(*out[:-1], batch_size=2)
+        gen = GraphBatchDistanceConvert(*out[:-1], batch_size=2, distance_convertor=GaussianDistance())
         data = next(gen)
         x = data[0]
         y = data[1]
@@ -45,17 +45,6 @@ class TestMP(unittest.TestCase):
         self.assertListEqual([len(x[i].shape) for i in range(3, 7)], [2] * 4)
         # target is 1*2(crystal)*1(target dimension)
         self.assertListEqual(list(y.shape), [1, 2, 1])
-
-    def test_to_list(self):
-        x = 1
-        y = [1]
-        self.assertListEqual(to_list(x), [1])
-        self.assertListEqual(to_list(y), y)
-
-    def test_dummy_transform(self):
-        dt = _DummyTransformer()
-        x = [1, 2]
-        self.assertListEqual(dt.transform(x), x)
 
 
 if __name__ == "__main__":

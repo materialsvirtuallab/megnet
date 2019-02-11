@@ -12,7 +12,7 @@ from sklearn.base import TransformerMixin, BaseEstimator
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelBinarizer
 from operator import itemgetter
-from megnet.data.graph import GaussianDistance, expand_1st
+from megnet.data.graph import GaussianDistance
 import logging
 
 atom_attri = ['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor', "donor", "aromatic"]
