@@ -1,6 +1,6 @@
 # Preamble
 
-This repository represents the efforts of the Materials Virtual Lab in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
+This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
 
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
