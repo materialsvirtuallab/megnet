@@ -215,6 +215,8 @@ def megnet_model(n_connect,
     :param is_classification: (bool) whether it is a classifiation task
     :param loss: (object or str) loss function
     :param dropout: (float) dropout rate
+    :param graph_convertor: (object) object that exposes a "convert" method for structure to graph conversion
+    :param distance_convertor: (object) object that exposes a "convert" method for distance to expanded vector conversion
     :return: keras model object
     """
     int32 = 'int32'
