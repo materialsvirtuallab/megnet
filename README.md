@@ -68,7 +68,11 @@ n_bond_feature = 10
 n_global_feature = 2
 gaussian_centers = np.linspace(0, 5, 10)
 gaussian_width = 0.5
-model = megnet_model(n_bond_feature, n_global_feature, graph_convertor=CrystalGraph(), distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
+graph_convertor = CrystalGraph()
+distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
+model = megnet_model(n_bond_feature, n_global_feature, 
+                     graph_convertor=graph_convertor, 
+                     distance_convertor=distance_convertor)
 
 # assume you have a list of pymatgen structures and the corresponding property targets
 # train the model as follows
