@@ -74,6 +74,10 @@ model = megnet_model(n_bond_feature, n_global_feature, graph_convertor=CrystalGr
 # train the model as follows
 
 model.train(structures, targets, epochs=10)
+
+# predict the property of a new structure
+
+pred_target = model.predict_structure(new_structure)
 ```
 
 For model details and benchmarks, please refer to the preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
