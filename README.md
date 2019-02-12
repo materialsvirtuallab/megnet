@@ -18,8 +18,8 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 
 ## Usage
 
-A fast model building tool is in the `megnet.model` module, and the corresponding tests explain the usage. A simple model building example is as follows:
-
+A fast model building tool is in the `megnet.model` module, and the corresponding tests explain the usage. Simple model building examples are as follows:
+### A basic example
 ```python
 from keras.layers import Input, Dense
 from keras.models import Model
@@ -56,6 +56,25 @@ model.compile(loss='mse', optimizer='adam')
 ```
 
 With less than 20 lines of code, you have built a graph network model that is ready for materials property prediction!
+
+### Train from crystal structures
+Assume you have a list of `structures` and a list of property `targets`. It is easy to use `megnet_model` for setting up the model and train. 
+
+```python
+from megnet.model import megnet_model
+from megnet.data.graph import GaussianDistance
+from megnet.data.crystal import CrystalGraph
+n_bond_feature = 10
+n_global_feature = 2
+gaussian_centers = np.linspace(0, 5, 10)
+gaussian_width = 0.5
+model = megnet_model(n_bond_feature, n_global_feature, graph_convertor=CrystalGraph(), distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
+
+# assume you have a list of pymatgen structures and the corresponding property targets
+# train the model as follows
+
+model.train(structures, targets, epochs=10)
+```
 
 For model details and benchmarks, please refer to the preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
 
