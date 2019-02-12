@@ -73,14 +73,10 @@ distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
 model = megnet_model(n_bond_feature, n_global_feature, 
                      graph_convertor=graph_convertor, 
                      distance_convertor=distance_convertor)
-
-# assume you have a list of pymatgen structures and the corresponding property targets
-# train the model as follows
-
+# model training
 model.train(structures, targets, epochs=10)
 
 # predict the property of a new structure
-
 pred_target = model.predict_structure(new_structure)
 ```
 
