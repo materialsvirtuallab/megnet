@@ -3,6 +3,7 @@ import os
 import json
 try:
     from megnet.data.molecule import MolecularGraph, mol_from_smiles
+    import_failed = False
 except ImportError:
     import_failed = True
 
@@ -49,7 +50,6 @@ class QM9Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     if import_failed:
         raise unittest.SkipTest("Please install openbabel and rdkit for molecular functions")
     else:
