@@ -41,6 +41,7 @@ class QM9Test(unittest.TestCase):
         with open(os.path.join(module_dir, 'qm9', '000001.json'), 'r') as f:
             cls.qm9_000001 = json.load(f)
 
+    @unittest.skipIf(import_failed, "molecular package replies on openbabel")
     def test_featurizer(self):
         mg = MolecularGraph()
         mol = mol_from_smiles(self.qm9_000001['smiles'])
@@ -50,7 +51,4 @@ class QM9Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    if import_failed:
-        raise unittest.SkipTest("Please install openbabel and rdkit for molecular functions")
-    else:
-        unittest.main()
+    unittest.main()
