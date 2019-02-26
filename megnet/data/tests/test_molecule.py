@@ -1,7 +1,11 @@
 import unittest
 import os
 import json
-from megnet.data.molecule import MolecularGraph, mol_from_smiles
+try:
+    from megnet.data.molecule import MolecularGraph, mol_from_smiles
+except ImportError:
+    import_failed = True
+
 module_dir = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -45,4 +49,8 @@ class QM9Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+
+    if import_failed:
+        raise unittest.SkipTest("Please install openbabel and rdkit for molecular functions")
+    else:
+        unittest.main()
