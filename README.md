@@ -8,12 +8,12 @@ MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networ
 
 Briefly, Figure 1 shows the sequential update steps of the graph network, whereby bonds, atoms, and global state attributes are updated using information from each other, generating an output graph.
 
-![Model diagram](resources/model_diagram.png)
+![GraphModel diagram](resources/model_diagram.png)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
 Figure 2 shows the overall schematic of the MEGNet. Each graph network module is preceded by two multi-layer perceptrons (known as Dense layers in Keras terminology), constituting a MEGNet block. Multiple MEGNet blocks can be stacked, allowing for information flow across greater spatial distances. The number of blocks required depend on the range of interactions necessary to predict a target property. In the final step, a `set2set` is used to map the output to a scalar/vector property.
 
-![Model architecture](resources/model_arch.jpg)
+![GraphModel architecture](resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
 ## Usage
@@ -22,7 +22,7 @@ A fast model building tool is in the `megnet.model` module, and the correspondin
 ### A basic example
 ```python
 from keras.layers import Input, Dense
-from keras.models import Model
+from keras.models import GraphModel
 from megnet.layers import MEGNet, Set2Set
 
 n_atom_feature= 20
@@ -51,7 +51,7 @@ out = MEGNet([32, 16], [32, 16], [32, 16], pool_method='mean', activation='relu'
 out = Dense(1)(out[2])
 
 # Set up the model and compile it!
-model = Model(inputs=xs, outputs=out)
+model = GraphModel(inputs=xs, outputs=out)
 model.compile(loss='mse', optimizer='adam')
 ```
 

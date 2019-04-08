@@ -16,13 +16,13 @@ import os
 pjoin = os.path.join
 
 
-class Model(KerasModel):
+class GraphModel(KerasModel):
     """
     #todo whole model save. now self.save only saves keras model
 
-    Wrapper of keras Model.
+    Wrapper of keras GraphModel.
     We add methods to train the model from (structures, targets) pairs
-    In addition to keras Model arguments, we add the following arguments
+    In addition to keras GraphModel arguments, we add the following arguments
 
     Args:
         graph_convertor: (object) a object that turns a structure to a graph
@@ -33,10 +33,10 @@ class Model(KerasModel):
     """
     def __init__(self,
                  *args,
+                 graph_convertor=None,
+                 distance_convertor=None,
                  **kwargs):
-        graph_convertor = kwargs.pop('graph_convertor', None)
-        distance_convertor = kwargs.pop('distance_convertor', None)
-        super(Model, self).__init__(*args, **kwargs)
+        super(GraphModel, self).__init__(*args, **kwargs)
         self.graph_convertor = graph_convertor
         self.distance_convertor = distance_convertor
         self.yscaler = StandardScaler()
@@ -55,11 +55,13 @@ class Model(KerasModel):
         """
         :param train_structures: (list) list of pymatgen structures
         :param train_targets: (list) list of target values
-        :param validation_structures: (list) list of pymatgen structures as validation
+        :param validation_structures: (list) list of pymatgen structures as
+            validation
         :param validation_targets: (list) list of validation targets
         :param epochs: (int) number of epochs
         :param batch_size: (int) training batch size
-        :param verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
+        :param verbose: (int) keras fit verbose, 0 no progress bar, 1 only at
+            the epoch end and 2 every batch
         :param callbacks: (list) megnet or keras callback functions for training
         :param prev_model: (str) file name for previously saved model
         :param kwargs:
@@ -156,15 +158,6 @@ class Model(KerasModel):
         if self.graph_convertor is None:
             raise RuntimeError("MEGNet cannot use the train method if no graph_convertor is provided,"
                                "Please use other methods instead.")
-
-    def set_graph_convertor(self, graph_convertor):
-        self.set('graph_convertor', graph_convertor)
-
-    def set_distance_convertor(self, distance_convertor):
-        self.set('distance_convertor', distance_convertor)
-
-    def set(self, attribute, value):
-        setattr(self, attribute, value)
 
     def _create_generator(self, *args, **kwargs):
         if self.distance_convertor is not None:
@@ -305,7 +298,7 @@ def megnet_model(n_connect,
         loss = loss
 
     out = Dense(n_target, activation=final_act)(final_vec)
-    model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out, graph_convertor=graph_convertor, distance_convertor=distance_convertor)
+    model = GraphModel(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out, graph_convertor=graph_convertor, distance_convertor=distance_convertor)
     model.compile(Adam(lr), loss)
     return model
 
@@ -314,7 +307,7 @@ def load_megnet_model(fname):
     """
     Customized load_model for MEGNet, which requires some custom objects.
     :param fname: HDF5 file containing model.
-    :return: Model
+    :return: GraphModel
     """
     from keras.utils import get_custom_objects
     from keras.models import load_model
