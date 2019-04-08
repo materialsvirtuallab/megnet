@@ -8,10 +8,9 @@ from keras.regularizers import l2
 from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop
 from megnet.utils.general_utils import expand_1st
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator
-from megnet.data.crystal import graphs2inputs
+from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
+from megnet.data.crystal import graphs2inputs, CrystalGraph
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 import os
 
 from monty.serialization import dumpfn, loadfn
@@ -41,7 +40,6 @@ class GraphModel:
         self.model = model
         self.graph_convertor = graph_convertor
         self.distance_convertor = distance_convertor
-        self.yscaler = StandardScaler()
 
     def __getattr__(self, p):
         return getattr(self.model, p)
@@ -111,10 +109,10 @@ class GraphModel:
             os.makedirs(dirname)
         if callbacks is None:
             callbacks = [ManualStop()]
-        train_targets = self.yscaler.fit_transform(np.array(train_targets).reshape((-1, 1))).ravel()
+        train_targets = np.array(train_targets).ravel()
         if validation_graphs is not None:
             filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{val_mae:.6f}.hdf5')
-            validation_targets = self.yscaler.transform(np.array(validation_targets).reshape((-1, 1))).ravel()
+            validation_targets = np.array(validation_targets).ravel()
             val_inputs = graphs2inputs(validation_graphs, validation_targets)
 
             val_generator = self._create_generator(*val_inputs,
@@ -126,7 +124,7 @@ class GraphModel:
                                                  save_weights_only=False,
                                                  val_gen=val_generator,
                                                  steps_per_val=steps_per_val,
-                                                 y_scaler=self.yscaler)])
+                                                 y_scaler=None)])
         else:
             val_generator = None
             steps_per_val = None
@@ -154,7 +152,7 @@ class GraphModel:
                expand_1st(np.array(gnode)),
                expand_1st(np.array(gbond)),
                ]
-        return self.yscaler.inverse_transform(self.predict(inp).reshape((-1, 1))).ravel()
+        return self.predict(inp).ravel()
 
     def _create_generator(self, *args, **kwargs):
         if self.distance_convertor is not None:
@@ -345,6 +343,10 @@ class MEGNetModel(GraphModel):
         model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
         model.compile(Adam(lr), loss)
 
+        if graph_convertor is None:
+            graph_convertor = CrystalGraph()
+        if distance_convertor is None:
+            distance_convertor = GaussianDistance(np.linspace(0, 5, 100), 0.5)
         super(MEGNetModel, self).__init__(
             model=model, graph_convertor=graph_convertor,
             distance_convertor=distance_convertor)
