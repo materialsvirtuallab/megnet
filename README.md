@@ -22,7 +22,7 @@ Our current implementation supports a variety of use cases for users with differ
 
 ### Using pre-built models
 
-In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method. These models are available in the `mvl_models` folder of this repo. The following models are available:
+In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5+JSON files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method. These models are available in the `mvl_models` folder of this repo. The following models are available:
 
 * QM9 molecule data:
     - HOMO: Highest occupied molecular orbital energy
@@ -49,7 +49,6 @@ For model details and benchmarks, please refer to ["Graph Networks as a Universa
 ```python
 from megnet.models import MEGNetModel
 from pymatgen import MPRester
-
 
 model = MEGNetModel.from_file('mvl_models/mp/log10K.hdf5')
 
