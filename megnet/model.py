@@ -138,6 +138,8 @@ class Model(KerasModel):
         :param structure:
         :return:
         """
+        if len(structure) == 1:
+            structure *= [2, 1, 1]
         self.assert_graph_convertor()
         graph = self.graph_convertor(structure)
         gnode = [0] * len(graph['node'])
