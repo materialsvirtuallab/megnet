@@ -165,13 +165,20 @@ class GraphModel:
 
     def save_model(self, filename):
         """
-        Save the model to a keras model hdf5 and a json config for additional convertors
+        Save the model to a keras model hdf5 and a json config for additional
+        convertors
+
         :param filename: (str)
         :return:
         """
         self.model.save(filename)
-        dumpfn({'distance_convertor': self.distance_convertor,
-                'graph_convertor': self.graph_convertor}, filename + '.json', cls=MontyEncoder)
+        dumpfn(
+            {
+                'distance_convertor': self.distance_convertor,
+                'graph_convertor': self.graph_convertor
+            },
+            filename + '.json'
+        )
 
     @classmethod
     def from_file(cls, filename):
@@ -183,7 +190,7 @@ class GraphModel:
         :param filename: (str)
         :return: Model
         """
-        configs = loadfn(filename + '.json', cls=MontyDecoder)
+        configs = loadfn(filename + '.json')
         model = load_megnet_model(filename)
         configs.update({'model': model})
         return cls(**configs)
