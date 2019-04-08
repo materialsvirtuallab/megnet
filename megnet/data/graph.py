@@ -51,15 +51,18 @@ class GaussianDistance(DistanceConvertor):
 
 class GraphBatchGenerator:
     """
-    A generator class that assembles several structures (indicated by batch_size) and form (x, y) pairs for model training
+    A generator class that assembles several structures (indicated by
+    batch_size) and form (x, y) pairs for model training
 
     :param atom_features: (list of np.array) list of atom feature matrix,
     :param bond_features: (list of np.array) list of bond features matrix
-    :param state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
-    :param index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different
-        structures
-    :param index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for different
-        structures, but it has to be the same as the correponding index1.
+    :param state_features: (list of np.array) list of [1, G] state features,
+        where G is the global state feature dimension
+    :param index1_list: (list of integer) list of (M, ) one side atomic index
+        of the bond, M is different for different structures
+    :param index2_list: (list of integer) list of (M, ) the other side atomic
+        index of the bond, M is different for different structures, but it has
+        to be the same as the correponding index1.
     :param targets: (numpy array), N*1, where N is the number of structures
     :param batch_size: (int) number of samples in a batch
     """

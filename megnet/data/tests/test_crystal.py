@@ -1,5 +1,5 @@
 import unittest
-from megnet.data.crystal import CrystalGraph, structure2graph, structure2input, graphs2inputs
+from megnet.data.crystal import CrystalGraph, graphs2inputs
 from pymatgen import Structure
 import os
 
@@ -26,12 +26,14 @@ class TestGraph(unittest.TestCase):
         graph3 = cg(self.structures[0])
         self.assertListEqual(graph['node'], graph3['node'])
 
-    def test_s2graph(self):
-        graph = structure2graph(self.structures[0])
+    def test_convert(self):
+        cg = CrystalGraph()
+        graph = cg.convert(self.structures[0])
         self.assertListEqual(graph['node'], [i.specie.Z for i in self.structures[0]])
 
-    def test_s2input(self):
-        inp = structure2input(self.structures[0])
+    def test_get_input(self):
+        cg = CrystalGraph()
+        inp = cg.get_input(self.structures[0])
         self.assertEqual(len(inp), 7)
         shapes = [i.shape for i in inp]
         true_shapes = [(1, 28), (1, 704, 100), (1, 1, 2), (1, 704), (1, 704), (1, 28), (1, 704)]
@@ -39,8 +41,8 @@ class TestGraph(unittest.TestCase):
             self.assertListEqual(list(i), list(j))
 
     def test_g2inputs(self):
-
-        graphs = [structure2graph(i) for i in self.structures]
+        cg = CrystalGraph()
+        graphs = [cg.convert(i) for i in self.structures]
         targets = [0.1, 0.2]
         inp = graphs2inputs(graphs, targets)
         self.assertListEqual([len(i) for i in inp], [2] * 6)
