@@ -22,7 +22,29 @@ Our current implementation supports a variety of use cases for users with differ
 
 ### Using pre-built models
 
-In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method.
+In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method. These models are available in the `mvl_models` folder of this repo. The following models are available:
+
+* QM9 molecule data:
+    - HOMO: Highest occupied molecular orbital energy
+    - LUMO: Lowest unoccupied molecular orbital energy
+    - Gap: energy gap
+    - ZPVE: zero point vibrational energy
+    - µ: dipole moment
+    - α: isotropic polarizability
+    - <R2> electronic spatial extent
+    - U0: internal energy at 0 K
+    - U: internal energy at 298 K
+    - H: enthalpy at 298 K
+    - G: Gibbs free energy at 298 K
+    - Cv: heat capacity at 298 K
+    - ω1: highest vibrational frequency.
+* Materials Project data:
+    - Formation energy from the elements
+    - Band gap
+    - Log 10 of Bulk Modulus (K)
+    - Log 10 of Shear Modulus (G)
+
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]. Below is an example of usage:
 
 ```python
 from megnet.models import MEGNetModel
