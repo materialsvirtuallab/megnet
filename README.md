@@ -16,11 +16,11 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 ![GraphModel architecture](resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
-## Usage
+# Usage
 
 Our current implementation supports a variety of use cases for users with different requirements and experience with deep learning. Please also visit the `notebooks` directory for Jupyter notebooks with more detailed code examples.
 
-### Using pre-built models
+## Using pre-built models
 
 In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5+JSON files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method. These models are available in the `mvl_models` folder of this repo. The following models are available:
 
@@ -62,7 +62,7 @@ predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
 ```
 
-### Training a new MEGNetModel from Structures
+## Training a new MEGNetModel from structures
 
 For users who wish to build a new model from a set of crystal structures with corresponding properties, there is a convenient `MEGNetModel` class for setting up and training the model. By default, the number of MEGNet blocks is 3 and the atomic number Z is used as the only node feature (with embedding).
 
@@ -93,7 +93,7 @@ pred_target = model.predict_structure(new_structure)
 
 For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
 
-### Customized Graph Network Models
+## Customized Graph Network Models
 
 For users who are familiar with deep learning and wish to optimize the MEGNet models themselves, a fast model building tool is in the `megnet.models` module. A simple model building example is given below:
 
@@ -134,8 +134,7 @@ model.compile(loss='mse', optimizer='adam')
 
 With less than 20 lines of code, you have built a graph network model that is ready for materials property prediction!
 
-
-## Implementation details
+# Implementation details
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
 
@@ -152,13 +151,13 @@ We then assemble several structures together. For **V**, we directly append the 
 
 In summary the inputs for the model is **V** (1\*N'\*Nv), **E** (1\*M'\*Nm), **u** (1\*Ng\*Nu), `index1` (1\*M'), `index2` (1\*M'), `atom_ind` (1\*N'), and `bond_ind` (1\*M'). For Z-only atomic features, **V** is a (1\*N') vector.
 
-## Data sets
+# Data sets
 
-To aid others in reproducing (and improving on) our results, we have provided our MP-crystals-2018.6.1 crystal data set via [figshare](https://figshare.com/articles/Graphs_of_materials_project/7451351)[4]. The MP-crystals-2018.6.1 data set comprises the DFT-computed energies and band gaps of 69,640 crystals from the [Materials Project](http://www.materialsproject.org) obtained via the [Python Materials Genomics (pymatgen)](http://pymatgen.org) interface to the Materials Application Programming Interface (API)[5] on June 1, 2018. The crystal graphs were constructed using a radius cut-oﬀ of 4 angstroms. Using this cut-oﬀ, 69,239 crystals do not form isolated atoms and are used in the models. A subset of 5830 structures have elasticity data that do not have calculation warnings and will be used for elasticity models.
+To aid others in reproducing (and improving on) our results, we have provided our MP-crystals-2018.6.1 crystal data set via [figshare](https://figshare.com/articles/Graphs_of_materials_project/7451351)[4]. The MP-crystals-2018.6.1 data set comprises the DFT-computed energies and band gaps of 69,640 crystals from the [Materials Project](http://www.materialsproject.org) obtained via the [Python Materials Genomics (pymatgen)](http://pymatgen.org) interface to the Materials Application Programming Interface (API)[5] on June 1, 2018. The crystal graphs were constructed using a radius cut-oﬀ of 4 angstroms. Using this cut-oﬀ, 69,239 crystals do not form isolated atoms and are used in the models. A subset of 5,830 structures have elasticity data that do not have calculation warnings and will be used for elasticity models.
 
 The molecule data set used in this work is the QM9 data set 30 processed by Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation results on 130,462 small organic molecules containing up to 9 heavy atoms.
 
-## References
+# References
 
 1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; Faulkner, R.; et al. Relational inductive biases, deep learning, and graph networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
 2. Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals, 2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
