@@ -16,9 +16,9 @@ import subprocess
 import datetime
 
 from monty.os import cd
-from pymatgen import __version__ as CURRENT_VER
+import megnet
 
-NEW_VER = datetime.datetime.today().strftime("%Y.%-m.%-d")
+NEW_VER = megnet.__version__
 
 
 @task
