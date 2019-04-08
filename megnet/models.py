@@ -8,8 +8,8 @@ from keras.regularizers import l2
 from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop
 from megnet.utils.general_utils import expand_1st
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator
-from megnet.data.crystal import graphs2inputs
+from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
+from megnet.data.crystal import graphs2inputs, CrystalGraph
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import os
@@ -345,6 +345,10 @@ class MEGNetModel(GraphModel):
         model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
         model.compile(Adam(lr), loss)
 
+        if graph_convertor is None:
+            graph_convertor = CrystalGraph()
+        if distance_convertor is None:
+            distance_convertor = GaussianDistance(np.linspace(0, 4, 100), 0.5)
         super(MEGNetModel, self).__init__(
             model=model, graph_convertor=graph_convertor,
             distance_convertor=distance_convertor)
