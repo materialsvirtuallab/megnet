@@ -22,10 +22,8 @@ pjoin = os.path.join
 
 class GraphModel:
     """
-
-    Wrapper of keras GraphModel.
+    Wrapper of keras.Model.
     We add methods to train the model from (structures, targets) pairs
-    In addition to keras GraphModel arguments, we add the following arguments
 
     Args:
         model: (keras model)
@@ -74,8 +72,6 @@ class GraphModel:
         :param kwargs:
         :return:
         """
-
-        self.assert_graph_convertor()
         train_graphs = [self.graph_convertor(i) for i in train_structures]
         if validation_structures is not None:
             val_graphs = [self.graph_convertor(i) for i in validation_structures]
@@ -147,7 +143,6 @@ class GraphModel:
         :param structure:
         :return:
         """
-        self.assert_graph_convertor()
         graph = self.graph_convertor(structure)
         gnode = [0] * len(graph['node'])
         gbond = [0] * len(graph['index1'])
@@ -160,11 +155,6 @@ class GraphModel:
                expand_1st(np.array(gbond)),
                ]
         return self.yscaler.inverse_transform(self.predict(inp).reshape((-1, 1))).ravel()
-
-    def assert_graph_convertor(self):
-        if self.graph_convertor is None:
-            raise RuntimeError("MEGNet cannot use the train method if no graph_convertor is provided,"
-                               "Please use other methods instead.")
 
     def _create_generator(self, *args, **kwargs):
         if self.distance_convertor is not None:
@@ -220,7 +210,8 @@ def megnet_model(n_connect,
                  distance_convertor=None):
     """
     construct a graph network model with or without explicit atom features
-    if n_feature is specified then a general graph model is assumed, otherwise a crystal graph model with z number as
+    if n_feature is specified then a general graph model is assumed, otherwise
+    a crystal graph model with z number as
     atom feature is assumed.
 
     :param n_connect: (int) number of bond features
