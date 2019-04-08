@@ -22,16 +22,19 @@ try:
 except:
     raise ImportError("The molecule graph depends on rdkit package")
 
-
 __author__ = 'Weike Ye, Chi Chen'
 __date__ = '12/01/2018'
 
-ATOM_FEATURES = ['atomic_num', 'chirality', 'partial_charge', 'ring_sizes', 'hybridization', 'donor', 'acceptor', 'aromatic']
-BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
+ATOM_FEATURES = ['atomic_num', 'chirality', 'partial_charge', 'ring_sizes',
+                 'hybridization', 'donor', 'acceptor', 'aromatic']
+BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance',
+                 'graph_distance']
+
 
 class MolecularGraph(MSONable):
 
-    def __init__(self, atom_features=ATOM_FEATURES, bond_features=BOND_FEATURES):
+    def __init__(self, atom_features=ATOM_FEATURES,
+                 bond_features=BOND_FEATURES):
         """
         Args:
             mol (pybel.Molecule)
@@ -72,14 +75,14 @@ class MolecularGraph(MSONable):
             d = dict()
             for j, k in i.items():
                 if j in self.atom_features:
-                    d.update({j:k})
+                    d.update({j: k})
             out_atom.append(d)
 
         for i in atom_pairs:
             d = dict()
             for j, k in i.items():
                 if j in self.bond_features:
-                    d.update({j:k})
+                    d.update({j: k})
             out_pair.append(d)
         return out_atom, out_pair
 
@@ -109,7 +112,8 @@ class MolecularGraph(MSONable):
                 "atomic_num": obatom.GetAtomicNum(),
                 "chirality": chirality,
                 "formal_charge": obatom.GetFormalCharge(),
-                "ring_sizes": [i for i in range(3, 9) if obatom.IsInRingSize(i)],
+                "ring_sizes": [i for i in range(3, 9) if
+                               obatom.IsInRingSize(i)],
                 "hybridization": 6 if element == 'H' else obatom.GetHyb(),
                 "acceptor": obatom.IsHbondAcceptor(),
                 "donor": obatom.IsHbondDonorH() if atom.type == 'H' else obatom.IsHbondDonor(),
@@ -205,13 +209,16 @@ def dijkstra_distance(bonds):
                 if k not in visited:
                     queue.append(k)
                     # print(s, k, visited)
-                    graph_dist[i, k] = min(graph_dist[i, k], graph_dist[i, s] + 1)
+                    graph_dist[i, k] = min(graph_dist[i, k],
+                                           graph_dist[i, s] + 1)
     return graph_dist
+
 
 def mol_from_smiles(smiles):
     mol = pybel.readstring(format='smi', string=smiles)
     mol.make3D()
     return mol
+
 
 def mol_from_pymatgen(mol):
     """

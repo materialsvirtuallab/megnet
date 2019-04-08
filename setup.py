@@ -8,7 +8,7 @@ with open(join(this_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='megnet',
-    version='0.0.3',
+    version='0.1.0',
     decription='MatErials Graph Networks for machine learning of molecules and crystals.',
     long_description=long_description,
     long_description_content_type='text/markdown',

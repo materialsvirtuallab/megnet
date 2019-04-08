@@ -15,9 +15,12 @@ from operator import itemgetter
 from megnet.data.graph import GaussianDistance
 import logging
 
-atom_attri = ['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor', "donor", "aromatic"]
-bond_attri = ['a_idx', 'b_idx', 'bond_type', "graph_distance", 'same_ring', 'spatial_distance']
-target_list = ['mu', 'alpha', 'HOMO', 'LUMO', 'gap', 'R2', 'ZPVE', 'U0', 'U', 'H', 'G', 'Cv', 'omega1']
+atom_attri = ['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor',
+              "donor", "aromatic"]
+bond_attri = ['a_idx', 'b_idx', 'bond_type', "graph_distance", 'same_ring',
+              'spatial_distance']
+target_list = ['mu', 'alpha', 'HOMO', 'LUMO', 'gap', 'R2', 'ZPVE', 'U0', 'U',
+               'H', 'G', 'Cv', 'omega1']
 
 chem_accuracy = [0.1, 0.1, 0.043, 0.043, 1.2, 0.0012, 0.043, 0.05, 10]
 
@@ -35,8 +38,8 @@ def load_qm9_faber(db_connection=None,
     :param db_connection: mongodb collection pointing to the qm9 data
     :param atom_attri: (list of string) atom attributes used as feature
     :param bond_attri: (list of string) bond attributes used as feature
-    :param graph_dist: (list of integer) graph distances considered. Basically bonded atoms have graph distance of 1,
-        second nearest neighbors are 2 etc.
+    :param graph_dist: (list of integer) graph distances considered. Basically
+        bonded atoms have graph distance of 1, second nearest neighbors are 2 etc.
     :param restrict: (dict) extra constraints for the query
     :param verbose: (bool) show the progress
     :return: atom_features, bond_features, global_features, bond_atom_index1, bond_atom_index2, targets
@@ -101,7 +104,8 @@ def load_qm9_faber(db_connection=None,
         index2 = it(index2)
         connect = it(connect)
         features_list.append(features)
-        global_list.append([[total_weight / total_atom, total_bonds / total_atom]])  # weight/atom, bond/atom
+        global_list.append([[total_weight / total_atom,
+                             total_bonds / total_atom]])  # weight/atom, bond/atom
         connection_list.append(connect)
         index1_list.append(index1)
         index2_list.append(index2)
@@ -143,9 +147,13 @@ class FeatureClean(BaseEstimator, TransformerMixin):
     :param is_norm_dist: (bool) whether to normalize the distance features
     """
 
-    def __init__(self, categorical=["type", 'chirality', 'hybridization', 'donor', 'acceptor', 'aromatic'],
-                 feature_labels=['type', 'chirality', 'ring_sizes', 'hybridization',
-                                 'acceptor', "donor", 'aromatic'], distance_converter=GaussianDistance(),
+    def __init__(self,
+                 categorical=["type", 'chirality', 'hybridization', 'donor',
+                              'acceptor', 'aromatic'],
+                 feature_labels=['type', 'chirality', 'ring_sizes',
+                                 'hybridization',
+                                 'acceptor', "donor", 'aromatic'],
+                 distance_converter=GaussianDistance(),
                  is_norm_dist=False):
         self.categorical = categorical
         self.feature_labels = feature_labels
@@ -164,7 +172,8 @@ class FeatureClean(BaseEstimator, TransformerMixin):
         :return: (np.array) converted feature matrix
         """
         self.c_labels = []
-        concated = np.concatenate([np.array(i, dtype=object) for i in X], axis=0)
+        concated = np.concatenate([np.array(i, dtype=object) for i in X],
+                                  axis=0)
         if concated.shape[1] != len(self.feature_labels):
             raise ValueError('Feature label dimension does not match data!')
         numerical_array = []
@@ -191,12 +200,15 @@ class FeatureClean(BaseEstimator, TransformerMixin):
                     dist_symbol = 'n'
                 else:
                     dist_symbol = 'c'
-                self.c_labels.extend([dist_symbol] * self.distance_converter.centers.shape[-1])
+                self.c_labels.extend(
+                    [dist_symbol] * self.distance_converter.centers.shape[-1])
                 if dist_symbol == 'n':
-                    numerical_array.append(self.distance_converter.convert(np.array(concated[:, i], dtype=float)))
+                    numerical_array.append(self.distance_converter.convert(
+                        np.array(concated[:, i], dtype=float)))
             else:
                 self.c_labels.append('n')
-                numerical_array.append(np.array(concated[:, i], dtype=float)[:, None])
+                numerical_array.append(
+                    np.array(concated[:, i], dtype=float)[:, None])
         # print([i.shape for i in numerical_array])
         if len(numerical_array) > 0:
             numerical_array = np.concatenate(numerical_array, axis=1)
@@ -219,7 +231,8 @@ class FeatureClean(BaseEstimator, TransformerMixin):
             for i, label in enumerate(self.feature_labels):
                 column = x[:, i]
                 if label in self.categorical:
-                    x_transformed.append(self.binarizer[label].transform(list(column)))
+                    x_transformed.append(
+                        self.binarizer[label].transform(list(column)))
                 elif label == 'ring_sizes':
                     ring_sizes = []
                     for l in column:
@@ -227,14 +240,16 @@ class FeatureClean(BaseEstimator, TransformerMixin):
                     x_transformed.append(np.array(ring_sizes))
 
                 elif label == 'spatial_distance':
-                    x_transformed.append(self.distance_converter.convert(np.array(column, dtype=float)))
+                    x_transformed.append(self.distance_converter.convert(
+                        np.array(column, dtype=float)))
                 else:
                     x_transformed.append(np.array(column, dtype=float)[:, None])
                     # print([i.shape for i in x_transformed])
             concated = np.concatenate(x_transformed, axis=1)
             if self.has_numeric:
                 n_columns = [i for i, j in enumerate(self.c_labels) if j == 'n']
-                concated[:, n_columns] = self.scaler.transform(concated[:, n_columns])
+                concated[:, n_columns] = self.scaler.transform(
+                    concated[:, n_columns])
             X_transformed.append(concated)
         return X_transformed
 
