@@ -1,4 +1,4 @@
-# Preamble
+# Introduction
 
 This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
 
@@ -29,7 +29,7 @@ from megnet.models import MEGNetModel
 from pymatgen import MPRester
 
 
-model = MEGNetModel.from_file('trained_models/mp/log10K.hdf5')
+model = MEGNetModel.from_file('mvl_models/mp/log10K.hdf5')
 
 # We can grab a crystal structure from the Materials Project.
 mpr = MPRester()
