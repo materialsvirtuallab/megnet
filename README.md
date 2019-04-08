@@ -18,8 +18,64 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 
 ## Usage
 
-A fast model building tool is in the `megnet.model` module, and the corresponding tests explain the usage. Simple model building examples are as follows:
-### A basic example
+Our current implementation supports a variety of use cases for users with different requirements and experience with deep learning.
+
+### Using pre-built models
+
+In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `load_megnet_model` method.
+
+```python
+from megnet.models import MEGNetModel
+from pymatgen import MPRester
+
+
+model = MEGNetModel.from_file('trained_models/mp/log10K.hdf5')
+
+# We can grab a crystal structure from the Materials Project.
+mpr = MPRester()
+structure = mpr.get_structure_by_material_id('mp-1143')
+
+# Use the model to predict bulk modulus K. Note that the model is trained on
+# log10 K. So a conversion is necessary.
+predicted_K = 10 ** model.predict_structure(structure).ravel()
+print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
+```
+
+### Training a new MEGNetModel from Structures
+
+For users who wish to build a new model from a set of crystal structures with corresponding properties, there is a convenient `MEGNetModel` class for setting up and training the model. By default, the number of MEGNet blocks is 3 and the atomic number Z is used as the only node feature (with embedding).
+
+```python
+from megnet.models import MEGNetModel
+from megnet.data.graph import GaussianDistance
+from megnet.data.crystal import CrystalGraph
+import numpy as np
+
+nfeat_bond = 10
+nfeat_global = 2
+gaussian_centers = np.linspace(0, 5, 10)
+gaussian_width = 0.5
+graph_convertor = CrystalGraph()
+distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
+model = MEGNetModel(nfeat_bond, nfeat_global, 
+                    graph_convertor=graph_convertor, 
+                    distance_convertor=distance_convertor)
+
+# Model training
+# Here, `structures` is a list of pymatgen Structure objects.
+# `targets` is a corresponding list of properties.
+model.train(structures, targets, epochs=10)
+
+# Predict the property of a new structure
+pred_target = model.predict_structure(new_structure)
+```
+
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
+
+### Customized Graph Network Models
+
+For users who are familiar with deep learning and wish to optimize the MEGNet models themselves, a fast model building tool is in the `megnet.models` module. A simple model building example is given below:
+
 ```python
 from keras.layers import Input, Dense
 from keras.models import Model
@@ -57,32 +113,6 @@ model.compile(loss='mse', optimizer='adam')
 
 With less than 20 lines of code, you have built a graph network model that is ready for materials property prediction!
 
-### Train from crystal structures
-Assume you have a list of `structures` and a list of property `targets`. It is easy to use `megnet_model` for setting up the model and train. 
-
-```python
-from megnet.model import MEGNetModel
-from megnet.data.graph import GaussianDistance
-from megnet.data.crystal import CrystalGraph
-import numpy as np
-
-n_bond_feature = 10
-n_global_feature = 2
-gaussian_centers = np.linspace(0, 5, 10)
-gaussian_width = 0.5
-graph_convertor = CrystalGraph()
-distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
-model = MEGNetModel(n_bond_feature, n_global_feature, 
-                    graph_convertor=graph_convertor, 
-                    distance_convertor=distance_convertor)
-# model training
-model.train(structures, targets, epochs=10)
-
-# predict the property of a new structure
-pred_target = model.predict_structure(new_structure)
-```
-
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
 
 ## Implementation details
 

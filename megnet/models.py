@@ -193,41 +193,40 @@ class GraphModel:
         configs = loadfn(filename + '.json')
         model = load_megnet_model(filename)
         configs.update({'model': model})
-        return cls(**configs)
+        return GraphModel(**configs)
 
 
 class MEGNetModel(GraphModel):
 
     def __init__(self,
-        n_connect,
-        n_global,
-        n_feature=None,
-        n_blocks=3,
-        lr=1e-3,
-        n1=64,
-        n2=32,
-        n3=16,
-        n_vocal=95,
-        embedding_dim=16,
-        n_pass=3,
-        n_target=1,
-        act=softplus2,
-        is_classification=False,
-        loss="mse",
-        l2_coef=None,
-        dropout=None,
-        graph_convertor=None,
-        distance_convertor=None):
+                 nfeat_edge,
+                 nfeat_global,
+                 nfeat_node=None,
+                 n_blocks=3,
+                 lr=1e-3,
+                 n1=64,
+                 n2=32,
+                 n3=16,
+                 n_vocal=95,
+                 embedding_dim=16,
+                 n_pass=3,
+                 n_target=1,
+                 act=softplus2,
+                 is_classification=False,
+                 loss="mse",
+                 l2_coef=None,
+                 dropout=None,
+                 graph_convertor=None,
+                 distance_convertor=None):
         """
-        construct a graph network model with or without explicit atom features
-        if n_feature is specified then a general graph model is assumed, otherwise
-        a crystal graph model with z number as
-        atom feature is assumed.
+        Construct a graph network model with or without explicit atom features
+        if n_feature is specified then a general graph model is assumed,
+        otherwise a crystal graph model with z number as atom feature is assumed.
 
-        :param n_connect: (int) number of bond features
-        :param n_global: (int) number of state features
-        :param n_feature: (int) number of atom features
-        :param n_blocks: (int) number of MEGNetLayer block
+        :param nfeat_edge: (int) number of bond features
+        :param nfeat_global: (int) number of state features
+        :param nfeat_node: (int) number of atom features
+        :param n_blocks: (int) number of MEGNetLayer blocks
         :param lr: (float) learning rate
         :param n1: (int) number of hidden units in layer 1 in MEGNetLayer
         :param n2: (int) number of hidden units in layer 2 in MEGNetLayer
@@ -246,14 +245,14 @@ class MEGNetModel(GraphModel):
         :return: keras model object
         """
         int32 = 'int32'
-        if n_feature is None:
+        if nfeat_node is None:
             x1 = Input(shape=(None,), dtype=int32)  # only z as feature
             x1_ = Embedding(n_vocal, embedding_dim)(x1)
         else:
-            x1 = Input(shape=(None, n_feature))
+            x1 = Input(shape=(None, nfeat_node))
             x1_ = x1
-        x2 = Input(shape=(None, n_connect))
-        x3 = Input(shape=(None, n_global))
+        x2 = Input(shape=(None, nfeat_edge))
+        x3 = Input(shape=(None, nfeat_global))
         x4 = Input(shape=(None,), dtype=int32)
         x5 = Input(shape=(None,), dtype=int32)
         x6 = Input(shape=(None,), dtype=int32)
