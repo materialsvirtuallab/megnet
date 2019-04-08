@@ -11,7 +11,38 @@ __date__ = "Dec 1, 2018"
 
 class MEGNetLayer(GraphNetworkLayer):
     """
-    TODO: Document this?
+    The MEGNet graph implementation as described in the paper
+
+    Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping.
+    Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals,
+    2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
+
+    Args:
+        units_v (list of integers): the hidden layer sizes for node update neural network
+        units_e (list of integers): the hidden layer sizes for edge update neural network
+        units_u (list of integers): the hidden layer sizes for state update neural network
+        pool_method (str): 'mean' or 'sum', determines how information is gathered to nodes from neighboring edges
+        activation (str): Default: None. The activation function used for each sub-neural network. Examples include 'relu', 'softmax', 'tanh', 'sigmoid'
+            and etc.
+        use_bias (bool): Default: True. Whether to use the bias term in the neural network.
+        kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
+        bias_initializer (str): Default: 'zeros'
+        activity_regularizer (str): Default: None. The regularization function for the output
+        kernel_constraint (str): Default: None. Keras constraint for kernel values
+        bias_constraint (str): Default: None .Keras constraint for bias values
+
+    Method:
+        call(inputs, mask=None): the logic of the layer, returns the final graph
+        compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes
+        build(input_shape): initialize the weights and biases for each function
+        phi_e(inputs): update function for bonds and returns updated bond attribute e_p
+        rho_e_v(e_p, inputs): aggregate updated bonds e_p to per atom attributes, b_e_p
+        phi_v(b_e_p, inputs): update the atom attributes by the results from previous step b_e_p and all the inputs
+            returns v_p.
+        rho_e_u(e_p, inputs): aggregate bonds to global attribute
+        rho_v_u(v_p, inputs): aggregate atom to global attributes
+        get_config(): part of keras interface for serialization
+
     """
 
     def __init__(self,
