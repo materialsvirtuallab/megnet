@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from megnet.model import megnet_model
+from megnet.model import megnet_model, Model
 from megnet.callbacks import ModelCheckpointMAE, GeneratorLog, ManualStop
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
@@ -8,6 +8,7 @@ from glob import glob
 import os
 from pymatgen import Structure, Lattice
 import shutil
+from monty.tempfile import ScratchDir
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -72,6 +73,14 @@ class TestModel(unittest.TestCase):
         self.model.train([s, s], [0.1, 0.1], epochs=1)
         pred = self.model.predict_structure(s)
         self.assertEqual(len(pred.ravel()), 1)
+
+    def test_save_and_load(self):
+        weights1 = self.model.get_weights()
+        with ScratchDir('.'):
+            self.model.save_model('test.hdf5')
+            model2 = Model.from_file('test.hdf5')
+        weights2 = model2.get_weights()
+        self.assertTrue(np.allclose(weights1[0], weights2[0]))
 
     @unittest.skip
     def test_crystal_model(self):
