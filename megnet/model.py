@@ -13,33 +13,40 @@ from megnet.data.crystal import graphs2inputs
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import os
+
+from monty.serialization import dumpfn, loadfn
+from monty.json import MontyEncoder, MontyDecoder
+
 pjoin = os.path.join
 
 
-class GraphModel(KerasModel):
+class GraphModel:
     """
-    #todo whole model save. now self.save only saves keras model
 
     Wrapper of keras GraphModel.
     We add methods to train the model from (structures, targets) pairs
     In addition to keras GraphModel arguments, we add the following arguments
 
     Args:
+        model: (keras model)
         graph_convertor: (object) a object that turns a structure to a graph
         distance_convertor: (object) expand the distance value to a vector
 
     Or one can specify the maximum radius (max_r), number of basis (n_basis) and
     the Gaussian width (width) for constructing the distance convertor
     """
+
     def __init__(self,
-                 *args,
-                 graph_convertor=None,
-                 distance_convertor=None,
-                 **kwargs):
-        super(GraphModel, self).__init__(*args, **kwargs)
+                 model,
+                 graph_convertor,
+                 distance_convertor):
+        self.model = model
         self.graph_convertor = graph_convertor
         self.distance_convertor = distance_convertor
         self.yscaler = StandardScaler()
+
+    def __getattr__(self, p):
+        return getattr(self.model, p)
 
     def train(self,
               train_structures,
@@ -165,6 +172,31 @@ class GraphModel(KerasModel):
             return GraphBatchDistanceConvert(*args, **kwargs)
         else:
             return GraphBatchGenerator(*args, **kwargs)
+
+    def save_model(self, filename):
+        """
+        Save the model to a keras model hdf5 and a json config for additional convertors
+        :param filename: (str)
+        :return:
+        """
+        self.model.save(filename)
+        dumpfn({'distance_convertor': self.distance_convertor,
+                'graph_convertor': self.graph_convertor}, filename + '.json', cls=MontyEncoder)
+
+    @classmethod
+    def from_file(cls, filename):
+        """
+        Class method to load model from
+            filename for keras model
+            filename.json for additional convertors
+
+        :param filename: (str)
+        :return: Model
+        """
+        configs = loadfn(filename + '.json', cls=MontyDecoder)
+        model = load_megnet_model(filename)
+        configs.update({'model': model})
+        return cls(**configs)
 
 
 def megnet_model(n_connect,
@@ -298,9 +330,11 @@ def megnet_model(n_connect,
         loss = loss
 
     out = Dense(n_target, activation=final_act)(final_vec)
-    model = GraphModel(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out, graph_convertor=graph_convertor, distance_convertor=distance_convertor)
+    model = KerasModel(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
     model.compile(Adam(lr), loss)
-    return model
+
+    return GraphModel(model=model, graph_convertor=graph_convertor,
+                      distance_convertor=distance_convertor)
 
 
 def load_megnet_model(fname):
@@ -318,3 +352,4 @@ def load_megnet_model(fname):
                         'MEGNet': MEGNet,
                         'Set2Set': Set2Set})
     return load_model(fname, custom_objects=custom_objs)
+

@@ -1,13 +1,14 @@
 import unittest
 import numpy as np
-from megnet.model import megnet_model
+from megnet.model import megnet_model, GraphModel
 from megnet.callbacks import ModelCheckpointMAE, GeneratorLog, ManualStop
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
 from glob import glob
 import os
-from pymatgen import Structure
+from pymatgen import Structure, Lattice
 import shutil
+from monty.tempfile import ScratchDir
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -45,25 +46,41 @@ class TestModel(unittest.TestCase):
         y = np.random.normal(size=(1, 2, 1))
         cls.train_gen_mol = generator(x_mol, y)
 
+        cls.model = megnet_model(10, 2, n_blocks=1, lr=1e-2,
+                                 n1=4, n2=4, n3=4, n_pass=1, n_target=1,
+                                 graph_convertor=CrystalGraph(),
+                                 distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
+
     def test_train_pred(self):
-        model = megnet_model(10, 2, n_blocks=1, lr=1e-2,
-                             n1=4, n2=4, n3=4, n_pass=1, n_target=1,
-                             graph_convertor=CrystalGraph(),
-                             distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
         structures = [s] * 4
         targets = [0.1, 0.1, 0.1, 0.1]
-        model.train(structures,
-                    targets,
-                    validation_structures=structures[:2],
-                    validation_targets=[0.1, 0.1],
-                    batch_size=2,
-                    epochs=1,
-                    verbose=2)
-        preds = model.predict_structure(structures[0])
+        self.model.train(structures,
+                         targets,
+                         validation_structures=structures[:2],
+                         validation_targets=[0.1, 0.1],
+                         batch_size=2,
+                         epochs=1,
+                         verbose=2)
+        preds = self.model.predict_structure(structures[0])
         if os.path.isdir('callback'):
             shutil.rmtree('callback')
         self.assertTrue(np.size(preds) == 1)
+
+    def test_single_atom_structure(self):
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        # initialize the model
+        self.model.train([s, s], [0.1, 0.1], epochs=1)
+        pred = self.model.predict_structure(s)
+        self.assertEqual(len(pred.ravel()), 1)
+
+    def test_save_and_load(self):
+        weights1 = self.model.get_weights()
+        with ScratchDir('.'):
+            self.model.save_model('test.hdf5')
+            model2 = GraphModel.from_file('test.hdf5')
+        weights2 = model2.get_weights()
+        self.assertTrue(np.allclose(weights1[0], weights2[0]))
 
     @unittest.skip
     def test_crystal_model(self):
