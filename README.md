@@ -95,7 +95,7 @@ For model details and benchmarks, please refer to ["Graph Networks as a Universa
 
 ## Customized Graph Network Models
 
-For users who are familiar with deep learning and wish to optimize the MEGNet models themselves, a fast model building tool is in the `megnet.models` module. A simple model building example is given below:
+For users who are familiar with deep learning and Keras and wish to build customized graph network based models, the following example outlines how a custom model can be constructed from `MEGNetLayer`, which is essentially our implementation of the graph network using neural networks:
 
 ```python
 from keras.layers import Input, Dense
