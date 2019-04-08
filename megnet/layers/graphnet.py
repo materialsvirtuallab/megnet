@@ -160,7 +160,7 @@ class MEGNet(GraphNetwork):
     def rho_v_u(self, v_p, inputs):
         node, weights, u, index1, index2, gnode, gbond = inputs
         gnode = tf.reshape(gnode, (-1,))
-        return tf.expand_dims(self.seg_method(tf.squeeze(v_p), gnode), axis=0)
+        return tf.expand_dims(self.seg_method(tf.squeeze(v_p, axis=0), gnode), axis=0)
 
     def phi_u(self, b_e_p, b_v_p, inputs):
         concated = tf.concat([b_e_p, b_v_p, inputs[2]], axis=-1)
