@@ -46,8 +46,8 @@ class TestModel(unittest.TestCase):
         y = np.random.normal(size=(1, 2, 1))
         cls.train_gen_mol = generator(x_mol, y)
 
-        cls.model = MEGNetModel(10, 2, n_blocks=1, lr=1e-2,
-                                n1=4, n2=4, n3=4, n_pass=1, n_target=1,
+        cls.model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
+                                n1=4, n2=4, n3=4, npass=1, ntarget=1,
                                 graph_convertor=CrystalGraph(),
                                 distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
 

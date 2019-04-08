@@ -5,7 +5,7 @@ from megnet.activations import softplus2
 from megnet.losses import mse_scale
 from keras.regularizers import l2
 
-from keras.models import Model as KerasModel
+from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop
 from megnet.utils.general_utils import expand_1st
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator
@@ -191,7 +191,15 @@ class GraphModel:
         :return: Model
         """
         configs = loadfn(filename + '.json')
-        model = load_megnet_model(filename)
+        from keras.utils import get_custom_objects
+        from keras.models import load_model
+
+        custom_objs = get_custom_objects()
+        custom_objs.update({'mean_squared_error_with_scale': mse_scale,
+                            'softplus2': softplus2,
+                            'MEGNetLayer': MEGNetLayer,
+                            'Set2Set': Set2Set})
+        model = load_model(filename, custom_objects=custom_objs)
         configs.update({'model': model})
         return GraphModel(**configs)
 
@@ -202,15 +210,15 @@ class MEGNetModel(GraphModel):
                  nfeat_edge,
                  nfeat_global,
                  nfeat_node=None,
-                 n_blocks=3,
+                 nblocks=3,
                  lr=1e-3,
                  n1=64,
                  n2=32,
                  n3=16,
-                 n_vocal=95,
+                 nvocal=95,
                  embedding_dim=16,
-                 n_pass=3,
-                 n_target=1,
+                 npass=3,
+                 ntarget=1,
                  act=softplus2,
                  is_classification=False,
                  loss="mse",
@@ -226,28 +234,30 @@ class MEGNetModel(GraphModel):
         :param nfeat_edge: (int) number of bond features
         :param nfeat_global: (int) number of state features
         :param nfeat_node: (int) number of atom features
-        :param n_blocks: (int) number of MEGNetLayer blocks
+        :param nblocks: (int) number of MEGNetLayer blocks
         :param lr: (float) learning rate
         :param n1: (int) number of hidden units in layer 1 in MEGNetLayer
         :param n2: (int) number of hidden units in layer 2 in MEGNetLayer
         :param n3: (int) number of hidden units in layer 3 in MEGNetLayer
-        :param n_vocal: (int) number of total element
+        :param nvocal: (int) number of total element
         :param embedding_dim: (int) number of embedding dimension
-        :param n_pass: (int) number of recurrent steps in Set2Set layer
-        :param n_target: (int) number of output targets
+        :param npass: (int) number of recurrent steps in Set2Set layer
+        :param ntarget: (int) number of output targets
         :param act: (object) activation function
         :param l2_coef: (float or None) l2 regularization parameter
         :param is_classification: (bool) whether it is a classifiation task
         :param loss: (object or str) loss function
         :param dropout: (float) dropout rate
-        :param graph_convertor: (object) object that exposes a "convert" method for structure to graph conversion
-        :param distance_convertor: (object) object that exposes a "convert" method for distance to expanded vector conversion
+        :param graph_convertor: (object) object that exposes a "convert" method
+            for structure to graph conversion
+        :param distance_convertor: (object) object that exposes a "convert"
+            method for distance to expanded vector conversion
         :return: keras model object
         """
         int32 = 'int32'
         if nfeat_node is None:
             x1 = Input(shape=(None,), dtype=int32)  # only z as feature
-            x1_ = Embedding(n_vocal, embedding_dim)(x1)
+            x1_ = Embedding(nvocal, embedding_dim)(x1)
         else:
             x1 = Input(shape=(None, nfeat_node))
             x1_ = x1
@@ -299,7 +309,7 @@ class MEGNetModel(GraphModel):
         x1_ = ff(x1_)
         x2_ = ff(x2)
         x3_ = ff(x3)
-        for i in range(n_blocks):
+        for i in range(nblocks):
             if i == 0:
                 has_ff = False
             else:
@@ -314,8 +324,8 @@ class MEGNetModel(GraphModel):
             x3_ = Add()([x3_, x3_1])
 
         # set2set for both the atom and bond
-        node_vec = Set2Set(T=n_pass, n_hidden=n3)([x1_, x6])
-        edge_vec = Set2Set(T=n_pass, n_hidden=n3)([x2_, x7])
+        node_vec = Set2Set(T=npass, n_hidden=n3)([x1_, x6])
+        edge_vec = Set2Set(T=npass, n_hidden=n3)([x2_, x7])
         # concatenate atom, bond, and global
         final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
         if dropout:
@@ -331,28 +341,10 @@ class MEGNetModel(GraphModel):
             final_act = None
             loss = loss
 
-        out = Dense(n_target, activation=final_act)(final_vec)
-        model = KerasModel(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
+        out = Dense(ntarget, activation=final_act)(final_vec)
+        model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
         model.compile(Adam(lr), loss)
 
         super(MEGNetModel, self).__init__(
             model=model, graph_convertor=graph_convertor,
             distance_convertor=distance_convertor)
-
-
-def load_megnet_model(fname):
-    """
-    Customized load_model for MEGNetLayer, which requires some custom objects.
-    :param fname: HDF5 file containing model.
-    :return: GraphModel
-    """
-    from keras.utils import get_custom_objects
-    from keras.models import load_model
-
-    custom_objs = get_custom_objects()
-    custom_objs.update({'mean_squared_error_with_scale': mse_scale,
-                        'softplus2': softplus2,
-                        'MEGNetLayer': MEGNetLayer,
-                        'Set2Set': Set2Set})
-    return load_model(fname, custom_objects=custom_objs)
-

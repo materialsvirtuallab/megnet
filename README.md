@@ -18,11 +18,11 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 
 ## Usage
 
-Our current implementation supports a variety of use cases for users with different requirements and experience with deep learning.
+Our current implementation supports a variety of use cases for users with different requirements and experience with deep learning. Please also visit the `notebooks` directory for Jupyter notebooks with more detailed code examples.
 
 ### Using pre-built models
 
-In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `load_megnet_model` method.
+In our work, we have already built MEGNet models for the QM9 data set and Materials Project dataset. These models are provided as serialized HDF5 files. Users who are purely interested in using these models for prediction can quickly load and use them via the convenient `MEGNetModel.from_file` method.
 
 ```python
 from megnet.models import MEGNetModel
