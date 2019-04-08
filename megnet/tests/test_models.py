@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from megnet.model import MEGNetModel, GraphModel
+from megnet.models import MEGNetModel, GraphModel
 from megnet.callbacks import ModelCheckpointMAE, GeneratorLog, ManualStop
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph

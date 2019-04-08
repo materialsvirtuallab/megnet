@@ -7,11 +7,12 @@ from megnet.utils.layer_util import repeat_with_index
 
 class Set2Set(Layer):
     """
-    For a set of vectors, the set2set neural network maps it to a single vector. The order invariance is acheived by
-    a attention mechanism.
+    For a set of vectors, the set2set neural network maps it to a single vector.
+    The order invariance is acheived by a attention mechanism.
 
     See Vinyals, Oriol, Samy Bengio, and Manjunath Kudlur.
-    "Order matters: Sequence to sequence for sets." arXiv preprint arXiv:1511.06391 (2015).
+    "Order matters: Sequence to sequence for sets." arXiv preprint
+    arXiv:1511.06391 (2015).
 
     :param T: (int) recurrent step
     :param n_hidden: (int) number of hidden units

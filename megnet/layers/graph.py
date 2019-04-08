@@ -16,17 +16,23 @@ from keras.layers import activations, initializers, regularizers, constraints
 
 class GraphNetworkLayer(Layer):
     """
-    Base for graphnet. The implementation is based on neural networks for each update function, and sum or mean for
-    each aggregation function
+    Implementation of a graph network layer. Current implementation is based on
+    neural networks for each update function, and sum or mean for each
+    aggregation function
 
     Args:
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include 'relu', 'softmax', 'tanh', 'sigmoid'
-            and etc.
-        use_bias (bool): Default: True. Whether to use the bias term in the neural network.
-        kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
+        activation (str): Default: None. The activation function used for each
+            sub-neural network. Examples include 'relu', 'softmax', 'tanh',
+            'sigmoid' and etc.
+        use_bias (bool): Default: True. Whether to use the bias term in the
+            neural network.
+        kernel_initializer (str): Default: 'glorot_uniform'. Initialization
+            function for the layer kernel weights,
         bias_initializer (str): Default: 'zeros'
-        activity_regularizer (str): Default: None. The regularization function for the output
-        kernel_constraint (str): Default: None. Keras constraint for kernel values
+        activity_regularizer (str): Default: None. The regularization function
+            for the output
+        kernel_constraint (str): Default: None. Keras constraint for kernel
+            values
         bias_constraint (str): Default: None .Keras constraint for bias values
 
     Method:
