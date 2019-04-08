@@ -1,16 +1,14 @@
 import numpy as np
 from operator import itemgetter
-from megnet.data.graph import GaussianDistance, expand_1st
-import threading
 from megnet.utils.general_utils import to_list
 
 
 def index_rep_from_structure(structure, r=4):
     """
     Take a pymatgen structure and convert it to a index-type graph representation
-    The graph will have node, distance, index1, index2, where node is a vector of Z number
-    of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
-    distance
+    The graph will have node, distance, index1, index2, where node is a vector
+    of Z number of atoms in the structure, index1 and index2 mark the atom
+    indices forming the bond and separated by distance
 
     :param structure: (pymatgen structure)
     :param r: (float) distance cutoff
@@ -79,6 +77,3 @@ def graph_to_inputs(mp_ids, graphs, targets):
             index2.append(g['index2'])
             final_targets.append([t])
     return nodes, edges, globs, index1, index2, final_targets, ids
-
-
-
