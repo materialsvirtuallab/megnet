@@ -4,7 +4,7 @@ This repository represents the efforts of the [Materials Virtual Lab](http://www
 
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
-MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networks[1] for universal machine learning in materials science. We have demonstrated its success in achieving very low prediction errors in a broad array of properties in both molecules and crystals (see preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]).
+The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networks[1] for universal machine learning in materials science. We have demonstrated its success in achieving very low prediction errors in a broad array of properties in both molecules and crystals (see ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]).
 
 Briefly, Figure 1 shows the sequential update steps of the graph network, whereby bonds, atoms, and global state attributes are updated using information from each other, generating an output graph.
 
@@ -23,7 +23,7 @@ A fast model building tool is in the `megnet.model` module, and the correspondin
 ```python
 from keras.layers import Input, Dense
 from keras.models import Model
-from megnet.layers import MEGNet, Set2Set
+from megnet.layers import MEGNetLayer, Set2Set
 
 n_atom_feature= 20
 n_bond_feature = 10
@@ -40,10 +40,10 @@ x6 = Input(shape=(None,), dtype=int32) # atom_ind placeholder
 x7 = Input(shape=(None,), dtype=int32) # bond_ind placeholder
 xs = [x1, x2, x3, x4, x5, x6, x7]
 
-# Pass the inputs to the MEGNet layer
+# Pass the inputs to the MEGNetLayer layer
 # Here the list are the hidden units + the output unit, 
 # you can have others like [n1] or [n1, n2, n3 ...] if you want. 
-out = MEGNet([32, 16], [32, 16], [32, 16], pool_method='mean', activation='relu')(xs)
+out = MEGNetLayer([32, 16], [32, 16], [32, 16], pool_method='mean', activation='relu')(xs)
 
 # the output is a tuple of new graphs V, E and u
 # Since u is a per-structure quantity, 
@@ -61,9 +61,10 @@ With less than 20 lines of code, you have built a graph network model that is re
 Assume you have a list of `structures` and a list of property `targets`. It is easy to use `megnet_model` for setting up the model and train. 
 
 ```python
-from megnet.model import megnet_model
+from megnet.model import MEGNetModel
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
+import numpy as np
 
 n_bond_feature = 10
 n_global_feature = 2
@@ -71,9 +72,9 @@ gaussian_centers = np.linspace(0, 5, 10)
 gaussian_width = 0.5
 graph_convertor = CrystalGraph()
 distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
-model = megnet_model(n_bond_feature, n_global_feature, 
-                     graph_convertor=graph_convertor, 
-                     distance_convertor=distance_convertor)
+model = MEGNetModel(n_bond_feature, n_global_feature, 
+                    graph_convertor=graph_convertor, 
+                    distance_convertor=distance_convertor)
 # model training
 model.train(structures, targets, epochs=10)
 
@@ -81,7 +82,7 @@ model.train(structures, targets, epochs=10)
 pred_target = model.predict_structure(new_structure)
 ```
 
-For model details and benchmarks, please refer to the preprint of our paper ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
 
 ## Implementation details
 

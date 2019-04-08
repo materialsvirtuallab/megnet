@@ -1,4 +1,4 @@
-from megnet.layers import MEGNet
+from megnet.layers import MEGNetLayer
 from keras.layers import Input
 import unittest
 
@@ -23,10 +23,10 @@ class TestLayer(unittest.TestCase):
         units_v = [13, 14, 16]
         units_e = [16, 16, 17]
         units_u = [13, 14, 18]
-        layer = MEGNet(units_v, units_e, units_u)
+        layer = MEGNetLayer(units_v, units_e, units_u)
         out = layer(self.x)
         self.assertListEqual([i._keras_shape[-1] for i in out], [units_v[-1], units_e[-1], units_u[-1]])
-        new_layer = MEGNet.from_config(layer.get_config())
+        new_layer = MEGNetLayer.from_config(layer.get_config())
         out2 = new_layer(self.x)
         self.assertListEqual([i._keras_shape[-1] for i in out2], [units_v[-1], units_e[-1], units_u[-1]])
 

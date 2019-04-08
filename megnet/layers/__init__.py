@@ -1,2 +1,2 @@
-from .graphnet import MEGNet
+from .megnet import MEGNetLayer
 from .set2set import Set2Set

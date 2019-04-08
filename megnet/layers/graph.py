@@ -14,7 +14,7 @@ from keras.engine import Layer
 from keras.layers import activations, initializers, regularizers, constraints
 
 
-class GraphNetwork(Layer):
+class GraphNetworkLayer(Layer):
     """
     Base for graphnet. The implementation is based on neural networks for each update function, and sum or mean for
     each aggregation function
@@ -56,7 +56,7 @@ class GraphNetwork(Layer):
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
-        super(GraphNetwork, self).__init__(**kwargs)
+        super(GraphNetworkLayer, self).__init__(**kwargs)
         self.activation = activations.get(activation)
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -155,5 +155,5 @@ class GraphNetwork(Layer):
             'bias_constraint': constraints.serialize(self.bias_constraint)
         }
 
-        base_config = super(GraphNetwork, self).get_config()
+        base_config = super(GraphNetworkLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))

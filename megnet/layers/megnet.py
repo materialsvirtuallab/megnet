@@ -1,4 +1,4 @@
-from megnet.layers.base import GraphNetwork
+from megnet.layers.graph import GraphNetworkLayer
 import tensorflow as tf
 import keras.backend as K
 from megnet.utils.layer_util import repeat_with_index
@@ -9,7 +9,7 @@ __version__ = "0.1"
 __date__ = "Dec 1, 2018"
 
 
-class MEGNet(GraphNetwork):
+class MEGNetLayer(GraphNetworkLayer):
     """
     TODO: Document this?
     """
@@ -30,16 +30,16 @@ class MEGNet(GraphNetwork):
                  bias_constraint=None,
                  **kwargs):
 
-        super(MEGNet, self).__init__(activation=activation,
-                                     use_bias=use_bias,
-                                     kernel_initializer=kernel_initializer,
-                                     bias_initializer=bias_initializer,
-                                     kernel_regularizer=kernel_regularizer,
-                                     bias_regularizer=bias_regularizer,
-                                     activity_regularizer=activity_regularizer,
-                                     kernel_constraint=kernel_constraint,
-                                     bias_constraint=bias_constraint,
-                                     **kwargs)
+        super(MEGNetLayer, self).__init__(activation=activation,
+                                          use_bias=use_bias,
+                                          kernel_initializer=kernel_initializer,
+                                          bias_initializer=bias_initializer,
+                                          kernel_regularizer=kernel_regularizer,
+                                          bias_regularizer=bias_regularizer,
+                                          activity_regularizer=activity_regularizer,
+                                          kernel_constraint=kernel_constraint,
+                                          bias_constraint=bias_constraint,
+                                          **kwargs)
         self.units_v = units_v
         self.units_e = units_e
         self.units_u = units_u
@@ -181,7 +181,7 @@ class MEGNet(GraphNetwork):
             'pool_method': self.pool_method
         }
 
-        base_config = super(MEGNet, self).get_config()
+        base_config = super(MEGNetLayer, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
 
@@ -205,7 +205,7 @@ if __name__ == '__main__':
     x5_ = Input(shape=(None,), dtype=int32)
     x6_ = Input(shape=(None,), dtype=int32)
     x7_ = Input(shape=(None,), dtype=int32)
-    out = MEGNet([10, 5], [20, 4], [30, 3])([x1_, x2_, x3_, x4_, x5_, x6_, x7_])
+    out = MEGNetLayer([10, 5], [20, 4], [30, 3])([x1_, x2_, x3_, x4_, x5_, x6_, x7_])
     model = Model(inputs=[x1_, x2_, x3_, x4_, x5_, x6_, x7_], outputs=out)
     model.compile('adam', 'mse')
     print('Dummy prediction ', model.predict([x1, x2, x3, x4, x5, x6, x7]))

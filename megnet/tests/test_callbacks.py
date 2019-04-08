@@ -2,7 +2,7 @@ import unittest
 from keras.models import Model
 from keras.layers import Input, Dense
 from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop
-from megnet.layers import MEGNet
+from megnet.layers import MEGNetLayer
 import numpy as np
 from io import StringIO
 import sys
@@ -28,7 +28,7 @@ class TestCallBack(unittest.TestCase):
         units_v = [2, 2]
         units_e = [2, 2]
         units_u = [2, ]
-        layer = MEGNet(units_v, units_e, units_u)
+        layer = MEGNetLayer(units_v, units_e, units_u)
         out = layer(cls.x)
         out = Dense(1)(out[2])
         cls.model = Model(inputs=cls.x, outputs=out)

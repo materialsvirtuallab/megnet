@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from megnet.model import megnet_model, GraphModel
+from megnet.model import MEGNetModel, GraphModel
 from megnet.callbacks import ModelCheckpointMAE, GeneratorLog, ManualStop
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
@@ -46,10 +46,10 @@ class TestModel(unittest.TestCase):
         y = np.random.normal(size=(1, 2, 1))
         cls.train_gen_mol = generator(x_mol, y)
 
-        cls.model = megnet_model(10, 2, n_blocks=1, lr=1e-2,
-                                 n1=4, n2=4, n3=4, n_pass=1, n_target=1,
-                                 graph_convertor=CrystalGraph(),
-                                 distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
+        cls.model = MEGNetModel(10, 2, n_blocks=1, lr=1e-2,
+                                n1=4, n2=4, n3=4, n_pass=1, n_target=1,
+                                graph_convertor=CrystalGraph(),
+                                distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
 
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
