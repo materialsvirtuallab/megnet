@@ -22,7 +22,7 @@ A fast model building tool is in the `megnet.model` module, and the correspondin
 ### A basic example
 ```python
 from keras.layers import Input, Dense
-from keras.models import GraphModel
+from keras.models import Model
 from megnet.layers import MEGNet, Set2Set
 
 n_atom_feature= 20
@@ -51,7 +51,7 @@ out = MEGNet([32, 16], [32, 16], [32, 16], pool_method='mean', activation='relu'
 out = Dense(1)(out[2])
 
 # Set up the model and compile it!
-model = GraphModel(inputs=xs, outputs=out)
+model = Model(inputs=xs, outputs=out)
 model.compile(loss='mse', optimizer='adam')
 ```
 
@@ -64,6 +64,7 @@ Assume you have a list of `structures` and a list of property `targets`. It is e
 from megnet.model import megnet_model
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
+
 n_bond_feature = 10
 n_global_feature = 2
 gaussian_centers = np.linspace(0, 5, 10)
