@@ -1,4 +1,3 @@
 ## Elemental embeddings 
 
-- `elemental_embedding_1MEGNet_layer.json` contains the elemental embeddings trained on the formation energy data in Materials Project up to z number of 94. The file contains 95 lists of length 16, with the first list being a dummy placeholder (z number 0). 
-
+- `elemental_embedding_1MEGNet_layer.json` contains elemental features for 89 elements (up to Z=94, excluding Po, At, Rn, Fr, Ra) learnt from MEGNet model. The key for the dictionary is the element name and the value is a vector of length 16.
