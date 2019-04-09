@@ -31,7 +31,7 @@ In our work, we have already built MEGNet models for the QM9 data set and Materi
     - ZPVE: zero point vibrational energy
     - µ: dipole moment
     - α: isotropic polarizability
-    - <R2> electronic spatial extent
+    - \<R2\>: electronic spatial extent
     - U0: internal energy at 0 K
     - U: internal energy at 298 K
     - H: enthalpy at 298 K
