@@ -19,7 +19,6 @@ def equal(x, y):
         return x == y
 
 
-
 class QM9Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
