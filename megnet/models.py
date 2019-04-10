@@ -4,12 +4,10 @@ from megnet.layers import MEGNetLayer, Set2Set
 from megnet.activations import softplus2
 from megnet.losses import mse_scale
 from keras.regularizers import l2
-
 from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop
-from megnet.utils.general_utils import expand_1st
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
-from megnet.data.crystal import graphs2inputs, CrystalGraph
+from megnet.data.crystal import CrystalGraph
 import numpy as np
 import os
 
@@ -21,25 +19,20 @@ pjoin = os.path.join
 
 class GraphModel:
     """
-    Wrapper of keras.Model.
-    We add methods to train the model from (structures, targets) pairs
+    Composition of keras model and convertor class for transfering structure object to
+    input tensors. We add methods to train the model from (structures, targets) pairs
 
     Args:
         model: (keras model)
-        graph_convertor: (object) a object that turns a structure to a graph
-        distance_convertor: (object) expand the distance value to a vector
-
-    Or one can specify the maximum radius (max_r), number of basis (n_basis) and
-    the Gaussian width (width) for constructing the distance convertor
+        graph_convertor: (object) a object that turns a structure to a graph, check `megnet.data.crystal`
     """
 
     def __init__(self,
                  model,
                  graph_convertor,
-                 distance_convertor):
+                 **kwargs):
         self.model = model
         self.graph_convertor = graph_convertor
-        self.distance_convertor = distance_convertor
 
     def __getattr__(self, p):
         return getattr(self.model, p)
@@ -70,9 +63,9 @@ class GraphModel:
         :param kwargs:
         :return:
         """
-        train_graphs = [self.graph_convertor(i) for i in train_structures]
+        train_graphs = [self.graph_convertor.convert(i) for i in train_structures]
         if validation_structures is not None:
-            val_graphs = [self.graph_convertor(i) for i in validation_structures]
+            val_graphs = [self.graph_convertor.convert(i) for i in validation_structures]
         else:
             val_graphs = None
 
@@ -108,17 +101,17 @@ class GraphModel:
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
+            # with this call back you can stop the model training by `touch STOP`
             callbacks = [ManualStop()]
         train_targets = np.array(train_targets).ravel()
         if validation_graphs is not None:
             filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{val_mae:.6f}.hdf5')
             validation_targets = np.array(validation_targets).ravel()
-            val_inputs = graphs2inputs(validation_graphs, validation_targets)
+            val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
 
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
-            # print(steps_per_val)
             callbacks.extend([ModelCheckpointMAE(filepath=filepath,
                                                  save_best_only=True,
                                                  save_weights_only=False,
@@ -128,7 +121,7 @@ class GraphModel:
         else:
             val_generator = None
             steps_per_val = None
-        train_inputs = graphs2inputs(train_graphs, train_targets)
+        train_inputs = self.graph_convertor.get_flat_data(train_graphs, train_targets)
         train_generator = self._create_generator(*train_inputs, batch_size=batch_size)
         steps_per_train = int(np.ceil(len(train_graphs) / batch_size))
         self.fit_generator(train_generator, steps_per_epoch=steps_per_train,
@@ -141,22 +134,12 @@ class GraphModel:
         :param structure:
         :return:
         """
-        graph = self.graph_convertor(structure)
-        gnode = [0] * len(graph['node'])
-        gbond = [0] * len(graph['index1'])
-        inp = [expand_1st(graph['node']),
-               expand_1st(self.distance_convertor.convert(graph['distance'])),
-               expand_1st(np.array(graph['state'])),
-               expand_1st(np.array(graph['index1'])),
-               expand_1st(np.array(graph['index2'])),
-               expand_1st(np.array(gnode)),
-               expand_1st(np.array(gbond)),
-               ]
+        inp = self.graph_convertor.get_input(structure)
         return self.predict(inp).ravel()
 
     def _create_generator(self, *args, **kwargs):
-        if self.distance_convertor is not None:
-            kwargs.update({'distance_convertor': self.distance_convertor})
+        if hasattr(self.graph_convertor, 'bond_convertor'):
+            kwargs.update({'distance_convertor': self.graph_convertor.bond_convertor})
             return GraphBatchDistanceConvert(*args, **kwargs)
         else:
             return GraphBatchGenerator(*args, **kwargs)
@@ -172,7 +155,6 @@ class GraphModel:
         self.model.save(filename)
         dumpfn(
             {
-                'distance_convertor': self.distance_convertor,
                 'graph_convertor': self.graph_convertor
             },
             filename + '.json'
@@ -222,8 +204,7 @@ class MEGNetModel(GraphModel):
                  loss="mse",
                  l2_coef=None,
                  dropout=None,
-                 graph_convertor=None,
-                 distance_convertor=None):
+                 graph_convertor=None):
         """
         Construct a graph network model with or without explicit atom features
         if n_feature is specified then a general graph model is assumed,
@@ -248,8 +229,6 @@ class MEGNetModel(GraphModel):
         :param dropout: (float) dropout rate
         :param graph_convertor: (object) object that exposes a "convert" method
             for structure to graph conversion
-        :param distance_convertor: (object) object that exposes a "convert"
-            method for distance to expanded vector conversion
         :return: keras model object
         """
         int32 = 'int32'
@@ -344,9 +323,7 @@ class MEGNetModel(GraphModel):
         model.compile(Adam(lr), loss)
 
         if graph_convertor is None:
-            graph_convertor = CrystalGraph()
-        if distance_convertor is None:
-            distance_convertor = GaussianDistance(np.linspace(0, 5, 100), 0.5)
+            graph_convertor = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
+
         super(MEGNetModel, self).__init__(
-            model=model, graph_convertor=graph_convertor,
-            distance_convertor=distance_convertor)
+            model=model, graph_convertor=graph_convertor)

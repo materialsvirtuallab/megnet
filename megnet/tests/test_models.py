@@ -17,7 +17,7 @@ class TestModel(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.n_feature = 3
-        cls.n_bond_features = 6
+        cls.n_bond_features = 10
         cls.n_global_features = 2
 
         def generator(x, y):
@@ -48,8 +48,8 @@ class TestModel(unittest.TestCase):
 
         cls.model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                                 n1=4, n2=4, n3=4, npass=1, ntarget=1,
-                                graph_convertor=CrystalGraph(),
-                                distance_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5))
+                                graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
+                                )
 
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
@@ -82,10 +82,7 @@ class TestModel(unittest.TestCase):
         weights2 = model2.get_weights()
         self.assertTrue(np.allclose(weights1[0], weights2[0]))
 
-    @unittest.skip
     def test_crystal_model(self):
-        model = megnet_model(self.n_bond_features, self.n_global_features, n_blocks=1, lr=1e-2,
-                             n1=4, n2=4, n3=4, n_pass=1, n_target=1)
         callbacks = [ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
                                         save_best_only=True,
                                         val_gen=self.train_gen_crystal,
@@ -96,29 +93,8 @@ class TestModel(unittest.TestCase):
                                   val_names=['Ef'], val_units=['eV/atom']),
                      ManualStop()]
 
-        model.fit_generator(generator=self.train_gen_crystal, steps_per_epoch=1, epochs=2, verbose=1,
-                            callbacks=callbacks)
-        model_files = glob('val_mae*.hdf5')
-        self.assertGreater(len(model_files), 0)
-        for i in model_files:
-            os.remove(i)
-
-    @unittest.skip
-    def test_molecule_model(self):
-        model = megnet_model(self.n_bond_features, self.n_global_features, n_feature=self.n_feature,
-                             n_blocks=1, lr=1e-2, n1=4, n2=4, n3=4, n_pass=1, n_target=1)
-
-        callbacks = [ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
-                                        save_best_only=True,
-                                        val_gen=self.train_gen_mol,
-                                        steps_per_val=1,
-                                        is_pa=False),
-                     GeneratorLog(self.train_gen_mol, 1,
-                                  self.train_gen_mol, 1,
-                                  val_names=['Ef'], val_units=['eV/atom']),
-                     ManualStop()]
-
-        model.fit_generator(generator=self.train_gen_mol, steps_per_epoch=1, epochs=2, verbose=1, callbacks=callbacks)
+        self.model.fit_generator(generator=self.train_gen_crystal, steps_per_epoch=1, epochs=2, verbose=1,
+                                 callbacks=callbacks)
         model_files = glob('val_mae*.hdf5')
         self.assertGreater(len(model_files), 0)
         for i in model_files:
