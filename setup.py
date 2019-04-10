@@ -21,6 +21,9 @@ setup(
     extras_require={
         'model_saving': ['h5py'], },
     package=find_packages(),
+    package_data={
+        "megnet": ["*.json", "*.md"]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
