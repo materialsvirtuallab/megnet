@@ -19,21 +19,6 @@ def equal(x, y):
         return x == y
 
 
-def is_subset(xs, ys, sort_attr='atomic_num', skip=None):
-    xs = sorted(xs, key=lambda x: x[sort_attr])
-    ys = sorted(ys, key=lambda x: x[sort_attr])
-    for x, y in zip(xs, ys):
-        for i in x:
-            if skip:
-                if i in skip:
-                    continue
-            if equal(y[i], x[i]):
-                pass
-            else:
-                print(i, x[i], y[i])
-                return False
-    return True
-
 
 class QM9Test(unittest.TestCase):
     @classmethod
@@ -45,9 +30,12 @@ class QM9Test(unittest.TestCase):
     def test_featurizer(self):
         mg = MolecularGraph()
         mol = mol_from_smiles(self.qm9_000001['smiles'])
-        atom_attributes, bond_attributes = mg.featurize(mol)
-        self.assertTrue(is_subset(atom_attributes, self.qm9_000001['atoms']))
-        self.assertTrue(is_subset(bond_attributes, self.qm9_000001['atom_pairs'], 'spatial_distance', skip=['a_idx', 'b_idx']))
+        mol_graph = mg.convert(mol)
+        self.assertEqual(len(mol_graph['index1']), 20) # 20 bonds in total, including double counting
+        self.assertEqual(len(mol_graph['atom']), 5) # 5 atoms
+        self.assertListEqual(mol_graph['state'][0], [0, 0]) # dummy state [0, 0]
+        mol_graph = mg.convert(mol, state_attributes=[[1, 2]])
+        self.assertListEqual(mol_graph['state'][0], [1, 2])
 
 
 if __name__ == "__main__":

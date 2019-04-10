@@ -11,7 +11,7 @@ module_dir = os.path.dirname(os.path.abspath(__file__))
 class QM9Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        with open(os.path.join(module_dir, 'qm9' ,'qm9.json'), 'r') as f:
+        with open(os.path.join(module_dir, 'qm9','qm9.json'), 'r') as f:
             cls.data = json.load(f)
         cls.db_connection = type("MockTest", (), {})
         cls.db_connection.find = MagicMock(return_value=cls.data)
@@ -51,8 +51,8 @@ class QM9Test(unittest.TestCase):
 
         # note that the bond feature dimension is 27 for the whole dataset
         # here we are missing 1 element (totally 5), thus the dimension is
-        # 4 + 1 + 1 + 20 = 26
-        self.assertListEqual(list(out[0].shape), [20, 26])
+        # 4 + 1 + 1 + 100 = 106
+        self.assertListEqual(list(out[0].shape), [20, 106])
 
     def test_scaler(self):
         x = [[[1, 2], [1, 2]], [[3, 4], [5, 6]]]

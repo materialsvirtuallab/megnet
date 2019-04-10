@@ -9,8 +9,7 @@ import re
 from pymatgen import Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
-from monty.json import MSONable
-
+from megnet.data.graph import StructureGraph
 try:
     import pybel
 except:
@@ -31,9 +30,10 @@ BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance',
                  'graph_distance']
 
 
-class MolecularGraph(MSONable):
+class MolecularGraph(StructureGraph):
 
-    def __init__(self, atom_features=ATOM_FEATURES,
+    def __init__(self,
+                 atom_features=ATOM_FEATURES,
                  bond_features=BOND_FEATURES):
         """
         Args:
@@ -42,10 +42,11 @@ class MolecularGraph(MSONable):
         self.atom_features = atom_features
         self.bond_features = bond_features
 
-    def featurize(self, mol, full_pair_matrix=True):
+    def convert(self, mol, state_attributes=None, full_pair_matrix=True):
         """
         Args：
-
+            mol: (object)
+            state_attributes: (list) state attributes
             full_pair_matrix:
                 Whether to get to full matrix instead of half
                 Default true
@@ -84,7 +85,43 @@ class MolecularGraph(MSONable):
                 if j in self.bond_features:
                     d.update({j: k})
             out_pair.append(d)
-        return out_atom, out_pair
+
+        state_attributes = state_attributes or [[0, 0]]
+        atoms = []
+        bonds = []
+        index1_temp = []
+        index2_temp = []
+        for atom in out_atom:
+            atom_temp = []
+            for i in self.atom_features:
+                if i in atom:
+                    atom_temp.append(atom[i])
+            atoms.append(atom_temp)
+
+        for bond in out_pair:
+            index1_temp.append(bond.pop('a_idx'))
+            index2_temp.append(bond.pop('b_idx'))
+            bond_temp = []
+            for i in self.bond_features:
+                if i in bond:
+                    bond_temp.append(bond[i])
+            bonds.append(bond_temp)
+
+        index1 = index1_temp + index2_temp
+        index2 = index2_temp + index1_temp
+        bonds = bonds + bonds
+
+        sorted_arg = np.argsort(index1)
+        index1 = np.array(index1)[sorted_arg].tolist()
+        index2 = np.array(index2)[sorted_arg].tolist()
+        bonds = np.array(bonds)[sorted_arg].tolist()
+
+        return {'atom': atoms,
+                'bond': bonds,
+                'state': state_attributes,
+                'index1': index1,
+                'index2': index2
+                }
 
     def _dijkstra_distance(self, pairs):
         bonds = []
