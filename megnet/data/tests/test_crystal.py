@@ -1,6 +1,6 @@
 import unittest
-from megnet.data.crystal import CrystalGraph
 from megnet.data.graph import GaussianDistance
+from megnet.data.crystal import CrystalGraph, get_elemental_embeddings
 from pymatgen import Structure
 import os
 import numpy as np
@@ -48,6 +48,11 @@ class TestGraph(unittest.TestCase):
         targets = [0.1, 0.2]
         inp = cg.get_flat_data(graphs, targets)
         self.assertListEqual([len(i) for i in inp], [2] * 6)
+
+    def test_get_elemental_embeddings(self):
+        data = get_elemental_embeddings()
+        for k, v in data.items():
+            self.assertTrue(len(v) == 16)
 
 
 if __name__ == "__main__":
