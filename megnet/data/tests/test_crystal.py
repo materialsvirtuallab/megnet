@@ -1,5 +1,5 @@
 import unittest
-from megnet.data.crystal import CrystalGraph, graphs2inputs
+from megnet.data.crystal import CrystalGraph, graphs2inputs, get_elemental_embeddings
 from pymatgen import Structure
 import os
 
@@ -46,6 +46,11 @@ class TestGraph(unittest.TestCase):
         targets = [0.1, 0.2]
         inp = graphs2inputs(graphs, targets)
         self.assertListEqual([len(i) for i in inp], [2] * 6)
+
+    def test_get_elemental_embeddings(self):
+        data = get_elemental_embeddings()
+        for k, v in data.items():
+            self.assertTrue(len(v) == 16)
 
 
 if __name__ == "__main__":
