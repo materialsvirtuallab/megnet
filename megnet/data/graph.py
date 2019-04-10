@@ -3,20 +3,142 @@ import numpy as np
 import threading
 from megnet.utils.general_utils import expand_1st
 from monty.json import MSONable
+from pymatgen.analysis.graphs import StructureGraph as PMGStructureGraph
+from megnet.data.local_env import *
+from pymatgen.analysis.local_env import *
+from inspect import signature
 
 
-def itemgetter_list(l, indices):
+class StructureGraph(MSONable):
     """
-    Get indices of l and return a tuple
-    :param l:  (list)
-    :param indices: (list) indices
-    :return: (tuple)
+    This is an abstract class for converting converting structure into graphs or model inputs
+    Methods to be implemented are follows:
+        1. convert(self, structure)
+            This is to convert a structure into a graph dictionary
+        2. get_input(self, structure)
+            This method convert a structure directly to a model input
+        3. get_flat_data(self, graphs, targets)
+            This method process graphs and targets pairs and output model input list.
+
     """
-    it = itemgetter(*indices)
-    if np.size(indices) == 1:
-        return it(l),
-    else:
-        return it(l)
+    def __init__(self,
+                 nn_strategy,
+                 atom_convertor=None,
+                 bond_convertor=None,
+                 **kwargs):
+
+        if isinstance(nn_strategy, str):
+            strategy = globals()[nn_strategy]
+            parameters = signature(strategy).parameters
+            param_dict = {i: j.default for i, j in parameters.items()}
+            for i, j in kwargs.items():
+                if i in param_dict:
+                    setattr(self, i, j)
+                    param_dict.update({i: j})
+            self.nn_strategy = strategy(**param_dict)
+        elif isinstance(nn_strategy, NearNeighbors):
+            self.nn_strategy = nn_strategy
+        else:
+            raise RuntimeError("Strategy not valid")
+
+        self.atom_convertor = atom_convertor
+        self.bond_convertor = bond_convertor
+        if self.atom_convertor is None:
+            self.atom_convertor = self._get_dummy_convertor()
+        if self.bond_convertor is None:
+            self.bond_convertor = self._get_dummy_convertor()
+
+    def convert(self, structure, state_attributes=None):
+        """
+        Take a pymatgen structure and convert it to a index-type graph representation
+        The graph will have node, distance, index1, index2, where node is a vector of Z number
+        of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
+        distance
+        :param structure: (pymatgen structure)
+        :param state_attributes: (list) state attributes
+        :return: (dictionary)
+        """
+        state_attributes = state_attributes or [[0, 0]]
+        structure_graph = PMGStructureGraph.with_local_env_strategy(structure, self.nn_strategy)
+        us = []
+        vs = []
+        ks = []
+        ds = []
+        for u, v, k, d in structure_graph.graph.edges(keys=True, data=True):
+            us.append(u)
+            vs.append(v)
+            ks.append(k)
+            ds.append(d['weight'])
+
+        atoms = [i.specie.Z for i in structure]
+        index1 = us + vs
+        index2 = vs + us
+        bonds = ds + ds
+        sorted_index = np.argsort(index1)
+        index1 = np.array(index1)[sorted_index].tolist()
+        index2 = np.array(index2)[sorted_index].tolist()
+        bonds = np.array(bonds)[sorted_index].tolist()
+
+        if np.size(np.unique(index1)) < len(atoms):
+            raise RuntimeError("Isolated atoms found in the structure")
+        else:
+            return {'atom': np.array(atoms, dtype='int32').tolist(),
+                    'bond': bonds,
+                    'state': state_attributes,
+                    'index1': index1,
+                    'index2': index2
+                    }
+
+    def __call__(self, structure, state_attributes=None):
+        return self.convert(structure, state_attributes)
+
+    def get_input(self, structure):
+        graph = self.convert(structure)
+        gnode = [0] * len(structure)
+        gbond = [0] * len(graph['index1'])
+
+        return [expand_1st(self.atom_convertor.convert(graph['atom'])),
+                expand_1st(self.bond_convertor.convert(graph['bond'])),
+                expand_1st(np.array(graph['state'])),
+                expand_1st(np.array(graph['index1'])),
+                expand_1st(np.array(graph['index2'])),
+                expand_1st(np.array(gnode)),
+                expand_1st(np.array(gbond)),
+                ]
+
+    def get_flat_data(self, graphs, targets):
+        """
+        Expand the graph dictionary to form a list of features and targets tensors
+        This is useful when the model is trained on assembled graphs on the fly
+
+        :param graphs: (list of dictionary) list of graph dictionary for each structure
+        :param targets: (list of float) correpsonding target values for each structure
+        :return: tuple(node_features, edges_features, global_values, index1, index2, targets)
+        """
+        atoms = []
+        bonds = []
+        states = []
+        index1 = []
+        index2 = []
+
+        final_targets = []
+        for g, t in zip(graphs, targets):
+            if isinstance(g, dict):
+                atoms.append(np.array(g['atom']))
+                bonds.append(np.array(g['bond']))
+                states.append(g['state'])
+                index1.append(g['index1'])
+                index2.append(g['index2'])
+                final_targets.append([t])
+        return atoms, bonds, states, index1, index2, final_targets
+
+    def _get_dummy_convertor(self):
+        return DummyConvertor()
+
+    def as_dict(self):
+        all_dict = super(StructureGraph, self).as_dict()
+        all_dict.pop('nn_strategy')
+        return all_dict
 
 
 class DistanceConvertor(MSONable):
@@ -27,6 +149,14 @@ class DistanceConvertor(MSONable):
         raise NotImplementedError
 
 
+class DummyConvertor(DistanceConvertor):
+    """
+    Dummy convertor as a placeholder
+    """
+    def convert(self, d):
+        return d
+
+
 class GaussianDistance(DistanceConvertor):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
@@ -35,7 +165,7 @@ class GaussianDistance(DistanceConvertor):
     :param width: (float)
     """
 
-    def __init__(self, centers=np.linspace(0, 4, 20), width=0.5):
+    def __init__(self, centers=np.linspace(0, 5, 100), width=0.5):
         self.centers = centers
         self.width = width
 
@@ -199,3 +329,17 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
 
     def process_bond_feature(self, x):
         return self.distance_convertor.convert(x)
+
+
+def itemgetter_list(l, indices):
+    """
+    Get indices of l and return a tuple
+    :param l:  (list)
+    :param indices: (list) indices
+    :return: (tuple)
+    """
+    it = itemgetter(*indices)
+    if np.size(indices) == 1:
+        return it(l),
+    else:
+        return it(l)
