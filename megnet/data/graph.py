@@ -4,14 +4,13 @@ import threading
 from megnet.utils.general_utils import expand_1st
 from monty.json import MSONable
 from pymatgen.analysis.graphs import StructureGraph as PMGStructureGraph
-from megnet.data.local_env import *
-from pymatgen.analysis.local_env import *
+from megnet.data import local_env
 from inspect import signature
 
 
 class StructureGraph(MSONable):
     """
-    This is an abstract class for converting converting structure into graphs or model inputs
+    This is a base class for converting converting structure into graphs or model inputs
     Methods to be implemented are follows:
         1. convert(self, structure)
             This is to convert a structure into a graph dictionary
@@ -28,7 +27,7 @@ class StructureGraph(MSONable):
                  **kwargs):
 
         if isinstance(nn_strategy, str):
-            strategy = globals()[nn_strategy]
+            strategy = local_env.get(nn_strategy)
             parameters = signature(strategy).parameters
             param_dict = {i: j.default for i, j in parameters.items()}
             for i, j in kwargs.items():

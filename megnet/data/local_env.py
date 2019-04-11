@@ -1,4 +1,5 @@
-from pymatgen.analysis.local_env import MinimumDistanceNN
+from pymatgen.analysis.local_env import *
+
 
 class MinimumDistanceNNAll(MinimumDistanceNN):
     """
@@ -38,3 +39,13 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
                         'weight': w,
                         'site_index': self._get_original_site(structure, s)})
         return siw
+
+
+def get(identifier):
+    if isinstance(identifier, str):
+        return globals()[identifier]
+    elif isinstance(identifier, NearNeighbors):
+        return identifier
+    else:
+        raise ValueError('Unknown local environment ', identifier)
+
