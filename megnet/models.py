@@ -97,7 +97,7 @@ class GraphModel:
         # load from saved model
         if prev_model:
             self.load_weights(prev_model)
-        dirname = kwargs.get('dirname', 'callback')
+        dirname = kwargs.pop('dirname', 'callback')
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
@@ -126,7 +126,7 @@ class GraphModel:
         steps_per_train = int(np.ceil(len(train_graphs) / batch_size))
         self.fit_generator(train_generator, steps_per_epoch=steps_per_train,
                            validation_data=val_generator, validation_steps=steps_per_val,
-                           epochs=epochs, verbose=verbose, callbacks=callbacks)
+                           epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
 
     def predict_structure(self, structure):
         """
