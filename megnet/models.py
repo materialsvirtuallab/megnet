@@ -97,6 +97,9 @@ class GraphModel:
         # load from saved model
         if prev_model:
             self.load_weights(prev_model)
+        is_classification = 'entropy' in self.model.loss
+        monitor = 'val_acc' if is_classification else 'val_mae'
+        mode = 'max' if is_classification else 'min'
         dirname = kwargs.pop('dirname', 'callback')
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
@@ -105,7 +108,7 @@ class GraphModel:
             callbacks = [ManualStop()]
         train_targets = np.array(train_targets).ravel()
         if validation_graphs is not None:
-            filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{val_mae:.6f}.hdf5')
+            filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
             validation_targets = np.array(validation_targets).ravel()
             val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
 
@@ -113,6 +116,8 @@ class GraphModel:
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
             callbacks.extend([ModelCheckpointMAE(filepath=filepath,
+                                                 monitor=monitor,
+                                                 mode=mode,
                                                  save_best_only=True,
                                                  save_weights_only=False,
                                                  val_gen=val_generator,
