@@ -53,7 +53,7 @@ class Set2Set(Layer):
                  bias_constraint=None,
                  **kwargs):
 
-        super(Set2Set, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activations.get(activation)
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -204,5 +204,5 @@ class Set2Set(Layer):
                   "bias_constraint": constraints.serialize(self.bias_constraint)
 
                   }
-        base_config = super(Set2Set, self).get_config()
+        base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))

@@ -135,7 +135,7 @@ class StructureGraph(MSONable):
         return DummyConvertor()
 
     def as_dict(self):
-        all_dict = super(StructureGraph, self).as_dict()
+        all_dict = super().as_dict()
         all_dict.pop('nn_strategy')
         return all_dict
 
@@ -315,15 +315,14 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                  batch_size=128,
                  is_shuffle=True,
                  distance_convertor=None):
-        super(GraphBatchDistanceConvert, self).__init__(atom_features=atom_features,
-                                                        bond_features=bond_features,
-                                                        state_features=state_features,
-                                                        index1_list=index1_list,
-                                                        index2_list=index2_list,
-                                                        targets=targets,
-                                                        batch_size=batch_size,
-                                                        is_shuffle=is_shuffle,
-                                                        )
+        super().__init__(atom_features=atom_features,
+                         bond_features=bond_features,
+                         state_features=state_features,
+                         index1_list=index1_list,
+                         index2_list=index2_list,
+                         targets=targets,
+                         batch_size=batch_size,
+                         is_shuffle=is_shuffle)
         self.distance_convertor = distance_convertor
 
     def process_bond_feature(self, x):

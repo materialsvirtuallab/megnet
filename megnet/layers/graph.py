@@ -62,7 +62,7 @@ class GraphNetworkLayer(Layer):
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
-        super(GraphNetworkLayer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activations.get(activation)
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -161,5 +161,5 @@ class GraphNetworkLayer(Layer):
             'bias_constraint': constraints.serialize(self.bias_constraint)
         }
 
-        base_config = super(GraphNetworkLayer, self).get_config()
+        base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))

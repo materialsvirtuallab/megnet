@@ -21,10 +21,8 @@ class CrystalGraph(StructureGraph):
                  ):
         if bond_convertor is None:
             bond_convertor = GaussianDistance(np.linspace(0, 5, 100), 0.5)
-        super(CrystalGraph, self).__init__(nn_strategy=nn_strategy,
-                                           atom_convertor=atom_convertor,
-                                           bond_convertor=bond_convertor,
-                                           cutoff=cutoff)
+        super().__init__(nn_strategy=nn_strategy, atom_convertor=atom_convertor,
+                         bond_convertor=bond_convertor, cutoff=cutoff)
 
 
 def get_elemental_embeddings():

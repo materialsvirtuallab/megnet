@@ -61,16 +61,16 @@ class MEGNetLayer(GraphNetworkLayer):
                  bias_constraint=None,
                  **kwargs):
 
-        super(MEGNetLayer, self).__init__(activation=activation,
-                                          use_bias=use_bias,
-                                          kernel_initializer=kernel_initializer,
-                                          bias_initializer=bias_initializer,
-                                          kernel_regularizer=kernel_regularizer,
-                                          bias_regularizer=bias_regularizer,
-                                          activity_regularizer=activity_regularizer,
-                                          kernel_constraint=kernel_constraint,
-                                          bias_constraint=bias_constraint,
-                                          **kwargs)
+        super().__init__(activation=activation,
+                         use_bias=use_bias,
+                         kernel_initializer=kernel_initializer,
+                         bias_initializer=bias_initializer,
+                         kernel_regularizer=kernel_regularizer,
+                         bias_regularizer=bias_regularizer,
+                         activity_regularizer=activity_regularizer,
+                         kernel_constraint=kernel_constraint,
+                         bias_constraint=bias_constraint,
+                         **kwargs)
         self.units_v = units_v
         self.units_e = units_e
         self.units_u = units_u
@@ -212,7 +212,7 @@ class MEGNetLayer(GraphNetworkLayer):
             'pool_method': self.pool_method
         }
 
-        base_config = super(MEGNetLayer, self).get_config()
+        base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
 
