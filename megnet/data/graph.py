@@ -3,9 +3,9 @@ import numpy as np
 import threading
 from megnet.utils.general_utils import expand_1st
 from monty.json import MSONable
-from pymatgen.analysis.graphs import StructureGraph as PMGStructureGraph
 from megnet.data import local_env
 from inspect import signature
+from pymatgen.analysis.local_env import NearNeighbors
 
 
 class StructureGraph(MSONable):
@@ -58,25 +58,16 @@ class StructureGraph(MSONable):
         :return: (dictionary)
         """
         state_attributes = state_attributes or [[0, 0]]
-        structure_graph = PMGStructureGraph.with_local_env_strategy(structure, self.nn_strategy)
-        us = []
-        vs = []
-        ks = []
-        ds = []
-        for u, v, k, d in structure_graph.graph.edges(keys=True, data=True):
-            us.append(u)
-            vs.append(v)
-            ks.append(k)
-            ds.append(d['weight'])
+        index1 = []
+        index2 = []
+        bonds = []
+        for n, neighbors in enumerate(self.nn_strategy.get_all_nn_info(structure)):
+            index1.extend([n] * len(neighbors))
+            for neighbor in neighbors:
+                index2.append(neighbor['site_index'])
+                bonds.append(neighbor['weight'])
 
         atoms = [i.specie.Z for i in structure]
-        index1 = us + vs
-        index2 = vs + us
-        bonds = ds + ds
-        sorted_index = np.argsort(index1)
-        index1 = np.array(index1)[sorted_index].tolist()
-        index2 = np.array(index2)[sorted_index].tolist()
-        bonds = np.array(bonds)[sorted_index].tolist()
 
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
@@ -92,8 +83,17 @@ class StructureGraph(MSONable):
         return self.convert(structure, state_attributes)
 
     def get_input(self, structure):
+        """
+        Turns a structure into model input
+        """
         graph = self.convert(structure)
-        gnode = [0] * len(structure)
+        return self.graph_to_input(graph)
+
+    def graph_to_input(self, graph):
+        """
+        Turns a graph into model input
+        """
+        gnode = [0] * len(graph['atom'])
         gbond = [0] * len(graph['index1'])
 
         return [expand_1st(self.atom_convertor.convert(graph['atom'])),
