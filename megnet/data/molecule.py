@@ -33,13 +33,12 @@ class SimpleMolGraph(StructureGraph):
     def __init__(self,
                  nn_strategy='AllAtomPairs',
                  atom_convertor=None,
-                 bond_convertor=None,
-                 cutoff=4.0
+                 bond_convertor=None
                  ):
         if bond_convertor is None:
             bond_convertor = GaussianDistance(np.linspace(0, 4, 20), 0.5)
         super().__init__(nn_strategy=nn_strategy, atom_convertor=atom_convertor,
-                         bond_convertor=bond_convertor, cutoff=cutoff)
+                         bond_convertor=bond_convertor)
 
 
 
