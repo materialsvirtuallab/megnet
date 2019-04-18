@@ -5,12 +5,12 @@ from megnet.data.molecule import SimpleMolGraph
 from pymatgen import Molecule
 import numpy as np
 
+from megnet.data.molecule import MolecularGraph, mol_from_smiles, pybel
 
-try:
-    from megnet.data.molecule import MolecularGraph, mol_from_smiles
-    import_failed = False
-except ImportError:
+if pybel is None:
     import_failed = True
+else:
+    import_failed = False
 
 module_dir = os.path.dirname(os.path.abspath(__file__))
 
