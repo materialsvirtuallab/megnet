@@ -41,6 +41,22 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
         return siw
 
 
+class AllAtomPairs(NearNeighbors):
+    """
+    Get all combinations of atoms as bonds in a molecule
+    """
+    def get_nn_info(self, molecule, n):
+        site = molecule[n]
+        siw = []
+        for i, s in enumerate(molecule):
+            if i != n:
+                siw.append({'site': s,
+                            'image': None,
+                            'weight': site.distance(s),
+                            'site_index': i})
+        return siw
+
+
 def get(identifier):
     if isinstance(identifier, str):
         return globals()[identifier]

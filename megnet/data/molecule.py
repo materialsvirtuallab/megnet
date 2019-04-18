@@ -9,7 +9,7 @@ import re
 from pymatgen import Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
-from megnet.data.graph import StructureGraph
+from megnet.data.graph import StructureGraph, GaussianDistance
 try:
     import pybel
 except:
@@ -30,8 +30,21 @@ BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance',
                  'graph_distance']
 
 
-class MolecularGraph(StructureGraph):
+class SimpleMolGraph(StructureGraph):
+    def __init__(self,
+                 nn_strategy='AllAtomPairs',
+                 atom_convertor=None,
+                 bond_convertor=None,
+                 cutoff=4.0
+                 ):
+        if bond_convertor is None:
+            bond_convertor = GaussianDistance(np.linspace(0, 4, 20), 0.5)
+        super().__init__(nn_strategy=nn_strategy, atom_convertor=atom_convertor,
+                         bond_convertor=bond_convertor, cutoff=cutoff)
 
+
+
+class MolecularGraph(StructureGraph):
     def __init__(self,
                  atom_features=ATOM_FEATURES,
                  bond_features=BOND_FEATURES):

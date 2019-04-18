@@ -1,6 +1,11 @@
 import unittest
 import os
 import json
+from megnet.data.molecule import SimpleMolGraph
+from pymatgen import Molecule
+import numpy as np
+
+
 try:
     from megnet.data.molecule import MolecularGraph, mol_from_smiles
     import_failed = False
@@ -35,6 +40,14 @@ class QM9Test(unittest.TestCase):
         self.assertListEqual(mol_graph['state'][0], [0, 0]) # dummy state [0, 0]
         mol_graph = mg.convert(mol, state_attributes=[[1, 2]])
         self.assertListEqual(mol_graph['state'][0], [1, 2])
+
+    def test_simple_molecule_graph(self):
+        mol = Molecule(['C', 'H', 'O'], [[0, 0, 0], [1, 0, 0], [2, 0, 0]])
+        graph = SimpleMolGraph().convert(mol)
+        self.assertListEqual(graph['atom'], [6, 1, 8])
+        self.assertTrue(np.allclose(graph['bond'], [1, 2, 1, 1, 2, 1]))
+        self.assertListEqual(graph['index1'], [0, 0, 1, 1, 2, 2])
+        self.assertListEqual(graph['index2'], [1, 2, 0, 2, 0, 1])
 
 
 if __name__ == "__main__":
