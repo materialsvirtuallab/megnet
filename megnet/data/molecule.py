@@ -10,18 +10,17 @@ from pymatgen import Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
 from megnet.data.graph import StructureGraph, GaussianDistance
+
 try:
     import pybel
 except:
     pybel = None
-    raise ImportError("The molecule graph depends on openbabel")
 
 try:
     from rdkit import Chem
 except:
-    raise ImportError("The molecule graph depends on rdkit package")
+    Chem = None
 
-__author__ = 'Weike Ye, Chi Chen'
 __date__ = '12/01/2018'
 
 ATOM_FEATURES = ['atomic_num', 'chirality', 'partial_charge', 'ring_sizes',
