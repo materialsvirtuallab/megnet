@@ -30,6 +30,11 @@ BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance',
 
 
 class SimpleMolGraph(StructureGraph):
+    """
+    Default using all atom pairs as bonds. The distance between atoms are used
+    as bond features. By default the distance is expanded using a Gaussian
+    expansion with centers at np.linspace(0, 4, 20) and width of 0.5
+    """
     def __init__(self,
                  nn_strategy='AllAtomPairs',
                  atom_convertor=None,
