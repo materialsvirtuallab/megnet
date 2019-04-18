@@ -330,5 +330,4 @@ class MEGNetModel(GraphModel):
         if graph_convertor is None:
             graph_convertor = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
 
-        super(MEGNetModel, self).__init__(
-            model=model, graph_convertor=graph_convertor)
+        super().__init__(model=model, graph_convertor=graph_convertor)

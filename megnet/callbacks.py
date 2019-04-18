@@ -26,7 +26,7 @@ class GeneratorLog(Callback):
     def __init__(self, train_gen, steps_per_train=None,
                  val_gen=None, steps_per_val=None, y_scaler=None, n_every=5,
                  val_names=None, val_units=None, is_pa=False):
-        super(GeneratorLog, self).__init__()
+        super().__init__()
         self.train_gen = train_gen
         self.val_gen = val_gen
         self.steps_per_train = steps_per_train
@@ -107,7 +107,7 @@ class ModelCheckpointMAE(Callback):
                  period=1,
                  is_pa=False,
                  mode='auto'):
-        super(ModelCheckpointMAE, self).__init__()
+        super().__init__()
         if val_gen is None:
             raise ValueError('No validation data is provided!')
         self.verbose = verbose
