@@ -44,7 +44,7 @@ In our work, we have already built MEGNet models for the QM9 data set and Materi
     - Log 10 of Bulk Modulus (K)
     - Log 10 of Shear Modulus (G)
 
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]. Below is an example of usage:
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]. Below is an example of crystal model usage:
 
 ```python
 from megnet.models import MEGNetModel
@@ -61,6 +61,7 @@ structure = mpr.get_structure_by_material_id('mp-1143')
 predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
 ```
+A full example is in `notebooks/crystal_example.ipynb`. For molecular models, we have an example in `notebooks/qm9_pretrained.ipynb`. We support prediction directly from a pymatgen molecule object. With a few more lines of code, the model can predict from `SMILES` representation of molecules, as shown in the example. It is also straightforward to load a `xyz` molecule file with pymatgen and predict the properties using the models. However, the users are generally not advised to use the `qm9` molecule models for other molecules outside the `qm9` datasets, since the training data coverage is limited.
 
 ## Training a new MEGNetModel from structures
 
