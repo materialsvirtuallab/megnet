@@ -76,11 +76,10 @@ nfeat_bond = 10
 nfeat_global = 2
 gaussian_centers = np.linspace(0, 5, 10)
 gaussian_width = 0.5
-graph_convertor = CrystalGraph()
 distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
+bond_convertor = CrystalGraph(bond_convertor=distance_convertor)
 model = MEGNetModel(nfeat_bond, nfeat_global, 
-                    graph_convertor=graph_convertor, 
-                    distance_convertor=distance_convertor)
+                    graph_convertor=graph_convertor)
 
 # Model training
 # Here, `structures` is a list of pymatgen Structure objects.
