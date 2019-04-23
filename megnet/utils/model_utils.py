@@ -2,13 +2,20 @@ from megnet.models import MEGNetModel
 from monty.serialization import loadfn
 import os
 from pymatgen.io.babel import BabelMolAdaptor
-import pybel as pb
-import openbabel as ob
+import logging
+
+try:
+    import pybel as pb
+except:
+    logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
+    pb = None
+
 
 ATOMNUM2TYPE = {1: 1, 6: 2, 7: 4, 8: 6, 9: 8}
 pjoin = os.path.join
 QM9_MODELDIR = pjoin(os.path.dirname(__file__), '../../mvl_models/qm9')
 SCALER = loadfn(pjoin(QM9_MODELDIR, "scaler.json"))
+
 
 def get_pmg_mol_from_smiles(smiles):
     """
