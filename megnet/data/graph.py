@@ -6,6 +6,7 @@ from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
 from pymatgen.analysis.local_env import NearNeighbors
+from keras.utils import Sequence
 
 
 class StructureGraph(MSONable):
@@ -178,7 +179,7 @@ class GaussianDistance(DistanceConvertor):
         return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
-class GraphBatchGenerator:
+class GraphBatchGenerator(Sequence):
     """
     A generator class that assembles several structures (indicated by
     batch_size) and form (x, y) pairs for model training
@@ -211,72 +212,68 @@ class GraphBatchGenerator:
         self.index2_list = index2_list
         self.targets = targets
         self.batch_size = batch_size
-        self.lock = threading.Lock()
         self.total_n = len(atom_features)
         self.max_step = int(np.ceil(self.total_n / batch_size))
         self.mol_index = list(range(self.total_n))
         self.mol_index = np.random.permutation(self.mol_index)
-        self.i = 0
         self.is_shuffle = is_shuffle
 
-    def __iter__(self):
-        return self
+    def __len__(self):
+        return self.max_step
 
-    def __next__(self):
-        with self.lock:
-            batch_index = self.mol_index[self.i * self.batch_size:(self.i + 1) * self.batch_size]
-            it = itemgetter(*batch_index)
-            # get atom features from  a batch of structures
-            feature_list_temp = itemgetter_list(self.atom_features, batch_index)
-            # get atom's structure id
-            gnode = []
-            for i, j in enumerate(feature_list_temp):
-                gnode += [i] * len(j)
+    def __getitem__(self, index):
+        batch_index = self.mol_index[index * self.batch_size:(index + 1) * self.batch_size]
+        it = itemgetter(*batch_index)
+        # get atom features from  a batch of structures
+        feature_list_temp = itemgetter_list(self.atom_features, batch_index)
+        # get atom's structure id
+        gnode = []
+        for i, j in enumerate(feature_list_temp):
+            gnode += [i] * len(j)
 
-            # get bond features from a batch of structures
-            connection_list_temp = itemgetter_list(self.bond_features, batch_index)
-            # get bond's structure id
-            gbond = []
-            for i, j in enumerate(connection_list_temp):
-                gbond += [i] * len(j)
+        # get bond features from a batch of structures
+        connection_list_temp = itemgetter_list(self.bond_features, batch_index)
+        # get bond's structure id
+        gbond = []
+        for i, j in enumerate(connection_list_temp):
+            gbond += [i] * len(j)
 
-            global_list_temp = itemgetter_list(self.state_features, batch_index)
-            # assemble atom features together
-            feature_list_temp = np.concatenate(feature_list_temp, axis=0)
-            feature_list_temp = self.process_atom_feature(feature_list_temp)
-            # assemble bond feature together
-            connection_list_temp = np.concatenate(connection_list_temp, axis=0)
-            connection_list_temp = self.process_bond_feature(connection_list_temp)
-            # assemble state feature together
-            global_list_temp = np.concatenate(global_list_temp, axis=0)
-            global_list_temp = self.process_state_feature(global_list_temp)
+        global_list_temp = itemgetter_list(self.state_features, batch_index)
+        # assemble atom features together
+        feature_list_temp = np.concatenate(feature_list_temp, axis=0)
+        feature_list_temp = self.process_atom_feature(feature_list_temp)
+        # assemble bond feature together
+        connection_list_temp = np.concatenate(connection_list_temp, axis=0)
+        connection_list_temp = self.process_bond_feature(connection_list_temp)
+        # assemble state feature together
+        global_list_temp = np.concatenate(global_list_temp, axis=0)
+        global_list_temp = self.process_state_feature(global_list_temp)
 
-            # assemble bond indices
-            index1_temp = it(self.index1_list)
-            index2_temp = it(self.index2_list)
-            index1 = []
-            index2 = []
-            offset_ind = 0
-            for ind1, ind2 in zip(index1_temp, index2_temp):
-                index1 += [i + offset_ind for i in ind1]
-                index2 += [i + offset_ind for i in ind2]
-                offset_ind += (max(ind1) + 1)
-            # get targets
-            target_temp = it(self.targets)
-            target_temp = np.atleast_2d(target_temp)
-            self.i += 1
+        # assemble bond indices
+        index1_temp = it(self.index1_list)
+        index2_temp = it(self.index2_list)
+        index1 = []
+        index2 = []
+        offset_ind = 0
+        for ind1, ind2 in zip(index1_temp, index2_temp):
+            index1 += [i + offset_ind for i in ind1]
+            index2 += [i + offset_ind for i in ind2]
+            offset_ind += (max(ind1) + 1)
+        # get targets
+        target_temp = it(self.targets)
+        target_temp = np.atleast_2d(target_temp)
 
-            if self.i == self.max_step:
-                self.i -= self.max_step
-                self.mol_index = np.random.permutation(self.mol_index)
+        return [expand_1st(feature_list_temp),
+                expand_1st(connection_list_temp),
+                expand_1st(global_list_temp),
+                expand_1st(index1),
+                expand_1st(index2),
+                expand_1st(gnode),
+                expand_1st(gbond)], expand_1st(target_temp)
 
-            return [expand_1st(feature_list_temp),
-                    expand_1st(connection_list_temp),
-                    expand_1st(global_list_temp),
-                    expand_1st(index1),
-                    expand_1st(index2),
-                    expand_1st(gnode),
-                    expand_1st(gbond)], expand_1st(target_temp)
+    def on_epoch_end(self):
+        if self.is_shuffle:
+            self.mol_index = np.random.permutation(self.mol_index)
 
     def process_atom_feature(self, x):
         return x

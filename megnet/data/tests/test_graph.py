@@ -20,7 +20,7 @@ class TestGraph(unittest.TestCase):
         index2 = [np.array([1, 2]), np.array([1])]
         targets = np.random.normal(size=(2, 1))
         gen = GraphBatchGenerator(feature, bond, glob_features, index1, index2, targets, batch_size=2)
-        data = next(gen)
+        data = gen[0]
         self.assertListEqual(list(data[0][0].shape), [1, 5, 4])
         self.assertListEqual(list(data[0][1].shape), [1, 3, 5])
         self.assertListEqual(list(data[0][2].shape), [1, 2, 2])
@@ -39,7 +39,7 @@ class TestGraph(unittest.TestCase):
         width = 0.5
         gen = GraphBatchDistanceConvert(feature, bond, glob_features, index1, index2, targets, batch_size=2,
                                         distance_convertor=GaussianDistance(centers, width))
-        data = next(gen)
+        data = gen[0]
         self.assertListEqual(list(data[0][0].shape), [1, 5, 4])
         self.assertListEqual(list(data[0][1].shape), [1, 3, 20])
         self.assertListEqual(list(data[0][2].shape), [1, 2, 2])
