@@ -94,8 +94,3 @@ class QM9Model:
         """
         mol = get_pmg_mol_from_smiles(smiles)
         return self.predict_structure(mol)
-
-
-if __name__ == "__main__":
-    model  = QM9Model('HOMO')
-    print(model.predict_smiles('C'))
