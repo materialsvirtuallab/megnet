@@ -1,13 +1,19 @@
 import unittest
 from keras.models import Model
 from keras.layers import Input, Dense
-from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop
+from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.layers import MEGNetLayer
 import numpy as np
 from io import StringIO
 import sys
 import os
 import glob
+import keras.backend as K
+
+
+def generator(x, y):
+    while True:
+        yield x, y
 
 
 class TestCallBack(unittest.TestCase):
@@ -33,21 +39,16 @@ class TestCallBack(unittest.TestCase):
         out = Dense(1)(out[2])
         cls.model = Model(inputs=cls.x, outputs=out)
         cls.model.compile(loss='mse', optimizer='adam')
-
-        def generator(x, y):
-            while True:
-                yield x, y
-
-        x = [np.random.normal(size=(1, 4, cls.n_feature)),
-             np.random.normal(size=(1, 6, cls.n_bond_features)),
-             np.random.normal(size=(1, 2, cls.n_global_features)),
-             np.array([[0, 0, 1, 1, 2, 3]]),
-             np.array([[1, 1, 0, 0, 3, 2]]),
-             np.array([[0, 0, 1, 1]]),
-             np.array([[0, 0, 0, 0, 1, 1]]),
-             ]
-        y = np.random.normal(size=(1, 2, 1))
-        cls.train_gen = generator(x, y)
+        cls.x = [np.random.normal(size=(1, 4, cls.n_feature)),
+                 np.random.normal(size=(1, 6, cls.n_bond_features)),
+                 np.random.normal(size=(1, 2, cls.n_global_features)),
+                 np.array([[0, 0, 1, 1, 2, 3]]),
+                 np.array([[1, 1, 0, 0, 3, 2]]),
+                 np.array([[0, 0, 1, 1]]),
+                 np.array([[0, 0, 0, 0, 1, 1]]),
+                 ]
+        cls.y = np.random.normal(size=(1, 2, 1))
+        cls.train_gen = generator(cls.x, cls.y)
 
     def test_callback(self):
         callbacks = [GeneratorLog(self.train_gen, steps_per_train=1, val_gen=self.train_gen, steps_per_val=1,
@@ -85,6 +86,13 @@ class TestCallBack(unittest.TestCase):
                 epoch_count += 1
         self.assertEqual(epoch_count, 4)
         os.remove('STOP')
+
+    def test_reduce_lr_upon_nan(self):
+        callbacks = [ReduceLRUponNan(patience=100)]
+        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 1e-3)
+        gen = generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
+        self.model.fit_generator(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
+        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 0.5e-3)
 
 
 if __name__ == "__main__":

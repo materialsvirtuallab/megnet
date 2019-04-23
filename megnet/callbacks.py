@@ -1,8 +1,11 @@
 from keras.callbacks import Callback
+import keras.backend as K
 from megnet.utils.metric_utils import mae, accuracy
 import numpy as np
 import os
 import warnings
+from glob import glob
+from collections import deque
 
 
 class GeneratorLog(Callback):
@@ -200,6 +203,88 @@ class ManualStop(Callback):
     def on_batch_end(self, epoch, logs=None):
         if os.path.isfile('STOP'):
             self.model.stop_training = True
+
+
+class ReduceLRUponNan(Callback):
+    """
+    This callback function solves a problem that when doing regression, an nan loss may occur, or the
+    loss suddenly shoot up
+    If such things happen, the model will reduce the learning rate and load the last best model during the
+    training process.
+
+    It has an extra function that patience for early stopping. This will move to indepedent callback in the
+    future.
+
+    Args:
+        :param callback_dir: (str) the directory where the saved models are stored
+        :param factor: (float) a value < 1 for scaling the learning rate
+        :param verbose: (int) whether to show the loading event
+        :param patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
+        :param epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
+        :param splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
+            splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
+    """
+
+    def __init__(self,
+                 callback_dir='./callback',
+                 factor=0.5,
+                 verbose=1,
+                 patience=500,
+                 epoch_local_in_fname=2,
+                 splitter='_'):
+
+        self.callback_dir = callback_dir
+        self.verbose = verbose
+        self.factor = factor
+        self.losses = deque([], maxlen=10)
+        self.patience = patience
+        self.epoch_local_in_fname = epoch_local_in_fname
+        self.splitter = splitter
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        loss = logs.get('loss')
+
+        files = glob(os.path.join(self.callback_dir, "*"))
+        if len(files) > 1:
+            latest_file = max(files, key=lambda x: int(x.split(self.splitter)[self.epoch_local_in_fname]))
+        else:
+            latest_file = None
+        if latest_file:
+            last_saved_epoch = int(latest_file.split(self.splitter)[self.epoch_local_in_fname])
+            if last_saved_epoch + self.patience <= epoch:
+                self.model.stop_training = True
+                print('MAE does not improve after %d, stopping the fitting...' % self.patience)
+
+        if loss is not None:
+            self.losses.append(loss)
+            if np.isnan(loss) or np.isinf(loss):
+                self._reduce_lr_and_load()
+                if self.verbose:
+                    print("Nan loss found!\n")
+                    print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+            else:
+                if len(self.losses) > 1:
+                    if self.losses[-1] > (self.losses[-2] * 100):
+                        self._reduce_lr_and_load()
+                        if self.verbose:
+                            print("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
+                            print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+
+    def _reduce_lr_and_load(self):
+        old_value = float(K.get_value(self.model.optimizer.lr))
+        files = glob(os.path.join(self.callback_dir, "*"))
+        if len(files) > 1:
+            latest_file = max(files, key=os.path.getctime)
+        else:
+            latest_file = None
+
+        self.model.reset_states()
+        K.set_value(self.model.optimizer.lr, old_value*self.factor)
+        if latest_file is not None:
+            self.model.load_weights(latest_file)
+            if self.verbose:
+                print("Load weights %s" % latest_file)
 
 
 def _print_mae(target_names, maes, units):
