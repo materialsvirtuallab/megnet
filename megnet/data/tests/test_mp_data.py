@@ -31,7 +31,7 @@ class TestMP(unittest.TestCase):
         out = graph_to_inputs(mp_ids, graphs, targets)
         self.assertEqual(len(out), 7)
         gen = GraphBatchDistanceConvert(*out[:-1], batch_size=2, distance_convertor=GaussianDistance())
-        data = next(gen)
+        data = gen[0]
         x = data[0]
         y = data[1]
         # only one graph, therefore the batch dimension is 1
