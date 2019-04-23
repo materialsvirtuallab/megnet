@@ -9,11 +9,18 @@ import sys
 import os
 import glob
 import keras.backend as K
+from keras.utils import Sequence
 
+class Generator(Sequence):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-def generator(x, y):
-    while True:
-        yield x, y
+    def __len__(self):
+        return 10
+
+    def __getitem__(self, index):
+        return self.x, self.y
 
 
 class TestCallBack(unittest.TestCase):
@@ -48,7 +55,7 @@ class TestCallBack(unittest.TestCase):
                  np.array([[0, 0, 0, 0, 1, 1]]),
                  ]
         cls.y = np.random.normal(size=(1, 2, 1))
-        cls.train_gen = generator(cls.x, cls.y)
+        cls.train_gen = Generator(cls.x, cls.y)
 
     def test_callback(self):
         callbacks = [GeneratorLog(self.train_gen, steps_per_train=1, val_gen=self.train_gen, steps_per_val=1,
@@ -90,7 +97,7 @@ class TestCallBack(unittest.TestCase):
     def test_reduce_lr_upon_nan(self):
         callbacks = [ReduceLRUponNan(patience=100)]
         self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 1e-3)
-        gen = generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
+        gen = Generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
         self.model.fit_generator(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
         self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 0.5e-3)
 

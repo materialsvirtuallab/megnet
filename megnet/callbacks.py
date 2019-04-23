@@ -53,7 +53,7 @@ class GeneratorLog(Callback):
             train_pred = []
             train_y = []
             for i in range(self.steps_per_train):
-                train_data = next(self.train_gen)
+                train_data = self.train_gen[i]
                 nb_atom = _count(np.array(train_data[0][-2]))
                 if not self.is_pa:
                     nb_atom = np.ones_like(nb_atom)
@@ -66,7 +66,7 @@ class GeneratorLog(Callback):
             val_pred = []
             val_y = []
             for i in range(self.steps_per_val):
-                val_data = next(self.val_gen)
+                val_data = self.val_gen[i]
                 nb_atom = _count(np.array(val_data[0][-2]))
                 if not self.is_pa:
                     nb_atom = np.ones_like(nb_atom)
@@ -156,7 +156,7 @@ class ModelCheckpointMAE(Callback):
             val_pred = []
             val_y = []
             for i in range(self.steps_per_val):
-                val_data = next(self.val_gen)
+                val_data = self.val_gen[i]
                 nb_atom = _count(np.array(val_data[0][-2]))
                 if not self.is_pa:
                     nb_atom = np.ones_like(nb_atom)

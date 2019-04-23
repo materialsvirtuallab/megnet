@@ -9,6 +9,7 @@ import os
 from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
+from keras.utils import Sequence
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -20,9 +21,14 @@ class TestModel(unittest.TestCase):
         cls.n_bond_features = 10
         cls.n_global_features = 2
 
-        def generator(x, y):
-            while True:
-                yield x, y
+        class Generator(Sequence):
+            def __init__(self, x, y):
+                self.x = x
+                self.y = y
+            def __len__(self):
+                return 10
+            def __getitem__(self, index):
+                return  self.x, self.y
 
         x_crystal = [np.array([1, 2, 3, 4]).reshape((1, -1)),
                      np.random.normal(size=(1, 6, cls.n_bond_features)),
@@ -34,7 +40,7 @@ class TestModel(unittest.TestCase):
                      ]
 
         y = np.random.normal(size=(1, 2, 1))
-        cls.train_gen_crystal = generator(x_crystal, y)
+        cls.train_gen_crystal = Generator(x_crystal, y)
         x_mol = [np.random.normal(size=(1, 4, cls.n_feature)),
                  np.random.normal(size=(1, 6, cls.n_bond_features)),
                  np.random.normal(size=(1, 2, cls.n_global_features)),
@@ -44,7 +50,7 @@ class TestModel(unittest.TestCase):
                  np.array([[0, 0, 0, 0, 1, 1]]),
                  ]
         y = np.random.normal(size=(1, 2, 1))
-        cls.train_gen_mol = generator(x_mol, y)
+        cls.train_gen_mol = Generator(x_mol, y)
 
         cls.model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                                 n1=4, n2=4, n3=4, npass=1, ntarget=1,
