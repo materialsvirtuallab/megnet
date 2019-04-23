@@ -61,7 +61,18 @@ structure = mpr.get_structure_by_material_id('mp-1143')
 predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
 ```
-A full example is in `notebooks/crystal_example.ipynb`. For molecular models, we have an example in `notebooks/qm9_pretrained.ipynb`. We support prediction directly from a pymatgen molecule object. With a few more lines of code, the model can predict from `SMILES` representation of molecules, as shown in the example. It is also straightforward to load a `xyz` molecule file with pymatgen and predict the properties using the models. However, the users are generally not advised to use the `qm9` molecule models for other molecules outside the `qm9` datasets, since the training data coverage is limited.
+A full example is in `notebooks/crystal_example.ipynb`. 
+
+For molecular models, we have an example in `notebooks/qm9_pretrained.ipynb`. We support prediction directly from a pymatgen molecule object. With a few more lines of code, the model can predict from `SMILES` representation of molecules, as shown in the example. It is also straightforward to load a `xyz` molecule file with pymatgen and predict the properties using the models. However, the users are generally not advised to use the `qm9` molecule models for other molecules outside the `qm9` datasets, since the training data coverage is limited.
+
+Below is an example of predicting the "HOMO" of a smiles representation
+
+```python
+from megnet.utils.model_utils import QM9Model
+
+model = QM9Model('HOMO')
+model.predict_smiles("C")
+```
 
 ## Training a new MEGNetModel from structures
 
