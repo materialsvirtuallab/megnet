@@ -21,8 +21,13 @@ jobs:
             export MPLBACKEND=Agg
             source activate test_env
             pip install --quiet -e .
-            nosetests --config=nose.cfg --process-timeout=600
+            nosetests --config=nose.cfg --process-timeout=600 --cover-html --cover-html-dir=$CIRCLE_ARTIFACTS
           no_output_timeout: 3600
+      - store_artifacts:
+          path: coverage_reports/
+          destination: tr1
+      - store_test_results:
+          path: coverage_reports/
 
 workflows:
   version: 2
