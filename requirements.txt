@@ -1,5 +1,5 @@
 pandas==0.24.2
-pymatgen==2019.3.27
+pymatgen==2019.4.11
 tensorflow==1.13.1
 keras==2.2.4
 scikit-learn==0.20.3
