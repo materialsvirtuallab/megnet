@@ -276,7 +276,7 @@ class MEGNetModel(GraphModel):
                 x3_ = c
             out = MEGNetLayer(
                 [n1, n1, n2], [n1, n1, n2], [n1, n1, n2],
-                pool_method='mean', activation=act)(
+                pool_method='mean', activation=act, kernel_regularizer=reg)(
                 [x1_, x2_, x3_, x4, x5, x6, x7])
 
             x1_temp = out[0]
@@ -306,15 +306,15 @@ class MEGNetModel(GraphModel):
             x3_ = Add()([x3_, x3_1])
 
         # set2set for both the atom and bond
-        node_vec = Set2Set(T=npass, n_hidden=n3)([x1_, x6])
-        edge_vec = Set2Set(T=npass, n_hidden=n3)([x2_, x7])
+        node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x1_, x6])
+        edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x2_, x7])
         # concatenate atom, bond, and global
         final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
         if dropout:
             final_vec = Dropout(dropout)(final_vec)
         # final dense layers
-        final_vec = Dense(n2, activation=act)(final_vec)
-        final_vec = Dense(n3, activation=act)(final_vec)
+        final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
+        final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
 
         if is_classification:
             final_act = 'sigmoid'
