@@ -1,12 +1,13 @@
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=svg)](https://circleci.com/gh/materialsvirtuallab/megnet)
 [![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
+
 # Introduction
 
 This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
 
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
-The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networks[1] for universal machine learning in materials science. We have demonstrated its success in achieving very low prediction errors in a broad array of properties in both molecules and crystals (see ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]).
+The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph networks[1] for universal machine learning in materials science. We have demonstrated its success in achieving very low prediction errors in a broad array of properties in both molecules and crystals (see ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]).
 
 Briefly, Figure 1 shows the sequential update steps of the graph network, whereby bonds, atoms, and global state attributes are updated using information from each other, generating an output graph.
 
@@ -46,7 +47,7 @@ In our work, we have already built MEGNet models for the QM9 data set and Materi
     - Log 10 of Bulk Modulus (K)
     - Log 10 of Shear Modulus (G)
 
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]. Below is an example of crystal model usage:
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]. Below is an example of crystal model usage:
 
 ```python
 from megnet.models import MEGNetModel
@@ -104,7 +105,17 @@ model.train(structures, targets, epochs=10)
 pred_target = model.predict_structure(new_structure)
 ```
 
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://arxiv.org/abs/1812.05055)[2]
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]
+
+### Pre-trained elemental embeddings
+
+A key finding of our work is that element embeddings from trained formation energy models encode useful chemical information that can be transferred learned to develop models with smaller datasets (e.g. elastic constants, band gaps), with better converegence and lower errors. These embeddings are also potentially useful in developing other ML models and applications. These embeddings have been made available via the following code:
+
+```
+from megnet.data.crystal import get_elemental_embeddings
+
+el_embeddings = get_elemental_embeddings()
+```
 
 ## Customized Graph Network Models
 
@@ -147,6 +158,7 @@ model.compile(loss='mse', optimizer='adam')
 
 With less than 20 lines of code, you have built a graph network model that is ready for materials property prediction!
 
+
 # Implementation details
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a few innovations compared to conventional graph-based neural neworks. 
@@ -173,7 +185,7 @@ The molecule data set used in this work is the QM9 data set 30 processed by Fabe
 # References
 
 1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; Faulkner, R.; et al. Relational inductive biases, deep learning, and graph networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
-2. Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals, 2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
+2. Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals. Chemistry of Materials 2019, acs.chemmater.9b01294. [doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)
 3. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
 4. https://figshare.com/articles/Graphs_of_materials_project/7451351
 5. Ong, S. P.; Cholia, S.; Jain, A.; Brafman, M.; Gunter, D.; Ceder, G.; Persson, K. A. The Materials Application Programming Interface (API): A simple, flexible and efficient API for materials data based on REpresentational State Transfer (REST) principles. Comput. Mater. Sci. 2015, 97, 209–215 DOI: [10.1016/j.commatsci.2014.10.037](http://dx.doi.org/10.1016/j.commatsci.2014.10.037).
