@@ -209,7 +209,9 @@ class MEGNetModel(GraphModel):
                  loss="mse",
                  l2_coef=None,
                  dropout=None,
-                 graph_convertor=None):
+                 graph_convertor=None,
+                 optimizer_kwargs=None
+                 ):
         """
         Construct a graph network model with or without explicit atom features
         if n_feature is specified then a general graph model is assumed,
@@ -234,7 +236,9 @@ class MEGNetModel(GraphModel):
         :param dropout: (float) dropout rate
         :param graph_convertor: (object) object that exposes a "convert" method
             for structure to graph conversion
+        :param optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
         :return: keras model object
+
         """
         int32 = 'int32'
         if nfeat_node is None:
@@ -276,7 +280,7 @@ class MEGNetModel(GraphModel):
                 x3_ = c
             out = MEGNetLayer(
                 [n1, n1, n2], [n1, n1, n2], [n1, n1, n2],
-                pool_method='mean', activation=act)(
+                pool_method='mean', activation=act, kernel_regularizer=reg)(
                 [x1_, x2_, x3_, x4, x5, x6, x7])
 
             x1_temp = out[0]
@@ -306,15 +310,15 @@ class MEGNetModel(GraphModel):
             x3_ = Add()([x3_, x3_1])
 
         # set2set for both the atom and bond
-        node_vec = Set2Set(T=npass, n_hidden=n3)([x1_, x6])
-        edge_vec = Set2Set(T=npass, n_hidden=n3)([x2_, x7])
+        node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x1_, x6])
+        edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x2_, x7])
         # concatenate atom, bond, and global
         final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
         if dropout:
             final_vec = Dropout(dropout)(final_vec)
         # final dense layers
-        final_vec = Dense(n2, activation=act)(final_vec)
-        final_vec = Dense(n3, activation=act)(final_vec)
+        final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
+        final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
 
         if is_classification:
             final_act = 'sigmoid'
@@ -325,7 +329,11 @@ class MEGNetModel(GraphModel):
 
         out = Dense(ntarget, activation=final_act)(final_vec)
         model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
-        model.compile(Adam(lr), loss)
+
+        opt_params = {'lr': lr}
+        if optimizer_kwargs is not None:
+            opt_params.update(optimizer_kwargs)
+        model.compile(Adam(**opt_params), loss)
 
         if graph_convertor is None:
             graph_convertor = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
