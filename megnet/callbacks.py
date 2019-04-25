@@ -281,6 +281,8 @@ class ReduceLRUponNan(Callback):
 
         self.model.reset_states()
         K.set_value(self.model.optimizer.lr, old_value*self.factor)
+        opt_dict = self.model.optimizer.get_config()
+        self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if latest_file is not None:
             self.model.load_weights(latest_file)
             if self.verbose:
