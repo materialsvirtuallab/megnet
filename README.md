@@ -1,5 +1,5 @@
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=svg)](https://circleci.com/gh/materialsvirtuallab/megnet)
-
+[![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
 # Introduction
 
 This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) in developing graph networks for machine learning in materials science. It is a work in progress and the models we have developed thus far are only based on our best efforts. We welcome efforts by anyone to build and test models using our code and data, all of which are publicly available. Any comments or suggestions are also welcome (please post on the Github Issues page.)
