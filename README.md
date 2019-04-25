@@ -117,6 +117,8 @@ from megnet.data.crystal import get_elemental_embeddings
 el_embeddings = get_elemental_embeddings()
 ```
 
+An example of transfer learning using the elemental embedding from formation energy to other models, please check `notebooks/transfer_learning.ipynb`.
+
 ## Customized Graph Network Models
 
 For users who are familiar with deep learning and Keras and wish to build customized graph network based models, the following example outlines how a custom model can be constructed from `MEGNetLayer`, which is essentially our implementation of the graph network using neural networks:
