@@ -5,7 +5,7 @@ from megnet.activations import softplus2
 from megnet.losses import mse_scale
 from keras.regularizers import l2
 from keras.models import Model
-from megnet.callbacks import ModelCheckpointMAE, ManualStop
+from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
 from megnet.data.crystal import CrystalGraph
 import numpy as np
@@ -106,6 +106,7 @@ class GraphModel:
         if callbacks is None:
             # with this call back you can stop the model training by `touch STOP`
             callbacks = [ManualStop()]
+        callbacks.append(ReduceLRUponNan())
         train_targets = np.array(train_targets).ravel()
         if validation_graphs is not None:
             filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
