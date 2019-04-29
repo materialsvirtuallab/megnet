@@ -40,6 +40,19 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
                         'site_index': self._get_original_site(structure, s)})
         return siw
 
+    def get_all_nn_info(self, structure):
+        nn_info = []
+        all_neighbors = structure.get_all_neighbors(self.cutoff, include_index=True, include_image=True)
+        for n, neighd_dists in enumerate(all_neighbors):
+            siw = []
+            for s, dist, ind, image in neighd_dists:
+                siw.append({'site': s,
+                            'image': image,
+                            'weight': dist,
+                            'site_index': ind})
+            nn_info.append(siw)
+        return nn_info
+
 
 class AllAtomPairs(NearNeighbors):
     """
