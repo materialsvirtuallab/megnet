@@ -19,6 +19,20 @@ Figure 2 shows the overall schematic of the MEGNet. Each graph network module is
 ![GraphModel architecture](resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
+# Installation
+
+Megnet can be installed via pip for the latest stable version:
+
+```bash
+pip install megnet
+```
+
+For the latest dev version, please clone this repo and install using:
+
+```bash
+python setup.py develop
+```
+
 # Usage
 
 Our current implementation supports a variety of use cases for users with different requirements and experience with deep learning. Please also visit the `notebooks` directory for Jupyter notebooks with more detailed code examples.
