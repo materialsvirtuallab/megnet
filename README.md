@@ -54,7 +54,7 @@ python setup.py develop
 
 Our current implementation supports a variety of use cases for users with 
 different requirements and experience with deep learning. Please also visit 
-the [notebooks directory] for Jupyter notebooks with more detailed code examples.
+the [notebooks directory](notebooks) for Jupyter notebooks with more detailed code examples.
 
 ## Using pre-built models
 
@@ -104,7 +104,7 @@ print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0
 ```
 A full example is in `notebooks/crystal_example.ipynb`. 
 
-For molecular models, we have an example in [notebooks/qm9_pretrained.ipynb]. 
+For molecular models, we have an example in [notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb). 
 We support prediction directly from a pymatgen molecule object. With a few more
 lines of code, the model can predict from `SMILES` representation of molecules,
 as shown in the example. It is also straightforward to load a `xyz` molecule 
@@ -171,7 +171,7 @@ el_embeddings = get_elemental_embeddings()
 ```
 
 An example of transfer learning using the elemental embedding from formation 
-energy to other models, please check [notebooks/transfer_learning.ipynb].
+energy to other models, please check [notebooks/transfer_learning.ipynb](notebooks/transfer_learning.ipynb).
 
 ## Customized Graph Network Models
 
