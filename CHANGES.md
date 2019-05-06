@@ -1,3 +1,6 @@
+# v0.3.0
+* Proper fix to release on PyPi.
+
 # v0.2.0
 * Major refactoring to conform to OOP principles. Note that the
   changes are not backwards compatible, but many things are a lot
