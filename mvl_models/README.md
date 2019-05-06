@@ -30,10 +30,34 @@ Currently, we provide models for
 
 | Property | Units      | MAE   |
 |----------|------------|-------|
-| Ef       | meV/atom   | 0.028 |
+| Ef       | eV/atom    | 0.028 |
 | Eg       | eV         | 0.33  |
 | K_VRH    | log10(GPa) | 0.050 |
 | G_VRH    | log10(GPa) | 0.079 |
+
+### Performance of MP-2019.4.1
+
+| Property | Units      | MAE   |
+|----------|------------|-------|
+| Ef       | eV/atom    | 0.026 |
+
+### Performance of QM9 MEGNet-Simple models
+
+| Property | Units      | MAE   |
+|----------|------------|-------|
+| HOMO     | eV         | 0.043 |
+| LUMO     | eV         | 0.044 |
+| Gap      | eV         | 0.066 |
+| ZPVE     | meV        | 1.43  |
+| µ        | Debye      | 0.05  |
+| α        | Bohr^3     | 0.081 |
+| \<R2\>   | Bohr^2     | 0.302 |
+| U0       | eV         | 0.012 |
+| U        | eV         | 0.013 |
+| H        | eV         | 0.012 |
+| G        | eV         | 0.012 |
+| Cv       | $cal(molK)^-1$| 0.029|
+| ω1       | $cm^{-1}   | 1.18 |
 
 For the MP crystals, we provide all models for the original 2018.6.1 dataset
 that was used in the publication, as well as updated models based on the
