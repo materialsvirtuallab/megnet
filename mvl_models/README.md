@@ -56,8 +56,8 @@ Currently, we provide models for
 | U        | eV         | 0.013 |
 | H        | eV         | 0.012 |
 | G        | eV         | 0.012 |
-| Cv       | $cal(molK)^-1$| 0.029|
-| ω1       | $cm^{-1}   | 1.18 |
+| Cv       | cal/(molK) | 0.029|
+| ω1       | cm^-1   | 1.18 |
 
 For the MP crystals, we provide all models for the original 2018.6.1 dataset
 that was used in the publication, as well as updated models based on the
