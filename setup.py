@@ -20,10 +20,11 @@ setup(
                       'pymatgen', 'monty'],
     extras_require={
         'model_saving': ['h5py'], },
-    package=find_packages(),
+    packages=find_packages(),
     package_data={
         "megnet": ["*.json", "*.md"]
     },
+    keywords=["materials", "science", "machine", "learning", "graph", "networks", "neural"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
