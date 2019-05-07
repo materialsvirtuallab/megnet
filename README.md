@@ -120,9 +120,11 @@ The MAEs on the various models are given below:
 |----------|------------|-------|
 | Ef       | eV/atom    | 0.026 |
 
-New models will be added as they are developed.
+New models will be added as they are developed in the [mvl_models](mvl_models)
+folder. Each folder contains a summary of model details and benchmarks. For
+the initial models and bencharmks comparison to previous models, 
+please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]. 
 
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]. 
 Below is an example of crystal model usage:
 
 ```python
