@@ -85,7 +85,45 @@ The following models are available:
     - Log 10 of Bulk Modulus (K)
     - Log 10 of Shear Modulus (G)
 
-For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]. Below is an example of crystal model usage:
+The MAEs on the various models are given below:
+
+### Performance of QM9 MEGNet-Simple models
+
+| Property | Units      | MAE   |
+|----------|------------|-------|
+| HOMO     | eV         | 0.043 |
+| LUMO     | eV         | 0.044 |
+| Gap      | eV         | 0.066 |
+| ZPVE     | meV        | 1.43  |
+| µ        | Debye      | 0.05  |
+| α        | Bohr^3     | 0.081 |
+| \<R2\>   | Bohr^2     | 0.302 |
+| U0       | eV         | 0.012 |
+| U        | eV         | 0.013 |
+| H        | eV         | 0.012 |
+| G        | eV         | 0.012 |
+| Cv       | cal/(molK) | 0.029 |
+| ω1       | cm^-1      | 1.18  |
+
+### Performance of MP-2018.6.1
+
+| Property | Units      | MAE   |
+|----------|------------|-------|
+| Ef       | eV/atom    | 0.028 |
+| Eg       | eV         | 0.33  |
+| K_VRH    | log10(GPa) | 0.050 |
+| G_VRH    | log10(GPa) | 0.079 |
+
+### Performance of MP-2019.4.1
+
+| Property | Units      | MAE   |
+|----------|------------|-------|
+| Ef       | eV/atom    | 0.026 |
+
+New models will be added as they are developed.
+
+For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]. 
+Below is an example of crystal model usage:
 
 ```python
 from megnet.models import MEGNetModel
@@ -104,7 +142,8 @@ print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0
 ```
 A full example is in `notebooks/crystal_example.ipynb`. 
 
-For molecular models, we have an example in [notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb). 
+For molecular models, we have an example in 
+[notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb). 
 We support prediction directly from a pymatgen molecule object. With a few more
 lines of code, the model can predict from `SMILES` representation of molecules,
 as shown in the example. It is also straightforward to load a `xyz` molecule 
