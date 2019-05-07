@@ -1,15 +1,16 @@
 from setuptools import setup
 from setuptools import find_packages
-from os.path import dirname, abspath, join
-this_dir = abspath(dirname(__file__))
+import os
 
-with open(join(this_dir, 'README.md'), encoding='utf-8') as f:
+this_dir = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(this_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='megnet',
     version='0.3.0',
-    decription='MatErials Graph Networks for machine learning of molecules and crystals.',
+    description='MatErials Graph Networks for machine learning of molecules and crystals.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Chi Chen',
@@ -19,12 +20,13 @@ setup(
     install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn",
                       'pymatgen', 'monty'],
     extras_require={
-        'model_saving': ['h5py'], },
+        'model_saving': ['h5py']
+    },
     packages=find_packages(),
     package_data={
         "megnet": ["*.json", "*.md"]
     },
-    keywords=["materials", "science", "machine", "learning", "graph", "networks", "neural"],
+    keywords=["materials", "science", "machine", "learning", "deep", "graph", "networks", "neural"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
@@ -32,7 +34,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Topic :: Scientific/Engineering :: Information Analysis",
         "Topic :: Scientific/Engineering :: Physics",
