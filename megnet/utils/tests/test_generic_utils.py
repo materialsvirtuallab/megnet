@@ -14,3 +14,6 @@ class TestGeneralUtils(unittest.TestCase):
         y = [1]
         self.assertListEqual(to_list(x), [1])
         self.assertListEqual(to_list(y), y)
+
+if __name__ == "__main__":
+    unittest.main()

@@ -13,7 +13,7 @@ except:
 
 ATOMNUM2TYPE = {1: 1, 6: 2, 7: 4, 8: 6, 9: 8}
 pjoin = os.path.join
-QM9_MODELDIR = pjoin(os.path.dirname(__file__), '../../mvl_models/qm9')
+QM9_MODELDIR = pjoin(os.path.dirname(__file__), '../../mvl_models/qm9-2018.6.1')
 SCALER = loadfn(pjoin(QM9_MODELDIR, "scaler.json"))
 
 
