@@ -1,73 +1,17 @@
 ## Pre-trained models from Materials Virtual Lab
 
-This directory contains pre-trained models from Materials Virtual Lab. 
+This directory contains pre-trained models from the Materials Virtual Lab.
 
 Currently, we provide models for
 
-* QM9 molecules:
-    - HOMO: Highest occupied molecular orbital energy
-    - LUMO: Lowest unoccupied molecular orbital energy
-    - Gap: energy gap
-    - ZPVE: zero point vibrational energy
-    - µ: dipole moment
-    - α: isotropic polarizability
-    - \<R2\>: electronic spatial extent
-    - U0: internal energy at 0 K
-    - U: internal energy at 298 K
-    - H: enthalpy at 298 K
-    - G: Gibbs free energy at 298 K
-    - Cv: heat capacity at 298 K
-    - ω1: highest vibrational frequency.
-    
-* Materials Project (MP) crystals:
-    - Formation energy from the elements
-    - Band gap
-    - Log 10 of Bulk Modulus (K)
-    - Log 10 of Shear Modulus (G)
+* QM9 molecules    
+* Materials Project (MP) crystals
 
+The original models in ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294).
+are in the folders dated 2018.6.1. We are continuing to develop new models 
+on updated datasets, and these are dated accordingly (e.g., mp-2019.4.1 contains
+models developed on the much larger Materials Project dataset of 133,000
+crystals as of Apr 1 2019). 
 
-### Performance of MP-2018.6.1
-
-| Property | Units      | MAE   |
-|----------|------------|-------|
-| Ef       | eV/atom    | 0.028 |
-| Eg       | eV         | 0.33  |
-| K_VRH    | log10(GPa) | 0.050 |
-| G_VRH    | log10(GPa) | 0.079 |
-
-### Performance of MP-2019.4.1
-
-| Property | Units      | MAE   |
-|----------|------------|-------|
-| Ef       | eV/atom    | 0.026 |
-
-### Performance of QM9 MEGNet-Simple models
-
-| Property | Units      | MAE   |
-|----------|------------|-------|
-| HOMO     | eV         | 0.043 |
-| LUMO     | eV         | 0.044 |
-| Gap      | eV         | 0.066 |
-| ZPVE     | meV        | 1.43  |
-| µ        | Debye      | 0.05  |
-| α        | Bohr^3     | 0.081 |
-| \<R2\>   | Bohr^2     | 0.302 |
-| U0       | eV         | 0.012 |
-| U        | eV         | 0.013 |
-| H        | eV         | 0.012 |
-| G        | eV         | 0.012 |
-| Cv       | cal/(molK) | 0.029|
-| ω1       | cm^-1   | 1.18 |
-
-For the MP crystals, we provide all models for the original 2018.6.1 dataset
-that was used in the publication, as well as updated models based on the
-larger MP data set of 133,000 crystals as of 2019.4.1.
-
-It should be noted that for QM9 models, we do not expect transferability to 
-other molecules, since the QM9 dataset is limited in scope. Therefore please 
-only use it for testing QM9. Out of the 13 targets, we set `HOMO`, `LUMO`, 
-`gap`, and `omega1` to be intrinsic quantities and the models for them are 
-fitted on their scaled values. For other targets, however, the models are 
-fitted on `per_atom` quantities. We have a `scaler.json` file for the QM9
-models that specifies the scaling factors. Please see `notebooks/qm9_pretrained.ipynb` 
-as examples of how to use it properly.
+The README.md in each folder provides a summary of the dataset, training/test
+split and the model performance.
