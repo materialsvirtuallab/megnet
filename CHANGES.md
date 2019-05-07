@@ -1,3 +1,6 @@
+# v0.3.1
+* Minor fixes to setup.py and licenses.
+
 # v0.3.0
 * Proper fix to release on PyPi.
 
