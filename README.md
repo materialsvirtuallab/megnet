@@ -131,7 +131,7 @@ Below is an example of crystal model usage:
 from megnet.models import MEGNetModel
 from pymatgen import MPRester
 
-model = MEGNetModel.from_file('mvl_models/mp/log10K.hdf5')
+model = MEGNetModel.from_file('mvl_models/mp-2018.6.1/log10K.hdf5')
 
 # We can grab a crystal structure from the Materials Project.
 mpr = MPRester()
