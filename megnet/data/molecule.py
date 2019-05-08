@@ -55,6 +55,8 @@ class MolecularGraph(StructureGraph):
         Args:
             mol (pybel.Molecule)
         """
+        # TODO: the NN strategy is not actually used by this class
+        super().__init__('AllAtomPairs')
         self.atom_features = atom_features
         self.bond_features = bond_features
 
