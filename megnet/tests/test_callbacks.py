@@ -11,6 +11,7 @@ import glob
 import keras.backend as K
 from keras.utils import Sequence
 
+
 class Generator(Sequence):
     def __init__(self, x, y):
         self.x = x

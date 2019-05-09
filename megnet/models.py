@@ -8,6 +8,7 @@ from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
 from megnet.data.crystal import CrystalGraph
+from megnet.utils.preprocessing import StandardScaler
 import numpy as np
 import os
 
@@ -30,9 +31,11 @@ class GraphModel:
     def __init__(self,
                  model,
                  graph_convertor,
+                 target_scaler=StandardScaler(mean=0, std=1, is_intensive=True),
                  **kwargs):
         self.model = model
         self.graph_convertor = graph_convertor
+        self.target_scaler = target_scaler
 
     def __getattr__(self, p):
         return getattr(self.model, p)
@@ -107,9 +110,14 @@ class GraphModel:
             # with this call back you can stop the model training by `touch STOP`
             callbacks = [ManualStop()]
         callbacks.append(ReduceLRUponNan())
+        train_nb_atoms = [len(i['atom']) for i in train_graphs]
+        train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
         train_targets = np.array(train_targets).ravel()
+
         if validation_graphs is not None:
             filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
+            val_nb_atoms = [len(i['atom']) for i in validation_graphs]
+            validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
             validation_targets = np.array(validation_targets).ravel()
             val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
 
@@ -141,7 +149,7 @@ class GraphModel:
         :return:
         """
         inp = self.graph_convertor.get_input(structure)
-        return self.predict(inp).ravel()
+        return self.target_scaler.inverse_transform(self.predict(inp).ravel(), len(structure))
 
     def _create_generator(self, *args, **kwargs):
         if hasattr(self.graph_convertor, 'bond_convertor'):
