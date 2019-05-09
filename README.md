@@ -122,6 +122,7 @@ The MAEs on the various models are given below:
 | Property | Units      | MAE   |
 |----------|------------|-------|
 | Ef       | eV/atom    | 0.026 |
+| Efermi   | eV         | 0.288 |
 
 New models will be added as they are developed in the [mvl_models](mvl_models)
 folder. Each folder contains a summary of model details and benchmarks. For
