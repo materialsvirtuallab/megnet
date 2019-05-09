@@ -169,7 +169,8 @@ class GraphModel:
         self.model.save(filename)
         dumpfn(
             {
-                'graph_convertor': self.graph_convertor
+                'graph_convertor': self.graph_convertor,
+                'target_scaler': self.target_scaler,
             },
             filename + '.json'
         )
