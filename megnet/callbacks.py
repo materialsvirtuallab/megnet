@@ -14,16 +14,16 @@ class GeneratorLog(Callback):
     The default keras training log does not contain method to rescale the results, thus is not physically
     intuitive.
 
-    :param train_gen: (generator), yield (x, y) pairs for training
-    :param steps_per_train: (int) number of generator steps per training epoch
-    :param val_gen: (generator), yield (x, y) pairs for validation.
-    :param steps_per_val: (int) number of generator steps per epoch for validation data
-    :param y_scaler: (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale
-    :param n_every: (int) epoch interval for showing the log
-    :param val_names: (list of string) variable names
-    :param val_units: (list of string) variable units
-    :param is_pa: (bool) whether it is a per-atom quantity
-
+    Args:
+        train_gen: (generator), yield (x, y) pairs for training
+        steps_per_train: (int) number of generator steps per training epoch
+        val_gen: (generator), yield (x, y) pairs for validation.
+        steps_per_val: (int) number of generator steps per epoch for validation data
+        y_scaler: (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale
+        n_every: (int) epoch interval for showing the log
+        val_names: (list of string) variable names
+        val_units: (list of string) variable units
+        is_pa: (bool) whether it is a per-atom quantity
     """
 
     def __init__(self, train_gen, steps_per_train=None,
@@ -84,18 +84,19 @@ class ModelCheckpointMAE(Callback):
     """
     Save the best MAE model
 
-    :param filepath: (string) path to save the model file with format. For example
+    Args:
+        filepath: (string) path to save the model file with format. For example
         `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and val_mae in the filename
-    :param monitor: (string) quantity to monitor, default to "val_mae"
-    :param verbose: (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
-    :param save_best_only: (bool) whether to save only the best model
-    :param save_weights_only: (bool) whether to save the weights only excluding model structure
-    :param val_gen: (generator) validation generator
-    :param steps_per_val: (int) steps per epoch for validation generator
-    :param y_scaler: (object) exposing inverse_transform method to scale the output
-    :param period: (int) number of epoch interval for this callback
-    :param is_pa: (bool) if it is a per-atom quantity
-    :param mode: (string) choose from "min", "max" or "auto"
+        monitor: (string) quantity to monitor, default to "val_mae"
+        verbose: (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
+        save_best_only: (bool) whether to save only the best model
+        save_weights_only: (bool) whether to save the weights only excluding model structure
+        val_gen: (generator) validation generator
+        steps_per_val: (int) steps per epoch for validation generator
+        y_scaler: (object) exposing inverse_transform method to scale the output
+        period: (int) number of epoch interval for this callback
+        is_pa: (bool) if it is a per-atom quantity
+        mode: (string) choose from "min", "max" or "auto"
     """
 
     def __init__(self,
@@ -211,18 +212,17 @@ class ReduceLRUponNan(Callback):
     loss suddenly shoot up
     If such things happen, the model will reduce the learning rate and load the last best model during the
     training process.
-
     It has an extra function that patience for early stopping. This will move to indepedent callback in the
     future.
 
     Args:
-        :param callback_dir: (str) the directory where the saved models are stored
-        :param factor: (float) a value < 1 for scaling the learning rate
-        :param verbose: (int) whether to show the loading event
-        :param patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
-        :param epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
-        :param splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
-            splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
+        callback_dir: (str) the directory where the saved models are stored
+        factor: (float) a value < 1 for scaling the learning rate
+        verbose: (int) whether to show the loading event
+        patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
+        epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
+        splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
+        splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
     """
 
     def __init__(self,
@@ -292,10 +292,14 @@ class ReduceLRUponNan(Callback):
 def _print_mae(target_names, maes, units):
     """
     format printing the MAE for each variable
-    :param target_names: (list of string) variable names
-    :param maes:  (list of numeric) MAE values for each variable
-    :param units:  (list of string) units for each variable
-    :return: (bool)
+
+    Args:
+        target_names: (list of string) variable names
+        maes:  (list of numeric) MAE values for each variable
+        units:  (list of string) units for each variable
+
+    Returns:
+          bool
     """
     line = []
     for i, j, k in zip(target_names, maes, units):
@@ -307,8 +311,12 @@ def _print_mae(target_names, maes, units):
 def _count(a):
     """
     count number of appearance for each element in a
-    :param a: (np.array)
-    :return: (np.array) number of appearance of each element in a
+
+    Args:
+        a: (np.array)
+
+    Returns:
+        (np.array) number of appearance of each element in a
     """
     a = a.ravel()
     a = np.r_[a[0], a, np.Inf]

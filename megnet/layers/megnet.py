@@ -31,7 +31,7 @@ class MEGNetLayer(GraphNetworkLayer):
         kernel_constraint (str): Default: None. Keras constraint for kernel values
         bias_constraint (str): Default: None .Keras constraint for bias values
 
-    Method:
+    Methods:
         call(inputs, mask=None): the logic of the layer, returns the final graph
         compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes
         build(input_shape): initialize the weights and biases for each function

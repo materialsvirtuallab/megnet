@@ -4,6 +4,7 @@ from pymatgen.analysis.local_env import *
 class MinimumDistanceNNAll(MinimumDistanceNN):
     """
     Determine bonded sites by fixed cutoff
+
     Args:.
         cutoff (float): cutoff radius in Angstrom to look for trial
             near-neighbor sites (default: 4.0).
@@ -17,6 +18,7 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
         Get all near-neighbor sites as well as the associated image locations
         and weights of the site with index n using the closest neighbor
         distance-based method.
+
         Args:
             structure (Structure): input structure.
             n (integer): index of site for which to determine near

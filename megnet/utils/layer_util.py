@@ -8,10 +8,13 @@ def _repeat(x, n, axis=1):
     and the final tensor would have the shape (N*6*3) with the first one in M repeated 3 times,
     second 1 time and third 2 times.
 
-    :param x: (3d Tensor) tensor to be augmented
-    :param n: (1d Tensor) number of repetition for each row
-    :param axis: (int) axis for repetition
-    :return: (3d Tensor) tensor after repetition
+     Args:
+        x: (3d Tensor) tensor to be augmented
+        n: (1d Tensor) number of repetition for each row
+        axis: (int) axis for repetition
+
+    Returns:
+        (3d Tensor) tensor after repetition
     """
     # get maximum repeat length in x
     assert len(n.shape) == 1
@@ -46,10 +49,12 @@ def repeat_with_index(x, index, axis=1):
     and the final tensor would have the shape (N*6*3) with the first one in M repeated 3 times,
     second 1 time and third 2 times.
 
-    :param x: (3d Tensor) tensor to be augmented
-    :param index: (1d Tensor) repetition tensor
-    :param axis: (int) axis for repetition
-    :return: (3d Tensor) tensor after repetition
+     Args:
+        x: (3d Tensor) tensor to be augmented
+        index: (1d Tensor) repetition tensor
+        axis: (int) axis for repetition
+    Returns:
+        (3d Tensor) tensor after repetition
     """
     index = tf.reshape(index, (-1,))
     _, _, n = tf.unique_with_counts(index)

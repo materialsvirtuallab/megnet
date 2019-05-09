@@ -46,7 +46,6 @@ class SimpleMolGraph(StructureGraph):
                          bond_convertor=bond_convertor)
 
 
-
 class MolecularGraph(StructureGraph):
     def __init__(self,
                  atom_features=ATOM_FEATURES,
@@ -238,8 +237,12 @@ class MolecularGraph(StructureGraph):
 def dijkstra_distance(bonds):
     """
     Compute the graph distance based on the dijkstra algorithm
-    :param bonds: (list of list), for example [[0, 1], [1, 2]] means two bonds formed by atom 0, 1 and atom 1, 2
-    :return: full graph distance matrix
+
+    Args:
+        bonds: (list of list), for example [[0, 1], [1, 2]] means two bonds formed by atom 0, 1 and atom 1, 2
+
+    Returns:
+        full graph distance matrix
     """
     nb_atom = max(itertools.chain(*bonds)) + 1
     graph_dist = np.ones((nb_atom, nb_atom), dtype=np.int32) * np.infty

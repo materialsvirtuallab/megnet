@@ -14,6 +14,7 @@ class StandardScaler(MSONable):
         mean (float): mean value of target
         std (float): standard deviation of target
         is_intensive (bool): whether the target is already an intensive property
+
     Methods:
         transform(self, target, n=1): standard scaling the target and
     """
@@ -27,9 +28,13 @@ class StandardScaler(MSONable):
 
     def transform(self, target, n=1):
         """
-        :param target: target numerical value
-        :param n: number of atoms
-        :return: scaled target
+        Transform numeric values according the mean and std, plus a factor n
+        
+        Args:
+            target: target numerical value
+            n: number of atoms
+        Returns:
+            scaled target
         """
         if self.is_intensive:
             n = 1
@@ -37,10 +42,14 @@ class StandardScaler(MSONable):
 
     def inverse_transform(self, transformed_target, n=1):
         """
+        Inverse transform of the target
 
-        :param transformed_target: transformed target
-        :param n: number of atoms
-        :return: original target
+        Args:
+            transformed_target: transformed target
+            n: number of atoms
+
+        Returns:
+            original target
         """
         if self.is_intensive:
             n = 1

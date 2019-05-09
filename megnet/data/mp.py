@@ -10,9 +10,12 @@ def index_rep_from_structure(structure, r=4):
     of Z number of atoms in the structure, index1 and index2 mark the atom
     indices forming the bond and separated by distance
 
-    :param structure: (pymatgen structure)
-    :param r: (float) distance cutoff
-    :return: (dictionary)
+    Args:
+        structure: (pymatgen structure)
+        r: (float) distance cutoff
+
+    Returns:
+        (dictionary)
     """
     atom_i_segment_id = []  # index list for the center atom i for all bonds (row index)
     atom_i_j_id = []  # index list for atom j
@@ -54,10 +57,13 @@ def graph_to_inputs(mp_ids, graphs, targets):
     """
     Expand the graph dictionary to form a list of features and targets
 
-    :param mp_ids: (list) ids of each struture
-    :param graphs: (list of dictionary) list of graph dictionary for each structure
-    :param targets: (list of float) correpsonding target values for each structure
-    :return: tuple(node_features, edges_features, global_values, index1, index2, targets, and ids)
+    Args:
+        mp_ids: (list) ids of each struture
+        graphs: (list of dictionary) list of graph dictionary for each structure
+        targets: (list of float) correpsonding target values for each structure
+
+    Returns:
+         tuple(node_features, edges_features, global_values, index1, index2, targets, and ids)
     """
     nodes = []
     edges = []

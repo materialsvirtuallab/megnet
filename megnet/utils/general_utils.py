@@ -14,7 +14,10 @@ def to_list(x):
 def expand_1st(x):
     """
     Adding an extra first dimension
-    :param x: (np.array)
-    :return: (np.array)
+
+    Args:
+        x: (np.array)
+    Returns:
+         (np.array)
     """
     return np.expand_dims(x, axis=0)

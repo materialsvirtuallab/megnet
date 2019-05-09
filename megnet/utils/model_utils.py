@@ -80,8 +80,10 @@ class QM9Model:
     def predict_structure(self, structure):
         """
         Predict the property of structure
+
         Args:
-            structure: (pymatgen molecule) 
+            structure: (pymatgen molecule)
+
         Returns:
             target: (float)
         """
@@ -94,8 +96,10 @@ class QM9Model:
     def predict_smiles(self, smiles):
         """
         Predict the property of smiles
+
         Args:
             smiles: (str) smiles representation
+
         Returns:
             target: (float)
         """

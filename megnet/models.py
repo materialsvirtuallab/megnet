@@ -26,6 +26,8 @@ class GraphModel:
     Args:
         model: (keras model)
         graph_convertor: (object) a object that turns a structure to a graph, check `megnet.data.crystal`
+        target_scaler: (object) a scaler object for converting targets, check `megnet.utils.preprocessing`
+
     """
 
     def __init__(self,
@@ -52,19 +54,17 @@ class GraphModel:
               prev_model=None,
               **kwargs):
         """
-        :param train_structures: (list) list of pymatgen structures
-        :param train_targets: (list) list of target values
-        :param validation_structures: (list) list of pymatgen structures as
-            validation
-        :param validation_targets: (list) list of validation targets
-        :param epochs: (int) number of epochs
-        :param batch_size: (int) training batch size
-        :param verbose: (int) keras fit verbose, 0 no progress bar, 1 only at
-            the epoch end and 2 every batch
-        :param callbacks: (list) megnet or keras callback functions for training
-        :param prev_model: (str) file name for previously saved model
-        :param kwargs:
-        :return:
+        Args:
+            train_structures: (list) list of pymatgen structures
+            train_targets: (list) list of target values
+            validation_structures: (list) list of pymatgen structures as validation
+            validation_targets: (list) list of validation targets
+            epochs: (int) number of epochs
+            batch_size: (int) training batch size
+            verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
+            callbacks: (list) megnet or keras callback functions for training
+            prev_model: (str) file name for previously saved model
+            **kwargs:
         """
         train_graphs = [self.graph_convertor.convert(i) for i in train_structures]
         if validation_structures is not None:
@@ -145,8 +145,12 @@ class GraphModel:
     def predict_structure(self, structure):
         """
         Predict property from structure
-        :param structure:
-        :return:
+
+        Args:
+            structure: pymatgen structure or molecule
+
+        Returns:
+            batch generator object
         """
         inp = self.graph_convertor.get_input(structure)
         return self.target_scaler.inverse_transform(self.predict(inp).ravel(), len(structure))
@@ -163,8 +167,11 @@ class GraphModel:
         Save the model to a keras model hdf5 and a json config for additional
         convertors
 
-        :param filename: (str)
-        :return:
+        Args:
+            filename: (str) output file name
+
+        Returns:
+            None
         """
         self.model.save(filename)
         dumpfn(
@@ -182,8 +189,11 @@ class GraphModel:
             filename for keras model
             filename.json for additional convertors
 
-        :param filename: (str)
-        :return: Model
+        Args:
+            filename: (str) model file name
+
+        Returns
+            GraphModel
         """
         configs = loadfn(filename + '.json')
         from keras.utils import get_custom_objects
@@ -200,6 +210,32 @@ class GraphModel:
 
 
 class MEGNetModel(GraphModel):
+    """
+    Construct a graph network model with or without explicit atom features
+    if n_feature is specified then a general graph model is assumed,
+    otherwise a crystal graph model with z number as atom feature is assumed.
+
+    Args:
+        nfeat_edge: (int) number of bond features
+        nfeat_global: (int) number of state features
+        nfeat_node: (int) number of atom features
+        nblocks: (int) number of MEGNetLayer blocks
+        lr: (float) learning rate
+        n1: (int) number of hidden units in layer 1 in MEGNetLayer
+        n2: (int) number of hidden units in layer 2 in MEGNetLayer
+        n3: (int) number of hidden units in layer 3 in MEGNetLayer
+        nvocal: (int) number of total element
+        embedding_dim: (int) number of embedding dimension
+        npass: (int) number of recurrent steps in Set2Set layer
+        ntarget: (int) number of output targets
+        act: (object) activation function
+        l2_coef: (float or None) l2 regularization parameter
+        is_classification: (bool) whether it is a classifiation task
+        loss: (object or str) loss function
+        dropout: (float) dropout rate
+        graph_convertor: (object) object that exposes a "convert" method for structure to graph conversion
+        optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
+    """
 
     def __init__(self,
                  nfeat_edge,
@@ -222,34 +258,6 @@ class MEGNetModel(GraphModel):
                  graph_convertor=None,
                  optimizer_kwargs=None
                  ):
-        """
-        Construct a graph network model with or without explicit atom features
-        if n_feature is specified then a general graph model is assumed,
-        otherwise a crystal graph model with z number as atom feature is assumed.
-
-        :param nfeat_edge: (int) number of bond features
-        :param nfeat_global: (int) number of state features
-        :param nfeat_node: (int) number of atom features
-        :param nblocks: (int) number of MEGNetLayer blocks
-        :param lr: (float) learning rate
-        :param n1: (int) number of hidden units in layer 1 in MEGNetLayer
-        :param n2: (int) number of hidden units in layer 2 in MEGNetLayer
-        :param n3: (int) number of hidden units in layer 3 in MEGNetLayer
-        :param nvocal: (int) number of total element
-        :param embedding_dim: (int) number of embedding dimension
-        :param npass: (int) number of recurrent steps in Set2Set layer
-        :param ntarget: (int) number of output targets
-        :param act: (object) activation function
-        :param l2_coef: (float or None) l2 regularization parameter
-        :param is_classification: (bool) whether it is a classifiation task
-        :param loss: (object or str) loss function
-        :param dropout: (float) dropout rate
-        :param graph_convertor: (object) object that exposes a "convert" method
-            for structure to graph conversion
-        :param optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
-        :return: keras model object
-
-        """
         int32 = 'int32'
         if nfeat_node is None:
             x1 = Input(shape=(None,), dtype=int32)  # only z as feature

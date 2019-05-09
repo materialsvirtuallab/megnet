@@ -9,28 +9,28 @@ class Set2Set(Layer):
     """
     For a set of vectors, the set2set neural network maps it to a single vector.
     The order invariance is acheived by a attention mechanism.
-
     See Vinyals, Oriol, Samy Bengio, and Manjunath Kudlur.
     "Order matters: Sequence to sequence for sets." arXiv preprint
     arXiv:1511.06391 (2015).
 
-    :param T: (int) recurrent step
-    :param n_hidden: (int) number of hidden units
-    :param activation: (str or object) activation function
-    :param activation_lstm: (str or object) activation function for lstm
-    :param recurrent_activation: (str or object) activation function for recurrent step
-    :param kernel_initializer: (str or object) initializer for kernel weights
-    :param recurrent_initializer: (str or object) initializer for recurrent weights
-    :param bias_initializer: (str or object) initializer for biases
-    :param use_bias: (bool) whether to use biases
-    :param unit_forget_bias: (bool) whether to use basis in forget gate
-    :param kernel_regularizer: (str or object) regularizer for kernel weights
-    :param recurrent_regularizer: (str or object) regularizer for recurrent weights
-    :param bias_regularizer: (str or object) regularizer for biases
-    :param kernel_constraint: (str or object) constraint for kernel weights
-    :param recurrent_constraint: (str or object) constraint for recurrent weights
-    :param bias_constraint:(str or object) constraint for biases
-    :param kwargs: other inputs for keras Layer class
+    Args:
+        T: (int) recurrent step
+        n_hidden: (int) number of hidden units
+        activation: (str or object) activation function
+        activation_lstm: (str or object) activation function for lstm
+        recurrent_activation: (str or object) activation function for recurrent step
+        kernel_initializer: (str or object) initializer for kernel weights
+        recurrent_initializer: (str or object) initializer for recurrent weights
+        bias_initializer: (str or object) initializer for biases
+        use_bias: (bool) whether to use biases
+        unit_forget_bias: (bool) whether to use basis in forget gate
+        kernel_regularizer: (str or object) regularizer for kernel weights
+        recurrent_regularizer: (str or object) regularizer for recurrent weights
+        bias_regularizer: (str or object) regularizer for biases
+        kernel_constraint: (str or object) constraint for kernel weights
+        recurrent_constraint: (str or object) constraint for recurrent weights
+        bias_constraint:(str or object) constraint for biases
+        kwargs: other inputs for keras Layer class
 
     """
 
