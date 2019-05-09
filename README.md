@@ -10,6 +10,9 @@ our best efforts. We welcome efforts by anyone to build and test models using
 our code and data, all of which are publicly available. Any comments or 
 suggestions are also welcome (please post on the Github Issues page.)
 
+A web app using our pre-trained MEGNet models for property prediction in 
+crystals is available at http://megnet.crystals.ai.
+
 # MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
 
 The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph 
