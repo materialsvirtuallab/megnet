@@ -1,5 +1,4 @@
-These are updated models are trained on the 2019.4.1 Materials Project crystals 
-data set.
+These are updated models are trained on the 2019.4.1 Materials Project crystals data set. The data is available at [https://figshare.com/articles/Graphs_of_Materials_Project_20190401/8097992](https://figshare.com/articles/Graphs_of_Materials_Project_20190401/8097992).
 
 ## Performance
 
