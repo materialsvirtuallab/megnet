@@ -6,10 +6,13 @@ https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU
 """
 import itertools
 import re
+
 from pymatgen import Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
+from megnet.data.qm9 import ring_to_vector
 from megnet.data.graph import StructureGraph, GaussianDistance
+from sklearn.preprocessing import label_binarize
 
 try:
     import pybel
@@ -23,10 +26,12 @@ except:
 
 __date__ = '12/01/2018'
 
-ATOM_FEATURES = ['atomic_num', 'chirality', 'partial_charge', 'ring_sizes',
+# List of all possible atomic features
+ATOM_FEATURES = ['atomic_num', 'chirality', 'formal_charge', 'ring_sizes',
                  'hybridization', 'donor', 'acceptor', 'aromatic']
-BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance',
-                 'graph_distance']
+
+# List of all possible bond features
+BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
 
 
 class SimpleMolGraph(StructureGraph):
@@ -46,31 +51,52 @@ class SimpleMolGraph(StructureGraph):
                          bond_convertor=bond_convertor)
 
 
-
 class MolecularGraph(StructureGraph):
-    def __init__(self,
-                 atom_features=ATOM_FEATURES,
-                 bond_features=BOND_FEATURES):
+    """Class for generating the graph inputs from a molecule"""
+    def __init__(self, atom_features=None, bond_features=None, distance_converter=None):
         """
+        TODO (wardlt): Document what atom and bond features are available to compute
+
         Args:
-            mol (pybel.Molecule)
+            atom_features ([str]): List of atom features to compute
+            bond_features ([str]): List of bond features to compute
         """
         # TODO: the NN strategy is not actually used by this class
         super().__init__('AllAtomPairs')
+        if bond_features is None:
+            bond_features = BOND_FEATURES
+        if atom_features is None:
+            atom_features = ATOM_FEATURES
+        if distance_converter is None:
+            distance_converter = GaussianDistance()
+
+        # Check if all feature names are valid
+        if any(i not in ATOM_FEATURES for i in atom_features):
+            bad_features = set(atom_features).difference(ATOM_FEATURES)
+            raise ValueError('Unrecognized atom features: {}'.format(', '.join(bad_features)))
         self.atom_features = atom_features
+        if any(i not in BOND_FEATURES for i in bond_features):
+            bad_features = set(bond_features).difference(BOND_FEATURES)
+            raise ValueError('Unrecognized bond features: {}'.format(', '.join(bad_features)))
         self.bond_features = bond_features
+        self.distance_converter = distance_converter
 
     def convert(self, mol, state_attributes=None, full_pair_matrix=True):
         """
+
+        # TODO (wardlt): Are we using Google-style docstrings (project uses several strategies)
         Args：
-            mol: (object)
+            mol: (object) Molecule to generate features for
             state_attributes: (list) state attributes
             full_pair_matrix:
                 Whether to get to full matrix instead of half
+                # TODO (wardlt): Is this actually whether we generate info for all atom pairs, not just bonded ones
                 Default true
         Returns:
-            atom_features matrix, bond_features_matrix
+            (dict): Dictionary of features
         """
+
+        # Get the features features for all atoms and bonds
         atom_features = []
         atom_pairs = []
         for idx, atom in enumerate(mol.atoms):
@@ -84,51 +110,65 @@ class MolecularGraph(StructureGraph):
                 atom_pairs.append(bond_feature)
             else:
                 continue
-        graph_dist = self._dijkstra_distance(atom_pairs)
-        for i in atom_pairs:
-            i.update({'graph_distance': graph_dist[i['a_idx'], i['b_idx']]})
 
-        out_atom = []
-        out_pair = []
-        for i in atom_features:
-            d = dict()
-            for j, k in i.items():
-                if j in self.atom_features:
-                    d.update({j: k})
-            out_atom.append(d)
+        # Compute the graph distance, if desired
+        if 'graph_distance' in self.bond_features:
+            graph_dist = self._dijkstra_distance(atom_pairs)
+            for i in atom_pairs:
+                i.update({'graph_distance': graph_dist[i['a_idx'], i['b_idx']]})
 
-        for i in atom_pairs:
-            d = dict()
-            for j, k in i.items():
-                if j in self.bond_features:
-                    d.update({j: k})
-            out_pair.append(d)
-
+        # Generate the state attributes (that describe the whole network)
         state_attributes = state_attributes or [[0, 0]]
+
+        # Get the atom features in the order they are requested by the user as a 2D array
+        # TODO (wardlt): Consider breaking this off into its own class method
         atoms = []
-        bonds = []
-        index1_temp = []
-        index2_temp = []
-        for atom in out_atom:
+        for atom in atom_features:
             atom_temp = []
             for i in self.atom_features:
-                if i in atom:
+                # Some features require conversion (e.g., binarization of a categorical variable)
+                if i == 'chirality':
+                    atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
+                elif i in ['aromatic', 'donor', 'acceptor']:
+                    atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
+                elif i == 'hybridization':
+                    atom_temp.extend(label_binarize([atom[i]], range(1, 7))[0].tolist())
+                elif i == 'ring_sizes':
+                    atom_temp.extend(ring_to_vector(atom[i]))
+                else:  # It is a scalar
                     atom_temp.append(atom[i])
             atoms.append(atom_temp)
 
-        for bond in out_pair:
+        # Get the bond features in the order request by the user
+        bonds = []
+        index1_temp = []
+        index2_temp = []
+        for bond in atom_pairs:
+            # Store the index of each bond
             index1_temp.append(bond.pop('a_idx'))
             index2_temp.append(bond.pop('b_idx'))
+
+            # Get the desired bond features
             bond_temp = []
             for i in self.bond_features:
+                # Some features require conversion (e.g., binarization)
                 if i in bond:
-                    bond_temp.append(bond[i])
+                    if i == "bond_type":
+                        bond_temp.extend(label_binarize([bond[i]], range(5))[0].tolist())
+                    elif i == "same_ring":
+                        bond_temp.append(int(bond[i]))
+                    elif i == "spatial_distance":
+                        bond_temp.extend(self.distance_converter.convert([bond[i]])[0].tolist())
+                    else:
+                        bond_temp.append(bond[i])
             bonds.append(bond_temp)
 
+        # Given the bonds (i,j), make it so (i,j) == (j, i)
         index1 = index1_temp + index2_temp
         index2 = index2_temp + index1_temp
         bonds = bonds + bonds
 
+        # Sort the arrays by the beginning index
         sorted_arg = np.argsort(index1)
         index1 = np.array(index1)[sorted_arg].tolist()
         index2 = np.array(index2)[sorted_arg].tolist()
@@ -142,6 +182,15 @@ class MolecularGraph(StructureGraph):
                 }
 
     def _dijkstra_distance(self, pairs):
+        """
+        Compute the graph distance between each pair of atoms,
+        using the network defined by the bonded atoms.
+
+        Args:
+            pairs ([dict]): List of bond information
+        Returns:
+            ([int]) Distance for each pair of bonds
+        """
         bonds = []
         for p in pairs:
             if p['bond_type'] > 0:
@@ -150,12 +199,20 @@ class MolecularGraph(StructureGraph):
 
     def get_atom_feature(self, mol, atom):
         """
+        Generate all features of a particular atom
+
         Args:
-            atom(pybel.Atom)
+            mol (pybel.Molecule): Molecule being evaluated
+            atom (pybel.Atom): Specific atom being evaluated
         Return:
+            (dict): All features for that atom
         """
+
+        # Get the link to the OpenBabel representation of the atom
         obatom = atom.OBAtom
         atom_idx = atom.idx - 1  # (pybel atoms indexs start from 1)
+
+        # Determine whether the molecule has chiral centers
         chiral_cc = self._get_chiral_centers(mol)
         if atom_idx not in chiral_cc:
             chirality = 0
@@ -168,7 +225,7 @@ class MolecularGraph(StructureGraph):
                 "chirality": chirality,
                 "formal_charge": obatom.GetFormalCharge(),
                 "ring_sizes": [i for i in range(3, 9) if
-                               obatom.IsInRingSize(i)],
+                               obatom.IsInRingSize(i)],  # TODO (wardlt): Misses atoms in two rings of the same size
                 "hybridization": 6 if element == 'H' else obatom.GetHyb(),
                 "acceptor": obatom.IsHbondAcceptor(),
                 "donor": obatom.IsHbondDonorH() if atom.type == 'H' else obatom.IsHbondDonor(),
@@ -177,10 +234,12 @@ class MolecularGraph(StructureGraph):
 
     def create_bond_feature(self, mol, bid, eid):
         """
-        Function to create the bond if there isn't the bond info with pybel
+        Create information for a bond for a pair of atoms that are not actually bonded
+
         Args:
-            bid(int), eid(int): begin and end atoms' index
-                                # Start from 0
+            mol (pybel.Molecule): Molecule being featurized
+            bid (int): Index of atom beginning of the bond
+            eid (int): Index of atom at the end of the bond
         """
         a1 = mol.atoms[bid].OBAtom
         a2 = mol.atoms[eid].OBAtom
@@ -193,18 +252,27 @@ class MolecularGraph(StructureGraph):
 
     def get_pair_feature(self, mol, bid, eid, full_pair_matrix):
         """
+        Get the features for a certain bond
         Args:
-            bond(pybel.OBBond)
-            mol(pybel.Molecule)
+            mol (pybel.Molecule): Molecule being featurized
+            bid (int): Index of atom beginning of the bond
+            eid (int): Index of atom at the end of the bond
+            full_pair_matrix (bool): Whether to compute the matrix for every atom - even those that
+                are not actually bonded
         """
+        # Find the bonded pair of atoms
         bond = mol.OBMol.GetBond(bid + 1, eid + 1)
-        if not bond:
+        if not bond:  # If the bond is ordered in the other direction
             bond = mol.OBMol.GetBond(eid + 1, bid + 1)
+
+        # If the atoms are not bonded
         if not bond:
             if full_pair_matrix:
                 return self.create_bond_feature(mol, bid, eid)
             else:
                 return None
+
+        # Compute bond features
         a1 = mol.atoms[bid].OBAtom
         a2 = mol.atoms[eid].OBAtom
         same_ring = mol.OBMol.AreInSameRing(a1, a2)
