@@ -26,6 +26,7 @@ def equal(x, y):
 
 
 class QM9Test(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         with open(os.path.join(module_dir, 'qm9', '000001.json'), 'r') as f:
@@ -39,9 +40,9 @@ class QM9Test(unittest.TestCase):
     def test_featurizer(self):
         mg = MolecularGraph()
         mol_graph = mg.convert(self.mol)
-        self.assertEqual(len(mol_graph['index1']), 20) # 20 bonds in total, including double counting
-        self.assertEqual(len(mol_graph['atom']), 5) # 5 atoms
-        self.assertListEqual(mol_graph['state'][0], [0, 0]) # dummy state [0, 0]
+        self.assertEqual(len(mol_graph['index1']), 20)  # 20 bonds in total, including double counting
+        self.assertEqual(len(mol_graph['atom']), 5)  # 5 atoms
+        self.assertListEqual(mol_graph['state'][0], [0, 0])  # dummy state [0, 0]
         mol_graph = mg.convert(self.mol, state_attributes=[[1, 2]])
         self.assertListEqual(mol_graph['state'][0], [1, 2])
 
@@ -67,6 +68,16 @@ class QM9Test(unittest.TestCase):
         self.assertEqual(feat['acceptor'], False)
         self.assertEqual(feat['donor'], False)
         self.assertEqual(feat['aromatic'], False)
+
+        # Make sure it gets the hybridization of the C correctly
+        feat = self.mg.get_atom_feature(self.mol, self.mol.atoms[1])
+        self.assertEqual(feat['element'], 'C')
+        self.assertEqual(feat['atomic_num'], 6)
+        self.assertEqual(feat['chirality'], 0)
+        self.assertEqual(feat['formal_charge'], 0)
+        self.assertEqual(feat['ring_sizes'], [])
+        self.assertEqual(feat['hybridization'], 3)
+
 
         # Test chirality using L/D-alanine
         la = pybel.readstring('smiles', 'N[C@@H](C)C(=O)O')
@@ -107,6 +118,47 @@ class QM9Test(unittest.TestCase):
         water = pybel.readstring('smiles', 'O')
         feat = self.mg.get_atom_feature(water, water.atoms[0])
         self.assertTrue(feat['acceptor'])
+
+    def test_atom_feature_vector(self):
+        """Test the code that transforms feature dict to a list"""
+
+        # Make feature dictionary with complicated molecule
+        naph = pybel.readstring('smiles', 'C1=CC=C2C=CC=CC2=C1')
+        feat = self.mg.get_atom_feature(naph, naph.atoms[3])
+
+        # Run with all features
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual(23, len(vec))
+
+        # Check with only atomic number and formal charge
+        self.mg.atom_features = ['atomic_num', 'formal_charge']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([6, 0], vec)
+
+        # Make sure it obeys user-defined order
+        self.mg.atom_features = ['formal_charge', 'atomic_num']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([0, 6], vec)
+
+        # Run the chirality binarization
+        self.mg.atom_features = ['chirality']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([1, 0, 0], vec)
+
+        # Run the ring size calculation (it is in 2 6-member rings)
+        self.mg.atom_features = ['ring_sizes']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([0, 0, 0, 0, 0, 2, 0, 0, 0], vec)
+
+        # Run the hybridization test
+        self.mg.atom_features = ['hybridization']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([0, 1, 0, 0, 0, 0], vec)
+
+        # Test donor, acceptor, aromatic
+        self.mg.atom_features = ['donor', 'acceptor', 'aromatic']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([0, 0, 1], vec)
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU
 import itertools
 import re
 
+from typing import List
 from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
@@ -124,19 +125,7 @@ class MolecularGraph(StructureGraph):
         # TODO (wardlt): Consider breaking this off into its own class method
         atoms = []
         for atom in atom_features:
-            atom_temp = []
-            for i in self.atom_features:
-                # Some features require conversion (e.g., binarization of a categorical variable)
-                if i == 'chirality':
-                    atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
-                elif i in ['aromatic', 'donor', 'acceptor']:
-                    atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
-                elif i == 'hybridization':
-                    atom_temp.extend(label_binarize([atom[i]], range(1, 7))[0].tolist())
-                elif i == 'ring_sizes':
-                    atom_temp.extend(ring_to_vector(atom[i]))
-                else:  # It is a scalar
-                    atom_temp.append(atom[i])
+            atom_temp = self._create_atom_feature_vector(atom)
             atoms.append(atom_temp)
 
         # Get the bond features in the order request by the user
@@ -180,6 +169,31 @@ class MolecularGraph(StructureGraph):
                 'index1': index1,
                 'index2': index2
                 }
+
+    def _create_atom_feature_vector(self, atom: dict) -> List[int]:
+        """Generate the feature vector from the atomic feature dictionary
+
+        Handles the binarization of categorical variables, and transforming the ring_sizes to a list
+
+        Args:
+            atom (dict): Dictionary of atomic features
+        Returns:
+            ([int]): Atomic feature vector
+        """
+        atom_temp = []
+        for i in self.atom_features:
+            # Some features require conversion (e.g., binarization of a categorical variable)
+            if i == 'chirality':
+                atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
+            elif i in ['aromatic', 'donor', 'acceptor']:
+                atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
+            elif i == 'hybridization':
+                atom_temp.extend(label_binarize([atom[i]], range(1, 7))[0].tolist())
+            elif i == 'ring_sizes':
+                atom_temp.extend(ring_to_vector(atom[i]))
+            else:  # It is a scalar
+                atom_temp.append(atom[i])
+        return atom_temp
 
     def _dijkstra_distance(self, pairs):
         """
