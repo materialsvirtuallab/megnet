@@ -52,16 +52,46 @@ class SimpleMolGraph(StructureGraph):
 
 
 class MolecularGraph(StructureGraph):
-    """Class for generating the graph inputs from a molecule"""
+    """Class for generating the graph inputs from a molecule
+
+    Computes many different features for the atoms and bonds in a molecule, and prepares them
+    in a form compatible with MEGNet models. The :meth:`convert` method takes a OpenBabel molecule
+    and, besides computing features, also encodes them in a form compatible with machine learning.
+    Namely, the `convert` method one-hot encodes categorical variables and concatenates the atomic features
+
+    ## Atomic Features
+
+    This class can compute the following features for each atom
+
+    - `atomic_num`: The atomic number
+    - `chirality`: (categorical) R, S, or not a Chiral center (one-hot encoded).
+    - `formal_charge`: Formal charge of the atom
+    - `ring_sizes`: For rings with 9 or fewer atoms, how many unique rings of each size include this atom
+    - `hybridization`: (categorical) Hybridization of atom: sp, sp2, sp3, sq. planer, trig, octahedral, or hydrogen
+    - `donor`: (boolean) Whether the atom is a hydrogen bond donor
+    - `acceptor`: (boolean) Whether the atom is a hydrogen bond acceptor
+    - `aromatic`: (boolean) Whether the atom is part of an aromatic system
+
+    ## Atom Pair Features
+
+    The class also computes features for each pair of atoms
+
+    - `bond_type`: (categorical) Whether the pair are unbonded, or in a single, double, triple, or aromatic bond
+    - `same_ring`: (boolean) Whether the atoms are in the same aromatic ring
+    - `graph_distance`: Distance of shortest path between atoms on the bonding graph
+    - `spatial_distance`: Euclidean distance between the atoms. By default, this distance is expanded into
+        a vector of 20 different values computed using the `GaussianDistance` converter
+
+    The class may use the distance
+
+    """
     def __init__(self, atom_features=None, bond_features=None, distance_converter=None):
         """
-        TODO (wardlt): Document what atom and bond features are available to compute
-
         Args:
             atom_features ([str]): List of atom features to compute
             bond_features ([str]): List of bond features to compute
         """
-        # TODO: the NN strategy is not actually used by this class
+        # TODO (wardlt): I do not think NN strategy is not actually used by this class. Refactor StructureGraph?
         super().__init__('AllAtomPairs')
         if bond_features is None:
             bond_features = BOND_FEATURES
