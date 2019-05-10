@@ -210,27 +210,37 @@ class MolecularGraph(StructureGraph):
 
         # Get the link to the OpenBabel representation of the atom
         obatom = atom.OBAtom
-        atom_idx = atom.idx - 1  # (pybel atoms indexs start from 1)
+        atom_idx = atom.idx - 1  # (pybel atoms indices start from 1)
 
-        # Determine whether the molecule has chiral centers
-        chiral_cc = self._get_chiral_centers(mol)
-        if atom_idx not in chiral_cc:
-            chirality = 0
-        else:
-            # 1 --> 'R', 2 --> 'S'
-            chirality = 1 if chiral_cc[atom_idx] == 'R' else 2
+        # Get the element
         element = Element.from_Z(obatom.GetAtomicNum()).symbol
-        return {"element": element,
-                "atomic_num": obatom.GetAtomicNum(),
-                "chirality": chirality,
-                "formal_charge": obatom.GetFormalCharge(),
-                "ring_sizes": [i for i in range(3, 9) if
-                               obatom.IsInRingSize(i)],  # TODO (wardlt): Misses atoms in two rings of the same size
-                "hybridization": 6 if element == 'H' else obatom.GetHyb(),
-                "acceptor": obatom.IsHbondAcceptor(),
-                "donor": obatom.IsHbondDonorH() if atom.type == 'H' else obatom.IsHbondDonor(),
-                "aromatic": obatom.IsAromatic(),
-                "coordid": atom.coordidx}
+
+        # Get the fast-to-compute properties
+        output = {"element": element,
+                  "atomic_num": obatom.GetAtomicNum(),
+                  "formal_charge": obatom.GetFormalCharge(),
+                  "hybridization": 6 if element == 'H' else obatom.GetHyb(),
+                  "acceptor": obatom.IsHbondAcceptor(),
+                  "donor": obatom.IsHbondDonorH() if atom.type == 'H' else obatom.IsHbondDonor(),
+                  "aromatic": obatom.IsAromatic(),
+                  "coordid": atom.coordidx}
+
+        # Get the chirality, if desired
+        if 'chirality' in self.atom_features:
+            # Determine whether the molecule has chiral centers
+            chiral_cc = self._get_chiral_centers(mol)
+            if atom_idx not in chiral_cc:
+                output['chirality'] = 0
+            else:
+                # 1 --> 'R', 2 --> 'S'
+                output['chirality'] = 1 if chiral_cc[atom_idx] == 'R' else 2
+
+        # Find the rings, if desired
+        if 'ring_sizes' in self.atom_features:
+            rings = mol.OBMol.GetSSSR()  # OpenBabel caches ring computation internally, no need to cache ourselves
+            output['ring_sizes'] = [r.Size() for r in rings if r.IsInRing(atom.idx)]
+
+        return output
 
     def create_bond_feature(self, mol, bid, eid):
         """
