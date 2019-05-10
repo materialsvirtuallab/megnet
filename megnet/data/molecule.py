@@ -7,7 +7,7 @@ https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU
 import itertools
 import re
 
-from pymatgen import Molecule
+from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
 from megnet.data.qm9 import ring_to_vector
@@ -68,7 +68,7 @@ class MolecularGraph(StructureGraph):
         if atom_features is None:
             atom_features = ATOM_FEATURES
         if distance_converter is None:
-            distance_converter = GaussianDistance()
+            distance_converter = GaussianDistance(np.linspace(0, 4, 20), 0.5)
 
         # Check if all feature names are valid
         if any(i not in ATOM_FEATURES for i in atom_features):
@@ -219,7 +219,7 @@ class MolecularGraph(StructureGraph):
         else:
             # 1 --> 'R', 2 --> 'S'
             chirality = 1 if chiral_cc[atom_idx] == 'R' else 2
-        element = re.findall(r'\D+', atom.type)[0]
+        element = Element.from_Z(obatom.GetAtomicNum()).symbol
         return {"element": element,
                 "atomic_num": obatom.GetAtomicNum(),
                 "chirality": chirality,
