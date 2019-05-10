@@ -1,11 +1,10 @@
 """
-Create the graph from molecules. This implementation is in alpha version.
-The original MEGNet paper uses features directly taken from Faber et al. at
-https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU
-
+Tools for creating graph inputs from molecule data
 """
-import itertools
+
 import re
+import itertools
+
 
 from typing import List
 from pymatgen import Molecule, Element
@@ -32,7 +31,7 @@ ATOM_FEATURES = ['atomic_num', 'chirality', 'formal_charge', 'ring_sizes',
                  'hybridization', 'donor', 'acceptor', 'aromatic']
 
 # List of all possible bond features
-BOND_FEATURES = ['a_idx', 'b_idx', 'bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
+BOND_FEATURES = ['bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
 
 
 class SimpleMolGraph(StructureGraph):
@@ -84,15 +83,12 @@ class MolecularGraph(StructureGraph):
 
     def convert(self, mol, state_attributes=None, full_pair_matrix=True):
         """
+        Compute the representation for a molecule
 
-        # TODO (wardlt): Are we using Google-style docstrings (project uses several strategies)
         Args：
-            mol: (object) Molecule to generate features for
-            state_attributes: (list) state attributes
-            full_pair_matrix:
-                Whether to get to full matrix instead of half
-                # TODO (wardlt): Is this actually whether we generate info for all atom pairs, not just bonded ones
-                Default true
+            mol (Molecule): Molecule to generate features for
+            state_attributes (list): State attributes
+            full_pair_matrix (bool): Whether to generate info for all atom pairs, not just bonded ones
         Returns:
             (dict): Dictionary of features
         """
@@ -119,14 +115,13 @@ class MolecularGraph(StructureGraph):
                 i.update({'graph_distance': graph_dist[i['a_idx'], i['b_idx']]})
 
         # Generate the state attributes (that describe the whole network)
+        # TODO (wardlt): Use the average atomic weight and the bonds per atom
         state_attributes = state_attributes or [[0, 0]]
 
         # Get the atom features in the order they are requested by the user as a 2D array
-        # TODO (wardlt): Consider breaking this off into its own class method
         atoms = []
         for atom in atom_features:
-            atom_temp = self._create_atom_feature_vector(atom)
-            atoms.append(atom_temp)
+            atoms.append(self._create_atom_feature_vector(atom))
 
         # Get the bond features in the order request by the user
         bonds = []
@@ -138,19 +133,7 @@ class MolecularGraph(StructureGraph):
             index2_temp.append(bond.pop('b_idx'))
 
             # Get the desired bond features
-            bond_temp = []
-            for i in self.bond_features:
-                # Some features require conversion (e.g., binarization)
-                if i in bond:
-                    if i == "bond_type":
-                        bond_temp.extend(label_binarize([bond[i]], range(5))[0].tolist())
-                    elif i == "same_ring":
-                        bond_temp.append(int(bond[i]))
-                    elif i == "spatial_distance":
-                        bond_temp.extend(self.distance_converter.convert([bond[i]])[0].tolist())
-                    else:
-                        bond_temp.append(bond[i])
-            bonds.append(bond_temp)
+            bonds.append(self._create_pair_feature_vector(bond))
 
         # Given the bonds (i,j), make it so (i,j) == (j, i)
         index1 = index1_temp + index2_temp
@@ -167,8 +150,37 @@ class MolecularGraph(StructureGraph):
                 'bond': bonds,
                 'state': state_attributes,
                 'index1': index1,
-                'index2': index2
-                }
+                'index2': index2}
+
+    def _create_pair_feature_vector(self, bond: dict) -> List[float]:
+        """Generate the feature vector from the bond feature dictionary
+
+        Handles the binarization of categorical variables, and performing the distance conversion
+
+        Args:
+            bond (dict): Features for a certain pair of atoms
+        Returns:
+            ([float]) Values converted to a vector
+            """
+        bond_temp = []
+        for i in self.bond_features:
+            # Some features require conversion (e.g., binarization)
+            if i in bond:
+                if i == "bond_type":
+                    bond_temp.extend(label_binarize([bond[i]], range(5))[0].tolist())
+                elif i == "same_ring":
+                    bond_temp.append(int(bond[i]))
+                elif i == "spatial_distance":
+                    expanded = self.distance_converter.convert([bond[i]])[0]
+                    if isinstance(expanded, np.ndarray):
+                        # If we use a distance expansion
+                        bond_temp.extend(expanded.tolist())
+                    else:
+                        # If not
+                        bond_temp.append(expanded)
+                else:
+                    bond_temp.append(bond[i])
+        return bond_temp
 
     def _create_atom_feature_vector(self, atom: dict) -> List[int]:
         """Generate the feature vector from the atomic feature dictionary
@@ -182,7 +194,7 @@ class MolecularGraph(StructureGraph):
         """
         atom_temp = []
         for i in self.atom_features:
-            # Some features require conversion (e.g., binarization of a categorical variable)
+            # TODO (wardlt): One-hot encoding for the elements
             if i == 'chirality':
                 atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
             elif i in ['aromatic', 'donor', 'acceptor']:
@@ -277,6 +289,7 @@ class MolecularGraph(StructureGraph):
     def get_pair_feature(self, mol, bid, eid, full_pair_matrix):
         """
         Get the features for a certain bond
+
         Args:
             mol (pybel.Molecule): Molecule being featurized
             bid (int): Index of atom beginning of the bond
@@ -318,11 +331,14 @@ class MolecularGraph(StructureGraph):
     def _get_chiral_centers(self, mol):
         """
         Use RDKit to find the chiral centers with CIP(R/S) label
-        This provides the absolute stereochemistry
-        The chiralabel obtaiend from pybabel and rdkit.mol.getchiraltag
-        is relative positions of the bonds as provided
-        Return: List of chiral centers with CIP label
-        eg. [(1,'S'), (3, 'R')]
+
+        This provides the absolute stereochemistry.  The chiral label obtained
+        from pybabel and rdkit.mol.getchiraltag is relative positions of the bonds as provided
+
+        Args:
+            mol (Molecule): Molecule to asses
+        Return:
+            (dict): Keys are the atom index and values are the CIP label
         """
         mol_rdk = self._get_rdk_mol(mol, 'smiles')
         chiral_cc = Chem.FindMolChiralCenters(mol_rdk)
@@ -358,6 +374,7 @@ def dijkstra_distance(bonds):
                     # print(s, k, visited)
                     graph_dist[i, k] = min(graph_dist[i, k],
                                            graph_dist[i, s] + 1)
+                    graph_dist[k, i] = graph_dist[i, k]
     return graph_dist
 
 

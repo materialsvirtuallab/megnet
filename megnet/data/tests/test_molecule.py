@@ -2,7 +2,9 @@ import tensorflow as tf
 import unittest
 import os
 import json
+
 from megnet.data.molecule import SimpleMolGraph
+from megnet.data.graph import DummyConvertor
 from pymatgen import Molecule
 import numpy as np
 
@@ -159,6 +161,62 @@ class QM9Test(unittest.TestCase):
         self.mg.atom_features = ['donor', 'acceptor', 'aromatic']
         vec = self.mg._create_atom_feature_vector(feat)
         self.assertEqual([0, 0, 1], vec)
+
+    def test_bond_features(self):
+        """Detailed tests for bond features"""
+
+        # Test C-H bonds on the methane molecule
+        feat = self.mg.get_pair_feature(self.mol, 0, 1, True)
+        self.assertEqual(0, feat['a_idx'])
+        self.assertEqual(1, feat['b_idx'])
+        self.assertEqual(1, feat['bond_type'])
+        self.assertEqual(False, feat['same_ring'])
+        self.assertAlmostEqual(1.0921, feat['spatial_distance'], places=3)
+
+        feat = self.mg.get_pair_feature(self.mol, 1, 0, True)
+        self.assertEqual(1, feat['a_idx'])
+        self.assertEqual(0, feat['b_idx'])
+        self.assertEqual(1, feat['bond_type'])
+        self.assertEqual(False, feat['same_ring'])
+        self.assertAlmostEqual(1.0921, feat['spatial_distance'], places=3)
+
+        # Test atoms that are not bonded
+        feat = self.mg.get_pair_feature(self.mol, 0, 2, True)
+        self.assertEqual(0, feat['a_idx'])
+        self.assertEqual(2, feat['b_idx'])
+        self.assertEqual(0, feat['bond_type'])
+        self.assertEqual(False, feat['same_ring'])
+        self.assertAlmostEqual(1.7835, feat['spatial_distance'], places=3)
+
+        feat = self.mg.get_pair_feature(self.mol, 0, 2, False)
+        self.assertIsNone(feat)
+
+        # Test an aromatic bond
+        benzene = pybel.readstring('smiles', 'C1=CC=CC=C1')
+        feat = self.mg.get_pair_feature(benzene, 0, 1, True)
+        self.assertEqual(4, feat['bond_type'])
+        self.assertEqual(True, feat['same_ring'])
+
+    def test_bond_feature_vec(self):
+        # Test the full list
+        feat = self.mg.get_pair_feature(self.mol, 0, 1, True)
+        self.assertEqual(26, len(self.mg._create_pair_feature_vector(feat)))
+
+        # Test the bond type
+        self.mg.bond_features = ['bond_type']
+        self.assertEqual([0, 1, 0, 0, 0], self.mg._create_pair_feature_vector(feat))
+
+        # Test the ring encoding
+        self.mg.bond_features = ['same_ring']
+        self.assertEqual([0], self.mg._create_pair_feature_vector(feat))
+
+        # Test the spatial distance
+        self.mg.bond_features = ['spatial_distance']
+        self.assertEqual(20, len(self.mg._create_pair_feature_vector(feat)))
+
+        # Test the spatial distance without the expansion
+        self.mg.distance_converter = DummyConvertor()
+        self.assertAlmostEqual(1.0921, self.mg._create_pair_feature_vector(feat)[0], places=3)
 
 
 if __name__ == "__main__":
