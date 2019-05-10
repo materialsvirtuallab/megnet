@@ -44,7 +44,8 @@ class QM9Test(unittest.TestCase):
         mol_graph = mg.convert(self.mol)
         self.assertEqual(len(mol_graph['index1']), 20)  # 20 bonds in total, including double counting
         self.assertEqual(len(mol_graph['atom']), 5)  # 5 atoms
-        self.assertListEqual(mol_graph['state'][0], [0, 0])  # dummy state [0, 0]
+        self.assertAlmostEqual(mol_graph['state'][0][0], 3.2, places=1)
+        self.assertAlmostEqual(mol_graph['state'][0][1], 0.8, places=1)
         mol_graph = mg.convert(self.mol, state_attributes=[[1, 2]])
         self.assertListEqual(mol_graph['state'][0], [1, 2])
 

@@ -111,13 +111,13 @@ class MolecularGraph(StructureGraph):
         self.bond_features = bond_features
         self.distance_converter = distance_converter
 
-    def convert(self, mol, state_attributes=None, full_pair_matrix=True):
+    def convert(self, mol: pybel.Molecule, state_attributes=None, full_pair_matrix=True):
         """
         Compute the representation for a molecule
 
         Args：
-            mol (Molecule): Molecule to generate features for
-            state_attributes (list): State attributes
+            mol (pybel.Molecule): Molecule to generate features for
+            state_attributes (list): State attributes. Uses average mass and number of bonds per atom as default
             full_pair_matrix (bool): Whether to generate info for all atom pairs, not just bonded ones
         Returns:
             (dict): Dictionary of features
@@ -145,8 +145,10 @@ class MolecularGraph(StructureGraph):
                 i.update({'graph_distance': graph_dist[i['a_idx'], i['b_idx']]})
 
         # Generate the state attributes (that describe the whole network)
-        # TODO (wardlt): Use the average atomic weight and the bonds per atom
-        state_attributes = state_attributes or [[0, 0]]
+        state_attributes = state_attributes or [
+            [mol.molwt / num_atoms,
+             len([i for i in atom_pairs if i['bond_type'] > 0]) / num_atoms]
+        ]
 
         # Get the atom features in the order they are requested by the user as a 2D array
         atoms = []
