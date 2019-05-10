@@ -146,7 +146,7 @@ structure = mpr.get_structure_by_material_id('mp-1143')
 predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
 ```
-A full example is in `notebooks/crystal_example.ipynb`. 
+A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb). 
 
 For molecular models, we have an example in 
 [notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb). 
