@@ -26,12 +26,15 @@ except:
 
 __date__ = '12/01/2018'
 
-# List of all possible atomic features
-ATOM_FEATURES = ['atomic_num', 'chirality', 'formal_charge', 'ring_sizes',
-                 'hybridization', 'donor', 'acceptor', 'aromatic']
+# List of features to use by default for each atom
+_ATOM_FEATURES = ['element', 'chirality', 'formal_charge', 'ring_sizes',
+                  'hybridization', 'donor', 'acceptor', 'aromatic']
 
-# List of all possible bond features
-BOND_FEATURES = ['bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
+# List of features to use by default for each bond
+_BOND_FEATURES = ['bond_type', 'same_ring', 'spatial_distance', 'graph_distance']
+
+# List of elements in library to use by default
+_ELEMENTS = ['H', 'C', 'N', 'O', 'F']
 
 
 class SimpleMolGraph(StructureGraph):
@@ -57,17 +60,21 @@ class MolecularGraph(StructureGraph):
     Computes many different features for the atoms and bonds in a molecule, and prepares them
     in a form compatible with MEGNet models. The :meth:`convert` method takes a OpenBabel molecule
     and, besides computing features, also encodes them in a form compatible with machine learning.
-    Namely, the `convert` method one-hot encodes categorical variables and concatenates the atomic features
+    Namely, the `convert` method one-hot encodes categorical variables and concatenates
+    the atomic features
 
     ## Atomic Features
 
     This class can compute the following features for each atom
 
     - `atomic_num`: The atomic number
+    - `element`: (categorical) Element identity. (Unlike `atomic_num`, element is one-hot-encoded)
     - `chirality`: (categorical) R, S, or not a Chiral center (one-hot encoded).
     - `formal_charge`: Formal charge of the atom
-    - `ring_sizes`: For rings with 9 or fewer atoms, how many unique rings of each size include this atom
-    - `hybridization`: (categorical) Hybridization of atom: sp, sp2, sp3, sq. planer, trig, octahedral, or hydrogen
+    - `ring_sizes`: For rings with 9 or fewer atoms, how many unique rings
+    of each size include this atom
+    - `hybridization`: (categorical) Hybridization of atom: sp, sp2, sp3, sq.
+    planer, trig, octahedral, or hydrogen
     - `donor`: (boolean) Whether the atom is a hydrogen bond donor
     - `acceptor`: (boolean) Whether the atom is a hydrogen bond acceptor
     - `aromatic`: (boolean) Whether the atom is part of an aromatic system
@@ -85,30 +92,39 @@ class MolecularGraph(StructureGraph):
     The class may use the distance
 
     """
-    def __init__(self, atom_features=None, bond_features=None, distance_converter=None):
+    def __init__(self, atom_features=None, bond_features=None, distance_converter=None,
+                 known_elements=None):
         """
         Args:
             atom_features ([str]): List of atom features to compute
             bond_features ([str]): List of bond features to compute
+            distance_converter (DistanceCovertor): Tool used to expand distances
+                from a single scalar vector to an array of values
+            known_elements ([str]): List of elements expected to be in dataset. Used only if the
+                feature `element` is used to describe each atom
         """
+
         # TODO (wardlt): I do not think NN strategy is not actually used by this class. Refactor StructureGraph?
         super().__init__('AllAtomPairs')
         if bond_features is None:
-            bond_features = BOND_FEATURES
+            bond_features = _BOND_FEATURES
         if atom_features is None:
-            atom_features = ATOM_FEATURES
+            atom_features = _ATOM_FEATURES
         if distance_converter is None:
             distance_converter = GaussianDistance(np.linspace(0, 4, 20), 0.5)
+        if known_elements is None:
+            known_elements = _ELEMENTS
 
         # Check if all feature names are valid
-        if any(i not in ATOM_FEATURES for i in atom_features):
-            bad_features = set(atom_features).difference(ATOM_FEATURES)
+        if any(i not in _ATOM_FEATURES for i in atom_features):
+            bad_features = set(atom_features).difference(_ATOM_FEATURES)
             raise ValueError('Unrecognized atom features: {}'.format(', '.join(bad_features)))
         self.atom_features = atom_features
-        if any(i not in BOND_FEATURES for i in bond_features):
-            bad_features = set(bond_features).difference(BOND_FEATURES)
+        if any(i not in _BOND_FEATURES for i in bond_features):
+            bad_features = set(bond_features).difference(_BOND_FEATURES)
             raise ValueError('Unrecognized bond features: {}'.format(', '.join(bad_features)))
         self.bond_features = bond_features
+        self.known_elements = known_elements
         self.distance_converter = distance_converter
 
     def convert(self, mol: pybel.Molecule, state_attributes=None, full_pair_matrix=True):
@@ -226,9 +242,10 @@ class MolecularGraph(StructureGraph):
         """
         atom_temp = []
         for i in self.atom_features:
-            # TODO (wardlt): One-hot encoding for the elements
             if i == 'chirality':
                 atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
+            elif i == 'element':
+                atom_temp.extend(label_binarize([atom[i]], self.known_elements)[0].tolist())
             elif i in ['aromatic', 'donor', 'acceptor']:
                 atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
             elif i == 'hybridization':

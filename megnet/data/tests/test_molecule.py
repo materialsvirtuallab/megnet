@@ -42,7 +42,7 @@ class QM9Test(unittest.TestCase):
     def test_featurizer(self):
         mg = MolecularGraph()
         mol_graph = mg.convert(self.mol)
-        self.assertEqual(len(mol_graph['index1']), 20)  # 20 bonds in total, including double counting
+        self.assertEqual(len(mol_graph['index1']), 20)  # 20 bonds, including double counting
         self.assertEqual(len(mol_graph['atom']), 5)  # 5 atoms
         self.assertAlmostEqual(mol_graph['state'][0][0], 3.2, places=1)
         self.assertAlmostEqual(mol_graph['state'][0][1], 0.8, places=1)
@@ -80,7 +80,6 @@ class QM9Test(unittest.TestCase):
         self.assertEqual(feat['formal_charge'], 0)
         self.assertEqual(feat['ring_sizes'], [])
         self.assertEqual(feat['hybridization'], 3)
-
 
         # Test chirality using L/D-alanine
         la = pybel.readstring('smiles', 'N[C@@H](C)C(=O)O')
@@ -129,9 +128,14 @@ class QM9Test(unittest.TestCase):
         naph = pybel.readstring('smiles', 'C1=CC=C2C=CC=CC2=C1')
         feat = self.mg.get_atom_feature(naph, naph.atoms[3])
 
-        # Run with all features
+        # Run with the default features
         vec = self.mg._create_atom_feature_vector(feat)
-        self.assertEqual(23, len(vec))
+        self.assertEqual(27, len(vec))
+
+        # Check the on-hot-encoding for elements
+        self.mg.atom_features = ['element']
+        vec = self.mg._create_atom_feature_vector(feat)
+        self.assertEqual([0, 1, 0, 0, 0], vec)
 
         # Check with only atomic number and formal charge
         self.mg.atom_features = ['atomic_num', 'formal_charge']
