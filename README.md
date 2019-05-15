@@ -9,6 +9,7 @@
 * [Implementation details](#implementation-details)
 * [Datasets](#datasets)
 * [Computing requirements](#computing-requirements)
+* [Known limitations](#limitations)
 * [References](#references)
 
 <a name="introduction"></a>
@@ -360,6 +361,16 @@ crystals/molecules. It is recommended that you do the same.
 Prediction: Once trained, prediction using MEGNet models are fairly cheap. 
 For example, the http://megnet.crystals.ai web app runs on a single hobby dyno
 on Heroku and provides the prediction for any crystal within seconds.
+
+<a name="limitations"></a>
+# Known limitations
+
+- `isolated atoms` error. This error occurs when using the given cutoff in the model (4A for
+2018 models and 5A for 2019 models), the crystal structure contains isolated atoms, i.e., 
+no neighboring atoms are within the distance of `cutoff`. Most of the time, we can just 
+discard the structure, since we found that those structures tend to have a high energy above 
+hull (less stable). If you think this error is an essential issue for a particular problem, 
+please feel free to email us and we will consider releasing a new model with increased cutoff. 
 
 <a name="references"></a>
 # References
