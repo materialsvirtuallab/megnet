@@ -11,7 +11,7 @@ from megnet.data.crystal import CrystalGraph
 from megnet.utils.preprocessing import StandardScaler
 import numpy as np
 import os
-
+from warnings import warn
 from monty.serialization import dumpfn, loadfn
 
 
@@ -51,6 +51,7 @@ class GraphModel:
               batch_size=128,
               verbose=1,
               callbacks=None,
+              scrub_failed_structures=False,
               prev_model=None,
               **kwargs):
         """
@@ -63,12 +64,15 @@ class GraphModel:
             batch_size: (int) training batch size
             verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
             callbacks: (list) megnet or keras callback functions for training
+            scrub_failed_structures: (bool) whether to scrub structures with failed graph computation
             prev_model: (str) file name for previously saved model
             **kwargs:
         """
-        train_graphs = [self.graph_convertor.convert(i) for i in train_structures]
+        train_graphs, train_targets = self.get_all_graphs_targets(train_structures, train_targets,
+                                                                  scrub_failed_structures=scrub_failed_structures)
         if validation_structures is not None:
-            val_graphs = [self.graph_convertor.convert(i) for i in validation_structures]
+            val_graphs, validation_targets = self.get_all_graphs_targets(
+                validation_structures, validation_targets, scrub_failed_structures=scrub_failed_structures)
         else:
             val_graphs = None
 
@@ -141,6 +145,37 @@ class GraphModel:
         self.fit_generator(train_generator, steps_per_epoch=steps_per_train,
                            validation_data=val_generator, validation_steps=steps_per_val,
                            epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
+
+    def get_all_graphs_targets(self, structures, targets, scrub_failed_structures=False):
+        """
+        Compute the graphs from structures and spit out (graphs, targets) with options to
+        automatically remove structures with failed graph computations
+
+        Args:
+            structures: (list) pymatgen structure list
+            targets: (list) target property list
+            scrub_failed_structures: (bool) whether to scrub those failed structures
+
+        Returns:
+            graphs, targets
+
+        """
+        graphs_valid = []
+        targets_valid = []
+
+        for i, (s, t) in enumerate(zip(structures, targets)):
+            try:
+                graph = self.graph_convertor.convert(s)
+                graphs_valid.append(graph)
+                targets_valid.append(t)
+            except Exception as e:
+                if scrub_failed_structures:
+                    warn("structure with index %d failed the graph computations" % i,
+                         UserWarning)
+                    continue
+                else:
+                    raise RuntimeError(str(e))
+        return graphs_valid, targets_valid
 
     def predict_structure(self, structure):
         """

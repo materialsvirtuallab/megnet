@@ -10,6 +10,7 @@ from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
 from keras.utils import Sequence
+import warnings
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -59,7 +60,7 @@ class TestModel(unittest.TestCase):
 
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
-        structures = [s] * 4
+        structures = [s.copy(), s.copy(), s.copy(), s.copy()]
         targets = [0.1, 0.1, 0.1, 0.1]
         self.model.train(structures,
                          targets,
@@ -69,6 +70,26 @@ class TestModel(unittest.TestCase):
                          epochs=1,
                          verbose=2)
         preds = self.model.predict_structure(structures[0])
+
+        # isolated atom error
+        for s in structures[3:]:
+            s.apply_strain(3)
+        with self.assertRaises(RuntimeError) as context:
+            self.model.train(structures,
+                             targets,
+                             epochs=1,
+                             verbose=2,
+                             scrub_failed_structures=False)
+            self.assertTrue('Isolated atoms found' in str(context.exception))
+
+        with self.assertRaises(Exception) as context:
+            self.model.train(structures,
+                             targets,
+                             epochs=1,
+                             verbose=2,
+                             scrub_failed_structures=True)
+            self.assertTrue('structure with index' in str(context.exception))
+
         if os.path.isdir('callback'):
             shutil.rmtree('callback')
         self.assertTrue(np.size(preds) == 1)
