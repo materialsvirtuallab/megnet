@@ -334,6 +334,17 @@ The molecule data set used in this work is the QM9 data set 30 processed by
 Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation
 results on 130,462 small organic molecules containing up to 9 heavy atoms.
 
+# Computational requirements
+
+Training: It should be noted that training MEGNet models, like other deep 
+learning models, is fairly computationally intensive with large datasets. In 
+our work, we use dedicated GPU resources to train MEGNet models with 100,000
+crystals/molecules.
+
+Prediction: Once trained, prediction using MEGNet models are fairly cheap. 
+For example, the http://megnet.crystals.ai web app runs on a single hobby dyno
+on Heroku and provides the prediction for any crystal within seconds.
+
 # References
 
 1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; 
