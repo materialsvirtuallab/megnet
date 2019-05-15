@@ -1,3 +1,7 @@
+# v0.3.2
+* Implement the option for a scaler in models, which is used in efermi models at
+  the moment but also can be helpful for extensive quantities.
+
 # v0.3.1
 * Minor fixes to setup.py and licenses.
 
