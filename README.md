@@ -1,6 +1,17 @@
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=svg)](https://circleci.com/gh/materialsvirtuallab/megnet)
 [![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
 
+# Table of Contents
+* [Introduction](#introduction)
+* [MEGNet Framework](#megnet-framework)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Implementation details](#implementation-details)
+* [Datasets](#datasets)
+* [Computing requirements](#computing-requirements)
+* [References](#references)
+
+<a name="introduction"></a>
 # Introduction
 
 This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) 
@@ -13,7 +24,8 @@ suggestions are also welcome (please post on the Github Issues page.)
 A web app using our pre-trained MEGNet models for property prediction in 
 crystals is available at http://megnet.crystals.ai.
 
-# MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
+<a name="megnet-framework"></a>
+# MEGNet framework
 
 The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph 
 networks[1] for universal machine learning in materials science. We have 
@@ -39,6 +51,7 @@ output to a scalar/vector property.
 ![GraphModel architecture](resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
+<a name="installation"></a>
 # Installation
 
 Megnet can be installed via pip for the latest stable version:
@@ -53,6 +66,7 @@ For the latest dev version, please clone this repo and install using:
 python setup.py develop
 ```
 
+<a name="usage"></a>
 # Usage
 
 Our current implementation supports a variety of use cases for users with 
@@ -263,7 +277,7 @@ model.compile(loss='mse', optimizer='adam')
 With less than 20 lines of code, you have built a graph network model that is 
 ready for materials property prediction!
 
-
+<a name="implementation-details"></a>
 # Implementation details
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a
@@ -317,6 +331,7 @@ In summary the inputs for the model is **V** (1\*N'\*Nv), **E** (1\*M'\*Nm),
 **u** (1\*Ng\*Nu), `index1` (1\*M'), `index2` (1\*M'), `atom_ind` (1\*N'), and
 `bond_ind` (1\*M'). For Z-only atomic features, **V** is a (1\*N') vector.
 
+<a name="datasets"></a>
 # Data sets
 
 To aid others in reproducing (and improving on) our results, we have provided 
@@ -334,17 +349,19 @@ The molecule data set used in this work is the QM9 data set 30 processed by
 Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation
 results on 130,462 small organic molecules containing up to 9 heavy atoms.
 
-# Computational requirements
+<a name="computing-requirements"></a>
+# Computing requirements
 
 Training: It should be noted that training MEGNet models, like other deep 
 learning models, is fairly computationally intensive with large datasets. In 
 our work, we use dedicated GPU resources to train MEGNet models with 100,000
-crystals/molecules.
+crystals/molecules. It is recommended that you do the same.
 
 Prediction: Once trained, prediction using MEGNet models are fairly cheap. 
 For example, the http://megnet.crystals.ai web app runs on a single hobby dyno
 on Heroku and provides the prediction for any crystal within seconds.
 
+<a name="references"></a>
 # References
 
 1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; 
