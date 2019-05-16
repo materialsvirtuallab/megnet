@@ -103,8 +103,10 @@ class TestModel(unittest.TestCase):
     def test_save_and_load(self):
         weights1 = self.model.get_weights()
         with ScratchDir('.'):
+            self.model.metadata = {"units": "eV"} # This is just a random
             self.model.save_model('test.hdf5')
             model2 = GraphModel.from_file('test.hdf5')
+            self.assertEqual(model2.metadata, {"units": "eV"})
         weights2 = model2.get_weights()
         self.assertTrue(np.allclose(weights1[0], weights2[0]))
 

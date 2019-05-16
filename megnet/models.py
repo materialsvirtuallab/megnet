@@ -21,13 +21,19 @@ pjoin = os.path.join
 
 class GraphModel:
     """
-    Composition of keras model and convertor class for transfering structure object to
-    input tensors. We add methods to train the model from (structures, targets) pairs
+    Composition of keras model and convertor class for transfering structure
+    object to input tensors. We add methods to train the model from
+    (structures, targets) pairs
 
     Args:
         model: (keras model)
-        graph_convertor: (object) a object that turns a structure to a graph, check `megnet.data.crystal`
-        target_scaler: (object) a scaler object for converting targets, check `megnet.utils.preprocessing`
+        graph_convertor: (object) a object that turns a structure to a graph,
+            check `megnet.data.crystal`
+        target_scaler: (object) a scaler object for converting targets, check
+            `megnet.utils.preprocessing`
+        metadata: (dict) An optional dict of metadata associated with the model.
+            Recommended to incorporate some basic information such as units,
+            MAE performance, etc.
 
     """
 
@@ -35,10 +41,12 @@ class GraphModel:
                  model,
                  graph_convertor,
                  target_scaler=StandardScaler(mean=0, std=1, is_intensive=True),
+                 metadata=None,
                  **kwargs):
         self.model = model
         self.graph_convertor = graph_convertor
         self.target_scaler = target_scaler
+        self.metadata = metadata or {}
 
     def __getattr__(self, p):
         return getattr(self.model, p)
@@ -264,6 +272,7 @@ class GraphModel:
             {
                 'graph_convertor': self.graph_convertor,
                 'target_scaler': self.target_scaler,
+                'metadata': self.metadata
             },
             filename + '.json'
         )
