@@ -13,6 +13,7 @@ import numpy as np
 import os
 from warnings import warn
 from monty.serialization import dumpfn, loadfn
+import keras.backend as K
 
 
 pjoin = os.path.join
@@ -140,11 +141,47 @@ class GraphModel:
             val_generator = None
             steps_per_val = None
         train_inputs = self.graph_convertor.get_flat_data(train_graphs, train_targets)
+        # check dimension match
+        self.check_dimension(train_graphs[0])
         train_generator = self._create_generator(*train_inputs, batch_size=batch_size)
         steps_per_train = int(np.ceil(len(train_graphs) / batch_size))
         self.fit_generator(train_generator, steps_per_epoch=steps_per_train,
                            validation_data=val_generator, validation_steps=steps_per_val,
                            epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
+
+    def check_dimension(self, graph):
+        """
+        Check the model dimension against the graph convertor dimension
+        Args:
+            graph: structure graph
+
+        Returns:
+
+        """
+        test_inp = self.graph_convertor.graph_to_input(graph)
+        input_shapes = [i.shape for i in test_inp]
+        model_input_shapes = [K.int_shape(i.input) for i in self.model.layers if i.name.startswith('input')]
+
+        def _check_match(real_shape, tensor_shape):
+            if len(real_shape) != len(tensor_shape):
+                return False
+            matched = True
+            for i, j in zip(real_shape, tensor_shape):
+                if j is None:
+                    continue
+                else:
+                    if i == j:
+                        continue
+                    else:
+                        matched = False
+            return matched
+
+        for i, j, k in zip(['atom features', 'bond features', 'state features'],
+                           input_shapes[:3], model_input_shapes[:3]):
+            matched = _check_match(j, k)
+            if not matched:
+                raise ValueError("The data dimension for %s is %s and does not match model "
+                                 "required shape of %s" % (i, str(j), str(k)))
 
     def get_all_graphs_targets(self, structures, targets, scrub_failed_structures=False):
         """

@@ -10,7 +10,6 @@ from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
 from keras.utils import Sequence
-import warnings
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
@@ -108,6 +107,18 @@ class TestModel(unittest.TestCase):
             model2 = GraphModel.from_file('test.hdf5')
         weights2 = model2.get_weights()
         self.assertTrue(np.allclose(weights1[0], weights2[0]))
+
+    def test_check_dimension(self):
+        gc = CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 20), 0.5))
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        graph = gc.convert(s)
+        model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
+                            n1=4, n2=4, n3=4, npass=1, ntarget=1,
+                            graph_convertor=CrystalGraph(bond_convertor=gc),
+                            )
+        with self.assertRaises(Exception) as context:
+            model.check_dimension(graph)
+            self.assertTrue('The data dimension for bond' in str(context.exception))
 
     def test_crystal_model(self):
         callbacks = [ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',

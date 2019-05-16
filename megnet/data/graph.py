@@ -1,6 +1,5 @@
 from operator import itemgetter
 import numpy as np
-import threading
 from megnet.utils.general_utils import expand_1st
 from monty.json import MSONable
 from megnet.data import local_env
@@ -48,20 +47,20 @@ class StructureGraph(MSONable):
         if self.bond_convertor is None:
             self.bond_convertor = self._get_dummy_convertor()
 
-    def convert(self, structure, state_attributes=None):
+    def convert(self, structure):
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
         of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
-        distance
+        distance.
+        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
+        take default [[0, 0]]
 
         Args:
             structure: (pymatgen structure)
-            state_attributes: (list) state attributes
-        Returns:
             (dictionary)
         """
-        state_attributes = state_attributes or [[0, 0]]
+        state_attributes = getattr(structure, 'state', None) or [[0, 0]]
         index1 = []
         index2 = []
         bonds = []
@@ -83,8 +82,8 @@ class StructureGraph(MSONable):
                     'index2': index2
                     }
 
-    def __call__(self, structure, state_attributes=None):
-        return self.convert(structure, state_attributes)
+    def __call__(self, structure):
+        return self.convert(structure)
 
     def get_input(self, structure):
         """
