@@ -1,1 +1,9 @@
-{"graph_convertor": {"@module": "megnet.data.molecule", "@class": "SimpleMolGraph", "atom_convertor": {"@module": "megnet.data.graph", "@class": "DummyConvertor"}, "bond_convertor": {"@module": "megnet.data.graph", "@class": "GaussianDistance", "centers": {"@module": "numpy", "@class": "array", "dtype": "float64", "data": [0.0, 0.21052631578947367, 0.42105263157894735, 0.631578947368421, 0.8421052631578947, 1.0526315789473684, 1.263157894736842, 1.4736842105263157, 1.6842105263157894, 1.894736842105263, 2.1052631578947367, 2.3157894736842106, 2.526315789473684, 2.7368421052631575, 2.9473684210526314, 3.1578947368421053, 3.3684210526315788, 3.578947368421052, 3.789473684210526, 4.0]}, "width": 0.5}}}
+{"graph_convertor": {"@module": "megnet.data.molecule", "@class": "SimpleMolGraph", "atom_convertor": {"@module": "megnet.data.graph", "@class": "DummyConvertor"}, "bond_convertor": {"@module": "megnet.data.graph", "@class": "GaussianDistance", "centers": {"@module": "numpy", "@class": "array", "dtype": "float64", "data": [0.0, 0.21052631578947367, 0.42105263157894735, 0.631578947368421, 0.8421052631578947, 1.0526315789473684, 1.263157894736842, 1.4736842105263157, 1.6842105263157894, 1.894736842105263, 2.1052631578947367, 2.3157894736842106, 2.526315789473684, 2.7368421052631575, 2.9473684210526314, 3.1578947368421053, 3.3684210526315788, 3.578947368421052, 3.789473684210526, 4.0]}, "width": 0.5}},
+   "metadata": {"name": "Enthalpy at 298 K",
+               "unit": "eV",
+               "metric": "mae",
+               "metric value": 0.013,
+               "training dataset": "QM9",
+               "description": "This model was trained using graphs and enthalpy at 298 K (H) of QM9 data base downloaded on June 1, 2018. The total data size is 130462. The model was trained by a 0.8-0.1-0.1, train, validation and test data ratio"}
+
+ }
