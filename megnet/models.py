@@ -321,6 +321,10 @@ class MEGNetModel(GraphModel):
         n3: (int) number of hidden units in layer 3 in MEGNetLayer
         nvocal: (int) number of total element
         embedding_dim: (int) number of embedding dimension
+        nbvocal: (int) number of bond types if bond attributes are types
+        bond_embedding_dim: (int) number of bond embedding dimension
+        ngvocal: (int) number of global types if global attributes are types
+        global_embedding_dim: (int) number of global embedding dimension
         npass: (int) number of recurrent steps in Set2Set layer
         ntarget: (int) number of output targets
         act: (object) activation function
@@ -343,6 +347,10 @@ class MEGNetModel(GraphModel):
                  n3=16,
                  nvocal=95,
                  embedding_dim=16,
+                 nbvocal=None,
+                 bond_embedding_dim=None,
+                 ngvocal=None,
+                 global_embedding_dim=None,
                  npass=3,
                  ntarget=1,
                  act=softplus2,
@@ -353,15 +361,30 @@ class MEGNetModel(GraphModel):
                  graph_convertor=None,
                  optimizer_kwargs=None
                  ):
+
         int32 = 'int32'
+
         if nfeat_node is None:
             x1 = Input(shape=(None,), dtype=int32)  # only z as feature
             x1_ = Embedding(nvocal, embedding_dim)(x1)
         else:
             x1 = Input(shape=(None, nfeat_node))
             x1_ = x1
-        x2 = Input(shape=(None, nfeat_edge))
-        x3 = Input(shape=(None, nfeat_global))
+
+        if nfeat_edge is None:
+            x2 = Input(shape=(None,), dtype=int32)
+            x2_ = Embedding(nbvocal, bond_embedding_dim)(x2)
+        else:
+            x2 = Input(shape=(None, nfeat_edge))
+            x2_ = x2
+
+        if nfeat_edge is None:
+            x3 = Input(shape=(None,), dtype=int32) 
+            x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
+        else:
+            x3 = Input(shape=(None, nfeat_global))
+            x3_ = x3
+
         x4 = Input(shape=(None,), dtype=int32)
         x5 = Input(shape=(None,), dtype=int32)
         x6 = Input(shape=(None,), dtype=int32)
@@ -406,8 +429,8 @@ class MEGNetModel(GraphModel):
             return x1_temp, x2_temp, x3_temp
 
         x1_ = ff(x1_)
-        x2_ = ff(x2)
-        x3_ = ff(x3)
+        x2_ = ff(x2_)
+        x3_ = ff(x3_)
         for i in range(nblocks):
             if i == 0:
                 has_ff = False
