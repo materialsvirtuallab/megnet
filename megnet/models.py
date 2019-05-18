@@ -168,7 +168,8 @@ class GraphModel:
         """
         test_inp = self.graph_convertor.graph_to_input(graph)
         input_shapes = [i.shape for i in test_inp]
-        model_input_shapes = [K.int_shape(i.input) for i in self.model.layers if i.name.startswith('input')]
+        layer_name_map = {i.name: i for i in self.model.layers}
+        model_input_shapes = [K.int_shape(layer_name_map[i].input) for i in ['atom', 'bond', 'state']]
 
         def _check_match(real_shape, tensor_shape):
             if len(real_shape) != len(tensor_shape):
@@ -365,24 +366,24 @@ class MEGNetModel(GraphModel):
         int32 = 'int32'
 
         if nfeat_node is None:
-            x1 = Input(shape=(None,), dtype=int32)  # only z as feature
+            x1 = Input(shape=(None,), dtype=int32, name='atom')  # only z as feature
             x1_ = Embedding(nvocal, embedding_dim)(x1)
         else:
-            x1 = Input(shape=(None, nfeat_node))
+            x1 = Input(shape=(None, nfeat_node), name='atom')
             x1_ = x1
 
         if nfeat_edge is None:
-            x2 = Input(shape=(None,), dtype=int32)
+            x2 = Input(shape=(None,), dtype=int32, name='bond')
             x2_ = Embedding(nbvocal, bond_embedding_dim)(x2)
         else:
-            x2 = Input(shape=(None, nfeat_edge))
+            x2 = Input(shape=(None, nfeat_edge), name='bond')
             x2_ = x2
 
         if nfeat_global is None:
-            x3 = Input(shape=(None,), dtype=int32)
+            x3 = Input(shape=(None,), dtype=int32, name='state')
             x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
         else:
-            x3 = Input(shape=(None, nfeat_global))
+            x3 = Input(shape=(None, nfeat_global), name='state')
             x3_ = x3
 
         x4 = Input(shape=(None,), dtype=int32)
