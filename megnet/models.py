@@ -337,8 +337,8 @@ class MEGNetModel(GraphModel):
     """
 
     def __init__(self,
-                 nfeat_edge,
-                 nfeat_global,
+                 nfeat_edge=None,
+                 nfeat_global=None,
                  nfeat_node=None,
                  nblocks=3,
                  lr=1e-3,
@@ -378,8 +378,8 @@ class MEGNetModel(GraphModel):
             x2 = Input(shape=(None, nfeat_edge))
             x2_ = x2
 
-        if nfeat_edge is None:
-            x3 = Input(shape=(None,), dtype=int32) 
+        if nfeat_global is None:
+            x3 = Input(shape=(None,), dtype=int32)
             x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
         else:
             x3 = Input(shape=(None, nfeat_global))
