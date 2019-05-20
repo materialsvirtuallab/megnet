@@ -7,6 +7,8 @@ def to_list(x):
     """
     if isinstance(x, list) or isinstance(x, tuple):
         return x
+    elif isinstance(x, np.ndarray):
+        return to_list(x.tolist())
     else:
         return [x]
 
