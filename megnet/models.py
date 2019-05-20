@@ -8,7 +8,7 @@ from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
 from megnet.data.crystal import CrystalGraph
-from megnet.utils.preprocessing import StandardScaler
+from megnet.utils.preprocessing import DummyScaler
 import numpy as np
 import os
 from warnings import warn
@@ -40,7 +40,7 @@ class GraphModel:
     def __init__(self,
                  model,
                  graph_convertor,
-                 target_scaler=StandardScaler(mean=0, std=1, is_intensive=True),
+                 target_scaler=DummyScaler(),
                  metadata=None,
                  **kwargs):
         self.model = model
@@ -125,13 +125,11 @@ class GraphModel:
         callbacks.append(ReduceLRUponNan())
         train_nb_atoms = [len(i['atom']) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
-        train_targets = np.array(train_targets).ravel()
 
         if validation_graphs is not None:
             filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
-            validation_targets = np.array(validation_targets).ravel()
             val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
 
             val_generator = self._create_generator(*val_inputs,

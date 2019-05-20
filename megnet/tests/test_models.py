@@ -56,6 +56,10 @@ class TestModel(unittest.TestCase):
                                 n1=4, n2=4, n3=4, npass=1, ntarget=1,
                                 graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
                                 )
+        cls.model2 = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
+                                 n1=4, n2=4, n3=4, npass=1, ntarget=2,
+                                 graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
+                                 )
 
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
@@ -99,6 +103,13 @@ class TestModel(unittest.TestCase):
         self.model.train([s, s], [0.1, 0.1], epochs=1)
         pred = self.model.predict_structure(s)
         self.assertEqual(len(pred.ravel()), 1)
+
+    def test_two_targets(self):
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        # initialize the model
+        self.model2.train([s, s], [[0.1, 0.2], [0.1, 0.2]], epochs=1)
+        pred = self.model2.predict_structure(s)
+        self.assertEqual(len(pred.ravel()), 2)
 
     def test_save_and_load(self):
         weights1 = self.model.get_weights()

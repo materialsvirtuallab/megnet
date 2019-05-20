@@ -70,3 +70,19 @@ class StandardScaler(MSONable):
 
     def __repr__(self):
         return str(self)
+
+
+class DummyScaler(MSONable):
+    """
+    Dummy scaler does nothing
+    """
+    def transform(self, target, n=1):
+        return target
+
+    def inverse_transform(self, transformed_target, n=1):
+        return transformed_target
+
+    @classmethod
+    def from_training_data(cls, structures, targets, is_intensive=True):
+        return cls()
+

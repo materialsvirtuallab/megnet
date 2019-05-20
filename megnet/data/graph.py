@@ -1,6 +1,6 @@
 from operator import itemgetter
 import numpy as np
-from megnet.utils.general_utils import expand_1st
+from megnet.utils.general_utils import expand_1st, to_list
 from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
@@ -115,7 +115,7 @@ class StructureGraph(MSONable):
 
         Args:
             graphs: (list of dictionary) list of graph dictionary for each structure
-            targets: (list of float) correpsonding target values for each structure
+            targets: (list of float or list) correpsonding target values for each structure
 
         Returns:
             tuple(node_features, edges_features, global_values, index1, index2, targets)
@@ -125,7 +125,6 @@ class StructureGraph(MSONable):
         states = []
         index1 = []
         index2 = []
-
         final_targets = []
         for g, t in zip(graphs, targets):
             if isinstance(g, dict):
@@ -134,7 +133,7 @@ class StructureGraph(MSONable):
                 states.append(g['state'])
                 index1.append(g['index1'])
                 index2.append(g['index2'])
-                final_targets.append([t])
+                final_targets.append(to_list(t))
         return atoms, bonds, states, index1, index2, final_targets
 
     def _get_dummy_convertor(self):
