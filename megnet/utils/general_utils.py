@@ -1,14 +1,15 @@
 import numpy as np
+from collections import Iterable
 
 
 def to_list(x):
     """
     If x is not a list, convert it to list
     """
-    if isinstance(x, list) or isinstance(x, tuple):
-        return x
+    if isinstance(x, Iterable):
+        return list(x)
     elif isinstance(x, np.ndarray):
-        return to_list(x.tolist())
+        return x.tolist()
     else:
         return [x]
 

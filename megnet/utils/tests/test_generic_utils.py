@@ -12,8 +12,11 @@ class TestGeneralUtils(unittest.TestCase):
     def test_to_list(self):
         x = 1
         y = [1]
-        self.assertListEqual(to_list(x), [1])
-        self.assertListEqual(to_list(y), y)
+        z = tuple([1, 2, 3])
+        v = np.array([1, 2, 3])
+        for k in [x, y, z, v]:
+            self.assertTrue(type(to_list(k)), list)
+
 
 if __name__ == "__main__":
     unittest.main()
