@@ -1,3 +1,9 @@
+#v0.3.3
+* GraphModel and MEGNetModel now supports a metadata tag, which is included in
+  the JSON. (suggestion of @mhorton).
+* Misc bug fixes for edge cases as well as improved error messages for
+  mismatches in inputs.
+
 # v0.3.2
 * Implement the option for a scaler in models, which is used in efermi models at
   the moment but also can be helpful for extensive quantities.
