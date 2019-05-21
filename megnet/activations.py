@@ -12,4 +12,4 @@ def softplus2(x):
     Returns:
          (Tensor) output tensor
     """
-    return kb.exp.relu(x) + kb.exp.log(0.5*kb.exp(-kb.exp.abs(x)) + 0.5)
+    return kb.relu(x) + kb.log(0.5*kb.exp(-kb.abs(x)) + 0.5)
