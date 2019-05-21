@@ -10,11 +10,12 @@ from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
 from keras.utils import Sequence
+from pymatgen.util.testing import PymatgenTest
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
 
-class TestModel(unittest.TestCase):
+class TestModel(PymatgenTest):
     @classmethod
     def setUpClass(cls):
         cls.n_feature = 3
@@ -150,6 +151,13 @@ class TestModel(unittest.TestCase):
         self.assertGreater(len(model_files), 0)
         for i in model_files:
             os.remove(i)
+
+    def test_from_url(self):
+        with ScratchDir("."):
+            model = MEGNetModel.from_url("https://github.com/materialsvirtuallab/megnet/raw/master/mvl_models/mp-2019.4.1/formation_energy.hdf5")
+            li2o = self.get_structure("Li2O")
+            self.assertAlmostEqual(float(model.predict_structure(li2o)),
+                                   -2.0152957439422607)
 
 
 if __name__ == "__main__":

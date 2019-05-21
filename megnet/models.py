@@ -301,6 +301,13 @@ class GraphModel:
 
     @classmethod
     def from_url(cls, url):
+        """
+        Download and load a model from a URL. E.g.
+        https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5
+
+        :param url: (str) URL
+        :return: GraphModel
+        """
         import urllib.request
         fname = url.split("/")[-1]
         urllib.request.urlretrieve(url, fname)
