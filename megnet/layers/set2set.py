@@ -1,5 +1,5 @@
 from keras.engine import Layer
-import keras.backend as K
+import keras.backend as kb
 import tensorflow as tf
 from keras.layers import activations, initializers, regularizers, constraints
 from megnet.utils.layer_util import repeat_with_index
@@ -100,7 +100,7 @@ class Set2Set(Layer):
         if self.use_bias:
             if self.unit_forget_bias:
                 def bias_initializer(_, *args, **kwargs):
-                    return K.concatenate([self.bias_initializer(
+                    return kb.concatenate([self.bias_initializer(
                         (self.n_hidden,), *args, **kwargs),
                                           initializers.Ones()((self.n_hidden,),
                                                               *args, **kwargs),
@@ -126,7 +126,7 @@ class Set2Set(Layer):
         features, feature_graph_index = inputs
         feature_graph_index = tf.reshape(feature_graph_index, (-1,))
         _, _, count = tf.unique_with_counts(feature_graph_index)
-        m = K.dot(features, self.m_weight)
+        m = kb.dot(features, self.m_weight)
         if self.use_bias:
             m += self.m_bias
 
@@ -155,12 +155,12 @@ class Set2Set(Layer):
             r_t = tf.transpose(tf.segment_sum(
                 tf.transpose(tf.multiply(m, a_i_t[:, :, None]), [1, 0, 2]),
                 feature_graph_index), [1, 0, 2])
-            q_star = K.concatenate([self.h, r_t], axis=-1)
+            q_star = kb.concatenate([self.h, r_t], axis=-1)
         return q_star
 
     def _lstm(self, h, c):
         # lstm implementation here
-        z = K.dot(h, self.recurrent_kernel)
+        z = kb.dot(h, self.recurrent_kernel)
         if self.use_bias:
             z += self.recurrent_bias
         z0 = z[:, :, :self.n_hidden]

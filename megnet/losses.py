@@ -1,4 +1,4 @@
-import keras.backend as K
+import keras.backend as kb
 
 
 def mean_squared_error_with_scale(y_true, y_pred, scale=10000):
@@ -14,7 +14,7 @@ def mean_squared_error_with_scale(y_true, y_pred, scale=10000):
     Returns:
         scaled mse (float)
     """
-    return K.mean(K.square(y_pred - y_true), axis=-1) * scale
+    return kb.mean(kb.square(y_pred - y_true), axis=-1) * scale
 
 
 mse_scale = mean_squared_error_with_scale

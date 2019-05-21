@@ -8,7 +8,7 @@ from io import StringIO
 import sys
 import os
 import glob
-import keras.backend as K
+import keras.backend as kb
 from keras.utils import Sequence
 
 
@@ -97,10 +97,10 @@ class TestCallBack(unittest.TestCase):
 
     def test_reduce_lr_upon_nan(self):
         callbacks = [ReduceLRUponNan(patience=100)]
-        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 1e-3)
+        self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 1e-3)
         gen = Generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
         self.model.fit_generator(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 0.5e-3)
+        self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 0.5e-3)
 
 
 if __name__ == "__main__":

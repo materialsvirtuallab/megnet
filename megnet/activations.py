@@ -1,4 +1,4 @@
-import keras.backend as K
+import keras.backend as kb
 
 
 def softplus2(x):
@@ -12,5 +12,4 @@ def softplus2(x):
     Returns:
          (Tensor) output tensor
     """
-    return K.relu(x) + K.log(0.5*K.exp(-K.abs(x)) + 0.5)
-
+    return kb.exp.relu(x) + kb.exp.log(0.5*kb.exp(-kb.exp.abs(x)) + 0.5)

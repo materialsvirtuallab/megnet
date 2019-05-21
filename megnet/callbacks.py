@@ -1,5 +1,5 @@
 from keras.callbacks import Callback
-import keras.backend as K
+import keras.backend as kb
 from megnet.utils.metric_utils import mae, accuracy
 import numpy as np
 import os
@@ -262,17 +262,17 @@ class ReduceLRUponNan(Callback):
                 self._reduce_lr_and_load()
                 if self.verbose:
                     print("Nan loss found!\n")
-                    print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+                    print("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load()
                         if self.verbose:
                             print("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
-                            print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+                            print("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
 
     def _reduce_lr_and_load(self):
-        old_value = float(K.get_value(self.model.optimizer.lr))
+        old_value = float(kb.get_value(self.model.optimizer.lr))
         files = glob(os.path.join(self.callback_dir, "*"))
         if len(files) > 1:
             latest_file = max(files, key=os.path.getctime)
@@ -280,7 +280,7 @@ class ReduceLRUponNan(Callback):
             latest_file = None
 
         self.model.reset_states()
-        K.set_value(self.model.optimizer.lr, old_value*self.factor)
+        kb.set_value(self.model.optimizer.lr, old_value*self.factor)
         opt_dict = self.model.optimizer.get_config()
         self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if latest_file is not None:

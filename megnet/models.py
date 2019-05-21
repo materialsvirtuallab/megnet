@@ -4,6 +4,7 @@ from megnet.layers import MEGNetLayer, Set2Set
 from megnet.activations import softplus2
 from megnet.losses import mse_scale
 from keras.regularizers import l2
+from keras.backend import int_shape
 from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
@@ -13,10 +14,6 @@ import numpy as np
 import os
 from warnings import warn
 from monty.serialization import dumpfn, loadfn
-import keras.backend as K
-
-
-pjoin = os.path.join
 
 
 class GraphModel:
@@ -127,7 +124,7 @@ class GraphModel:
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
 
         if validation_graphs is not None:
-            filepath = pjoin(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
+            filepath = os.path.join(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
             val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
@@ -167,7 +164,7 @@ class GraphModel:
         test_inp = self.graph_convertor.graph_to_input(graph)
         input_shapes = [i.shape for i in test_inp]
 
-        model_input_shapes = [K.int_shape(i) for i in self.model.inputs]
+        model_input_shapes = [int_shape(i) for i in self.model.inputs]
 
         def _check_match(real_shape, tensor_shape):
             if len(real_shape) != len(tensor_shape):
@@ -301,6 +298,14 @@ class GraphModel:
         model = load_model(filename, custom_objects=custom_objs)
         configs.update({'model': model})
         return GraphModel(**configs)
+
+    @classmethod
+    def from_url(cls, url):
+        import urllib.request
+        fname = url.split("/")[-1]
+        urllib.request.urlretrieve(url, fname)
+        urllib.request.urlretrieve(url + ".json", fname + ".json")
+        return cls.from_file(fname)
 
 
 class MEGNetModel(GraphModel):
