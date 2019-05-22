@@ -198,7 +198,7 @@ import numpy as np
 nfeat_bond = 10
 nfeat_global = 2
 r_cutoff = 5
-gaussian_centers = np.linspace(0, 5, 10)
+gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
 distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
 bond_convertor = CrystalGraph(bond_convertor=distance_convertor, cutoff=r_cutoff)
@@ -213,7 +213,7 @@ model.train(structures, targets, epochs=10)
 # Predict the property of a new structure
 pred_target = model.predict_structure(new_structure)
 ```
-
+Note that for realistic models, the `nfeat_bond` can be set to 100 and `epochs` can be 1000. 
 In some cases, some structures within the training pool may not be valid (containing isolated atoms),
 then one needs to use `train_from_graphs` method by training only on the valid graphs. 
 
