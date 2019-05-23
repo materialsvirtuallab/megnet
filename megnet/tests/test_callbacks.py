@@ -5,7 +5,7 @@ from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop, Reduc
 from megnet.layers import MEGNetLayer
 import numpy as np
 from io import StringIO
-import sys
+import logging
 import os
 import glob
 import keras.backend as kb
@@ -65,13 +65,13 @@ class TestCallBack(unittest.TestCase):
                                         steps_per_val=1),
                      ]
         captured_output = StringIO()
-        sys.stdout = captured_output
+        logging.basicConfig(level=logging.INFO, stream=captured_output)
 
         before_fit_file = glob.glob("./val_mae*.hdf5")
         self.model.fit_generator(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
         after_fit_file = glob.glob("./val_mae*.hdf5")
-        sys.stdout = sys.__stdout__
         result = captured_output.getvalue()
+        print(result)
         self.assertRegex(result, "Train MAE:\nconductivity: [-+]?\d*\.\d+|\d+ S/cm")
         self.assertRegex(result, "Test MAE:\nconductivity: [-+]?\d*\.\d+|\d+ S/cm")
 
