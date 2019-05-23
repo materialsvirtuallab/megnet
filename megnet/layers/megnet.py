@@ -1,7 +1,7 @@
 from megnet.layers.graph import GraphNetworkLayer
 import tensorflow as tf
 import keras.backend as kb
-from megnet.utils.layer_util import repeat_with_index
+from megnet.utils.layer import repeat_with_index
 
 __author__ = "Chi Chen"
 __copyright__ = "Copyright 2018, Materials Virtual Lab "

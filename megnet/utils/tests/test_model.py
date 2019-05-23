@@ -1,4 +1,4 @@
-from megnet.utils.model_utils import QM9Model, pb
+from megnet.utils.models import QM9Model, pb
 import unittest
 
 

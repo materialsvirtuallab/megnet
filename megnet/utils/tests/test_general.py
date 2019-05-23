@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from megnet.utils.general_utils import expand_1st, to_list
+from megnet.utils.general import expand_1st, to_list
 
 
 class TestGeneralUtils(unittest.TestCase):

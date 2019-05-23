@@ -1,6 +1,6 @@
 from operator import itemgetter
 import numpy as np
-from megnet.utils.general_utils import expand_1st, to_list
+from megnet.utils.general import expand_1st, to_list
 from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature

@@ -1,16 +1,20 @@
 from keras.callbacks import Callback
 import keras.backend as kb
-from megnet.utils.metric_utils import mae, accuracy
+from megnet.utils.metrics import mae, accuracy
 import numpy as np
 import os
 import warnings
 from glob import glob
 from collections import deque
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class GeneratorLog(Callback):
     """
-    This callback print out the MAE for train_generator and validation_generator every n_every steps.
+    This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
     The default keras training log does not contain method to rescale the results, thus is not physically
     intuitive.
 
@@ -61,7 +65,7 @@ class GeneratorLog(Callback):
                 train_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
                 train_y.append(self.yscaler.inverse_transform(train_data[1][0, :, :]) * nb_atom[:, None])
             train_mae = np.mean(np.abs(np.concatenate(train_pred, axis=0) - np.concatenate(train_y, axis=0)), axis=0)
-            print("Train MAE")
+            logger.info("Train MAE")
             _print_mae(self.val_names, train_mae, self.val_units)
             val_pred = []
             val_y = []
@@ -74,7 +78,7 @@ class GeneratorLog(Callback):
                 val_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
                 val_y.append(self.yscaler.inverse_transform(val_data[1][0, :, :]) * nb_atom[:, None])
             val_mae = np.mean(np.abs(np.concatenate(val_pred, axis=0) - np.concatenate(val_y, axis=0)), axis=0)
-            print("Test MAE")
+            logger.info("Test MAE")
             _print_mae(self.val_names, val_mae, self.val_units)
             self.model.history.history.setdefault("train_mae", []).append(train_mae)
             self.model.history.history.setdefault("val_mae", []).append(val_mae)
@@ -115,6 +119,8 @@ class ModelCheckpointMAE(Callback):
         if val_gen is None:
             raise ValueError('No validation data is provided!')
         self.verbose = verbose
+        if self.verbose > 0:
+            logging.basicConfig(level=logging.INFO)
         self.filepath = filepath
         self.save_best_only = save_best_only
         self.save_weights_only = save_weights_only
@@ -173,11 +179,8 @@ class ModelCheckpointMAE(Callback):
                                   'skipping.' % self.monitor, RuntimeWarning)
                 else:
                     if self.monitor_op(current, self.best):
-                        if self.verbose > 0:
-                            print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
-                                  ' saving model to %s'
-                                  % (epoch + 1, self.monitor, self.best,
-                                     current, filepath))
+                        logger.info('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
+                                    ' saving model to %s' % (epoch + 1, self.monitor, self.best, current, filepath))
                         self.best = current
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
@@ -185,11 +188,10 @@ class ModelCheckpointMAE(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            print('\nEpoch %05d: %s did not improve from %0.5f' %
-                                  (epoch + 1, self.monitor, self.best))
+                            logger.info('\nEpoch %05d: %s did not improve from %0.5f' %
+                                        (epoch + 1, self.monitor, self.best))
             else:
-                if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
+                logger.info('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
@@ -254,22 +256,22 @@ class ReduceLRUponNan(Callback):
             last_saved_epoch = int(latest_file.split(self.splitter)[self.epoch_local_in_fname])
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                print('MAE does not improve after %d, stopping the fitting...' % self.patience)
+                logger.info('MAE does not improve after %d, stopping the fitting...' % self.patience)
 
         if loss is not None:
             self.losses.append(loss)
             if np.isnan(loss) or np.isinf(loss):
                 self._reduce_lr_and_load()
                 if self.verbose:
-                    print("Nan loss found!\n")
-                    print("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
+                    logger.info("Nan loss found!\n")
+                    logger.info("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load()
                         if self.verbose:
-                            print("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
-                            print("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
+                            logger.info("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
+                            logger.info("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
 
     def _reduce_lr_and_load(self):
         old_value = float(kb.get_value(self.model.optimizer.lr))
@@ -286,7 +288,7 @@ class ReduceLRUponNan(Callback):
         if latest_file is not None:
             self.model.load_weights(latest_file)
             if self.verbose:
-                print("Load weights %s" % latest_file)
+                logger.info("Load weights %s" % latest_file)
 
 
 def _print_mae(target_names, maes, units):
@@ -304,7 +306,7 @@ def _print_mae(target_names, maes, units):
     line = []
     for i, j, k in zip(target_names, maes, units):
         line.append(i + ': ' + '%.4f' % j + ' ' + k)
-    print(' '.join(line))
+    logger.info(' '.join(line))
     return True
 
 

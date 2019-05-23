@@ -2,7 +2,7 @@ from keras.engine import Layer
 import keras.backend as kb
 import tensorflow as tf
 from keras.layers import activations, initializers, regularizers, constraints
-from megnet.utils.layer_util import repeat_with_index
+from megnet.utils.layer import repeat_with_index
 
 
 class Set2Set(Layer):

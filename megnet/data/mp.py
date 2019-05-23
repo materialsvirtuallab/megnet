@@ -1,6 +1,6 @@
 import numpy as np
 from operator import itemgetter
-from megnet.utils.general_utils import to_list
+from megnet.utils.general import to_list
 
 
 def index_rep_from_structure(structure, r=4):
