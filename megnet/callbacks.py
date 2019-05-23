@@ -264,14 +264,14 @@ class ReduceLRUponNan(Callback):
                 self._reduce_lr_and_load()
                 if self.verbose:
                     logger.info("Nan loss found!\n")
-                    logger.info("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
+                    logger.info("Now lr is %s.\n" % float(kb.get_value(self.model.optimizer.lr)))
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load()
                         if self.verbose:
-                            logger.info("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
-                            logger.info("Now lr is ", float(kb.get_value(self.model.optimizer.lr)), "\n")
+                            logger.info("Loss shot up from %.3f to %.3f! Reducing lr \n" % (self.losses[-1], self.losses[-2]))
+                            logger.info("Now lr is %s\n." % float(kb.get_value(self.model.optimizer.lr)))
 
     def _reduce_lr_and_load(self):
         old_value = float(kb.get_value(self.model.optimizer.lr))
