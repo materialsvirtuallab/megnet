@@ -67,6 +67,7 @@ class TestCallBack(unittest.TestCase):
         before_fit_file = glob.glob("./val_mae*.hdf5")
         self.model.fit_generator(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
         after_fit_file = glob.glob("./val_mae*.hdf5")
+
         self.assertEqual(len(before_fit_file), 0)
         self.assertEqual(len(after_fit_file), 1)
         os.remove(after_fit_file[0])
