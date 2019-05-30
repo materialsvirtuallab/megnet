@@ -21,16 +21,22 @@ class MEGNetMolecule(Molecule):
         for i in dist:
             inds = np.array(np.where(i <= cutoff)[0], dtype='int')
             d = i[i <= cutoff]
-            images = [0] * len(d)
+            images = [(0, 0, 0)] * len(d)
             neighbor = []
             for k, l, m in zip(d, inds, images):
-                entry = (k, )
-                if include_index:
-                    entry += (l, )
-                if include_image:
-                    entry += (m, )
+                item = []
                 if include_site:
-                    entry += (self[l], )
-                neighbor.append(entry)
+                    item.append(self[l])
+                item.append(k)
+                if include_index:
+                    item += [l]
+                if include_image:
+                    item += [m]
+                neighbor.append(item)
             neighbors.append(neighbor)
         return neighbors
+
+    @classmethod
+    def from_pymatgen(cls, mol):
+        sites = mol._sites
+        return cls.from_sites(sites)

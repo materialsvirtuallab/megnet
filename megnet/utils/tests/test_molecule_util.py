@@ -1,7 +1,8 @@
+import os
 import unittest
 from megnet.utils.molecule import MEGNetMolecule
 from megnet.models import MEGNetModel
-import os
+from pymatgen import Molecule
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,6 +16,11 @@ class TestMolecule(unittest.TestCase):
     def test_mol(self):
         pred = self.model.predict_structure(self.molecule)
         self.assertAlmostEqual(pred, -0.10959488)
+
+    def test_from_mol(self):
+        pmg_mol = Molecule(['C', 'O', 'O'], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
+        meg_mol = MEGNetMolecule.from_pymatgen(pmg_mol)
+        self.assertTrue(meg_mol == self.molecule)
 
 
 if __name__ == "__main__":
