@@ -19,8 +19,9 @@ class MEGNetMolecule(Molecule):
         dist = self.distance_matrix
         neighbors = []
         for i in dist:
-            inds = np.array(np.where(i <= cutoff)[0], dtype='int')
-            d = i[i <= cutoff]
+            cond = np.bitwise_and(i <= cutoff, i > 1e-8)
+            inds = np.array(np.where(cond)[0], dtype='int')
+            d = i[cond]
             images = [(0, 0, 0)] * len(d)
             neighbor = []
             for k, l, m in zip(d, inds, images):

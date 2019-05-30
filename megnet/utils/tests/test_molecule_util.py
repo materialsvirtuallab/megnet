@@ -15,7 +15,7 @@ class TestMolecule(unittest.TestCase):
 
     def test_mol(self):
         pred = self.model.predict_structure(self.molecule)
-        self.assertAlmostEqual(pred, -0.10959488)
+        self.assertAlmostEqual(pred, 0.39973044)
 
     def test_from_mol(self):
         pmg_mol = Molecule(['C', 'O', 'O'], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
