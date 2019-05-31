@@ -7,7 +7,7 @@ import warnings
 from glob import glob
 from collections import deque
 import logging
-
+from megnet.utils.preprocessing import DummyScaler
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class GeneratorLog(Callback):
         self.val_units = val_units
         self.is_pa = is_pa
         if self.yscaler is None:
-            self.yscaler = _DummyScaler()
+            self.yscaler = DummyScaler()
 
     def on_epoch_end(self, epoch, logs=None):
         """
@@ -97,9 +97,8 @@ class ModelCheckpointMAE(Callback):
         save_weights_only: (bool) whether to save the weights only excluding model structure
         val_gen: (generator) validation generator
         steps_per_val: (int) steps per epoch for validation generator
-        y_scaler: (object) exposing inverse_transform method to scale the output
+        target_scaler: (object) exposing inverse_transform method to scale the output
         period: (int) number of epoch interval for this callback
-        is_pa: (bool) if it is a per-atom quantity
         mode: (string) choose from "min", "max" or "auto"
     """
 
@@ -111,9 +110,8 @@ class ModelCheckpointMAE(Callback):
                  save_weights_only=False,
                  val_gen=None,
                  steps_per_val=None,
-                 y_scaler=None,
+                 target_scaler=None,
                  period=1,
-                 is_pa=False,
                  mode='auto'):
         super().__init__()
         if val_gen is None:
@@ -128,10 +126,9 @@ class ModelCheckpointMAE(Callback):
         self.epochs_since_last_save = 0
         self.val_gen = val_gen
         self.steps_per_val = steps_per_val
-        self.yscaler = y_scaler
-        self.is_pa = is_pa
-        if self.yscaler is None:
-            self.yscaler = _DummyScaler()
+        self.target_scaler = target_scaler
+        if self.target_scaler is None:
+            self.target_scaler = DummyScaler()
 
         if monitor == 'val_mae':
             self.metric = mae
@@ -165,11 +162,9 @@ class ModelCheckpointMAE(Callback):
             for i in range(self.steps_per_val):
                 val_data = self.val_gen[i]
                 nb_atom = _count(np.array(val_data[0][-2]))
-                if not self.is_pa:
-                    nb_atom = np.ones_like(nb_atom)
                 pred_ = self.model.predict(val_data[0])
-                val_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
-                val_y.append(self.yscaler.inverse_transform(val_data[1][0, :, :]) * nb_atom[:, None])
+                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :], nb_atom[:, None]))
+                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :], nb_atom[:, None]))
             current = self.metric(np.concatenate(val_y, axis=0), np.concatenate(val_pred, axis=0))
             filepath = self.filepath.format(**{"epoch": epoch + 1, self.monitor: current})
 
@@ -326,10 +321,3 @@ def _count(a):
     z = np.r_[0, z]
     return np.diff(z)
 
-
-class _DummyScaler(object):
-    """
-    Does nothing
-    """
-    def inverse_transform(self, x):
-        return x

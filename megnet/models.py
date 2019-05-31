@@ -139,7 +139,7 @@ class GraphModel:
                                                  save_weights_only=False,
                                                  val_gen=val_generator,
                                                  steps_per_val=steps_per_val,
-                                                 y_scaler=None)])
+                                                 target_scaler=self.target_scaler)])
         else:
             val_generator = None
             steps_per_val = None
