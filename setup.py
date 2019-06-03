@@ -21,7 +21,7 @@ setup(
                       'pymatgen', 'monty'],
     extras_require={
         'model_saving': ['h5py'],
-        'molecules': ['pybel', 'rdkit']
+        'molecules': ['openbabel', 'rdkit']
     },
     packages=find_packages(),
     package_data={
