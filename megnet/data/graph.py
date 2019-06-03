@@ -93,6 +93,11 @@ class StructureGraph(MSONable):
     def graph_to_input(self, graph):
         """
         Turns a graph into model input
+
+        Args:
+            (dict): Dictionary description of the graph
+        Return:
+            ([np.ndarray]): Inputs in the form needed by MEGNet
         """
         gnode = [0] * len(graph['atom'])
         gbond = [0] * len(graph['index1'])
@@ -103,8 +108,7 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(graph['index1'])),
                 expand_1st(np.array(graph['index2'])),
                 expand_1st(np.array(gnode)),
-                expand_1st(np.array(gbond)),
-                ]
+                expand_1st(np.array(gbond))]
 
     def get_flat_data(self, graphs, targets):
         """
@@ -112,7 +116,7 @@ class StructureGraph(MSONable):
         This is useful when the model is trained on assembled graphs on the fly
 
         :param graphs: (list of dictionary) list of graph dictionary for each structure
-        :param targets: (list of float) correpsonding target values for each structure
+        :param targets: (list of float) corresponding target values for each structure
         :return: tuple(node_features, edges_features, global_values, index1, index2, targets)
         """
         atoms = []
@@ -192,7 +196,7 @@ class GraphBatchGenerator(Sequence):
         of the bond, M is different for different structures
     :param index2_list: (list of integer) list of (M, ) the other side atomic
         index of the bond, M is different for different structures, but it has
-        to be the same as the correponding index1.
+        to be the same as the corresponding index1.
     :param targets: (numpy array), N*1, where N is the number of structures
     :param batch_size: (int) number of samples in a batch
     """

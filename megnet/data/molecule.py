@@ -14,6 +14,7 @@ from megnet.data.qm9 import ring_to_vector
 from megnet.data.graph import StructureGraph, GaussianDistance
 from sklearn.preprocessing import label_binarize
 
+# TODO (wardlt): These libraries are required. Should we remove try/catch
 try:
     import pybel
 except:
@@ -88,8 +89,6 @@ class MolecularGraph(StructureGraph):
     - `graph_distance`: Distance of shortest path between atoms on the bonding graph
     - `spatial_distance`: Euclidean distance between the atoms. By default, this distance is expanded into
         a vector of 20 different values computed using the `GaussianDistance` converter
-
-    The class may use the distance
 
     """
     def __init__(self, atom_features=None, bond_features=None, distance_converter=None,
@@ -390,8 +389,12 @@ class MolecularGraph(StructureGraph):
             (dict): Keys are the atom index and values are the CIP label
         """
         mol_rdk = self._get_rdk_mol(mol, 'smiles')
-        chiral_cc = Chem.FindMolChiralCenters(mol_rdk)
-        return dict(chiral_cc)
+        if mol_rdk is None:
+            # Conversion to RDKit has failed
+            return {}
+        else:
+            chiral_cc = Chem.FindMolChiralCenters(mol_rdk)
+            return dict(chiral_cc)
 
 
 def dijkstra_distance(bonds):
