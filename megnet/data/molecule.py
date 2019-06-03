@@ -128,7 +128,7 @@ class MolecularGraph(StructureGraph):
         self.known_elements = known_elements
         self.distance_converter = distance_converter
 
-    def convert(self, mol: pybel.Molecule, state_attributes=None, full_pair_matrix=True):
+    def convert(self, mol, state_attributes=None, full_pair_matrix=True):
         """
         Compute the representation for a molecule
 
