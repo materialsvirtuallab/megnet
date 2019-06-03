@@ -57,6 +57,7 @@ class QM9Test(unittest.TestCase):
         self.assertListEqual(graph['index1'], [0, 0, 1, 1, 2, 2])
         self.assertListEqual(graph['index2'], [1, 2, 0, 2, 0, 1])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_atom_features(self):
         """Detailed test of get_atom_feature"""
 
@@ -121,6 +122,7 @@ class QM9Test(unittest.TestCase):
         feat = self.mg.get_atom_feature(water, water.atoms[0])
         self.assertTrue(feat['acceptor'])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_atom_feature_vector(self):
         """Test the code that transforms feature dict to a list"""
 
@@ -167,6 +169,7 @@ class QM9Test(unittest.TestCase):
         vec = self.mg._create_atom_feature_vector(feat)
         self.assertEqual([0, 0, 1], vec)
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_bond_features(self):
         """Detailed tests for bond features"""
 
@@ -202,6 +205,7 @@ class QM9Test(unittest.TestCase):
         self.assertEqual(4, feat['bond_type'])
         self.assertEqual(True, feat['same_ring'])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_bond_feature_vec(self):
         # Test the full list
         feat = self.mg.get_pair_feature(self.mol, 0, 1, True)
