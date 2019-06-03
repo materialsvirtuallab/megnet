@@ -95,6 +95,11 @@ class StructureGraph(MSONable):
     def graph_to_input(self, graph):
         """
         Turns a graph into model input
+
+        Args:
+            (dict): Dictionary description of the graph
+        Return:
+            ([np.ndarray]): Inputs in the form needed by MEGNet
         """
         gnode = [0] * len(graph['atom'])
         gbond = [0] * len(graph['index1'])
@@ -105,8 +110,7 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(graph['index1'])),
                 expand_1st(np.array(graph['index2'])),
                 expand_1st(np.array(gnode)),
-                expand_1st(np.array(gbond)),
-                ]
+                expand_1st(np.array(gbond))]
 
     def get_flat_data(self, graphs, targets):
         """
@@ -115,7 +119,7 @@ class StructureGraph(MSONable):
 
         Args:
             graphs: (list of dictionary) list of graph dictionary for each structure
-            targets: (list of float or list) correpsonding target values for each structure
+            targets: (list of float or list) correspsonding target values for each structure
 
         Returns:
             tuple(node_features, edges_features, global_values, index1, index2, targets)
@@ -196,10 +200,13 @@ class GraphBatchGenerator(Sequence):
     Args:
         atom_features: (list of np.array) list of atom feature matrix,
         bond_features: (list of np.array) list of bond features matrix
-        state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
-        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different structures
+        state_features: (list of np.array) list of [1, G] state features,
+            where G is the global state feature dimension
+        index1_list: (list of integer) list of (M, ) one side atomic index of the bond,
+        M is different for different structures
         index2_list: (list of integer) list of (M, ) the other side atomic
-            index of the bond, M is different for different structures, but it has to be the same as the correponding index1.
+            index of the bond, M is different for different structures,
+            but it has to be the same as the corresponding index1.
         targets: (numpy array), N*1, where N is the number of structures
         batch_size: (int) number of samples in a batch
     """
