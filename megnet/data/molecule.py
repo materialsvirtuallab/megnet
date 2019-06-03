@@ -2,7 +2,6 @@
 Tools for creating graph inputs from molecule data
 """
 
-import re
 import itertools
 
 
@@ -14,16 +13,8 @@ from megnet.data.qm9 import ring_to_vector
 from megnet.data.graph import StructureGraph, GaussianDistance
 from sklearn.preprocessing import label_binarize
 
-# TODO (wardlt): These libraries are required. Should we remove try/catch
-try:
-    import pybel
-except:
-    pybel = None
-
-try:
-    from rdkit import Chem
-except:
-    Chem = None
+import pybel
+from rdkit import Chem
 
 __date__ = '12/01/2018'
 
