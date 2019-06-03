@@ -1,36 +1,36 @@
 from keras.engine import Layer
-import keras.backend as K
+import keras.backend as kb
 import tensorflow as tf
 from keras.layers import activations, initializers, regularizers, constraints
-from megnet.utils.layer_util import repeat_with_index
+from megnet.utils.layer import repeat_with_index
 
 
 class Set2Set(Layer):
     """
     For a set of vectors, the set2set neural network maps it to a single vector.
     The order invariance is acheived by a attention mechanism.
-
     See Vinyals, Oriol, Samy Bengio, and Manjunath Kudlur.
     "Order matters: Sequence to sequence for sets." arXiv preprint
     arXiv:1511.06391 (2015).
 
-    :param T: (int) recurrent step
-    :param n_hidden: (int) number of hidden units
-    :param activation: (str or object) activation function
-    :param activation_lstm: (str or object) activation function for lstm
-    :param recurrent_activation: (str or object) activation function for recurrent step
-    :param kernel_initializer: (str or object) initializer for kernel weights
-    :param recurrent_initializer: (str or object) initializer for recurrent weights
-    :param bias_initializer: (str or object) initializer for biases
-    :param use_bias: (bool) whether to use biases
-    :param unit_forget_bias: (bool) whether to use basis in forget gate
-    :param kernel_regularizer: (str or object) regularizer for kernel weights
-    :param recurrent_regularizer: (str or object) regularizer for recurrent weights
-    :param bias_regularizer: (str or object) regularizer for biases
-    :param kernel_constraint: (str or object) constraint for kernel weights
-    :param recurrent_constraint: (str or object) constraint for recurrent weights
-    :param bias_constraint:(str or object) constraint for biases
-    :param kwargs: other inputs for keras Layer class
+    Args:
+        T: (int) recurrent step
+        n_hidden: (int) number of hidden units
+        activation: (str or object) activation function
+        activation_lstm: (str or object) activation function for lstm
+        recurrent_activation: (str or object) activation function for recurrent step
+        kernel_initializer: (str or object) initializer for kernel weights
+        recurrent_initializer: (str or object) initializer for recurrent weights
+        bias_initializer: (str or object) initializer for biases
+        use_bias: (bool) whether to use biases
+        unit_forget_bias: (bool) whether to use basis in forget gate
+        kernel_regularizer: (str or object) regularizer for kernel weights
+        recurrent_regularizer: (str or object) regularizer for recurrent weights
+        bias_regularizer: (str or object) regularizer for biases
+        kernel_constraint: (str or object) constraint for kernel weights
+        recurrent_constraint: (str or object) constraint for recurrent weights
+        bias_constraint:(str or object) constraint for biases
+        kwargs: other inputs for keras Layer class
 
     """
 
@@ -100,7 +100,7 @@ class Set2Set(Layer):
         if self.use_bias:
             if self.unit_forget_bias:
                 def bias_initializer(_, *args, **kwargs):
-                    return K.concatenate([self.bias_initializer(
+                    return kb.concatenate([self.bias_initializer(
                         (self.n_hidden,), *args, **kwargs),
                                           initializers.Ones()((self.n_hidden,),
                                                               *args, **kwargs),
@@ -126,7 +126,7 @@ class Set2Set(Layer):
         features, feature_graph_index = inputs
         feature_graph_index = tf.reshape(feature_graph_index, (-1,))
         _, _, count = tf.unique_with_counts(feature_graph_index)
-        m = K.dot(features, self.m_weight)
+        m = kb.dot(features, self.m_weight)
         if self.use_bias:
             m += self.m_bias
 
@@ -155,12 +155,12 @@ class Set2Set(Layer):
             r_t = tf.transpose(tf.segment_sum(
                 tf.transpose(tf.multiply(m, a_i_t[:, :, None]), [1, 0, 2]),
                 feature_graph_index), [1, 0, 2])
-            q_star = K.concatenate([self.h, r_t], axis=-1)
+            q_star = kb.concatenate([self.h, r_t], axis=-1)
         return q_star
 
     def _lstm(self, h, c):
         # lstm implementation here
-        z = K.dot(h, self.recurrent_kernel)
+        z = kb.dot(h, self.recurrent_kernel)
         if self.use_bias:
             z += self.recurrent_bias
         z0 = z[:, :, :self.n_hidden]

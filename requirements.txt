@@ -1,7 +1,7 @@
 pandas==0.24.2
-pymatgen==2019.5.1
+pymatgen==2019.5.8
 tensorflow==1.13.1
 keras==2.2.4
-scikit-learn==0.20.3
-numpy==1.16.3
+scikit-learn==0.21.2
+numpy==1.16.4
 monty==2.0.4

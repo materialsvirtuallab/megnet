@@ -1,4 +1,4 @@
-from megnet.utils.metric_utils import mae, accuracy
+from megnet.utils.metrics import mae, accuracy
 import unittest
 import numpy as np
 

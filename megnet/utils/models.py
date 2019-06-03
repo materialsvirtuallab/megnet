@@ -10,7 +10,6 @@ except:
     logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
     pb = None
 
-
 ATOMNUM2TYPE = {1: 1, 6: 2, 7: 4, 8: 6, 9: 8}
 pjoin = os.path.join
 QM9_MODELDIR = pjoin(os.path.dirname(__file__), '../../mvl_models/qm9-2018.6.1')
@@ -35,11 +34,13 @@ class AtomNumberToTypeConvertor:
     A convertor that takes atomic number list and map
     it to type list as in qm9 dataset
     """
+
     def __init__(self, mapping=ATOMNUM2TYPE):
         self.mapping = mapping
 
     def convert(self, l):
         return [self.mapping[i] for i in l]
+
 
 class Scaler:
     """
@@ -48,10 +49,11 @@ class Scaler:
     properties is a per atom quantity the final 
     result will multiply by the number of atoms
     """
+
     def __init__(self, mean, std, is_pa):
         self.mean = mean
         self.std = std
-        self.is_pa = is_pa 
+        self.is_pa = is_pa
 
     def transform(self, target, structure):
         if self.is_pa:
@@ -72,30 +74,36 @@ class QM9Model:
         predict_structure(structure): compute the model prediction for structure
         predict_smiles(smiles): compute the model prediction for smiles representation of molecules
     """
+
     def __init__(self, target_name):
-        self.model = MEGNetModel.from_file(pjoin(QM9_MODELDIR, target_name+".hdf5"))
-        self.model.graph_convertor.atom_convertor = AtomNumberToTypeConvertor() 
-        self.scaler = Scaler(SCALER[target_name]['mean'], SCALER[target_name]['std'], SCALER[target_name]['is_per_atom'])
+        self.model = MEGNetModel.from_file(pjoin(QM9_MODELDIR, target_name + ".hdf5"))
+        self.model.graph_convertor.atom_convertor = AtomNumberToTypeConvertor()
+        self.scaler = Scaler(SCALER[target_name]['mean'], SCALER[target_name]['std'],
+                             SCALER[target_name]['is_per_atom'])
 
     def predict_structure(self, structure):
         """
         Predict the property of structure
+
         Args:
-            structure: (pymatgen molecule) 
+            structure: (pymatgen molecule)
+
         Returns:
             target: (float)
         """
         target = self.scaler.transform(
-                self.model.predict_structure(structure), 
-                structure
-                )
+            self.model.predict_structure(structure),
+            structure
+        )
         return target[0]
 
     def predict_smiles(self, smiles):
         """
         Predict the property of smiles
+
         Args:
             smiles: (str) smiles representation
+
         Returns:
             target: (float)
         """

@@ -1,7 +1,6 @@
 from operator import itemgetter
 import numpy as np
-import threading
-from megnet.utils.general_utils import expand_1st
+from megnet.utils.general import expand_1st, to_list
 from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
@@ -48,17 +47,20 @@ class StructureGraph(MSONable):
         if self.bond_convertor is None:
             self.bond_convertor = self._get_dummy_convertor()
 
-    def convert(self, structure, state_attributes=None):
+    def convert(self, structure):
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
         of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
-        distance
-        :param structure: (pymatgen structure)
-        :param state_attributes: (list) state attributes
-        :return: (dictionary)
+        distance.
+        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
+        take default [[0, 0]]
+
+        Args:
+            structure: (pymatgen structure)
+            (dictionary)
         """
-        state_attributes = state_attributes or [[0, 0]]
+        state_attributes = getattr(structure, 'state', None) or [[0, 0]]
         index1 = []
         index2 = []
         bonds = []
@@ -80,8 +82,8 @@ class StructureGraph(MSONable):
                     'index2': index2
                     }
 
-    def __call__(self, structure, state_attributes=None):
-        return self.convert(structure, state_attributes)
+    def __call__(self, structure):
+        return self.convert(structure)
 
     def get_input(self, structure):
         """
@@ -115,16 +117,18 @@ class StructureGraph(MSONable):
         Expand the graph dictionary to form a list of features and targets tensors
         This is useful when the model is trained on assembled graphs on the fly
 
-        :param graphs: (list of dictionary) list of graph dictionary for each structure
-        :param targets: (list of float) corresponding target values for each structure
-        :return: tuple(node_features, edges_features, global_values, index1, index2, targets)
+        Args:
+            graphs: (list of dictionary) list of graph dictionary for each structure
+            targets: (list of float or list) correspsonding target values for each structure
+
+        Returns:
+            tuple(node_features, edges_features, global_values, index1, index2, targets)
         """
         atoms = []
         bonds = []
         states = []
         index1 = []
         index2 = []
-
         final_targets = []
         for g, t in zip(graphs, targets):
             if isinstance(g, dict):
@@ -133,7 +137,7 @@ class StructureGraph(MSONable):
                 states.append(g['state'])
                 index1.append(g['index1'])
                 index2.append(g['index2'])
-                final_targets.append([t])
+                final_targets.append(to_list(t))
         return atoms, bonds, states, index1, index2, final_targets
 
     def _get_dummy_convertor(self):
@@ -165,8 +169,9 @@ class GaussianDistance(DistanceConvertor):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
-    :param centers: (np.array)
-    :param width: (float)
+    Args:
+        centers: (np.array)
+        width: (float)
     """
 
     def __init__(self, centers=np.linspace(0, 5, 100), width=0.5):
@@ -176,8 +181,12 @@ class GaussianDistance(DistanceConvertor):
     def convert(self, d):
         """
         expand distance vector d with given parameters
-        :param d: (1d array) distance array
-        :return: (matrix) N*M matrix with N the length of d and M the length of centers
+
+        Args:
+            d: (1d array) distance array
+
+        Returns
+            (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
         return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
@@ -188,17 +197,18 @@ class GraphBatchGenerator(Sequence):
     A generator class that assembles several structures (indicated by
     batch_size) and form (x, y) pairs for model training
 
-    :param atom_features: (list of np.array) list of atom feature matrix,
-    :param bond_features: (list of np.array) list of bond features matrix
-    :param state_features: (list of np.array) list of [1, G] state features,
-        where G is the global state feature dimension
-    :param index1_list: (list of integer) list of (M, ) one side atomic index
-        of the bond, M is different for different structures
-    :param index2_list: (list of integer) list of (M, ) the other side atomic
-        index of the bond, M is different for different structures, but it has
-        to be the same as the corresponding index1.
-    :param targets: (numpy array), N*1, where N is the number of structures
-    :param batch_size: (int) number of samples in a batch
+    Args:
+        atom_features: (list of np.array) list of atom feature matrix,
+        bond_features: (list of np.array) list of bond features matrix
+        state_features: (list of np.array) list of [1, G] state features,
+            where G is the global state feature dimension
+        index1_list: (list of integer) list of (M, ) one side atomic index of the bond,
+        M is different for different structures
+        index2_list: (list of integer) list of (M, ) the other side atomic
+            index of the bond, M is different for different structures,
+            but it has to be the same as the corresponding index1.
+        targets: (numpy array), N*1, where N is the number of structures
+        batch_size: (int) number of samples in a batch
     """
     def __init__(self,
                  atom_features,
@@ -293,17 +303,17 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
     """
     Generate batch of structures with bond distance being expanded using a Expansor
 
-    :param atom_features: (list of np.array) list of atom feature matrix,
-    :param bond_features: (list of np.array) list of bond features matrix
-    :param state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
-    :param index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different
-        structures
-    :param index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for different
-        structures, but it has to be the same as the correponding index1.
-    :param targets: (numpy array), N*1, where N is the number of structures
-    :param batch_size: (int) number of samples in a batch
-    :param is_shuffle: (bool) whether to shuffle the structure, default to True
-    :param distance_convertor: (bool) convertor for processing the distances
+    Args:
+        atom_features: (list of np.array) list of atom feature matrix,
+        bond_features: (list of np.array) list of bond features matrix
+        state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
+        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for differentstructures
+        index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for different
+            structures, but it has to be the same as the correponding index1.
+        targets: (numpy array), N*1, where N is the number of structures
+        batch_size: (int) number of samples in a batch
+        is_shuffle: (bool) whether to shuffle the structure, default to True
+        distance_convertor: (bool) convertor for processing the distances
 
     """
     def __init__(self,
@@ -333,9 +343,13 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
 def itemgetter_list(l, indices):
     """
     Get indices of l and return a tuple
-    :param l:  (list)
-    :param indices: (list) indices
-    :return: (tuple)
+
+    Args:
+        l:  (list)
+        indices: (list) indices
+
+    Returns:
+        (tuple)
     """
     it = itemgetter(*indices)
     if np.size(indices) == 1:

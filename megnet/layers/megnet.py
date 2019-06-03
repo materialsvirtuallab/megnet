@@ -1,7 +1,7 @@
 from megnet.layers.graph import GraphNetworkLayer
 import tensorflow as tf
-import keras.backend as K
-from megnet.utils.layer_util import repeat_with_index
+import keras.backend as kb
+from megnet.utils.layer import repeat_with_index
 
 __author__ = "Chi Chen"
 __copyright__ = "Copyright 2018, Materials Virtual Lab "
@@ -31,7 +31,7 @@ class MEGNetLayer(GraphNetworkLayer):
         kernel_constraint (str): Default: None. Keras constraint for kernel values
         bias_constraint (str): Default: None .Keras constraint for bias values
 
-    Method:
+    Methods:
         call(inputs, mask=None): the logic of the layer, returns the final graph
         compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes
         build(input_shape): initialize the weights and biases for each function
@@ -89,8 +89,8 @@ class MEGNetLayer(GraphNetworkLayer):
         edim = input_shapes[1][2]
         udim = input_shapes[2][2]
 
-        with K.name_scope(self.name):
-            with K.name_scope('phi_v'):
+        with kb.name_scope(self.name):
+            with kb.name_scope('phi_v'):
                 v_shapes = [self.units_e[-1] + vdim + udim] + self.units_v
                 v_shapes = list(zip(v_shapes[:-1], v_shapes[1:]))
                 self.phi_v_weight = [self.add_weight(shape=i,
@@ -109,7 +109,7 @@ class MEGNetLayer(GraphNetworkLayer):
                 else:
                     self.phi_v_bias = None
 
-            with K.name_scope('phi_e'):
+            with kb.name_scope('phi_e'):
                 e_shapes = [2 * vdim + edim + udim] + self.units_e
                 e_shapes = list(zip(e_shapes[:-1], e_shapes[1:]))
                 self.phi_e_weight = [self.add_weight(shape=i,
@@ -128,7 +128,7 @@ class MEGNetLayer(GraphNetworkLayer):
                 else:
                     self.phi_e_bias = None
 
-            with K.name_scope('phi_u'):
+            with kb.name_scope('phi_u'):
                 u_shapes = [self.units_e[-1] + self.units_v[
                     -1] + udim] + self.units_u
                 u_shapes = list(zip(u_shapes[:-1], u_shapes[1:]))
@@ -200,7 +200,7 @@ class MEGNetLayer(GraphNetworkLayer):
     def _mlp(self, input_, weights, bias):
         act = input_
         for w, b in zip(weights, bias):
-            output = K.dot(act, w) + b
+            output = kb.dot(act, w) + b
             act = self.activation(output)
         return output
 

@@ -35,14 +35,18 @@ def load_qm9_faber(db_connection=None,
                    verbose=True):
     """
     Load the qm9 dataset from faber
-    :param db_connection: mongodb collection pointing to the qm9 data
-    :param atom_attri: (list of string) atom attributes used as feature
-    :param bond_attri: (list of string) bond attributes used as feature
-    :param graph_dist: (list of integer) graph distances considered. Basically
+
+    Args:
+        db_connection: mongodb collection pointing to the qm9 data
+        atom_attri: (list of string) atom attributes used as feature
+        bond_attri: (list of string) bond attributes used as feature
+        graph_dist: (list of integer) graph distances considered. Basically
         bonded atoms have graph distance of 1, second nearest neighbors are 2 etc.
-    :param restrict: (dict) extra constraints for the query
-    :param verbose: (bool) show the progress
-    :return: atom_features, bond_features, global_features, bond_atom_index1, bond_atom_index2, targets
+        restrict: (dict) extra constraints for the query
+        verbose: (bool) show the progress
+
+    Returns:
+        atom_features, bond_features, global_features, bond_atom_index1, bond_atom_index2, targets
     """
     # connection is necessary
     if db_connection is None:
@@ -125,9 +129,12 @@ def ring_to_vector(l):
     in 1 3-sized ring and 2 5-sized ring. This function will convert it into
     [ 0, 0, 1, 0, 2, 0, 0, 0, 0, 0].
 
-    :param l: (list of integer) ring_sizes attributes
-    :return: (list of integer) fixed size list with the i-1 th element indicates number of
-        i-sized ring this atom is involved in.
+    Args:
+        l: (list of integer) ring_sizes attributes
+
+    Returns:
+        (list of integer) fixed size list with the i-1 th element indicates number of
+            i-sized ring this atom is involved in.
     """
     return_l = [0] * 9
     if l:
@@ -141,10 +148,10 @@ class FeatureClean(BaseEstimator, TransformerMixin):
     Clean the features and convert them to model inputs
 
     Args
-    :param categorical: (list of string) variables that will be considered as categorical
-    :param feature_labels: (list of string) all features
-    :param distance_converter: (object) convert the spatial distance to expanded Gaussians
-    :param is_norm_dist: (bool) whether to normalize the distance features
+        categorical: (list of string) variables that will be considered as categorical
+        feature_labels: (list of string) all features
+        distance_converter: (object) convert the spatial distance to expanded Gaussians
+        is_norm_dist: (bool) whether to normalize the distance features
     """
 
     def __init__(self,
@@ -167,9 +174,12 @@ class FeatureClean(BaseEstimator, TransformerMixin):
     def fit(self, X):
         """
         sklearn transformer interface
-        :param X: list of feature list, e.g., [[5, 0, [3, 5], 0, 0, 1, 1], [5, 0, [3, 5], 0, 0, 1, 1]] for the default
+
+        Args:
+            X: list of feature list, e.g., [[5, 0, [3, 5], 0, 0, 1, 1], [5, 0, [3, 5], 0, 0, 1, 1]] for the default
             feature labels
-        :return: (np.array) converted feature matrix
+        Returns:
+            (np.array) converted feature matrix
         """
         self.c_labels = []
         concated = np.concatenate([np.array(i, dtype=object) for i in X],
@@ -221,8 +231,12 @@ class FeatureClean(BaseEstimator, TransformerMixin):
     def transform(self, X):
         """
         Transform new data according to learnt logics
-        :param X: list of features
-        :return: feature dimension
+
+        Args:
+            X: list of features
+
+        Returns:
+            feature dimension
         """
         X_transformed = []
         for x in X:
@@ -282,10 +296,13 @@ def sublist_from_qm9(ids, targets, *features):
     """
     select a subset of the data according to the qm9 id.
 
-    :param ids: (list of string) qm9 id list
-    :param targets: (pandas DataFrame) data frame of targets
-    :param features: (list）list of graph features
-    :return: subset of targets, features
+    Args:
+        ids: (list of string) qm9 id list
+        targets: (pandas DataFrame) data frame of targets
+        features: (list）list of graph features
+
+    Returns:
+         subset of targets, features
     """
 
     def get_from_list(l, idx):

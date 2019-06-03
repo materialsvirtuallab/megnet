@@ -10,11 +10,12 @@ from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
 from keras.utils import Sequence
+from pymatgen.util.testing import PymatgenTest
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 
 
-class TestModel(unittest.TestCase):
+class TestModel(PymatgenTest):
     @classmethod
     def setUpClass(cls):
         cls.n_feature = 3
@@ -56,10 +57,14 @@ class TestModel(unittest.TestCase):
                                 n1=4, n2=4, n3=4, npass=1, ntarget=1,
                                 graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
                                 )
+        cls.model2 = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
+                                 n1=4, n2=4, n3=4, npass=1, ntarget=2,
+                                 graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
+                                 )
 
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
-        structures = [s] * 4
+        structures = [s.copy(), s.copy(), s.copy(), s.copy()]
         targets = [0.1, 0.1, 0.1, 0.1]
         self.model.train(structures,
                          targets,
@@ -69,6 +74,26 @@ class TestModel(unittest.TestCase):
                          epochs=1,
                          verbose=2)
         preds = self.model.predict_structure(structures[0])
+
+        # isolated atom error
+        for s in structures[3:]:
+            s.apply_strain(3)
+        with self.assertRaises(RuntimeError) as context:
+            self.model.train(structures,
+                             targets,
+                             epochs=1,
+                             verbose=2,
+                             scrub_failed_structures=False)
+            self.assertTrue('Isolated atoms found' in str(context.exception))
+
+        with self.assertRaises(Exception) as context:
+            self.model.train(structures,
+                             targets,
+                             epochs=1,
+                             verbose=2,
+                             scrub_failed_structures=True)
+            self.assertTrue('structure with index' in str(context.exception))
+
         if os.path.isdir('callback'):
             shutil.rmtree('callback')
         self.assertTrue(np.size(preds) == 1)
@@ -80,20 +105,40 @@ class TestModel(unittest.TestCase):
         pred = self.model.predict_structure(s)
         self.assertEqual(len(pred.ravel()), 1)
 
+    def test_two_targets(self):
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        # initialize the model
+        self.model2.train([s, s], [[0.1, 0.2], [0.1, 0.2]], epochs=1)
+        pred = self.model2.predict_structure(s)
+        self.assertEqual(len(pred.ravel()), 2)
+
     def test_save_and_load(self):
         weights1 = self.model.get_weights()
         with ScratchDir('.'):
+            self.model.metadata = {"units": "eV"} # This is just a random
             self.model.save_model('test.hdf5')
             model2 = GraphModel.from_file('test.hdf5')
+            self.assertEqual(model2.metadata, {"units": "eV"})
         weights2 = model2.get_weights()
         self.assertTrue(np.allclose(weights1[0], weights2[0]))
+
+    def test_check_dimension(self):
+        gc = CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 20), 0.5))
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        graph = gc.convert(s)
+        model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
+                            n1=4, n2=4, n3=4, npass=1, ntarget=1,
+                            graph_convertor=CrystalGraph(bond_convertor=gc),
+                            )
+        with self.assertRaises(Exception) as context:
+            model.check_dimension(graph)
+            self.assertTrue('The data dimension for bond' in str(context.exception))
 
     def test_crystal_model(self):
         callbacks = [ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
                                         save_best_only=True,
                                         val_gen=self.train_gen_crystal,
-                                        steps_per_val=1,
-                                        is_pa=False),
+                                        steps_per_val=1),
                      GeneratorLog(self.train_gen_crystal, 1,
                                   self.train_gen_crystal, 1,
                                   val_names=['Ef'], val_units=['eV/atom']),
@@ -105,6 +150,13 @@ class TestModel(unittest.TestCase):
         self.assertGreater(len(model_files), 0)
         for i in model_files:
             os.remove(i)
+
+    def test_from_url(self):
+        with ScratchDir("."):
+            model = MEGNetModel.from_url("https://github.com/materialsvirtuallab/megnet/raw/master/mvl_models/mp-2019.4.1/formation_energy.hdf5")
+            li2o = self.get_structure("Li2O")
+            self.assertAlmostEqual(float(model.predict_structure(li2o)),
+                                   -2.0152957439422607)
 
 
 if __name__ == "__main__":

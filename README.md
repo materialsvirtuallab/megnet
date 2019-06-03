@@ -1,6 +1,18 @@
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=svg)](https://circleci.com/gh/materialsvirtuallab/megnet)
 [![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
 
+# Table of Contents
+* [Introduction](#introduction)
+* [MEGNet Framework](#megnet-framework)
+* [Installation](#installation)
+* [Usage](#usage)
+* [Implementation details](#implementation-details)
+* [Datasets](#datasets)
+* [Computing requirements](#computing-requirements)
+* [Known limitations](#limitations)
+* [References](#references)
+
+<a name="introduction"></a>
 # Introduction
 
 This repository represents the efforts of the [Materials Virtual Lab](http://www.materialsvirtuallab.org) 
@@ -10,7 +22,11 @@ our best efforts. We welcome efforts by anyone to build and test models using
 our code and data, all of which are publicly available. Any comments or 
 suggestions are also welcome (please post on the Github Issues page.)
 
-# MatErials Graph Networks (MEGNet) for molecule/crystal property prediction
+A web app using our pre-trained MEGNet models for property prediction in 
+crystals is available at http://megnet.crystals.ai.
+
+<a name="megnet-framework"></a>
+# MEGNet framework
 
 The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph 
 networks[1] for universal machine learning in materials science. We have 
@@ -36,6 +52,7 @@ output to a scalar/vector property.
 ![GraphModel architecture](resources/model_arch.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
+<a name="installation"></a>
 # Installation
 
 Megnet can be installed via pip for the latest stable version:
@@ -50,6 +67,7 @@ For the latest dev version, please clone this repo and install using:
 python setup.py develop
 ```
 
+<a name="usage"></a>
 # Usage
 
 Our current implementation supports a variety of use cases for users with 
@@ -119,6 +137,7 @@ The MAEs on the various models are given below:
 | Property | Units      | MAE   |
 |----------|------------|-------|
 | Ef       | eV/atom    | 0.026 |
+| Efermi   | eV         | 0.288 |
 
 New models will be added as they are developed in the [mvl_models](mvl_models)
 folder. Each folder contains a summary of model details and benchmarks. For
@@ -131,7 +150,7 @@ Below is an example of crystal model usage:
 from megnet.models import MEGNetModel
 from pymatgen import MPRester
 
-model = MEGNetModel.from_file('mvl_models/mp/log10K.hdf5')
+model = MEGNetModel.from_file('mvl_models/mp-2018.6.1/log10K.hdf5')
 
 # We can grab a crystal structure from the Materials Project.
 mpr = MPRester()
@@ -142,7 +161,7 @@ structure = mpr.get_structure_by_material_id('mp-1143')
 predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
 ```
-A full example is in `notebooks/crystal_example.ipynb`. 
+A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb). 
 
 For molecular models, we have an example in 
 [notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb). 
@@ -178,10 +197,11 @@ import numpy as np
 
 nfeat_bond = 10
 nfeat_global = 2
-gaussian_centers = np.linspace(0, 5, 10)
+r_cutoff = 5
+gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
 distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
-bond_convertor = CrystalGraph(bond_convertor=distance_convertor)
+bond_convertor = CrystalGraph(bond_convertor=distance_convertor, cutoff=r_cutoff)
 model = MEGNetModel(nfeat_bond, nfeat_global, 
                     graph_convertor=graph_convertor)
 
@@ -193,7 +213,27 @@ model.train(structures, targets, epochs=10)
 # Predict the property of a new structure
 pred_target = model.predict_structure(new_structure)
 ```
+Note that for realistic models, the `nfeat_bond` can be set to 100 and `epochs` can be 1000. 
+In some cases, some structures within the training pool may not be valid (containing isolated atoms),
+then one needs to use `train_from_graphs` method by training only on the valid graphs. 
 
+Following the previous example, 
+```python
+model = MEGNetModel(nfeat_bond, nfeat_global, graph_convertor=graph_convertor)
+graphs_valid = []
+targets_valid = []
+structures_invalid = []
+for s, p in zip(structures, targets):
+    try:
+        graph = model.graph_convertor.convert(s)
+        graphs_valid.append(graph)
+        targets_valid.append(p)
+    except:
+        structures_invalid.append(s)
+
+# train the model using valid graphs and targets
+model.train_from_graphs(graphs_valid, targets_valid)
+```
 For model details and benchmarks, please refer to ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]
 
 ### Pre-trained elemental embeddings
@@ -259,7 +299,7 @@ model.compile(loss='mse', optimizer='adam')
 With less than 20 lines of code, you have built a graph network model that is 
 ready for materials property prediction!
 
-
+<a name="implementation-details"></a>
 # Implementation details
 
 Graph networks[1] are a superclass of graph-based neural networks. There are a
@@ -313,6 +353,7 @@ In summary the inputs for the model is **V** (1\*N'\*Nv), **E** (1\*M'\*Nm),
 **u** (1\*Ng\*Nu), `index1` (1\*M'), `index2` (1\*M'), `atom_ind` (1\*N'), and
 `bond_ind` (1\*M'). For Z-only atomic features, **V** is a (1\*N') vector.
 
+<a name="datasets"></a>
 # Data sets
 
 To aid others in reproducing (and improving on) our results, we have provided 
@@ -330,6 +371,29 @@ The molecule data set used in this work is the QM9 data set 30 processed by
 Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation
 results on 130,462 small organic molecules containing up to 9 heavy atoms.
 
+<a name="computing-requirements"></a>
+# Computing requirements
+
+Training: It should be noted that training MEGNet models, like other deep 
+learning models, is fairly computationally intensive with large datasets. In 
+our work, we use dedicated GPU resources to train MEGNet models with 100,000
+crystals/molecules. It is recommended that you do the same.
+
+Prediction: Once trained, prediction using MEGNet models are fairly cheap. 
+For example, the http://megnet.crystals.ai web app runs on a single hobby dyno
+on Heroku and provides the prediction for any crystal within seconds.
+
+<a name="limitations"></a>
+# Known limitations
+
+- `isolated atoms` error. This error occurs when using the given cutoff in the model (4A for
+2018 models and 5A for 2019 models), the crystal structure contains isolated atoms, i.e., 
+no neighboring atoms are within the distance of `cutoff`. Most of the time, we can just 
+discard the structure, since we found that those structures tend to have a high energy above 
+hull (less stable). If you think this error is an essential issue for a particular problem, 
+please feel free to email us and we will consider releasing a new model with increased cutoff. 
+
+<a name="references"></a>
 # References
 
 1. Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; 

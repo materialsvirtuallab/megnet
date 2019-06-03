@@ -3,13 +3,13 @@ from keras.models import Model
 from keras.layers import Input, Dense
 from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.layers import MEGNetLayer
+from megnet.utils.preprocessing import StandardScaler
 import numpy as np
-from io import StringIO
-import sys
 import os
 import glob
-import keras.backend as K
+import keras.backend as kb
 from keras.utils import Sequence
+
 
 class Generator(Sequence):
     def __init__(self, x, y):
@@ -63,20 +63,29 @@ class TestCallBack(unittest.TestCase):
                      ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
                                         steps_per_val=1),
                      ]
-        captured_output = StringIO()
-        sys.stdout = captured_output
-
         before_fit_file = glob.glob("./val_mae*.hdf5")
         self.model.fit_generator(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
         after_fit_file = glob.glob("./val_mae*.hdf5")
-        sys.stdout = sys.__stdout__
-        result = captured_output.getvalue()
-        self.assertRegex(result, "Train MAE:\nconductivity: [-+]?\d*\.\d+|\d+ S/cm")
-        self.assertRegex(result, "Test MAE:\nconductivity: [-+]?\d*\.\d+|\d+ S/cm")
 
         self.assertEqual(len(before_fit_file), 0)
         self.assertEqual(len(after_fit_file), 1)
         os.remove(after_fit_file[0])
+
+        callback_mae = ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
+                                        steps_per_val=1, target_scaler=StandardScaler(1, 1, is_intensive=True))
+
+        dummy_target = np.array([[1, 1], [2, 2]])
+        dummy_nb_atoms = np.array([[2], [3]])
+        transformed = callback_mae.target_scaler.inverse_transform(dummy_target, dummy_nb_atoms)
+        self.assertTrue(np.allclose(transformed, np.array([[2, 2], [3, 3]])))
+
+        callback_mae = ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
+                                        steps_per_val=1, target_scaler=StandardScaler(1, 1, is_intensive=False))
+
+        dummy_target = np.array([[1, 1], [2, 2]])
+        dummy_nb_atoms = np.array([[2], [3]])
+        transformed = callback_mae.target_scaler.inverse_transform(dummy_target, dummy_nb_atoms)
+        self.assertTrue(np.allclose(transformed, np.array([[4, 4], [9, 9]])))
 
     def test_manual_stop(self):
         callbacks = [ManualStop()]
@@ -96,10 +105,10 @@ class TestCallBack(unittest.TestCase):
 
     def test_reduce_lr_upon_nan(self):
         callbacks = [ReduceLRUponNan(patience=100)]
-        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 1e-3)
+        self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 1e-3)
         gen = Generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
         self.model.fit_generator(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-        self.assertAlmostEqual(float(K.get_value(self.model.optimizer.lr)), 0.5e-3)
+        self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 0.5e-3)
 
 
 if __name__ == "__main__":

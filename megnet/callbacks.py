@@ -1,29 +1,33 @@
 from keras.callbacks import Callback
-import keras.backend as K
-from megnet.utils.metric_utils import mae, accuracy
+import keras.backend as kb
+from megnet.utils.metrics import mae, accuracy
 import numpy as np
 import os
 import warnings
 from glob import glob
 from collections import deque
+import logging
+from megnet.utils.preprocessing import DummyScaler
+
+logger = logging.getLogger(__name__)
 
 
 class GeneratorLog(Callback):
     """
-    This callback print out the MAE for train_generator and validation_generator every n_every steps.
+    This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
     The default keras training log does not contain method to rescale the results, thus is not physically
     intuitive.
 
-    :param train_gen: (generator), yield (x, y) pairs for training
-    :param steps_per_train: (int) number of generator steps per training epoch
-    :param val_gen: (generator), yield (x, y) pairs for validation.
-    :param steps_per_val: (int) number of generator steps per epoch for validation data
-    :param y_scaler: (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale
-    :param n_every: (int) epoch interval for showing the log
-    :param val_names: (list of string) variable names
-    :param val_units: (list of string) variable units
-    :param is_pa: (bool) whether it is a per-atom quantity
-
+    Args:
+        train_gen: (generator), yield (x, y) pairs for training
+        steps_per_train: (int) number of generator steps per training epoch
+        val_gen: (generator), yield (x, y) pairs for validation.
+        steps_per_val: (int) number of generator steps per epoch for validation data
+        y_scaler: (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale
+        n_every: (int) epoch interval for showing the log
+        val_names: (list of string) variable names
+        val_units: (list of string) variable units
+        is_pa: (bool) whether it is a per-atom quantity
     """
 
     def __init__(self, train_gen, steps_per_train=None,
@@ -42,7 +46,7 @@ class GeneratorLog(Callback):
         self.val_units = val_units
         self.is_pa = is_pa
         if self.yscaler is None:
-            self.yscaler = _DummyScaler()
+            self.yscaler = DummyScaler()
 
     def on_epoch_end(self, epoch, logs=None):
         """
@@ -61,7 +65,7 @@ class GeneratorLog(Callback):
                 train_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
                 train_y.append(self.yscaler.inverse_transform(train_data[1][0, :, :]) * nb_atom[:, None])
             train_mae = np.mean(np.abs(np.concatenate(train_pred, axis=0) - np.concatenate(train_y, axis=0)), axis=0)
-            print("Train MAE")
+            logger.info("Train MAE")
             _print_mae(self.val_names, train_mae, self.val_units)
             val_pred = []
             val_y = []
@@ -74,7 +78,7 @@ class GeneratorLog(Callback):
                 val_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
                 val_y.append(self.yscaler.inverse_transform(val_data[1][0, :, :]) * nb_atom[:, None])
             val_mae = np.mean(np.abs(np.concatenate(val_pred, axis=0) - np.concatenate(val_y, axis=0)), axis=0)
-            print("Test MAE")
+            logger.info("Test MAE")
             _print_mae(self.val_names, val_mae, self.val_units)
             self.model.history.history.setdefault("train_mae", []).append(train_mae)
             self.model.history.history.setdefault("val_mae", []).append(val_mae)
@@ -84,18 +88,18 @@ class ModelCheckpointMAE(Callback):
     """
     Save the best MAE model
 
-    :param filepath: (string) path to save the model file with format. For example
+    Args:
+        filepath: (string) path to save the model file with format. For example
         `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and val_mae in the filename
-    :param monitor: (string) quantity to monitor, default to "val_mae"
-    :param verbose: (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
-    :param save_best_only: (bool) whether to save only the best model
-    :param save_weights_only: (bool) whether to save the weights only excluding model structure
-    :param val_gen: (generator) validation generator
-    :param steps_per_val: (int) steps per epoch for validation generator
-    :param y_scaler: (object) exposing inverse_transform method to scale the output
-    :param period: (int) number of epoch interval for this callback
-    :param is_pa: (bool) if it is a per-atom quantity
-    :param mode: (string) choose from "min", "max" or "auto"
+        monitor: (string) quantity to monitor, default to "val_mae"
+        verbose: (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
+        save_best_only: (bool) whether to save only the best model
+        save_weights_only: (bool) whether to save the weights only excluding model structure
+        val_gen: (generator) validation generator
+        steps_per_val: (int) steps per epoch for validation generator
+        target_scaler: (object) exposing inverse_transform method to scale the output
+        period: (int) number of epoch interval for this callback
+        mode: (string) choose from "min", "max" or "auto"
     """
 
     def __init__(self,
@@ -106,14 +110,15 @@ class ModelCheckpointMAE(Callback):
                  save_weights_only=False,
                  val_gen=None,
                  steps_per_val=None,
-                 y_scaler=None,
+                 target_scaler=None,
                  period=1,
-                 is_pa=False,
                  mode='auto'):
         super().__init__()
         if val_gen is None:
             raise ValueError('No validation data is provided!')
         self.verbose = verbose
+        if self.verbose > 0:
+            logging.basicConfig(level=logging.INFO)
         self.filepath = filepath
         self.save_best_only = save_best_only
         self.save_weights_only = save_weights_only
@@ -121,10 +126,9 @@ class ModelCheckpointMAE(Callback):
         self.epochs_since_last_save = 0
         self.val_gen = val_gen
         self.steps_per_val = steps_per_val
-        self.yscaler = y_scaler
-        self.is_pa = is_pa
-        if self.yscaler is None:
-            self.yscaler = _DummyScaler()
+        self.target_scaler = target_scaler
+        if self.target_scaler is None:
+            self.target_scaler = DummyScaler()
 
         if monitor == 'val_mae':
             self.metric = mae
@@ -158,11 +162,9 @@ class ModelCheckpointMAE(Callback):
             for i in range(self.steps_per_val):
                 val_data = self.val_gen[i]
                 nb_atom = _count(np.array(val_data[0][-2]))
-                if not self.is_pa:
-                    nb_atom = np.ones_like(nb_atom)
                 pred_ = self.model.predict(val_data[0])
-                val_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
-                val_y.append(self.yscaler.inverse_transform(val_data[1][0, :, :]) * nb_atom[:, None])
+                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :], nb_atom[:, None]))
+                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :], nb_atom[:, None]))
             current = self.metric(np.concatenate(val_y, axis=0), np.concatenate(val_pred, axis=0))
             filepath = self.filepath.format(**{"epoch": epoch + 1, self.monitor: current})
 
@@ -172,11 +174,8 @@ class ModelCheckpointMAE(Callback):
                                   'skipping.' % self.monitor, RuntimeWarning)
                 else:
                     if self.monitor_op(current, self.best):
-                        if self.verbose > 0:
-                            print('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
-                                  ' saving model to %s'
-                                  % (epoch + 1, self.monitor, self.best,
-                                     current, filepath))
+                        logger.info('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
+                                    ' saving model to %s' % (epoch + 1, self.monitor, self.best, current, filepath))
                         self.best = current
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
@@ -184,11 +183,10 @@ class ModelCheckpointMAE(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            print('\nEpoch %05d: %s did not improve from %0.5f' %
-                                  (epoch + 1, self.monitor, self.best))
+                            logger.info('\nEpoch %05d: %s did not improve from %0.5f' %
+                                        (epoch + 1, self.monitor, self.best))
             else:
-                if self.verbose > 0:
-                    print('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
+                logger.info('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
@@ -211,18 +209,17 @@ class ReduceLRUponNan(Callback):
     loss suddenly shoot up
     If such things happen, the model will reduce the learning rate and load the last best model during the
     training process.
-
     It has an extra function that patience for early stopping. This will move to indepedent callback in the
     future.
 
     Args:
-        :param callback_dir: (str) the directory where the saved models are stored
-        :param factor: (float) a value < 1 for scaling the learning rate
-        :param verbose: (int) whether to show the loading event
-        :param patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
-        :param epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
-        :param splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
-            splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
+        callback_dir: (str) the directory where the saved models are stored
+        factor: (float) a value < 1 for scaling the learning rate
+        verbose: (int) whether to show the loading event
+        patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
+        epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
+        splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
+        splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
     """
 
     def __init__(self,
@@ -254,25 +251,25 @@ class ReduceLRUponNan(Callback):
             last_saved_epoch = int(latest_file.split(self.splitter)[self.epoch_local_in_fname])
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                print('MAE does not improve after %d, stopping the fitting...' % self.patience)
+                logger.info('MAE does not improve after %d, stopping the fitting...' % self.patience)
 
         if loss is not None:
             self.losses.append(loss)
             if np.isnan(loss) or np.isinf(loss):
                 self._reduce_lr_and_load()
                 if self.verbose:
-                    print("Nan loss found!\n")
-                    print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+                    logger.info("Nan loss found!\n")
+                    logger.info("Now lr is %s.\n" % float(kb.get_value(self.model.optimizer.lr)))
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load()
                         if self.verbose:
-                            print("Loss shoot up from %.3f to %.3f! Reducing lr \n" %(self.losses[-1], self.losses[-2]))
-                            print("Now lr is ", float(K.get_value(self.model.optimizer.lr)), "\n")
+                            logger.info("Loss shot up from %.3f to %.3f! Reducing lr \n" % (self.losses[-1], self.losses[-2]))
+                            logger.info("Now lr is %s\n." % float(kb.get_value(self.model.optimizer.lr)))
 
     def _reduce_lr_and_load(self):
-        old_value = float(K.get_value(self.model.optimizer.lr))
+        old_value = float(kb.get_value(self.model.optimizer.lr))
         files = glob(os.path.join(self.callback_dir, "*"))
         if len(files) > 1:
             latest_file = max(files, key=os.path.getctime)
@@ -280,35 +277,43 @@ class ReduceLRUponNan(Callback):
             latest_file = None
 
         self.model.reset_states()
-        K.set_value(self.model.optimizer.lr, old_value*self.factor)
+        kb.set_value(self.model.optimizer.lr, old_value*self.factor)
         opt_dict = self.model.optimizer.get_config()
         self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if latest_file is not None:
             self.model.load_weights(latest_file)
             if self.verbose:
-                print("Load weights %s" % latest_file)
+                logger.info("Load weights %s" % latest_file)
 
 
 def _print_mae(target_names, maes, units):
     """
     format printing the MAE for each variable
-    :param target_names: (list of string) variable names
-    :param maes:  (list of numeric) MAE values for each variable
-    :param units:  (list of string) units for each variable
-    :return: (bool)
+
+    Args:
+        target_names: (list of string) variable names
+        maes:  (list of numeric) MAE values for each variable
+        units:  (list of string) units for each variable
+
+    Returns:
+          bool
     """
     line = []
     for i, j, k in zip(target_names, maes, units):
         line.append(i + ': ' + '%.4f' % j + ' ' + k)
-    print(' '.join(line))
+    logger.info(' '.join(line))
     return True
 
 
 def _count(a):
     """
     count number of appearance for each element in a
-    :param a: (np.array)
-    :return: (np.array) number of appearance of each element in a
+
+    Args:
+        a: (np.array)
+
+    Returns:
+        (np.array) number of appearance of each element in a
     """
     a = a.ravel()
     a = np.r_[a[0], a, np.Inf]
@@ -316,10 +321,3 @@ def _count(a):
     z = np.r_[0, z]
     return np.diff(z)
 
-
-class _DummyScaler(object):
-    """
-    Does nothing
-    """
-    def inverse_transform(self, x):
-        return x
