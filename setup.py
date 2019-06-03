@@ -20,7 +20,8 @@ setup(
     install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn",
                       'pymatgen', 'monty'],
     extras_require={
-        'model_saving': ['h5py']
+        'model_saving': ['h5py'],
+        'molecules': ['pybel', 'rdkit']
     },
     packages=find_packages(),
     package_data={
