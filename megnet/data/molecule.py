@@ -13,8 +13,15 @@ from megnet.data.qm9 import ring_to_vector
 from megnet.data.graph import StructureGraph, GaussianDistance
 from sklearn.preprocessing import label_binarize
 
-import pybel
-from rdkit import Chem
+try:
+    import pybel
+except ImportError:
+    pybel = None
+
+try:
+    from rdkit import Chem
+except ImportError:
+    Chem = None
 
 __date__ = '12/01/2018'
 
@@ -93,6 +100,10 @@ class MolecularGraph(StructureGraph):
             known_elements ([str]): List of elements expected to be in dataset. Used only if the
                 feature `element` is used to describe each atom
         """
+
+        # Check if openbabel and RDKit are installed
+        if Chem is None or pybel is None:
+            raise RuntimeError('RDKit and openbabel must be installed')
 
         # TODO (wardlt): I do not think NN strategy is not actually used by this class. Refactor StructureGraph?
         super().__init__('AllAtomPairs')
