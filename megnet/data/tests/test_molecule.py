@@ -30,6 +30,7 @@ def equal(x, y):
 class QM9Test(unittest.TestCase):
 
     @classmethod
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def setUpClass(cls):
         with open(os.path.join(module_dir, 'qm9', '000001.json'), 'r') as f:
             cls.qm9_000001 = json.load(f)
