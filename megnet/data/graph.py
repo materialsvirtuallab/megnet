@@ -112,33 +112,31 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(gnode)),
                 expand_1st(np.array(gbond))]
 
-    def get_flat_data(self, graphs, targets):
+    def get_flat_data(self, graphs, targets=None):
         """
-        Expand the graph dictionary to form a list of features and targets tensors
-        This is useful when the model is trained on assembled graphs on the fly
+        Expand the graph dictionary to form a list of features and targets tensors.
+        This is useful when the model is trained on assembled graphs on the fly.
 
         Args:
             graphs: (list of dictionary) list of graph dictionary for each structure
-            targets: (list of float or list) correspsonding target values for each structure
+            targets: (list of float or list) Optional: corresponding target
+                values for each structure
 
         Returns:
             tuple(node_features, edges_features, global_values, index1, index2, targets)
         """
-        atoms = []
-        bonds = []
-        states = []
-        index1 = []
-        index2 = []
-        final_targets = []
-        for g, t in zip(graphs, targets):
-            if isinstance(g, dict):
-                atoms.append(np.array(g['atom']))
-                bonds.append(np.array(g['bond']))
-                states.append(g['state'])
-                index1.append(g['index1'])
-                index2.append(g['index2'])
-                final_targets.append(to_list(t))
-        return atoms, bonds, states, index1, index2, final_targets
+
+        output = []  # Will be a list of arrays
+
+        # Convert the graphs to matrices
+        for feature in ['atom', 'bond', 'state', 'index1', 'index2']:
+            output.append([np.array(x[feature]) for x in graphs])
+
+        # If needed, add the targets
+        if targets is not None:
+            output.append([to_list(t) for t in targets])
+
+        return tuple(output)
 
     def _get_dummy_convertor(self):
         return DummyConvertor()
