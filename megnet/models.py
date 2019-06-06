@@ -343,7 +343,7 @@ class MEGNetModel(GraphModel):
         ntarget: (int) number of output targets
         act: (object) activation function
         l2_coef: (float or None) l2 regularization parameter
-        is_classification: (bool) whether it is a classifiation task
+        is_classification: (bool) whether it is a classification task
         loss: (object or str) loss function
         dropout: (float) dropout rate
         graph_convertor: (object) object that exposes a "convert" method for structure to graph conversion
@@ -376,109 +376,14 @@ class MEGNetModel(GraphModel):
                  optimizer_kwargs=None
                  ):
 
-        int32 = 'int32'
+        # Build th MEG Model
+        model = make_megnet_model(act, bond_embedding_dim, dropout, embedding_dim,
+                                       global_embedding_dim, is_classification, l2_coef, n1, n2, n3,
+                                       nblocks, nbvocal, nfeat_edge, nfeat_global, nfeat_node,
+                                       ngvocal, npass, ntarget, nvocal)
 
-        if nfeat_node is None:
-            x1 = Input(shape=(None,), dtype=int32)  # only z as feature
-            x1_ = Embedding(nvocal, embedding_dim)(x1)
-        else:
-            x1 = Input(shape=(None, nfeat_node))
-            x1_ = x1
-
-        if nfeat_edge is None:
-            x2 = Input(shape=(None,), dtype=int32)
-            x2_ = Embedding(nbvocal, bond_embedding_dim)(x2)
-        else:
-            x2 = Input(shape=(None, nfeat_edge))
-            x2_ = x2
-
-        if nfeat_global is None:
-            x3 = Input(shape=(None,), dtype=int32)
-            x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
-        else:
-            x3 = Input(shape=(None, nfeat_global))
-            x3_ = x3
-
-        x4 = Input(shape=(None,), dtype=int32)
-        x5 = Input(shape=(None,), dtype=int32)
-        x6 = Input(shape=(None,), dtype=int32)
-        x7 = Input(shape=(None,), dtype=int32)
-
-        if l2_coef is not None:
-            reg = l2(l2_coef)
-        else:
-            reg = None
-
-        # two feedforward layers
-        def ff(x, n_hiddens=[n1, n2]):
-            out = x
-            for i in n_hiddens:
-                out = Dense(i, activation=act, kernel_regularizer=reg)(out)
-            return out
-
-        # a block corresponds to two feedforward layers + one MEGNetLayer layer
-        # Note the first block does not contain the feedforward layer since
-        # it will be explicitly added before the block
-        def one_block(a, b, c, has_ff=True):
-            if has_ff:
-                x1_ = ff(a)
-                x2_ = ff(b)
-                x3_ = ff(c)
-            else:
-                x1_ = a
-                x2_ = b
-                x3_ = c
-            out = MEGNetLayer(
-                [n1, n1, n2], [n1, n1, n2], [n1, n1, n2],
-                pool_method='mean', activation=act, kernel_regularizer=reg)(
-                [x1_, x2_, x3_, x4, x5, x6, x7])
-
-            x1_temp = out[0]
-            x2_temp = out[1]
-            x3_temp = out[2]
-            if dropout:
-                x1_temp = Dropout(dropout)(x1_temp)
-                x2_temp = Dropout(dropout)(x2_temp)
-                x3_temp = Dropout(dropout)(x3_temp)
-            return x1_temp, x2_temp, x3_temp
-
-        x1_ = ff(x1_)
-        x2_ = ff(x2_)
-        x3_ = ff(x3_)
-        for i in range(nblocks):
-            if i == 0:
-                has_ff = False
-            else:
-                has_ff = True
-            x1_1 = x1_
-            x2_1 = x2_
-            x3_1 = x3_
-            x1_1, x2_1, x3_1 = one_block(x1_1, x2_1, x3_1, has_ff)
-            # skip connection
-            x1_ = Add()([x1_, x1_1])
-            x2_ = Add()([x2_, x2_1])
-            x3_ = Add()([x3_, x3_1])
-
-        # set2set for both the atom and bond
-        node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x1_, x6])
-        edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x2_, x7])
-        # concatenate atom, bond, and global
-        final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
-        if dropout:
-            final_vec = Dropout(dropout)(final_vec)
-        # final dense layers
-        final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
-        final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
-
-        if is_classification:
-            final_act = 'sigmoid'
-            loss = 'binary_crossentropy'
-        else:
-            final_act = None
-            loss = loss
-
-        out = Dense(ntarget, activation=final_act)(final_vec)
-        model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
+        # Compile the model with the optimizer
+        loss = 'binary_crossentropy' if is_classification else loss
 
         opt_params = {'lr': lr}
         if optimizer_kwargs is not None:
@@ -489,3 +394,131 @@ class MEGNetModel(GraphModel):
             graph_convertor = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
 
         super().__init__(model=model, graph_convertor=graph_convertor)
+
+
+def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nblocks=3,
+                      n1=64, n2=32, n3=16, nvocal=95, embedding_dim=16, nbvocal=None,
+                      bond_embedding_dim=None, ngvocal=None, global_embedding_dim=None,
+                      npass=3, ntarget=1, act=softplus2, is_classification=False,
+                      l2_coef=None, dropout=None):
+    """Make a MEGNet Model
+
+    Args:
+        nfeat_edge: (int) number of bond features
+        nfeat_global: (int) number of state features
+        nfeat_node: (int) number of atom features
+        nblocks: (int) number of MEGNetLayer blocks
+        n1: (int) number of hidden units in layer 1 in MEGNetLayer
+        n2: (int) number of hidden units in layer 2 in MEGNetLayer
+        n3: (int) number of hidden units in layer 3 in MEGNetLayer
+        nvocal: (int) number of total element
+        embedding_dim: (int) number of embedding dimension
+        nbvocal: (int) number of bond types if bond attributes are types
+        bond_embedding_dim: (int) number of bond embedding dimension
+        ngvocal: (int) number of global types if global attributes are types
+        global_embedding_dim: (int) number of global embedding dimension
+        npass: (int) number of recurrent steps in Set2Set layer
+        ntarget: (int) number of output targets
+        act: (object) activation function
+        l2_coef: (float or None) l2 regularization parameter
+        is_classification: (bool) whether it is a classification task
+        dropout: (float) dropout rate
+    Returns:
+        (Model) Keras model, ready to run
+    """
+
+    # Create the input blocks
+    int32 = 'int32'
+    if nfeat_node is None:
+        x1 = Input(shape=(None,), dtype=int32)  # only z as feature
+        x1_ = Embedding(nvocal, embedding_dim)(x1)
+    else:
+        x1 = Input(shape=(None, nfeat_node))
+        x1_ = x1
+    if nfeat_edge is None:
+        x2 = Input(shape=(None,), dtype=int32)
+        x2_ = Embedding(nbvocal, bond_embedding_dim)(x2)
+    else:
+        x2 = Input(shape=(None, nfeat_edge))
+        x2_ = x2
+    if nfeat_global is None:
+        x3 = Input(shape=(None,), dtype=int32)
+        x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
+    else:
+        x3 = Input(shape=(None, nfeat_global))
+        x3_ = x3
+    x4 = Input(shape=(None,), dtype=int32)
+    x5 = Input(shape=(None,), dtype=int32)
+    x6 = Input(shape=(None,), dtype=int32)
+    x7 = Input(shape=(None,), dtype=int32)
+    if l2_coef is not None:
+        reg = l2(l2_coef)
+    else:
+        reg = None
+
+    # two feedforward layers
+    def ff(x, n_hiddens=[n1, n2]):
+        out = x
+        for i in n_hiddens:
+            out = Dense(i, activation=act, kernel_regularizer=reg)(out)
+        return out
+
+    # a block corresponds to two feedforward layers + one MEGNetLayer layer
+    # Note the first block does not contain the feedforward layer since
+    # it will be explicitly added before the block
+    def one_block(a, b, c, has_ff=True):
+        if has_ff:
+            x1_ = ff(a)
+            x2_ = ff(b)
+            x3_ = ff(c)
+        else:
+            x1_ = a
+            x2_ = b
+            x3_ = c
+        out = MEGNetLayer(
+            [n1, n1, n2], [n1, n1, n2], [n1, n1, n2],
+            pool_method='mean', activation=act, kernel_regularizer=reg)(
+            [x1_, x2_, x3_, x4, x5, x6, x7])
+
+        x1_temp = out[0]
+        x2_temp = out[1]
+        x3_temp = out[2]
+        if dropout:
+            x1_temp = Dropout(dropout)(x1_temp)
+            x2_temp = Dropout(dropout)(x2_temp)
+            x3_temp = Dropout(dropout)(x3_temp)
+        return x1_temp, x2_temp, x3_temp
+
+    x1_ = ff(x1_)
+    x2_ = ff(x2_)
+    x3_ = ff(x3_)
+    for i in range(nblocks):
+        if i == 0:
+            has_ff = False
+        else:
+            has_ff = True
+        x1_1 = x1_
+        x2_1 = x2_
+        x3_1 = x3_
+        x1_1, x2_1, x3_1 = one_block(x1_1, x2_1, x3_1, has_ff)
+        # skip connection
+        x1_ = Add()([x1_, x1_1])
+        x2_ = Add()([x2_, x2_1])
+        x3_ = Add()([x3_, x3_1])
+    # set2set for both the atom and bond
+    node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x1_, x6])
+    edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x2_, x7])
+    # concatenate atom, bond, and global
+    final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
+    if dropout:
+        final_vec = Dropout(dropout)(final_vec)
+    # final dense layers
+    final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
+    final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
+    if is_classification:
+        final_act = 'sigmoid'
+    else:
+        final_act = None
+    out = Dense(ntarget, activation=final_act)(final_vec)
+    model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
+    return model
