@@ -10,7 +10,7 @@ from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
 import numpy as np
 from megnet.data.qm9 import ring_to_vector
-from megnet.data.graph import StructureGraph, GaussianDistance
+from megnet.data.graph import StructureGraph, GaussianDistance, BaseGraphBatchGenerator
 from sklearn.preprocessing import label_binarize
 
 try:
@@ -461,3 +461,60 @@ def mol_from_file(file_path, file_format='xyz'):
     mol = [r for r in pybel.readfile(format=file_format,
                                      filename=file_path)][0]
     return mol
+
+
+class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
+    """Generator that creates batches of molecular data by computing graph properties on demand
+
+    If your dataset is small enough that the descriptions of the whole dataset fit in memory,
+    we recommend using :class:`megnet.data.graph.GraphBatchGenerator` instead to avoid
+    the computational cost of dynamically computing graphs."""
+
+    def __init__(self, mols, targets, converter=MolecularGraph(), molecule_format='xyz',
+                 batch_size=128, shuffle=True):
+        """
+        Args:
+            mols ([str]): List of the string reprensetations of each molecule
+            targets ([ndarray]): Properties of each molecule to be predicted
+            converter (MolecularGraph): Converter used to generate graph features
+            molecule_format (str): Format of each of the string representations in `mols`
+            batch_size (int): Target size for each batch
+            shuffle (bool): Whether to shuffle the training data after each epoch
+        """
+
+        super().__init__(len(mols), targets, batch_size, shuffle)
+        self.mols = np.array(mols)
+        self.converter = converter
+        self.molecule_format = molecule_format
+
+    def _convert_mol(self, mol):
+        """Convert a molecule from string to its graph features
+
+        The parse and convert operations are both in this function due to Pybel objects
+        not being serializable. By not using the Pybel representation of each molecule
+        as an input to this function, we can use multiprocessing to parallelize conversion
+        over molecules as strings can be passed as pickle objects to the worker threads but
+        but Pybel objects cannot.
+
+        Args:
+            mol (str): String representation of a molecule
+        Returns:
+            (dict): Graph represnetation of the molecule
+        """
+
+        # Convert molecule into pybel format
+        if self.molecule_format == 'smiles':
+            mol = mol_from_smiles(mol)  # Used to generate 3D coordinates/H atoms
+        else:
+            mol = pybel.readstring(self.molecule_format, mol)
+
+        return self.converter.convert(mol)
+
+    def _generate_inputs(self, batch_index):
+        # Parse the data from smiles to
+
+        # Generate the graphs
+        graphs = [self._convert_mol(m) for m in self.mols[batch_index]]
+
+        # Return them as flattened into array format
+        return self.converter.get_flat_data(graphs)
