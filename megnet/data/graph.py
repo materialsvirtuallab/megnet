@@ -219,7 +219,7 @@ class BaseGraphBatchGenerator(Sequence):
         self.total_n = dataset_size
         self.is_shuffle = shuffle
         self.max_step = int(np.ceil(self.total_n / batch_size))
-        self.mol_index = list(range(self.total_n))
+        self.mol_index = np.arange(self.total_n)
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 

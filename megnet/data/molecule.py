@@ -3,15 +3,17 @@ Tools for creating graph inputs from molecule data
 """
 
 import itertools
-
-
 from typing import List
+from functools import partial
+from multiprocessing import Pool
+
+import numpy as np
 from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
-import numpy as np
+from sklearn.preprocessing import label_binarize
+
 from megnet.data.qm9 import ring_to_vector
 from megnet.data.graph import StructureGraph, GaussianDistance, BaseGraphBatchGenerator
-from sklearn.preprocessing import label_binarize
 
 try:
     import pybel
@@ -463,6 +465,34 @@ def mol_from_file(file_path, file_format='xyz'):
     return mol
 
 
+def _convert_mol(mol, molecule_format, converter):
+    """Convert a molecule from string to its graph features
+
+    Utility function used in the graph generator.
+
+    The parse and convert operations are both in this function due to Pybel objects
+    not being serializable. By not using the Pybel representation of each molecule
+    as an input to this function, we can use multiprocessing to parallelize conversion
+    over molecules as strings can be passed as pickle objects to the worker threads but
+    but Pybel objects cannot.
+
+    Args:
+        mol (str): String representation of a molecule
+        molecule_format (str): Format of the string representation
+        converter (MolecularGraph): Tool used to generate graph representation
+    Returns:
+        (dict): Graph representation of the molecule
+    """
+
+    # Convert molecule into pybel format
+    if molecule_format == 'smiles':
+        mol = mol_from_smiles(mol)  # Used to generate 3D coordinates/H atoms
+    else:
+        mol = pybel.readstring(molecule_format, mol)
+
+    return converter.convert(mol)
+
+
 class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
     """Generator that creates batches of molecular data by computing graph properties on demand
 
@@ -471,7 +501,7 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
     the computational cost of dynamically computing graphs."""
 
     def __init__(self, mols, targets, converter=MolecularGraph(), molecule_format='xyz',
-                 batch_size=128, shuffle=True):
+                 batch_size=128, shuffle=True, n_jobs=1):
         """
         Args:
             mols ([str]): List of the string reprensetations of each molecule
@@ -480,41 +510,31 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
             molecule_format (str): Format of each of the string representations in `mols`
             batch_size (int): Target size for each batch
             shuffle (bool): Whether to shuffle the training data after each epoch
+            n_jobs (int): Number of worker threads (None to use all threads).
         """
 
         super().__init__(len(mols), targets, batch_size, shuffle)
         self.mols = np.array(mols)
         self.converter = converter
         self.molecule_format = molecule_format
+        self.n_jobs = n_jobs
+        self.pool = Pool(self.n_jobs) if self.n_jobs != 1 else None
 
-    def _convert_mol(self, mol):
-        """Convert a molecule from string to its graph features
-
-        The parse and convert operations are both in this function due to Pybel objects
-        not being serializable. By not using the Pybel representation of each molecule
-        as an input to this function, we can use multiprocessing to parallelize conversion
-        over molecules as strings can be passed as pickle objects to the worker threads but
-        but Pybel objects cannot.
-
-        Args:
-            mol (str): String representation of a molecule
-        Returns:
-            (dict): Graph represnetation of the molecule
-        """
-
-        # Convert molecule into pybel format
-        if self.molecule_format == 'smiles':
-            mol = mol_from_smiles(mol)  # Used to generate 3D coordinates/H atoms
-        else:
-            mol = pybel.readstring(self.molecule_format, mol)
-
-        return self.converter.convert(mol)
+    def __del__(self):
+        if self.pool is not None:
+            self.pool.close()  # Kill thread pool if generator is deleted
 
     def _generate_inputs(self, batch_index):
-        # Parse the data from smiles to
+        # Get the molecules for this batch
+        mols = self.mols[batch_index]
 
         # Generate the graphs
-        graphs = [self._convert_mol(m) for m in self.mols[batch_index]]
+        if self.pool is None:
+            graphs = [_convert_mol(m, self.molecule_format, self.converter) for m in mols]
+        else:
+            func = partial(_convert_mol, molecule_format=self.molecule_format,
+                           converter=self.converter)
+            graphs = self.pool.map(func, mols)
 
         # Return them as flattened into array format
         return self.converter.get_flat_data(graphs)
