@@ -38,7 +38,7 @@ class TestGraph(unittest.TestCase):
         centers = np.linspace(0, 5, 20)
         width = 0.5
         gen = GraphBatchDistanceConvert(feature, bond, glob_features, index1, index2, targets, batch_size=2,
-                                        distance_convertor=GaussianDistance(centers, width))
+                                        distance_converter=GaussianDistance(centers, width))
         data = gen[0]
         self.assertListEqual(list(data[0][0].shape), [1, 5, 4])
         self.assertListEqual(list(data[0][1].shape), [1, 3, 20])
