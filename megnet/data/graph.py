@@ -25,6 +25,9 @@ class StructureGraph(MSONable):
             This method process graphs and targets pairs and output model input list.
 
     """
+
+    # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
+
     def __init__(self,
                  nn_strategy,
                  atom_convertor=None,
@@ -214,7 +217,7 @@ class BaseGraphBatchGenerator(Sequence):
             batch_size (int): Maximum batch size
             shuffle (bool): Whether to shuffle the data after each step
         """
-        self.targets = targets
+        self.targets = np.array(targets)
         self.batch_size = batch_size
         self.total_n = dataset_size
         self.is_shuffle = shuffle
