@@ -18,13 +18,13 @@ from monty.serialization import dumpfn, loadfn
 
 class GraphModel:
     """
-    Composition of keras model and convertor class for transfering structure
+    Composition of keras model and converter class for transfering structure
     object to input tensors. We add methods to train the model from
     (structures, targets) pairs
 
     Args:
         model: (keras model)
-        graph_convertor: (object) a object that turns a structure to a graph,
+        graph_converter: (object) a object that turns a structure to a graph,
             check `megnet.data.crystal`
         target_scaler: (object) a scaler object for converting targets, check
             `megnet.utils.preprocessing`
@@ -36,12 +36,12 @@ class GraphModel:
 
     def __init__(self,
                  model,
-                 graph_convertor,
+                 graph_converter,
                  target_scaler=DummyScaler(),
                  metadata=None,
                  **kwargs):
         self.model = model
-        self.graph_convertor = graph_convertor
+        self.graph_converter = graph_converter
         self.target_scaler = target_scaler
         self.metadata = metadata or {}
 
@@ -127,7 +127,7 @@ class GraphModel:
             filepath = os.path.join(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
-            val_inputs = self.graph_convertor.get_flat_data(validation_graphs, validation_targets)
+            val_inputs = self.graph_converter.get_flat_data(validation_graphs, validation_targets)
 
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
@@ -143,7 +143,7 @@ class GraphModel:
         else:
             val_generator = None
             steps_per_val = None
-        train_inputs = self.graph_convertor.get_flat_data(train_graphs, train_targets)
+        train_inputs = self.graph_converter.get_flat_data(train_graphs, train_targets)
         # check dimension match
         self.check_dimension(train_graphs[0])
         train_generator = self._create_generator(*train_inputs, batch_size=batch_size)
@@ -154,14 +154,14 @@ class GraphModel:
 
     def check_dimension(self, graph):
         """
-        Check the model dimension against the graph convertor dimension
+        Check the model dimension against the graph converter dimension
         Args:
             graph: structure graph
 
         Returns:
 
         """
-        test_inp = self.graph_convertor.graph_to_input(graph)
+        test_inp = self.graph_converter.graph_to_input(graph)
         input_shapes = [i.shape for i in test_inp]
 
         model_input_shapes = [int_shape(i) for i in self.model.inputs]
@@ -206,7 +206,7 @@ class GraphModel:
 
         for i, (s, t) in enumerate(zip(structures, targets)):
             try:
-                graph = self.graph_convertor.convert(s)
+                graph = self.graph_converter.convert(s)
                 graphs_valid.append(graph)
                 targets_valid.append(t)
             except Exception as e:
@@ -228,7 +228,7 @@ class GraphModel:
         Returns:
             predicted target value
         """
-        graph = self.graph_convertor.convert(structure)
+        graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
     def predict_graph(self, graph):
@@ -242,12 +242,12 @@ class GraphModel:
             predicted target value
 
         """
-        inp = self.graph_convertor.graph_to_input(graph)
+        inp = self.graph_converter.graph_to_input(graph)
         return self.target_scaler.inverse_transform(self.predict(inp).ravel(), len(graph['atom']))
 
     def _create_generator(self, *args, **kwargs):
-        if hasattr(self.graph_convertor, 'bond_convertor'):
-            kwargs.update({'distance_convertor': self.graph_convertor.bond_convertor})
+        if hasattr(self.graph_converter, 'bond_converter'):
+            kwargs.update({'distance_converter': self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)
         else:
             return GraphBatchGenerator(*args, **kwargs)
@@ -255,7 +255,7 @@ class GraphModel:
     def save_model(self, filename):
         """
         Save the model to a keras model hdf5 and a json config for additional
-        convertors
+        converters
 
         Args:
             filename: (str) output file name
@@ -266,7 +266,7 @@ class GraphModel:
         self.model.save(filename)
         dumpfn(
             {
-                'graph_convertor': self.graph_convertor,
+                'graph_converter': self.graph_converter,
                 'target_scaler': self.target_scaler,
                 'metadata': self.metadata
             },
@@ -278,7 +278,7 @@ class GraphModel:
         """
         Class method to load model from
             filename for keras model
-            filename.json for additional convertors
+            filename.json for additional converters
 
         Args:
             filename: (str) model file name
@@ -346,7 +346,7 @@ class MEGNetModel(GraphModel):
         is_classification: (bool) whether it is a classification task
         loss: (object or str) loss function
         dropout: (float) dropout rate
-        graph_convertor: (object) object that exposes a "convert" method for structure to graph conversion
+        graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
         optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
 
@@ -372,15 +372,30 @@ class MEGNetModel(GraphModel):
                  loss="mse",
                  l2_coef=None,
                  dropout=None,
-                 graph_convertor=None,
+                 graph_converter=None,
                  optimizer_kwargs=None
                  ):
 
         # Build th MEG Model
-        model = make_megnet_model(act, bond_embedding_dim, dropout, embedding_dim,
-                                       global_embedding_dim, is_classification, l2_coef, n1, n2, n3,
-                                       nblocks, nbvocal, nfeat_edge, nfeat_global, nfeat_node,
-                                       ngvocal, npass, ntarget, nvocal)
+        model = make_megnet_model(nfeat_edge=nfeat_edge,
+                                  nfeat_global=nfeat_global,
+                                  nfeat_node=nfeat_node,
+                                  nblocks=nblocks,
+                                  n1=n1,
+                                  n2=n2,
+                                  n3=n3,
+                                  nvocal=nvocal,
+                                  embedding_dim=embedding_dim,
+                                  nbvocal=nbvocal,
+                                  bond_embedding_dim=bond_embedding_dim,
+                                  ngvocal=ngvocal,
+                                  global_embedding_dim=global_embedding_dim,
+                                  npass=npass,
+                                  ntarget=ntarget,
+                                  act=act,
+                                  is_classification=is_classification,
+                                  l2_coef=l2_coef,
+                                  dropout=dropout)
 
         # Compile the model with the optimizer
         loss = 'binary_crossentropy' if is_classification else loss
@@ -390,10 +405,10 @@ class MEGNetModel(GraphModel):
             opt_params.update(optimizer_kwargs)
         model.compile(Adam(**opt_params), loss)
 
-        if graph_convertor is None:
-            graph_convertor = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
+        if graph_converter is None:
+            graph_converter = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))
 
-        super().__init__(model=model, graph_convertor=graph_convertor)
+        super().__init__(model=model, graph_converter=graph_converter)
 
 
 def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nblocks=3,

@@ -15,14 +15,14 @@ class CrystalGraph(StructureGraph):
     """
     def __init__(self,
                  nn_strategy='MinimumDistanceNNAll',
-                 atom_convertor=None,
-                 bond_convertor=None,
+                 atom_converter=None,
+                 bond_converter=None,
                  cutoff=4.0
                  ):
-        if bond_convertor is None:
-            bond_convertor = GaussianDistance(np.linspace(0, 5, 100), 0.5)
-        super().__init__(nn_strategy=nn_strategy, atom_convertor=atom_convertor,
-                         bond_convertor=bond_convertor, cutoff=cutoff)
+        if bond_converter is None:
+            bond_converter = GaussianDistance(np.linspace(0, 5, 100), 0.5)
+        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
+                         bond_converter=bond_converter, cutoff=cutoff)
 
 
 def get_elemental_embeddings():

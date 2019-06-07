@@ -46,13 +46,13 @@ class SimpleMolGraph(StructureGraph):
     """
     def __init__(self,
                  nn_strategy='AllAtomPairs',
-                 atom_convertor=None,
-                 bond_convertor=None
+                 atom_converter=None,
+                 bond_converter=None
                  ):
-        if bond_convertor is None:
-            bond_convertor = GaussianDistance(np.linspace(0, 4, 20), 0.5)
-        super().__init__(nn_strategy=nn_strategy, atom_convertor=atom_convertor,
-                         bond_convertor=bond_convertor)
+        if bond_converter is None:
+            bond_converter = GaussianDistance(np.linspace(0, 4, 20), 0.5)
+        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
+                         bond_converter=bond_converter)
 
 
 class MolecularGraph(StructureGraph):

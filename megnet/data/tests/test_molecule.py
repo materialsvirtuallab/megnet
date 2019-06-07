@@ -4,7 +4,7 @@ import os
 import json
 
 from megnet.data.molecule import SimpleMolGraph
-from megnet.data.graph import DummyConvertor
+from megnet.data.graph import DummyConverter
 from pymatgen import Molecule
 import numpy as np
 
@@ -226,7 +226,7 @@ class QM9Test(unittest.TestCase):
         self.assertEqual(20, len(self.mg._create_pair_feature_vector(feat)))
 
         # Test the spatial distance without the expansion
-        self.mg.distance_converter = DummyConvertor()
+        self.mg.distance_converter = DummyConverter()
         self.assertAlmostEqual(1.0921, self.mg._create_pair_feature_vector(feat)[0], places=3)
 
     @unittest.skipIf(import_failed, "molecule package relies on openbabel")

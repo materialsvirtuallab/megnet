@@ -30,8 +30,8 @@ class StructureGraph(MSONable):
 
     def __init__(self,
                  nn_strategy,
-                 atom_convertor=None,
-                 bond_convertor=None,
+                 atom_converter=None,
+                 bond_converter=None,
                  **kwargs):
 
         if isinstance(nn_strategy, str):
@@ -48,12 +48,12 @@ class StructureGraph(MSONable):
         else:
             raise RuntimeError("Strategy not valid")
 
-        self.atom_convertor = atom_convertor
-        self.bond_convertor = bond_convertor
-        if self.atom_convertor is None:
-            self.atom_convertor = self._get_dummy_convertor()
-        if self.bond_convertor is None:
-            self.bond_convertor = self._get_dummy_convertor()
+        self.atom_converter = atom_converter
+        self.bond_converter = bond_converter
+        if self.atom_converter is None:
+            self.atom_converter = self._get_dummy_converter()
+        if self.bond_converter is None:
+            self.bond_converter = self._get_dummy_converter()
 
     def convert(self, structure):
         """
@@ -112,8 +112,8 @@ class StructureGraph(MSONable):
         gnode = [0] * len(graph['atom'])
         gbond = [0] * len(graph['index1'])
 
-        return [expand_1st(self.atom_convertor.convert(graph['atom'])),
-                expand_1st(self.bond_convertor.convert(graph['bond'])),
+        return [expand_1st(self.atom_converter.convert(graph['atom'])),
+                expand_1st(self.bond_converter.convert(graph['bond'])),
                 expand_1st(np.array(graph['state'])),
                 expand_1st(np.array(graph['index1'])),
                 expand_1st(np.array(graph['index2'])),
@@ -146,8 +146,8 @@ class StructureGraph(MSONable):
 
         return tuple(output)
 
-    def _get_dummy_convertor(self):
-        return DummyConvertor()
+    def _get_dummy_converter(self):
+        return DummyConverter()
 
     def as_dict(self):
         all_dict = super().as_dict()
@@ -155,7 +155,7 @@ class StructureGraph(MSONable):
         return all_dict
 
 
-class DistanceConvertor(MSONable):
+class DistanceConverter(MSONable):
     """
     Base class for distance conversion. The class needs to have a convert method.
     """
@@ -163,15 +163,15 @@ class DistanceConvertor(MSONable):
         raise NotImplementedError
 
 
-class DummyConvertor(DistanceConvertor):
+class DummyConverter(DistanceConverter):
     """
-    Dummy convertor as a placeholder
+    Dummy converter as a placeholder
     """
     def convert(self, d):
         return d
 
 
-class GaussianDistance(DistanceConvertor):
+class GaussianDistance(DistanceConverter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
@@ -414,7 +414,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         targets: (numpy array), N*1, where N is the number of structures
         batch_size: (int) number of samples in a batch
         is_shuffle: (bool) whether to shuffle the structure, default to True
-        distance_converter: (bool) convertor for processing the distances
+        distance_converter: (bool) converter for processing the distances
 
     """
     def __init__(self,

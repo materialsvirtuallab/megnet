@@ -34,7 +34,7 @@ class TestGraph(unittest.TestCase):
         self.assertListEqual(graph['atom'], [i.specie.Z for i in self.structures[0]])
 
     def test_get_input(self):
-        cg = CrystalGraph(cutoff=4, bond_convertor=GaussianDistance(np.linspace(0, 5, 100), 0.5))
+        cg = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))
         inp = cg.get_input(self.structures[0])
         self.assertEqual(len(inp), 7)
         shapes = [i.shape for i in inp]
