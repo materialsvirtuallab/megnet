@@ -29,9 +29,9 @@ def get_pmg_mol_from_smiles(smiles):
     return p_mol
 
 
-class AtomNumberToTypeConvertor:
+class AtomNumberToTypeconverter:
     """
-    A convertor that takes atomic number list and map
+    A converter that takes atomic number list and map
     it to type list as in qm9 dataset
     """
 
@@ -77,7 +77,7 @@ class QM9Model:
 
     def __init__(self, target_name):
         self.model = MEGNetModel.from_file(pjoin(QM9_MODELDIR, target_name + ".hdf5"))
-        self.model.graph_convertor.atom_convertor = AtomNumberToTypeConvertor()
+        self.model.graph_converter.atom_converter = AtomNumberToTypeconverter()
         self.scaler = Scaler(SCALER[target_name]['mean'], SCALER[target_name]['std'],
                              SCALER[target_name]['is_per_atom'])
 

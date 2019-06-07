@@ -4,11 +4,12 @@ import os
 import json
 
 from megnet.data.molecule import SimpleMolGraph
-from megnet.data.graph import DummyConvertor
+from megnet.data.graph import DummyConverter
 from pymatgen import Molecule
 import numpy as np
 
-from megnet.data.molecule import MolecularGraph, mol_from_smiles, pybel
+from megnet.data.molecule import MolecularGraph, MolecularGraphBatchGenerator,\
+    pybel, mol_from_smiles
 
 if pybel is None:
     import_failed = True
@@ -225,9 +226,25 @@ class QM9Test(unittest.TestCase):
         self.assertEqual(20, len(self.mg._create_pair_feature_vector(feat)))
 
         # Test the spatial distance without the expansion
-        self.mg.distance_converter = DummyConvertor()
+        self.mg.distance_converter = DummyConverter()
         self.assertAlmostEqual(1.0921, self.mg._create_pair_feature_vector(feat)[0], places=3)
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
+    def test_mol_generator(self):
+        mols = ['c', 'C', 'cc', 'ccn']
+        gen = MolecularGraphBatchGenerator(mols, range(4), batch_size=2, molecule_format='smiles')
+
+        # Make a batch, check it has the correct sizes
+        batch = gen[0]
+        self.assertEqual(2, len(batch))
+        self.assertEqual((1, 1, 2), np.shape(batch[1]))  # Should be 2 targets
+        self.assertEqual(7, len(batch[0]))  # Should have 7 different arrays for inputs
+
+        # Test the generator with 2 threads
+        gen = MolecularGraphBatchGenerator(mols, range(4), batch_size=2,
+                                           molecule_format='smiles', n_jobs=2)
+        batch = gen[0]
+        self.assertEqual(2, len(batch))
 
 if __name__ == "__main__":
     unittest.main()

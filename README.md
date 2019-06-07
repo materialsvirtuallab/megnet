@@ -200,10 +200,10 @@ nfeat_global = 2
 r_cutoff = 5
 gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
-distance_convertor = GaussianDistance(gaussian_centers, gaussian_width)
-bond_convertor = CrystalGraph(bond_convertor=distance_convertor, cutoff=r_cutoff)
+distance_converter = GaussianDistance(gaussian_centers, gaussian_width)
+bond_converter = CrystalGraph(bond_converter=distance_converter, cutoff=r_cutoff)
 model = MEGNetModel(nfeat_bond, nfeat_global, 
-                    graph_convertor=graph_convertor)
+                    graph_converter=graph_converter)
 
 # Model training
 # Here, `structures` is a list of pymatgen Structure objects.
@@ -219,13 +219,13 @@ then one needs to use `train_from_graphs` method by training only on the valid g
 
 Following the previous example, 
 ```python
-model = MEGNetModel(nfeat_bond, nfeat_global, graph_convertor=graph_convertor)
+model = MEGNetModel(nfeat_bond, nfeat_global, graph_converter=graph_converter)
 graphs_valid = []
 targets_valid = []
 structures_invalid = []
 for s, p in zip(structures, targets):
     try:
-        graph = model.graph_convertor.convert(s)
+        graph = model.graph_converter.convert(s)
         graphs_valid.append(graph)
         targets_valid.append(p)
     except:

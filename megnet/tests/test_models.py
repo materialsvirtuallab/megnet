@@ -55,11 +55,11 @@ class TestModel(PymatgenTest):
 
         cls.model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                                 n1=4, n2=4, n3=4, npass=1, ntarget=1,
-                                graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
+                                graph_converter=CrystalGraph(bond_converter=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
                                 )
         cls.model2 = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                                  n1=4, n2=4, n3=4, npass=1, ntarget=2,
-                                 graph_convertor=CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
+                                 graph_converter=CrystalGraph(bond_converter=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
                                  )
 
     def test_train_pred(self):
@@ -123,12 +123,12 @@ class TestModel(PymatgenTest):
         self.assertTrue(np.allclose(weights1[0], weights2[0]))
 
     def test_check_dimension(self):
-        gc = CrystalGraph(bond_convertor=GaussianDistance(np.linspace(0, 5, 20), 0.5))
+        gc = CrystalGraph(bond_converter=GaussianDistance(np.linspace(0, 5, 20), 0.5))
         s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
         graph = gc.convert(s)
         model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                             n1=4, n2=4, n3=4, npass=1, ntarget=1,
-                            graph_convertor=CrystalGraph(bond_convertor=gc),
+                            graph_converter=CrystalGraph(bond_converter=gc),
                             )
         with self.assertRaises(Exception) as context:
             model.check_dimension(graph)

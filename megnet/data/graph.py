@@ -1,3 +1,8 @@
+"""Abstract classes and utility operations for building graph representations and
+data loaders (known as Sequence objects in Keras).
+
+Most users will not need to interact with this module."""
+from abc import ABCMeta, abstractmethod
 from operator import itemgetter
 import numpy as np
 from megnet.utils.general import expand_1st, to_list
@@ -20,10 +25,13 @@ class StructureGraph(MSONable):
             This method process graphs and targets pairs and output model input list.
 
     """
+
+    # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
+
     def __init__(self,
                  nn_strategy,
-                 atom_convertor=None,
-                 bond_convertor=None,
+                 atom_converter=None,
+                 bond_converter=None,
                  **kwargs):
 
         if isinstance(nn_strategy, str):
@@ -40,12 +48,12 @@ class StructureGraph(MSONable):
         else:
             raise RuntimeError("Strategy not valid")
 
-        self.atom_convertor = atom_convertor
-        self.bond_convertor = bond_convertor
-        if self.atom_convertor is None:
-            self.atom_convertor = self._get_dummy_convertor()
-        if self.bond_convertor is None:
-            self.bond_convertor = self._get_dummy_convertor()
+        self.atom_converter = atom_converter
+        self.bond_converter = bond_converter
+        if self.atom_converter is None:
+            self.atom_converter = self._get_dummy_converter()
+        if self.bond_converter is None:
+            self.bond_converter = self._get_dummy_converter()
 
     def convert(self, structure):
         """
@@ -104,44 +112,42 @@ class StructureGraph(MSONable):
         gnode = [0] * len(graph['atom'])
         gbond = [0] * len(graph['index1'])
 
-        return [expand_1st(self.atom_convertor.convert(graph['atom'])),
-                expand_1st(self.bond_convertor.convert(graph['bond'])),
+        return [expand_1st(self.atom_converter.convert(graph['atom'])),
+                expand_1st(self.bond_converter.convert(graph['bond'])),
                 expand_1st(np.array(graph['state'])),
                 expand_1st(np.array(graph['index1'])),
                 expand_1st(np.array(graph['index2'])),
                 expand_1st(np.array(gnode)),
                 expand_1st(np.array(gbond))]
 
-    def get_flat_data(self, graphs, targets):
+    def get_flat_data(self, graphs, targets=None):
         """
-        Expand the graph dictionary to form a list of features and targets tensors
-        This is useful when the model is trained on assembled graphs on the fly
+        Expand the graph dictionary to form a list of features and targets tensors.
+        This is useful when the model is trained on assembled graphs on the fly.
 
         Args:
             graphs: (list of dictionary) list of graph dictionary for each structure
-            targets: (list of float or list) correspsonding target values for each structure
+            targets: (list of float or list) Optional: corresponding target
+                values for each structure
 
         Returns:
             tuple(node_features, edges_features, global_values, index1, index2, targets)
         """
-        atoms = []
-        bonds = []
-        states = []
-        index1 = []
-        index2 = []
-        final_targets = []
-        for g, t in zip(graphs, targets):
-            if isinstance(g, dict):
-                atoms.append(np.array(g['atom']))
-                bonds.append(np.array(g['bond']))
-                states.append(g['state'])
-                index1.append(g['index1'])
-                index2.append(g['index2'])
-                final_targets.append(to_list(t))
-        return atoms, bonds, states, index1, index2, final_targets
 
-    def _get_dummy_convertor(self):
-        return DummyConvertor()
+        output = []  # Will be a list of arrays
+
+        # Convert the graphs to matrices
+        for feature in ['atom', 'bond', 'state', 'index1', 'index2']:
+            output.append([np.array(x[feature]) for x in graphs])
+
+        # If needed, add the targets
+        if targets is not None:
+            output.append([to_list(t) for t in targets])
+
+        return tuple(output)
+
+    def _get_dummy_converter(self):
+        return DummyConverter()
 
     def as_dict(self):
         all_dict = super().as_dict()
@@ -149,7 +155,7 @@ class StructureGraph(MSONable):
         return all_dict
 
 
-class DistanceConvertor(MSONable):
+class DistanceConverter(MSONable):
     """
     Base class for distance conversion. The class needs to have a convert method.
     """
@@ -157,15 +163,15 @@ class DistanceConvertor(MSONable):
         raise NotImplementedError
 
 
-class DummyConvertor(DistanceConvertor):
+class DummyConverter(DistanceConverter):
     """
-    Dummy convertor as a placeholder
+    Dummy converter as a placeholder
     """
     def convert(self, d):
         return d
 
 
-class GaussianDistance(DistanceConvertor):
+class GaussianDistance(DistanceConverter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
@@ -192,10 +198,152 @@ class GaussianDistance(DistanceConvertor):
         return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
-class GraphBatchGenerator(Sequence):
+class BaseGraphBatchGenerator(Sequence):
+    """Base class for classes that generate batches of training data for MEGNet.
+    Based on the Sequence class, which is the data loader equivalent for Keras.
+
+    Implementations of this base class must implement the :meth:`_generate_inputs`,
+    which generates the lists of graph descriptions for a batch.
+
+    The :meth:`process_atom_features` function and related functions are used to modify
+    the features for each atom, bond, and global features when creating a batch.
+    """
+
+    def __init__(self, dataset_size, targets, batch_size=128, shuffle=True):
+        """
+        Args:
+            dataset_size (int): Number of entries in dataset
+            targets (ndarray): Feature to be predicted for each network
+            batch_size (int): Maximum batch size
+            shuffle (bool): Whether to shuffle the data after each step
+        """
+        self.targets = np.array(targets)
+        self.batch_size = batch_size
+        self.total_n = dataset_size
+        self.is_shuffle = shuffle
+        self.max_step = int(np.ceil(self.total_n / batch_size))
+        self.mol_index = np.arange(self.total_n)
+        if self.is_shuffle:
+            self.mol_index = np.random.permutation(self.mol_index)
+
+    def __len__(self):
+        return self.max_step
+
+    def _combine_graph_data(self, feature_list_temp, connection_list_temp, global_list_temp,
+                            index1_temp, index2_temp):
+        """Compile the matrices describing each graph into single matrices for the entire graph
+
+        Beyond concatenating the graph descriptions, this operation updates the indices of each
+        node to be sequential across all graphs so they are not duplicated between graphs
+
+        Args:
+            feature_list_temp ([ndarray]): List of features for each node
+            connection_list_temp ([ndarray]): List of features for each connection
+            global_list_temp ([ndarray]): List of global state for each graph
+            index1_temp ([ndarray]): List of indices for the start of each bond
+            index2_temp ([ndarray]): List of indices for the end of each bond
+        Returns:
+            (tuple): Input arrays describing the entire batch of networks:
+                - ndarray: Features for each node
+                - ndarray: Features for each connection
+                - ndarray: Global state for each graph
+                - ndarray: Indices for the start of each bond
+                - ndarray: Indices for the end of each bond
+                - ndarray: Index of graph associated with each node
+                - ndarray: Index of graph associated with each connection
+        """
+        # get atom's structure id
+        gnode = []
+        for i, j in enumerate(feature_list_temp):
+            gnode += [i] * len(j)
+        # get bond features from a batch of structures
+        # get bond's structure id
+        gbond = []
+        for i, j in enumerate(connection_list_temp):
+            gbond += [i] * len(j)
+
+        # assemble atom features together
+        feature_list_temp = np.concatenate(feature_list_temp, axis=0)
+        feature_list_temp = self.process_atom_feature(feature_list_temp)
+
+        # assemble bond feature together
+        connection_list_temp = np.concatenate(connection_list_temp, axis=0)
+        connection_list_temp = self.process_bond_feature(connection_list_temp)
+
+        # assemble state feature together
+        global_list_temp = np.concatenate(global_list_temp, axis=0)
+        global_list_temp = self.process_state_feature(global_list_temp)
+
+        # assemble bond indices
+        index1 = []
+        index2 = []
+        offset_ind = 0
+        for ind1, ind2 in zip(index1_temp, index2_temp):
+            index1 += [i + offset_ind for i in ind1]
+            index2 += [i + offset_ind for i in ind2]
+            offset_ind += (max(ind1) + 1)
+
+        # Compile the inputs in needed order
+        inputs = [expand_1st(feature_list_temp),
+                  expand_1st(connection_list_temp),
+                  expand_1st(global_list_temp),
+                  expand_1st(index1),
+                  expand_1st(index2),
+                  expand_1st(gnode),
+                  expand_1st(gbond)]
+        return inputs
+
+    def on_epoch_end(self):
+        if self.is_shuffle:
+            self.mol_index = np.random.permutation(self.mol_index)
+
+    def process_atom_feature(self, x):
+        return x
+
+    def process_bond_feature(self, x):
+        return x
+
+    def process_state_feature(self, x):
+        return x
+
+    def __getitem__(self, index):
+        # Get the indices for this batch
+        batch_index = self.mol_index[index * self.batch_size:(index + 1) * self.batch_size]
+
+        # Get the inputs for each batch
+        inputs = self._generate_inputs(batch_index)
+
+        # Make the graph data
+        inputs = self._combine_graph_data(*inputs)
+
+        # get targets
+        it = itemgetter(*batch_index)
+        target_temp = it(self.targets)
+        target_temp = np.atleast_2d(target_temp)
+
+        return inputs, expand_1st(target_temp)
+
+    @abstractmethod
+    def _generate_inputs(self, batch_index):
+        """Get the graph descriptions for each batch
+
+        Args:
+             batch_index ([int]): List of indices for training batch
+        Returns:
+            (tuple): Input arrays describing each network:
+                - [ndarray]: List of features for each node
+                - [ndarray]: List of features for each connection
+                - [ndarray]: List of global state for each graph
+                - [ndarray]: List of indices for the start of each bond
+                - [ndarray]: List of indices for the end of each bond
+        """
+        pass
+
+
+class GraphBatchGenerator(BaseGraphBatchGenerator):
     """
     A generator class that assembles several structures (indicated by
-    batch_size) and form (x, y) pairs for model training
+    batch_size) and form (x, y) pairs for model training.
 
     Args:
         atom_features: (list of np.array) list of atom feature matrix,
@@ -219,84 +367,37 @@ class GraphBatchGenerator(Sequence):
                  targets,
                  batch_size=128,
                  is_shuffle=True):
+        super().__init__(len(atom_features), targets, batch_size, is_shuffle)
         self.atom_features = atom_features
         self.bond_features = bond_features
         self.state_features = state_features
         self.index1_list = index1_list
         self.index2_list = index2_list
-        self.targets = targets
-        self.batch_size = batch_size
-        self.total_n = len(atom_features)
-        self.max_step = int(np.ceil(self.total_n / batch_size))
-        self.mol_index = list(range(self.total_n))
-        self.mol_index = np.random.permutation(self.mol_index)
-        self.is_shuffle = is_shuffle
 
-    def __len__(self):
-        return self.max_step
+    def _generate_inputs(self, batch_index):
+        """Get the graph descriptions for each batch
 
-    def __getitem__(self, index):
-        batch_index = self.mol_index[index * self.batch_size:(index + 1) * self.batch_size]
+        Args:
+             batch_index ([int]): List of indices for training batch
+        Returns:
+            (tuple): Input arrays describe each network:
+                - [ndarray]: List of features for each nodes
+                - [ndarray]: List of features for each connection
+                - [ndarray]: List of global state for each graph
+                - [ndarray]: List of indices for the start of each bond
+                - [ndarray]: List of indices for the end of each bond
+        """
+
+        # Get the features and connectivity lists for this batch
         it = itemgetter(*batch_index)
-        # get atom features from  a batch of structures
         feature_list_temp = itemgetter_list(self.atom_features, batch_index)
-        # get atom's structure id
-        gnode = []
-        for i, j in enumerate(feature_list_temp):
-            gnode += [i] * len(j)
-
-        # get bond features from a batch of structures
         connection_list_temp = itemgetter_list(self.bond_features, batch_index)
-        # get bond's structure id
-        gbond = []
-        for i, j in enumerate(connection_list_temp):
-            gbond += [i] * len(j)
-
         global_list_temp = itemgetter_list(self.state_features, batch_index)
-        # assemble atom features together
-        feature_list_temp = np.concatenate(feature_list_temp, axis=0)
-        feature_list_temp = self.process_atom_feature(feature_list_temp)
-        # assemble bond feature together
-        connection_list_temp = np.concatenate(connection_list_temp, axis=0)
-        connection_list_temp = self.process_bond_feature(connection_list_temp)
-        # assemble state feature together
-        global_list_temp = np.concatenate(global_list_temp, axis=0)
-        global_list_temp = self.process_state_feature(global_list_temp)
-
-        # assemble bond indices
         index1_temp = it(self.index1_list)
         index2_temp = it(self.index2_list)
-        index1 = []
-        index2 = []
-        offset_ind = 0
-        for ind1, ind2 in zip(index1_temp, index2_temp):
-            index1 += [i + offset_ind for i in ind1]
-            index2 += [i + offset_ind for i in ind2]
-            offset_ind += (max(ind1) + 1)
-        # get targets
-        target_temp = it(self.targets)
-        target_temp = np.atleast_2d(target_temp)
 
-        return [expand_1st(feature_list_temp),
-                expand_1st(connection_list_temp),
-                expand_1st(global_list_temp),
-                expand_1st(index1),
-                expand_1st(index2),
-                expand_1st(gnode),
-                expand_1st(gbond)], expand_1st(target_temp)
-
-    def on_epoch_end(self):
-        if self.is_shuffle:
-            self.mol_index = np.random.permutation(self.mol_index)
-
-    def process_atom_feature(self, x):
-        return x
-
-    def process_bond_feature(self, x):
-        return x
-
-    def process_state_feature(self, x):
-        return x
+        return feature_list_temp, connection_list_temp, global_list_temp, \
+            index1_temp, index2_temp
 
 
 class GraphBatchDistanceConvert(GraphBatchGenerator):
@@ -313,7 +414,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         targets: (numpy array), N*1, where N is the number of structures
         batch_size: (int) number of samples in a batch
         is_shuffle: (bool) whether to shuffle the structure, default to True
-        distance_convertor: (bool) convertor for processing the distances
+        distance_converter: (bool) converter for processing the distances
 
     """
     def __init__(self,
@@ -325,7 +426,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                  targets,
                  batch_size=128,
                  is_shuffle=True,
-                 distance_convertor=None):
+                 distance_converter=None):
         super().__init__(atom_features=atom_features,
                          bond_features=bond_features,
                          state_features=state_features,
@@ -334,10 +435,10 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                          targets=targets,
                          batch_size=batch_size,
                          is_shuffle=is_shuffle)
-        self.distance_convertor = distance_convertor
+        self.distance_converter = distance_converter
 
     def process_bond_feature(self, x):
-        return self.distance_convertor.convert(x)
+        return self.distance_converter.convert(x)
 
 
 def itemgetter_list(l, indices):
