@@ -9,8 +9,9 @@ from collections import deque
 import logging
 from megnet.utils.preprocessing import DummyScaler
 
+logging.basicConfig()
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.INFO)
 
 class GeneratorLog(Callback):
     """
