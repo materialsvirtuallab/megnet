@@ -1,13 +1,15 @@
-from keras.callbacks import Callback
-import keras.backend as kb
-from megnet.utils.metrics import mae, accuracy
-import numpy as np
+import re
+import logging
 import os
 import warnings
 from glob import glob
 from collections import deque
-import logging
+import numpy as np
+from keras.callbacks import Callback
+import keras.backend as kb
+from megnet.utils.metrics import mae, accuracy
 from megnet.utils.preprocessing import DummyScaler
+
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -214,77 +216,101 @@ class ReduceLRUponNan(Callback):
     future.
 
     Args:
-        callback_dir: (str) the directory where the saved models are stored
+        filepath: (str) filepath for saved model checkpoint, should be consistent with checkpoint callback
         factor: (float) a value < 1 for scaling the learning rate
         verbose: (int) whether to show the loading event
         patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
-        epoch_local_in_fname: (int) combine with splitter to find the epoch number in file name
-        splitter: (str) a splitter string for the file name, e.g., callback/val_mae_0013_0.123.hdf5, can use _ as
-        splitter and epoch_local_in_fname of 2 to get the correct epoch number of 13.
+        track_metric: (string) the variable to track
     """
 
     def __init__(self,
-                 callback_dir='./callback',
+                 filepath='./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
                  factor=0.5,
                  verbose=1,
                  patience=500,
-                 epoch_local_in_fname=2,
-                 splitter='_'):
-
-        self.callback_dir = callback_dir
+                 monitor='val_mae',
+                 mode='auto'):
+        self.filepath = filepath
         self.verbose = verbose
         self.factor = factor
         self.losses = deque([], maxlen=10)
         self.patience = patience
-        self.epoch_local_in_fname = epoch_local_in_fname
-        self.splitter = splitter
+        self.monitor = monitor
+        super().__init__()
+
+        if mode == 'min':
+            self.monitor_op = np.argmin
+        elif mode == 'max':
+            self.monitor_op = np.argmax
+        else:
+            if 'acc' in self.monitor:
+                self.monitor_op = np.argmax
+            else:
+                self.monitor_op = np.argmin
+
+        # get variable name
+        variable_name_pattern = r'{(.+?)}'
+        self.variable_names = re.findall(variable_name_pattern, filepath)
+        self.variable_names = [i.split(':')[0] for i in self.variable_names]
+        if self.monitor not in self.variable_names:
+            raise ValueError("The monitored metric should be in the name pattern")
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
         loss = logs.get('loss')
-
-        files = glob(os.path.join(self.callback_dir, "*"))
-        if len(files) > 1:
-            latest_file = max(files, key=lambda x: int(x.split(self.splitter)[self.epoch_local_in_fname]))
-        else:
-            latest_file = None
-        if latest_file:
-            last_saved_epoch = int(latest_file.split(self.splitter)[self.epoch_local_in_fname])
+        last_saved_epoch, last_metric, last_file = self._get_checkpoints()
+        if last_saved_epoch is not None:
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                logger.info('MAE does not improve after %d, stopping the fitting...' % self.patience)
+                logger.info('%s does not improve after %d, stopping the fitting...' % (self.monitor, self.patience))
 
         if loss is not None:
             self.losses.append(loss)
             if np.isnan(loss) or np.isinf(loss):
-                self._reduce_lr_and_load()
                 if self.verbose:
-                    logger.info("Nan loss found!\n")
-                    logger.info("Now lr is %s.\n" % float(kb.get_value(self.model.optimizer.lr)))
+                    logger.info("Nan loss found!")
+                self._reduce_lr_and_load(last_file)
+                if self.verbose:
+                    logger.info("Now lr is %s." % float(kb.get_value(self.model.optimizer.lr)))
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
-                        self._reduce_lr_and_load()
+                        self._reduce_lr_and_load(last_file)
                         if self.verbose:
-                            logger.info("Loss shot up from %.3f to %.3f! Reducing lr \n" % (self.losses[-1], self.losses[-2]))
-                            logger.info("Now lr is %s\n." % float(kb.get_value(self.model.optimizer.lr)))
+                            logger.info("Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-1], self.losses[-2]))
+                            logger.info("Now lr is %s." % float(kb.get_value(self.model.optimizer.lr)))
 
-    def _reduce_lr_and_load(self):
+    def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.get_value(self.model.optimizer.lr))
-        files = glob(os.path.join(self.callback_dir, "*"))
-        if len(files) > 1:
-            latest_file = max(files, key=os.path.getctime)
-        else:
-            latest_file = None
-
         self.model.reset_states()
         kb.set_value(self.model.optimizer.lr, old_value*self.factor)
         opt_dict = self.model.optimizer.get_config()
         self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
-        if latest_file is not None:
-            self.model.load_weights(latest_file)
+        if last_file is not None:
+            self.model.load_weights(last_file)
             if self.verbose:
-                logger.info("Load weights %s" % latest_file)
+                logger.info("Load weights %s" % last_file)
+        else:
+            logger.info("No weights were loaded")
+
+    def _get_checkpoints(self):
+        file_pattern = re.sub('{(.+?)}', '([0-9\.]+)', self.filepath)
+        glob_pattern = re.sub('{(.+?)}', '*', self.filepath)
+        all_check_points = glob(glob_pattern)
+
+        if len(all_check_points) > 0:
+            metric_index = self.variable_names.index(self.monitor)
+            epoch_index = self.variable_names.index('epoch')
+            metric_values = []
+            epochs = []
+            for i in all_check_points:
+                metrics = re.findall(file_pattern, i)[0]
+                metric_values.append(float(metrics[metric_index]))
+                epochs.append(int(metrics[epoch_index]))
+            ind = self.monitor_op(metric_values)
+            return epochs[ind], metric_values[ind], all_check_points[ind]
+        else:
+            return None, None, None
 
 
 def _print_mae(target_names, maes, units):

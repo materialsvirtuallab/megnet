@@ -156,7 +156,7 @@ class TestModel(PymatgenTest):
             model = MEGNetModel.from_url("https://github.com/materialsvirtuallab/megnet/raw/master/mvl_models/mp-2019.4.1/formation_energy.hdf5")
             li2o = self.get_structure("Li2O")
             self.assertAlmostEqual(float(model.predict_structure(li2o)),
-                                   -2.0152957439422607)
+                                   -2.0152957439422607, places=4)
 
 
 if __name__ == "__main__":
