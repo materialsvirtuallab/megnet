@@ -93,113 +93,113 @@ class MEGNetLayer(GraphNetworkLayer):
             with kb.name_scope('phi_v'):
                 v_shapes = [self.units_e[-1] + vdim + udim] + self.units_v
                 v_shapes = list(zip(v_shapes[:-1], v_shapes[1:]))
-                self.phi_v_weight = [self.add_weight(shape=i,
-                                                     initializer=self.kernel_initializer,
-                                                     name='weight_v_%d' % j,
-                                                     regularizer=self.kernel_regularizer,
-                                                     constraint=self.kernel_constraint)
-                                     for j, i in enumerate(v_shapes)]
+                self.phi_v_weights = [self.add_weight(shape=i,
+                                                      initializer=self.kernel_initializer,
+                                                      name='weight_v_%d' % j,
+                                                      regularizer=self.kernel_regularizer,
+                                                      constraint=self.kernel_constraint)
+                                      for j, i in enumerate(v_shapes)]
                 if self.use_bias:
-                    self.phi_v_bias = [self.add_weight(shape=(i[-1],),
-                                                       initializer=self.bias_initializer,
-                                                       name='bias_v_%d' % j,
-                                                       regularizer=self.bias_regularizer,
-                                                       constraint=self.bias_constraint)
-                                       for j, i in enumerate(v_shapes)]
+                    self.phi_v_biases = [self.add_weight(shape=(i[-1],),
+                                                         initializer=self.bias_initializer,
+                                                         name='bias_v_%d' % j,
+                                                         regularizer=self.bias_regularizer,
+                                                         constraint=self.bias_constraint)
+                                         for j, i in enumerate(v_shapes)]
                 else:
-                    self.phi_v_bias = None
+                    self.phi_v_biases = None
 
             with kb.name_scope('phi_e'):
                 e_shapes = [2 * vdim + edim + udim] + self.units_e
                 e_shapes = list(zip(e_shapes[:-1], e_shapes[1:]))
-                self.phi_e_weight = [self.add_weight(shape=i,
-                                                     initializer=self.kernel_initializer,
-                                                     name='weight_e_%d' % j,
-                                                     regularizer=self.kernel_regularizer,
-                                                     constraint=self.kernel_constraint)
-                                     for j, i in enumerate(e_shapes)]
+                self.phi_e_weights = [self.add_weight(shape=i,
+                                                      initializer=self.kernel_initializer,
+                                                      name='weight_e_%d' % j,
+                                                      regularizer=self.kernel_regularizer,
+                                                      constraint=self.kernel_constraint)
+                                      for j, i in enumerate(e_shapes)]
                 if self.use_bias:
-                    self.phi_e_bias = [self.add_weight(shape=(i[-1],),
-                                                       initializer=self.bias_initializer,
-                                                       name='bias_e_%d' % j,
-                                                       regularizer=self.bias_regularizer,
-                                                       constraint=self.bias_constraint)
-                                       for j, i in enumerate(e_shapes)]
+                    self.phi_e_biases = [self.add_weight(shape=(i[-1],),
+                                                         initializer=self.bias_initializer,
+                                                         name='bias_e_%d' % j,
+                                                         regularizer=self.bias_regularizer,
+                                                         constraint=self.bias_constraint)
+                                         for j, i in enumerate(e_shapes)]
                 else:
-                    self.phi_e_bias = None
+                    self.phi_e_biases = None
 
             with kb.name_scope('phi_u'):
                 u_shapes = [self.units_e[-1] + self.units_v[
                     -1] + udim] + self.units_u
                 u_shapes = list(zip(u_shapes[:-1], u_shapes[1:]))
-                self.phi_u_weight = [self.add_weight(shape=i,
-                                                     initializer=self.kernel_initializer,
-                                                     name='weight_u_%d' % j,
-                                                     regularizer=self.kernel_regularizer,
-                                                     constraint=self.kernel_constraint)
-                                     for j, i in enumerate(u_shapes)]
+                self.phi_u_weights = [self.add_weight(shape=i,
+                                                      initializer=self.kernel_initializer,
+                                                      name='weight_u_%d' % j,
+                                                      regularizer=self.kernel_regularizer,
+                                                      constraint=self.kernel_constraint)
+                                      for j, i in enumerate(u_shapes)]
                 if self.use_bias:
-                    self.phi_u_bias = [self.add_weight(shape=(i[-1],),
-                                                       initializer=self.bias_initializer,
-                                                       name='bias_u_%d' % j,
-                                                       regularizer=self.bias_regularizer,
-                                                       constraint=self.bias_constraint)
-                                       for j, i in enumerate(u_shapes)]
+                    self.phi_u_biases = [self.add_weight(shape=(i[-1],),
+                                                         initializer=self.bias_initializer,
+                                                         name='bias_u_%d' % j,
+                                                         regularizer=self.bias_regularizer,
+                                                         constraint=self.bias_constraint)
+                                         for j, i in enumerate(u_shapes)]
                 else:
-                    self.phi_u_bias = None
+                    self.phi_u_biases = None
         self.built = True
 
     def compute_output_shape(self, input_shape):
         node_feature_shape = input_shape[0]
         edge_feature_shape = input_shape[1]
-        graph_feature_shape = input_shape[2]
+        state_feature_shape = input_shape[2]
         output_shape = [
             (node_feature_shape[0], node_feature_shape[1], self.units_v[-1]),
             (edge_feature_shape[0], edge_feature_shape[1], self.units_e[-1]),
-            (graph_feature_shape[0], graph_feature_shape[1], self.units_u[-1])]
+            (state_feature_shape[0], state_feature_shape[1], self.units_u[-1])]
         return output_shape
 
     def phi_e(self, inputs):
-        node, weights, u, index1, index2, gnode, gbond = inputs
+        nodes, edges, u, index1, index2, gnode, gbond = inputs
         index1 = tf.reshape(index1, (-1,))
         index2 = tf.reshape(index2, (-1,))
-        fs = tf.gather(node, index1, axis=1)
-        fr = tf.gather(node, index2, axis=1)
-        # print(fs.shape)
+        fs = tf.gather(nodes, index1, axis=1)
+        fr = tf.gather(nodes, index2, axis=1)
         concate_node = tf.concat([fs, fr], axis=-1)
         u_expand = repeat_with_index(u, gbond, axis=1)
-        concated = tf.concat([concate_node, weights, u_expand], axis=-1)
-        return self._mlp(concated, self.phi_e_weight, self.phi_e_bias)
+        concated = tf.concat([concate_node, edges, u_expand], axis=-1)
+        return self._mlp(concated, self.phi_e_weights, self.phi_e_biases)
 
     def rho_e_v(self, e_p, inputs):
-        node, weights, u, index1, index2, gnode, gbond = inputs
+        node, edges, u, index1, index2, gnode, gbond = inputs
         index1 = tf.reshape(index1, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(e_p), index1), axis=0)
 
     def phi_v(self, b_ei_p, inputs):
-        node, weights, u, index1, index2, gnode, gbond = inputs
+        nodes, edges, u, index1, index2, gnode, gbond = inputs
         u_expand = repeat_with_index(u, gnode, axis=1)
-        # print(u_expand.shape, node.shape)
-        concated = tf.concat([b_ei_p, node, u_expand], axis=-1)
-        return self._mlp(concated, self.phi_v_weight, self.phi_v_bias)
+        concated = tf.concat([b_ei_p, nodes, u_expand], axis=-1)
+        return self._mlp(concated, self.phi_v_weights, self.phi_v_biases)
 
     def rho_e_u(self, e_p, inputs):
-        node, weights, u, index1, index2, gnode, gbond = inputs
+        nodes, edges, u, index1, index2, gnode, gbond = inputs
         gbond = tf.reshape(gbond, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(e_p), gbond), axis=0)
 
     def rho_v_u(self, v_p, inputs):
-        node, weights, u, index1, index2, gnode, gbond = inputs
+        nodes, edges, u, index1, index2, gnode, gbond = inputs
         gnode = tf.reshape(gnode, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(v_p, axis=0), gnode), axis=0)
 
     def phi_u(self, b_e_p, b_v_p, inputs):
         concated = tf.concat([b_e_p, b_v_p, inputs[2]], axis=-1)
-        return self._mlp(concated, self.phi_u_weight, self.phi_u_bias)
+        return self._mlp(concated, self.phi_u_weights, self.phi_u_biases)
 
-    def _mlp(self, input_, weights, bias):
+    def _mlp(self, input_, weights, biases):
+        if biases is None:
+            biases = [0] * len(weights)
         act = input_
-        for w, b in zip(weights, bias):
+        for w, b in zip(weights, biases):
             output = kb.dot(act, w) + b
             act = self.activation(output)
         return output
