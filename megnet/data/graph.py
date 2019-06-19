@@ -198,6 +198,60 @@ class GaussianDistance(DistanceConverter):
         return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
+class MoorseLongRange(DistanceConverter):
+    """
+    This is an attempt to implement a Moorse/long range interactomic potential like
+    distance expansion. The distance is expanded with this basis at different equilibrium
+    bond distance, r_eq. It is still a work in progress. Do not use if you do not know
+    much about the parameters
+    ref: https://en.wikipedia.org/wiki/Morse/Long-range_potential#Function
+
+    Args:
+        d_e: (float) dissociate energy
+        r_ref: (float) reference bond length
+        r_eq: (list) equilibrium bond length
+        p: (int) exponential term in the original equation, see ref
+        q: (int) exponential term in the original equaiton, see ref
+        cm: (list) long range coefficients in u_LR = \Sigma_i_N (cm_i / r^i)
+        betas: (list) parameters determining the transition between long range and short range
+    """
+    def __init__(self, d_e=1, r_ref=2, r_eq=[1, 2, 3],
+                 p=2, q=2, cm=[1, 2, 3, 4],
+                 betas=[0.1, 0.2, 0.3, 0.4]):
+        self.d_e = d_e
+        self.r_ref = r_ref
+        self.r_eq = np.array(r_eq)
+        self.p = p
+        self.q = q
+        self.cm = np.array(cm).ravel()
+        self.n_cm = len(self.cm)
+        self.betas = np.array(betas).ravel()
+
+    def convert(self, d):
+        return self.d_e * (1 - self.u(d)[:, None] / self.u(self.r_eq)[None, :] *
+                           np.exp(-self.beta(d) * self.y(d[:, None], self.r_eq[None, :], self.p))) ** 2
+
+    def u(self, r):
+        m_i = np.arange(1, self.n_cm + 1)
+        if np.size(r) == 1:
+            return np.sum(self.cm / r**m_i)
+        return np.sum(self.cm[None, :] / r[:, None]**m_i[None, :], axis=1).ravel()
+
+    @staticmethod
+    def y(r, r_ref, p):
+        return (r**p - r_ref**p) / (r**p + r_ref**p)
+
+    def beta(self, r):
+        y_p_ref = self.y(r, self.r_ref, self.p)
+        y_q_ref = self.y(r, self.r_ref, self.q)
+        return self.beta_inf[None, :] * y_p_ref[:, None] + (1 - y_p_ref[:, None]) * \
+            np.sum(self.betas[None, :] * y_q_ref[:,  None] ** np.arange(0, len(self.betas))[None, :], axis=1).ravel()[:, None]
+
+    @property
+    def beta_inf(self):
+        return np.log(2*self.d_e/self.u(self.r_eq))
+
+
 class BaseGraphBatchGenerator(Sequence):
     """Base class for classes that generate batches of training data for MEGNet.
     Based on the Sequence class, which is the data loader equivalent for Keras.
@@ -397,7 +451,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         index2_temp = it(self.index2_list)
 
         return feature_list_temp, connection_list_temp, global_list_temp, \
-            index1_temp, index2_temp
+               index1_temp, index2_temp
 
 
 class GraphBatchDistanceConvert(GraphBatchGenerator):
