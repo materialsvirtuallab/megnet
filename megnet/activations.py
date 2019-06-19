@@ -1,4 +1,6 @@
 import keras.backend as kb
+from keras.activations import get as keras_get
+from keras.activations import deserialize, serialize
 
 
 def softplus2(x):
@@ -13,3 +15,13 @@ def softplus2(x):
          (Tensor) output tensor
     """
     return kb.relu(x) + kb.log(0.5*kb.exp(-kb.abs(x)) + 0.5)
+
+
+def get(identifier):
+    try:
+        return keras_get(identifier)
+    except ValueError:
+        if isinstance(identifier, str):
+            return deserialize(identifier, custom_objects=globals())
+        else:
+            raise ValueError('Could not interpret:',  identifier)

@@ -11,8 +11,8 @@ A full GN block has the following computation steps
 """
 
 from keras.engine import Layer
-from keras.layers import activations, initializers, regularizers, constraints
-
+from keras.layers import initializers, regularizers, constraints
+from megnet import activations
 
 class GraphNetworkLayer(Layer):
     """
@@ -62,7 +62,6 @@ class GraphNetworkLayer(Layer):
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
-        super().__init__(**kwargs)
         self.activation = activations.get(activation)
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -72,6 +71,7 @@ class GraphNetworkLayer(Layer):
         self.activity_regularizer = regularizers.get(activity_regularizer)
         self.kernel_constraint = constraints.get(kernel_constraint)
         self.bias_constraint = constraints.get(bias_constraint)
+        super().__init__(**kwargs)
 
     def call(self, inputs, mask=None):
         e_p = self.phi_e(inputs)

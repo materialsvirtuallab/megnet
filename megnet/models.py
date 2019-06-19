@@ -59,6 +59,8 @@ class GraphModel:
               callbacks=None,
               scrub_failed_structures=False,
               prev_model=None,
+              lr_scaling_factor=0.5,
+              patience=500,
               **kwargs):
         """
         Args:
@@ -72,6 +74,8 @@ class GraphModel:
             callbacks: (list) megnet or keras callback functions for training
             scrub_failed_structures: (bool) whether to scrub structures with failed graph computation
             prev_model: (str) file name for previously saved model
+            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
+            patience: (int) patience for early stopping
             **kwargs:
         """
         train_graphs, train_targets = self.get_all_graphs_targets(train_structures, train_targets,
@@ -91,6 +95,8 @@ class GraphModel:
                                verbose=verbose,
                                callbacks=callbacks,
                                prev_model=prev_model,
+                               lr_scaling_factor=lr_scaling_factor,
+                               patience=patience,
                                **kwargs
                                )
 
@@ -104,6 +110,8 @@ class GraphModel:
                           verbose=1,
                           callbacks=None,
                           prev_model=None,
+                          lr_scaling_factor=0.5,
+                          patience=500,
                           **kwargs
                           ):
 
@@ -119,12 +127,11 @@ class GraphModel:
         if callbacks is None:
             # with this call back you can stop the model training by `touch STOP`
             callbacks = [ManualStop()]
-        callbacks.append(ReduceLRUponNan())
         train_nb_atoms = [len(i['atom']) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
 
         if validation_graphs is not None:
-            filepath = os.path.join(dirname, 'val_mae_{epoch:05d}_{%s:.6f}.hdf5' % monitor)
+            filepath = os.path.join(dirname, '%s_{epoch:05d}_{%s:.6f}.hdf5' % (monitor, monitor))
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
             val_inputs = self.graph_converter.get_flat_data(validation_graphs, validation_targets)
@@ -132,6 +139,12 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
+            callbacks.extend([ReduceLRUponNan(filepath=filepath,
+                                              monitor=monitor,
+                                              mode=mode,
+                                              factor=lr_scaling_factor,
+                                              patience=patience,
+                                              )])
             callbacks.extend([ModelCheckpointMAE(filepath=filepath,
                                                  monitor=monitor,
                                                  mode=mode,
@@ -287,15 +300,9 @@ class GraphModel:
             GraphModel
         """
         configs = loadfn(filename + '.json')
-        from keras.utils import get_custom_objects
         from keras.models import load_model
-
-        custom_objs = get_custom_objects()
-        custom_objs.update({'mean_squared_error_with_scale': mse_scale,
-                            'softplus2': softplus2,
-                            'MEGNetLayer': MEGNetLayer,
-                            'Set2Set': Set2Set})
-        model = load_model(filename, custom_objects=custom_objs)
+        from megnet.layers import _CUSTOM_OBJECTS
+        model = load_model(filename, custom_objects=_CUSTOM_OBJECTS)
         configs.update({'model': model})
         return GraphModel(**configs)
 

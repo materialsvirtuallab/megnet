@@ -8,11 +8,11 @@ import unittest
 class TestLayer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.n_feature = 5
+        cls.n_features = 5
         cls.n_bond_features = 6
         cls.n_global_features = 2
         cls.x = [
-            Input(shape=(None, cls.n_feature)),
+            Input(shape=(None, cls.n_features)),
             Input(shape=(None, cls.n_bond_features)),
             Input(shape=(None, cls.n_global_features)),
             Input(shape=(None, ), dtype='int32'),
