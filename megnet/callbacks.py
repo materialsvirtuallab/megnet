@@ -15,6 +15,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 class GeneratorLog(Callback):
     """
     This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
