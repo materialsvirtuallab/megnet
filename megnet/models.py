@@ -300,15 +300,9 @@ class GraphModel:
             GraphModel
         """
         configs = loadfn(filename + '.json')
-        from keras.utils import get_custom_objects
         from keras.models import load_model
-
-        custom_objs = get_custom_objects()
-        custom_objs.update({'mean_squared_error_with_scale': mse_scale,
-                            'softplus2': softplus2,
-                            'MEGNetLayer': MEGNetLayer,
-                            'Set2Set': Set2Set})
-        model = load_model(filename, custom_objects=custom_objs)
+        from megnet.layers import _CUSTOM_OBJECTS
+        model = load_model(filename, custom_objects=_CUSTOM_OBJECTS)
         configs.update({'model': model})
         return GraphModel(**configs)
 
