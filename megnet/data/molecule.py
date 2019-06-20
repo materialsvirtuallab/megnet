@@ -13,7 +13,8 @@ from pymatgen.io.babel import BabelMolAdaptor
 from sklearn.preprocessing import label_binarize
 
 from megnet.data.qm9 import ring_to_vector
-from megnet.data.graph import StructureGraph, GaussianDistance, BaseGraphBatchGenerator
+from megnet.data.graph import (StructureGraph, GaussianDistance,
+                               BaseGraphBatchGenerator, GraphBatchGenerator)
 
 try:
     import pybel
@@ -531,12 +532,39 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         mols = self.mols[batch_index]
 
         # Generate the graphs
+        graphs = self._generate_graphs(mols)
+
+        # Return them as flattened into array format
+        return self.converter.get_flat_data(graphs)
+
+    def _generate_graphs(self, mols):
+        """Generate graphs for a certain collection of molecules
+
+        Args:
+            mols ([string]): Molecules to process
+        Returns:
+            ([dict]): Graphs for all of the molecules
+        """
         if self.pool is None:
             graphs = [_convert_mol(m, self.molecule_format, self.converter) for m in mols]
         else:
             func = partial(_convert_mol, molecule_format=self.molecule_format,
                            converter=self.converter)
             graphs = self.pool.map(func, mols)
+        return graphs
 
-        # Return them as flattened into array format
-        return self.converter.get_flat_data(graphs)
+    def create_cached_generator(self) -> GraphBatchGenerator:
+        """Generates features for all of the molecules and stores them in memory
+
+        Returns:
+            (GraphBatchGenerator) Graph genereator that relies on having the graphs in memory
+        """
+
+        # Make all the graphs
+        graphs = self._generate_graphs(self.mols)
+
+        # Turn them into a fat array
+        inputs = self.converter.get_flat_data(graphs, self.targets)
+
+        return GraphBatchGenerator(*inputs, is_shuffle=self.is_shuffle,
+                                   batch_size=self.batch_size)

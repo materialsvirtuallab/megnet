@@ -246,5 +246,14 @@ class QM9Test(unittest.TestCase):
         batch = gen[0]
         self.assertEqual(2, len(batch))
 
+        # Create the cached generator, amke sure it creates properly-sized inputs
+        cached = gen.create_cached_generator()
+
+        batch = cached[0]
+        self.assertEqual(2, len(batch))
+        self.assertEqual(2, np.size(batch[1]))  # Should be 2 targets
+        self.assertEqual(7, len(batch[0]))  # Should have 7 different arrays for inputs
+
+
 if __name__ == "__main__":
     unittest.main()
