@@ -380,7 +380,8 @@ class MEGNetModel(GraphModel):
                  l2_coef=None,
                  dropout=None,
                  graph_converter=None,
-                 optimizer_kwargs=None
+                 optimizer_kwargs=None,
+                 dropout_on_predict=False
                  ):
 
         # Build th MEG Model
@@ -402,7 +403,8 @@ class MEGNetModel(GraphModel):
                                   act=act,
                                   is_classification=is_classification,
                                   l2_coef=l2_coef,
-                                  dropout=dropout)
+                                  dropout=dropout,
+                                  dropout_on_predict=dropout_on_predict)
 
         # Compile the model with the optimizer
         loss = 'binary_crossentropy' if is_classification else loss
@@ -422,7 +424,7 @@ def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nbloc
                       n1=64, n2=32, n3=16, nvocal=95, embedding_dim=16, nbvocal=None,
                       bond_embedding_dim=None, ngvocal=None, global_embedding_dim=None,
                       npass=3, ntarget=1, act=softplus2, is_classification=False,
-                      l2_coef=None, dropout=None):
+                      l2_coef=None, dropout=None, dropout_on_predict=False):
     """Make a MEGNet Model
 
     Args:
@@ -445,9 +447,13 @@ def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nbloc
         l2_coef: (float or None) l2 regularization parameter
         is_classification: (bool) whether it is a classification task
         dropout: (float) dropout rate
+        dropout_on_predict (bool): Whether to use dropout during prediction and training
     Returns:
         (Model) Keras model, ready to run
     """
+
+    # Get the setting for the training kwarg of Dropout
+    dropout_training = True if dropout_on_predict else None
 
     # Create the input blocks
     int32 = 'int32'
@@ -506,9 +512,9 @@ def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nbloc
         x2_temp = out[1]
         x3_temp = out[2]
         if dropout:
-            x1_temp = Dropout(dropout)(x1_temp)
-            x2_temp = Dropout(dropout)(x2_temp)
-            x3_temp = Dropout(dropout)(x3_temp)
+            x1_temp = Dropout(dropout)(x1_temp, training=dropout_training)
+            x2_temp = Dropout(dropout)(x2_temp, training=dropout_training)
+            x3_temp = Dropout(dropout)(x3_temp, training=dropout_training)
         return x1_temp, x2_temp, x3_temp
 
     x1_ = ff(x1_)
@@ -533,7 +539,7 @@ def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nbloc
     # concatenate atom, bond, and global
     final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
     if dropout:
-        final_vec = Dropout(dropout)(final_vec)
+        final_vec = Dropout(dropout)(final_vec, training=dropout_training)
     # final dense layers
     final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
     final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
