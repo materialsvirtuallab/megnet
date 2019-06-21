@@ -3,6 +3,8 @@ import numpy as np
 from megnet.data.graph import GaussianDistance
 from monty.serialization import loadfn
 from pathlib import Path
+from copy import deepcopy
+from pymatgen import Element
 
 
 MODULE_DIR = Path(__file__).parent.absolute()
@@ -23,6 +25,28 @@ class CrystalGraph(StructureGraph):
             bond_converter = GaussianDistance(np.linspace(0, 5, 100), 0.5)
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
                          bond_converter=bond_converter, cutoff=cutoff)
+
+
+class CrystalGraphWithBondTypes(StructureGraph):
+    """
+    Overwrite the bond attributes with bond types, defined simply by
+    the metallicity of the atoms forming the bond. Three types of
+    scenario is considered, nonmetal-nonmetal (type 0), metal-nonmetal (type 1), and
+    metal-metal (type 2)
+
+    """
+
+    def convert(self, structure):
+        graph = super().convert(structure)
+        return self._get_bond_type(graph)
+
+    @staticmethod
+    def _get_bond_type(graph):
+        new_graph = deepcopy(graph)
+        elements = [Element.from_Z(i) for i in graph['atom']]
+        for k, (i, j) in enumerate(zip(graph['index1'], graph['index2'])):
+            new_graph['bond'][k] = elements[i].is_metal + elements[j].is_metal
+        return new_graph
 
 
 def get_elemental_embeddings():

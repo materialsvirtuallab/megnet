@@ -1,6 +1,6 @@
 import unittest
 from megnet.data.graph import GaussianDistance
-from megnet.data.crystal import CrystalGraph, get_elemental_embeddings
+from megnet.data.crystal import CrystalGraph, get_elemental_embeddings, CrystalGraphWithBondTypes
 from pymatgen import Structure
 import os
 import numpy as np
@@ -27,6 +27,17 @@ class TestGraph(unittest.TestCase):
         self.assertListEqual(graph2['state'][0], [0, 0])
         graph3 = cg(self.structures[0])
         self.assertListEqual(graph['atom'], graph3['atom'])
+
+    def test_crystal_graph_with_bond_types(self):
+        graph = {'atom': [11, 8, 8],
+                 'index1': [0, 0, 1, 1, 2, 2],
+                 'index2': [0, 1, 2, 2, 1, 1],
+                 'bond': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+                 'state': [[0, 0]]}
+        cgbt = CrystalGraphWithBondTypes(nn_strategy='VoronoiNN')
+        new_graph = cgbt._get_bond_type(graph)
+        self.assertListEqual(new_graph['bond'], [2, 1, 0, 0, 0, 0])
+
 
     def test_convert(self):
         cg = CrystalGraph(cutoff=4)
