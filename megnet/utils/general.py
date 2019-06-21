@@ -24,3 +24,26 @@ def expand_1st(x):
          (np.array)
     """
     return np.expand_dims(x, axis=0)
+
+
+def fast_label_binarize(value, labels):
+    """Faster version of label binarize
+
+    `label_binarize` from scikit-learn is slow when run 1 label at a time.
+    `label_binarize` also is efficient for large numbers of classes, which is not
+    common in `megnet`
+
+    Args:
+        value: Value to encode
+        labels (list): Possible class values
+    Returns:
+        ([int]): List of integers
+    """
+
+    if len(labels) == 2:
+        return [int(value == labels[0])]
+    else:
+        output = [0] * len(labels)
+        if value in labels:
+            output[labels.index(value)] = 1
+        return output

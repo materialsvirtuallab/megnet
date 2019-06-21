@@ -10,9 +10,9 @@ from multiprocessing import Pool
 import numpy as np
 from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
-from sklearn.preprocessing import label_binarize
 
 from megnet.data.qm9 import ring_to_vector
+from megnet.utils.general import fast_label_binarize
 from megnet.data.graph import (StructureGraph, GaussianDistance,
                                BaseGraphBatchGenerator, GraphBatchGenerator)
 
@@ -219,7 +219,7 @@ class MolecularGraph(StructureGraph):
             # Some features require conversion (e.g., binarization)
             if i in bond:
                 if i == "bond_type":
-                    bond_temp.extend(label_binarize([bond[i]], range(5))[0].tolist())
+                    bond_temp.extend(fast_label_binarize(bond[i], [0, 1, 2, 3, 4]))
                 elif i == "same_ring":
                     bond_temp.append(int(bond[i]))
                 elif i == "spatial_distance":
@@ -247,13 +247,13 @@ class MolecularGraph(StructureGraph):
         atom_temp = []
         for i in self.atom_features:
             if i == 'chirality':
-                atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], [0, 1, 2]))
             elif i == 'element':
-                atom_temp.extend(label_binarize([atom[i]], self.known_elements)[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], self.known_elements))
             elif i in ['aromatic', 'donor', 'acceptor']:
-                atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
+                atom_temp.append(int(atom[i]))
             elif i == 'hybridization':
-                atom_temp.extend(label_binarize([atom[i]], range(1, 7))[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], [1, 2, 3, 4, 5, 6]))
             elif i == 'ring_sizes':
                 atom_temp.extend(ring_to_vector(atom[i]))
             else:  # It is a scalar
