@@ -501,7 +501,7 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
     we recommend using :class:`megnet.data.graph.GraphBatchGenerator` instead to avoid
     the computational cost of dynamically computing graphs."""
 
-    def __init__(self, mols, targets, converter=None, molecule_format='xyz',
+    def __init__(self, mols, targets=None, converter=None, molecule_format='xyz',
                  batch_size=128, shuffle=True, n_jobs=1):
         """
         Args:

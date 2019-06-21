@@ -271,7 +271,10 @@ class BaseGraphBatchGenerator(Sequence):
             batch_size (int): Maximum batch size
             shuffle (bool): Whether to shuffle the data after each step
         """
-        self.targets = np.array(targets)
+        if targets is not None:
+            self.targets = np.array(targets)
+        else:
+            self.targets = None
         self.batch_size = batch_size
         self.total_n = dataset_size
         self.is_shuffle = shuffle
@@ -370,12 +373,16 @@ class BaseGraphBatchGenerator(Sequence):
         # Make the graph data
         inputs = self._combine_graph_data(*inputs)
 
-        # get targets
-        it = itemgetter(*batch_index)
-        target_temp = it(self.targets)
-        target_temp = np.atleast_2d(target_temp)
+        # Return the batch
+        if self.targets is None:
+            return inputs
+        else:
+            # get targets
+            it = itemgetter(*batch_index)
+            target_temp = it(self.targets)
+            target_temp = np.atleast_2d(target_temp)
 
-        return inputs, expand_1st(target_temp)
+            return inputs, expand_1st(target_temp)
 
     @abstractmethod
     def _generate_inputs(self, batch_index):
@@ -418,7 +425,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
                  state_features,
                  index1_list,
                  index2_list,
-                 targets,
+                 targets=None,
                  batch_size=128,
                  is_shuffle=True):
         super().__init__(len(atom_features), targets, batch_size, is_shuffle)
@@ -477,7 +484,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                  state_features,
                  index1_list,
                  index2_list,
-                 targets,
+                 targets=None,
                  batch_size=128,
                  is_shuffle=True,
                  distance_converter=None):
