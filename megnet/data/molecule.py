@@ -5,6 +5,7 @@ Tools for creating graph inputs from molecule data
 import itertools
 from typing import List
 from functools import partial
+from collections import deque
 from multiprocessing import Pool
 
 import numpy as np
@@ -418,21 +419,19 @@ def dijkstra_distance(bonds):
         graph_dist[bond[0], bond[1]] = 1
         graph_dist[bond[1], bond[0]] = 1
 
+    queue = deque()  # Queue used in all loops
+    visited = set()  # Used in all loops
     for i in range(nb_atom):
         graph_dist[i, i] = 0
-        unvisited = list(range(nb_atom))
-        visited = []
-        queue = []
-        unvisited.remove(i)
+        visited.clear()
         queue.append(i)
         while queue:
-            s = queue.pop(0)
-            visited.append(s)
+            s = queue.pop()
+            visited.add(s)
 
             for k in np.where(graph_dist[s, :] == 1)[0]:
                 if k not in visited:
                     queue.append(k)
-                    # print(s, k, visited)
                     graph_dist[i, k] = min(graph_dist[i, k],
                                            graph_dist[i, s] + 1)
                     graph_dist[k, i] = graph_dist[i, k]
