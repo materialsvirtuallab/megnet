@@ -1,5 +1,12 @@
 from pymatgen import Molecule
 import numpy as np
+from pymatgen.io.babel import BabelMolAdaptor
+import logging
+try:
+    import pybel as pb
+except:
+    logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
+    pb = None
 
 
 class MEGNetMolecule(Molecule):
@@ -41,3 +48,16 @@ class MEGNetMolecule(Molecule):
     def from_pymatgen(cls, mol):
         sites = mol._sites
         return cls.from_sites(sites)
+
+
+def get_pmg_mol_from_smiles(smiles):
+    """
+    Get a pymatgen molecule from smiles representation
+    Args:
+        smiles: (str) smiles representation of molecule
+    """
+    b_mol = pb.readstring('smi', smiles)
+    b_mol.make3D()
+    b_mol = b_mol.OBMol
+    p_mol = BabelMolAdaptor(b_mol).pymatgen_mol
+    return p_mol
