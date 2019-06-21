@@ -10,6 +10,7 @@
 * [Datasets](#datasets)
 * [Computing requirements](#computing-requirements)
 * [Known limitations](#limitations)
+* [Contributors](#contributors)
 * [References](#references)
 
 <a name="introduction"></a>
@@ -392,6 +393,14 @@ no neighboring atoms are within the distance of `cutoff`. Most of the time, we c
 discard the structure, since we found that those structures tend to have a high energy above 
 hull (less stable). If you think this error is an essential issue for a particular problem, 
 please feel free to email us and we will consider releasing a new model with increased cutoff. 
+
+<a name="contributors"></a>
+# Contributors
+1. Chi Chen from the Materials Virtual Lab is the lead developer of MEGNet.
+2. Shyue Ping Ong and other members of the Materials Virtual Lab contributes to general improvements
+   of MEGNet and its applications.
+3. Logan Ward has made extensive contributions, especially to the development of molecular graph 
+   portions of MEGNet.
 
 <a name="references"></a>
 # References
