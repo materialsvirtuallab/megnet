@@ -13,6 +13,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelBinarizer
 from operator import itemgetter
 from megnet.data.graph import GaussianDistance
+from monty.json import MSONable
 import logging
 
 atom_attri = ['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor',
@@ -25,6 +26,19 @@ target_list = ['mu', 'alpha', 'HOMO', 'LUMO', 'gap', 'R2', 'ZPVE', 'U0', 'U',
 chem_accuracy = [0.1, 0.1, 0.043, 0.043, 1.2, 0.0012, 0.043, 0.05, 10]
 
 logging.basicConfig(level=logging.INFO, handlers=[logging.StreamHandler()])
+
+ATOMNUM2TYPE = {"1": 1, "6": 2, "7": 4, "8": 6, "9": 8}
+
+
+class AtomNumberToTypeConverter(MSONable):
+    """
+    Convert atomic number Z into the atomic type in the QM9 dataset
+    """
+    def __init__(self, mapping=ATOMNUM2TYPE):
+        self.mapping = mapping
+
+    def convert(self, l):
+        return [self.mapping[str(i)] for i in l]
 
 
 def load_qm9_faber(db_connection=None,

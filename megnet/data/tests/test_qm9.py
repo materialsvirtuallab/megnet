@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 import json
-from megnet.data.qm9 import load_qm9_faber, ring_to_vector, FeatureClean, Scaler, sublist_from_qm9
+from megnet.data.qm9 import load_qm9_faber, ring_to_vector, FeatureClean, Scaler, sublist_from_qm9, AtomNumberToTypeConverter
 import os
 
 
@@ -15,6 +15,13 @@ class QM9Test(unittest.TestCase):
             cls.data = json.load(f)
         cls.db_connection = type("MockTest", (), {})
         cls.db_connection.find = MagicMock(return_value=cls.data)
+
+    def test_atom_number_converter(self):
+        anc = AtomNumberToTypeConverter()
+        types = {1: 1, 6: 2, 7: 4, 8: 6, 9: 8}
+        keys = list(types.keys())
+        values = list(types.values())
+        self.assertListEqual(anc.convert(keys), values)
 
     def test_load_qm9(self):
         features_list, connection_list, global_list, index1_list, index2_list, targets = load_qm9_faber(
