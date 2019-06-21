@@ -2,6 +2,8 @@
 Tools for creating graph inputs from molecule data
 """
 
+import os
+import sys
 import itertools
 from typing import List
 from functools import partial
@@ -520,7 +522,11 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         self.converter = converter
         self.molecule_format = molecule_format
         self.n_jobs = n_jobs
-        self.pool = Pool(self.n_jobs) if self.n_jobs != 1 else None
+
+        def mute():
+            sys.stdout = open(os.devnull, 'w')
+            sys.stderr = open(os.devnull, 'w')
+        self.pool = Pool(self.n_jobs, initializer=mute) if self.n_jobs != 1 else None
 
     def __del__(self):
         if self.pool is not None:
