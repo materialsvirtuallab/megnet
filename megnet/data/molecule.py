@@ -2,17 +2,20 @@
 Tools for creating graph inputs from molecule data
 """
 
+import os
+import sys
 import itertools
 from typing import List
 from functools import partial
+from collections import deque
 from multiprocessing import Pool
 
 import numpy as np
 from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
-from sklearn.preprocessing import label_binarize
 
 from megnet.data.qm9 import ring_to_vector
+from megnet.utils.general import fast_label_binarize
 from megnet.data.graph import (StructureGraph, GaussianDistance,
                                BaseGraphBatchGenerator, GraphBatchGenerator)
 
@@ -219,7 +222,7 @@ class MolecularGraph(StructureGraph):
             # Some features require conversion (e.g., binarization)
             if i in bond:
                 if i == "bond_type":
-                    bond_temp.extend(label_binarize([bond[i]], range(5))[0].tolist())
+                    bond_temp.extend(fast_label_binarize(bond[i], [0, 1, 2, 3, 4]))
                 elif i == "same_ring":
                     bond_temp.append(int(bond[i]))
                 elif i == "spatial_distance":
@@ -247,13 +250,13 @@ class MolecularGraph(StructureGraph):
         atom_temp = []
         for i in self.atom_features:
             if i == 'chirality':
-                atom_temp.extend(label_binarize([atom[i]], [0, 1, 2])[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], [0, 1, 2]))
             elif i == 'element':
-                atom_temp.extend(label_binarize([atom[i]], self.known_elements)[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], self.known_elements))
             elif i in ['aromatic', 'donor', 'acceptor']:
-                atom_temp.extend(label_binarize([atom[i]], [False, True])[0].tolist())
+                atom_temp.append(int(atom[i]))
             elif i == 'hybridization':
-                atom_temp.extend(label_binarize([atom[i]], range(1, 7))[0].tolist())
+                atom_temp.extend(fast_label_binarize(atom[i], [1, 2, 3, 4, 5, 6]))
             elif i == 'ring_sizes':
                 atom_temp.extend(ring_to_vector(atom[i]))
             else:  # It is a scalar
@@ -330,8 +333,8 @@ class MolecularGraph(StructureGraph):
             bid (int): Index of atom beginning of the bond
             eid (int): Index of atom at the end of the bond
         """
-        a1 = mol.atoms[bid].OBAtom
-        a2 = mol.atoms[eid].OBAtom
+        a1 = mol.OBMol.GetAtom(bid + 1)
+        a2 = mol.OBMol.GetAtom(eid + 1)
         same_ring = mol.OBMol.AreInSameRing(a1, a2)
         return {"a_idx": bid,
                 "b_idx": eid,
@@ -363,8 +366,8 @@ class MolecularGraph(StructureGraph):
                 return None
 
         # Compute bond features
-        a1 = mol.atoms[bid].OBAtom
-        a2 = mol.atoms[eid].OBAtom
+        a1 = mol.OBMol.GetAtom(bid + 1)
+        a2 = mol.OBMol.GetAtom(eid + 1)
         same_ring = mol.OBMol.AreInSameRing(a1, a2)
         return {"a_idx": bid,
                 "b_idx": eid,
@@ -418,21 +421,19 @@ def dijkstra_distance(bonds):
         graph_dist[bond[0], bond[1]] = 1
         graph_dist[bond[1], bond[0]] = 1
 
+    queue = deque()  # Queue used in all loops
+    visited = set()  # Used in all loops
     for i in range(nb_atom):
         graph_dist[i, i] = 0
-        unvisited = list(range(nb_atom))
-        visited = []
-        queue = []
-        unvisited.remove(i)
+        visited.clear()
         queue.append(i)
         while queue:
-            s = queue.pop(0)
-            visited.append(s)
+            s = queue.pop()
+            visited.add(s)
 
             for k in np.where(graph_dist[s, :] == 1)[0]:
                 if k not in visited:
                     queue.append(k)
-                    # print(s, k, visited)
                     graph_dist[i, k] = min(graph_dist[i, k],
                                            graph_dist[i, s] + 1)
                     graph_dist[k, i] = graph_dist[i, k]
@@ -521,7 +522,11 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         self.converter = converter
         self.molecule_format = molecule_format
         self.n_jobs = n_jobs
-        self.pool = Pool(self.n_jobs) if self.n_jobs != 1 else None
+
+        def mute():
+            sys.stdout = open(os.devnull, 'w')
+            sys.stderr = open(os.devnull, 'w')
+        self.pool = Pool(self.n_jobs, initializer=mute) if self.n_jobs != 1 else None
 
     def __del__(self):
         if self.pool is not None:
