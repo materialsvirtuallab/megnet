@@ -330,8 +330,8 @@ class MolecularGraph(StructureGraph):
             bid (int): Index of atom beginning of the bond
             eid (int): Index of atom at the end of the bond
         """
-        a1 = mol.atoms[bid].OBAtom
-        a2 = mol.atoms[eid].OBAtom
+        a1 = mol.OBMol.GetAtom(bid + 1)
+        a2 = mol.OBMol.GetAtom(eid + 1)
         same_ring = mol.OBMol.AreInSameRing(a1, a2)
         return {"a_idx": bid,
                 "b_idx": eid,
@@ -363,8 +363,8 @@ class MolecularGraph(StructureGraph):
                 return None
 
         # Compute bond features
-        a1 = mol.atoms[bid].OBAtom
-        a2 = mol.atoms[eid].OBAtom
+        a1 = mol.OBMol.GetAtom(bid + 1)
+        a2 = mol.OBMol.GetAtom(eid + 1)
         same_ring = mol.OBMol.AreInSameRing(a1, a2)
         return {"a_idx": bid,
                 "b_idx": eid,
