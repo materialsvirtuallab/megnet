@@ -177,10 +177,14 @@ limited.
 Below is an example of predicting the "HOMO" of a smiles representation
 
 ```python
-from megnet.utils.model_utils import QM9Model
+from megnet.utils.molecule import get_pmg_mol_from_smiles
+from megnet.models import MEGNetModel
 
-model = QM9Model('HOMO')
-model.predict_smiles("C")
+# same model API for molecule and crystals
+model = MEGNetModel.from_file('mvl_models/qm9-2018.6.1/HOMO.hdf5')
+# Need to convert SMILES into pymatgen Molecule
+mol = get_pmg_mol_from_smiles("C")
+model.predict_structure(mol)
 ```
 
 ## Training a new MEGNetModel from structures
