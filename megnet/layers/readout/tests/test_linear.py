@@ -25,7 +25,7 @@ class TestLayer(unittest.TestCase):
         result = model.predict([x, index])
         diff = np.linalg.norm(result[0, :, :] - expected_output)
         self.assertListEqual(list(result.shape), [1, 2, 6])
-        self.assertTrue(diff < 1e-7)
+        self.assertTrue(diff < 1e-5)
 
         linear = LinearWithIndex(mode='sum')
         out = linear([self.x, self.index])
@@ -38,7 +38,7 @@ class TestLayer(unittest.TestCase):
         result = model.predict([x, index])
         diff = np.linalg.norm(result[0, :, :] - expected_output)
         self.assertListEqual(list(result.shape), [1, 2, 6])
-        self.assertTrue(diff < 1e-6)
+        self.assertTrue(diff < 1e-5)
 
 
 if __name__ == "__main__":
