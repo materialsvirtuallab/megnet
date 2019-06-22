@@ -1,4 +1,5 @@
 from pymatgen.analysis.local_env import *
+from inspect import getfullargspec
 
 
 class MinimumDistanceNNAll(MinimumDistanceNN):
@@ -70,6 +71,49 @@ class AllAtomPairs(NearNeighbors):
                             'weight': site.distance(s),
                             'site_index': i})
         return siw
+
+
+def serialize(identifier):
+    if isinstance(identifier, str):
+        return identifier
+    elif isinstance(identifier, NearNeighbors):
+        args = getfullargspec(identifier.__class__.__init__).args
+        d = {"@module": identifier.__class__.__module__,
+             "@class": identifier.__class__.__name__}
+        for arg in args:
+            if arg == 'self':
+                continue
+            try:
+                a = identifier.__getattribute__(arg)
+                d[arg] = a
+            except AttributeError:
+                raise ValueError("Cannot find the argument")
+        if hasattr(identifier, "kwargs"):
+            d.update(**identifier.kwargs)
+        return d
+    elif identifier is None:
+        return None
+    else:
+        raise ValueError('Unknown identifier for local environment ', identifier)
+
+
+def deserialize(config):
+    """
+    Deserialize the config dict to object
+    Args:
+        config: (dict) nn_strategy config dict from seralize function
+
+    Returns: object
+
+    """
+    if config is None:
+        return None
+    modname = config['@module']
+    classname = config['@class']
+    mod = __import__(modname, globals(), locals(), [classname])
+    cls_ = getattr(mod, classname)
+    data = {k: v for k, v in config.items() if not k.startswith('@')}
+    return cls_(**data)
 
 
 def get(identifier):

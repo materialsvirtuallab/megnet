@@ -1,10 +1,11 @@
 import unittest
-from megnet.data.local_env import MinimumDistanceNNAll, AllAtomPairs
+from megnet.data.local_env import MinimumDistanceNNAll, AllAtomPairs, serialize, deserialize, get
 from pymatgen import Structure, Molecule
 import os
 import numpy as np
 
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def _equal(x, y):
     if isinstance(x, list):
@@ -43,6 +44,22 @@ class TestLocalEnv(unittest.TestCase):
     def test_all_atom_pairs(self):
         mol_pairs = self.aapair.get_all_nn_info(self.molecule)
         self.assertEqual(len(mol_pairs[0]), 2)
+
+    def test_serialization(self):
+        mall = MinimumDistanceNNAll(4)
+        config = serialize(mall)
+        self.assertDictEqual(config, {'@module': 'megnet.data.local_env',
+                                      '@class': 'MinimumDistanceNNAll',
+                                      'cutoff': 4})
+        self.assertTrue(serialize(None) is None)
+
+        mall2 = deserialize(config)
+        self.assertTrue(isinstance(mall2, MinimumDistanceNNAll))
+        self.assertTrue(mall2.cutoff == 4)
+
+    def test_get(self):
+        voronoi = get('VoronoiNN')
+        self.assertTrue(voronoi.__name__ == 'VoronoiNN')
 
 
 if __name__ == "__main__":
