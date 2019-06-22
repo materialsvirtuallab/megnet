@@ -74,6 +74,14 @@ class AllAtomPairs(NearNeighbors):
 
 
 def serialize(identifier):
+    """
+    Serialize the local env objects to a dictionary
+    Args:
+        identifier: (NearNeighbors object/str/None)
+
+    Returns: dictionary or None 
+
+    """
     if isinstance(identifier, str):
         return identifier
     elif isinstance(identifier, NearNeighbors):
