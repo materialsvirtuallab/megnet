@@ -29,7 +29,7 @@ class StructureGraph(MSONable):
     # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
 
     def __init__(self,
-                 nn_strategy,
+                 nn_strategy=None,
                  atom_converter=None,
                  bond_converter=None,
                  **kwargs):
