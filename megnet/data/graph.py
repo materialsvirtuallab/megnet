@@ -157,15 +157,18 @@ class StructureGraph(MSONable):
 
     def as_dict(self):
         all_dict = super().as_dict()
-        nn_strategy = all_dict.pop('nn_strategy')
-        all_dict.update({'nn_strategy': local_env.serialize(nn_strategy)})
+        if 'nn_strategy' in all_dict:
+            nn_strategy = all_dict.pop('nn_strategy')
+            all_dict.update({'nn_strategy': local_env.serialize(nn_strategy)})
         return all_dict
 
     @classmethod
     def from_dict(cls, d):
-        nn_strategy = d.pop('nn_strategy')
-        nn_strategy_obj = local_env.deserialize(nn_strategy)
-        d.update({'nn_strategy': nn_strategy_obj})
+        if 'nn_strategy' in d:
+            nn_strategy = d.pop('nn_strategy')
+            nn_strategy_obj = local_env.deserialize(nn_strategy)
+            d.update({'nn_strategy': nn_strategy_obj})
+            return super().from_dict(d)
         return super().from_dict(d)
 
 

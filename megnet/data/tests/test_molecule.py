@@ -38,18 +38,20 @@ class QM9Test(unittest.TestCase):
         self.assertListEqual(graph['index2'], [1, 2, 0, 2, 0, 1])
 
 
-@unittest.skipIf(import_failed, "molecule package relies on openbabel")
 class MolecularGraphTest(unittest.TestCase):
 
     @classmethod
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def setUpClass(cls):
         with open(os.path.join(module_dir, 'qm9', '000001.json'), 'r') as f:
             cls.qm9_000001 = json.load(f)
         cls.mol = mol_from_smiles(cls.qm9_000001['smiles'])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def setUp(self) -> None:
         self.mg = MolecularGraph()
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_featurizer(self):
         mg = MolecularGraph()
         mol_graph = mg.convert(self.mol)
@@ -60,6 +62,7 @@ class MolecularGraphTest(unittest.TestCase):
         mol_graph = mg.convert(self.mol, state_attributes=[[1, 2]])
         self.assertListEqual(mol_graph['state'][0], [1, 2])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_atom_features(self):
         """Detailed test of get_atom_feature"""
 
@@ -124,6 +127,7 @@ class MolecularGraphTest(unittest.TestCase):
         feat = self.mg.get_atom_feature(water, water.atoms[0])
         self.assertTrue(feat['acceptor'])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_atom_feature_vector(self):
         """Test the code that transforms feature dict to a list"""
 
@@ -170,6 +174,7 @@ class MolecularGraphTest(unittest.TestCase):
         vec = self.mg._create_atom_feature_vector(feat)
         self.assertEqual([0, 0, 1], vec)
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_bond_features(self):
         """Detailed tests for bond features"""
 
@@ -205,6 +210,7 @@ class MolecularGraphTest(unittest.TestCase):
         self.assertEqual(4, feat['bond_type'])
         self.assertEqual(True, feat['same_ring'])
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_bond_feature_vec(self):
         # Test the full list
         feat = self.mg.get_pair_feature(self.mol, 0, 1, True)
@@ -226,6 +232,7 @@ class MolecularGraphTest(unittest.TestCase):
         self.mg.distance_converter = DummyConverter()
         self.assertAlmostEqual(1.0921, self.mg._create_pair_feature_vector(feat)[0], places=3)
 
+    @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def test_mol_generator(self):
         mols = ['c', 'C', 'cc', 'ccn']
         gen = MolecularGraphBatchGenerator(mols, range(4), batch_size=2, molecule_format='smiles')
