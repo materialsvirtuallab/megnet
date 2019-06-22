@@ -45,6 +45,8 @@ class StructureGraph(MSONable):
             self.nn_strategy = strategy(**param_dict)
         elif isinstance(nn_strategy, NearNeighbors):
             self.nn_strategy = nn_strategy
+        elif nn_strategy is None:
+            self.nn_strategy = None
         else:
             raise RuntimeError("Strategy not valid")
 
@@ -55,7 +57,7 @@ class StructureGraph(MSONable):
         if self.bond_converter is None:
             self.bond_converter = self._get_dummy_converter()
 
-    def convert(self, structure):
+    def convert(self, structure, state_attributes=None):
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
@@ -65,13 +67,16 @@ class StructureGraph(MSONable):
         take default [[0, 0]]
 
         Args:
+            state_attributes: (list) state attributes
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = getattr(structure, 'state', None) or [[0, 0]]
+        state_attributes = state_attributes or [[0, 0]]
         index1 = []
         index2 = []
         bonds = []
+        if self.nn_strategy is None:
+            raise RuntimeError("NearNeighbor strategy is not provided!")
         for n, neighbors in enumerate(self.nn_strategy.get_all_nn_info(structure)):
             index1.extend([n] * len(neighbors))
             for neighbor in neighbors:
@@ -146,13 +151,22 @@ class StructureGraph(MSONable):
 
         return tuple(output)
 
-    def _get_dummy_converter(self):
+    @staticmethod
+    def _get_dummy_converter():
         return DummyConverter()
 
     def as_dict(self):
         all_dict = super().as_dict()
-        all_dict.pop('nn_strategy')
+        nn_strategy = all_dict.pop('nn_strategy')
+        all_dict.update({'nn_strategy': local_env.serialize(nn_strategy)})
         return all_dict
+
+    @classmethod
+    def from_dict(cls, d):
+        nn_strategy = d.pop('nn_strategy')
+        nn_strategy_obj = local_env.deserialize(nn_strategy)
+        d.update({'nn_strategy': nn_strategy_obj})
+        return super().from_dict(d)
 
 
 class DistanceConverter(MSONable):

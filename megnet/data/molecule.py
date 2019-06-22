@@ -111,8 +111,7 @@ class MolecularGraph(StructureGraph):
         if Chem is None or pybel is None:
             raise RuntimeError('RDKit and openbabel must be installed')
 
-        # TODO (wardlt): I do not think NN strategy is not actually used by this class. Refactor StructureGraph?
-        super().__init__('AllAtomPairs')
+        super().__init__()
         if bond_features is None:
             bond_features = _BOND_FEATURES
         if atom_features is None:

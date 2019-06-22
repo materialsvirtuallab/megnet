@@ -35,9 +35,15 @@ class CrystalGraphWithBondTypes(StructureGraph):
     metal-metal (type 2)
 
     """
+    def __init__(self,
+                 nn_strategy='VoronoiNN',
+                 atom_converter=None,
+                 bond_converter=None):
+        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
+                         bond_converter=bond_converter)
 
-    def convert(self, structure):
-        graph = super().convert(structure)
+    def convert(self, structure, state_attributes=None):
+        graph = super().convert(structure, state_attributes=state_attributes)
         return self._get_bond_type(graph)
 
     @staticmethod
