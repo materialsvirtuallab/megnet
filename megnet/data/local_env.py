@@ -79,7 +79,7 @@ def serialize(identifier):
     Args:
         identifier: (NearNeighbors object/str/None)
 
-    Returns: dictionary or None 
+    Returns: dictionary or None
 
     """
     if isinstance(identifier, str):
