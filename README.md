@@ -206,7 +206,7 @@ r_cutoff = 5
 gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
 distance_converter = GaussianDistance(gaussian_centers, gaussian_width)
-bond_converter = CrystalGraph(bond_converter=distance_converter, cutoff=r_cutoff)
+graph_converter = CrystalGraph(bond_converter=distance_converter, cutoff=r_cutoff)
 model = MEGNetModel(nfeat_bond, nfeat_global, 
                     graph_converter=graph_converter)
 
