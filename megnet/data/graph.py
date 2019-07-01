@@ -396,7 +396,7 @@ class BaseGraphBatchGenerator(Sequence):
         else:
             # get targets
             it = itemgetter(*batch_index)
-            target_temp = it(self.targets)
+            target_temp = itemgetter_list(self.targets, batch_index)
             target_temp = np.atleast_2d(target_temp)
 
             return inputs, expand_1st(target_temp)
@@ -471,8 +471,8 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         feature_list_temp = itemgetter_list(self.atom_features, batch_index)
         connection_list_temp = itemgetter_list(self.bond_features, batch_index)
         global_list_temp = itemgetter_list(self.state_features, batch_index)
-        index1_temp = it(self.index1_list)
-        index2_temp = it(self.index2_list)
+        index1_temp = itemgetter_list(self.index1_list,  batch_index)
+        index2_temp = itemgetter_list(self.index2_list, batch_index)
 
         return feature_list_temp, connection_list_temp, global_list_temp, \
                index1_temp, index2_temp
