@@ -6,8 +6,8 @@
 * [MEGNet Framework](#megnet-framework)
 * [Installation](#installation)
 * [Usage](#usage)
-* [Implementation details](#implementation-details)
 * [Datasets](#datasets)
+* [Implementation details](#implementation-details)
 * [Computing requirements](#computing-requirements)
 * [Known limitations](#limitations)
 * [Contributors](#contributors)
@@ -39,7 +39,7 @@ Briefly, Figure 1 shows the sequential update steps of the graph network,
 whereby bonds, atoms, and global state attributes are updated using information
 from each other, generating an output graph.
 
-![GraphModel diagram](resources/model_diagram.png)
+![GraphModel diagram](resources/model_diagram_small.jpg)
 <div align='center'><strong>Figure 1. The graph network update function.</strong></div>
 
 Figure 2 shows the overall schematic of the MEGNet. Each graph network module 
@@ -50,7 +50,7 @@ number of blocks required depend on the range of interactions necessary to
 predict a target property. In the final step, a `set2set` is used to map the 
 output to a scalar/vector property.
 
-![GraphModel architecture](resources/model_arch.jpg)
+![GraphModel architecture](resources/model_arch_small.jpg)
 <div align='center'><strong>Figure 2. Schematic of MatErials Graph Network.</strong></div>
 
 <a name="installation"></a>
