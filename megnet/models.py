@@ -354,7 +354,7 @@ class MEGNetModel(GraphModel):
         loss: (object or str) loss function
         dropout: (float) dropout rate
         graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
-        target_scaler: (object) object that provides a "transform" and "inverse_transform" methods for transforming the target values
+        target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the target values
         optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
 
