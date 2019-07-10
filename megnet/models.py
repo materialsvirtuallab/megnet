@@ -354,6 +354,7 @@ class MEGNetModel(GraphModel):
         loss: (object or str) loss function
         dropout: (float) dropout rate
         graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
+        target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the target values
         optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
 
@@ -380,6 +381,7 @@ class MEGNetModel(GraphModel):
                  l2_coef=None,
                  dropout=None,
                  graph_converter=None,
+                 target_scaler=DummyScaler(),
                  optimizer_kwargs=None,
                  dropout_on_predict=False
                  ):
@@ -417,7 +419,7 @@ class MEGNetModel(GraphModel):
         if graph_converter is None:
             graph_converter = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))
 
-        super().__init__(model=model, graph_converter=graph_converter)
+        super().__init__(model=model, target_scaler=target_scaler, graph_converter=graph_converter)
 
 
 def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nblocks=3,
