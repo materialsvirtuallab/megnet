@@ -23,8 +23,9 @@ class CrystalGraph(StructureGraph):
                  ):
         if bond_converter is None:
             bond_converter = GaussianDistance(np.linspace(0, 5, 100), 0.5)
+        self.cutoff = cutoff
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
-                         bond_converter=bond_converter, cutoff=cutoff)
+                         bond_converter=bond_converter, cutoff=self.cutoff)
 
 
 class CrystalGraphWithBondTypes(StructureGraph):
