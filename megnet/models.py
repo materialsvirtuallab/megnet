@@ -351,7 +351,7 @@ class MEGNetModel(GraphModel):
         l2_coef: (float or None) l2 regularization parameter
         is_classification: (bool) whether it is a classification task
         loss: (object or str) loss function
-        metrics: (str or list of str) metrics to monitor during training
+        metrics: (list or dict) List or dictionary of Keras metrics to be evaluated by the model during training and testing
         dropout: (float) dropout rate
         graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
         target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the target values
