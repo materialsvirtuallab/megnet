@@ -138,7 +138,6 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
-
             callbacks.extend([ReduceLRUponNan(filepath=filepath,
                                               monitor=monitor,
                                               mode=mode,
@@ -358,6 +357,7 @@ class MEGNetModel(GraphModel):
         target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the target values
         optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
+
     def __init__(self,
                  nfeat_edge=None,
                  nfeat_global=None,
