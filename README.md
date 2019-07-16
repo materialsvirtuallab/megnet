@@ -29,8 +29,8 @@ crystals is available at http://megnet.crystals.ai.
 <a name="megnet-framework"></a>
 # MEGNet framework
 
-The MatErials Graph Network (MEGNet) is an implementation of [DeepMind's graph 
-networks][1] for universal machine learning in materials science. We have 
+The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph 
+networks[^1] for universal machine learning in materials science. We have 
 demonstrated its success in achieving very low prediction errors in a broad 
 array of properties in both molecules and crystals (see 
 ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"][2]).
@@ -319,7 +319,7 @@ few innovations compared to conventional graph-based neural neworks.
   highly general model.
 
 The `MEGNet` model implements two major components: (a) the `graph network`
-layer and (b) the `set2set` layer.[3] The layers are based on 
+layer and (b) the [`set2set` layer][3]. The layers are based on 
 [keras](https://keras.io/) API and is thus compatible with other keras modules. 
 
 Different crystals/molecules have different number of atoms. Therefore it is 
@@ -366,7 +366,7 @@ our MP-crystals-2018.6.1 crystal data set via [figshare](https://figshare.com/ar
 The MP-crystals-2018.6.1 data set comprises the DFT-computed energies and
 band gaps of 69,640 crystals from the [Materials Project](http://www.materialsproject.org)
 obtained via the [Python Materials Genomics (pymatgen)](http://pymatgen.org)
-interface to the Materials Application Programming Interface (API)[5] on 
+interface to the [Materials Application Programming Interface (API)][5] on 
 June 1, 2018. The crystal graphs were constructed using a radius cut-oﬀ of 4 
 angstroms. Using this cut-oﬀ, 69,239 crystals do not form isolated atoms and 
 are used in the models. A subset of 5,830 structures have elasticity data that 
@@ -409,23 +409,23 @@ please feel free to email us and we will consider releasing a new model with inc
 <a name="references"></a>
 # References
 
-[1]: Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; 
+[^1]: Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.; 
      Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.; 
      Faulkner, R.; et al. Relational inductive biases, deep learning, and graph 
      networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
-[2]: Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. Graph Networks as a 
+[^2]: Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. Graph Networks as a 
      Universal Machine Learning Framework for Molecules and Crystals. Chemistry 
      of Materials 2019, acs.chemmater.9b01294. 
      [doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)
-[3]: Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for 
+[^3]: Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for 
      sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
-[4]: https://figshare.com/articles/Graphs_of_materials_project/7451351
-[5]: Ong, S. P.; Cholia, S.; Jain, A.; Brafman, M.; Gunter, D.; Ceder, G.; 
+[^4]: https://figshare.com/articles/Graphs_of_materials_project/7451351
+[^5]: Ong, S. P.; Cholia, S.; Jain, A.; Brafman, M.; Gunter, D.; Ceder, G.; 
      Persson, K. A. The Materials Application Programming Interface (API): A 
      simple, flexible and efficient API for materials data based on
      REpresentational State Transfer (REST) principles. Comput. Mater. Sci. 2015, 
      97, 209–215 DOI: [10.1016/j.commatsci.2014.10.037](http://dx.doi.org/10.1016/j.commatsci.2014.10.037).
-[6]: Faber, F. A.; Hutchison, L.; Huang, B.; Gilmer, J.; Schoenholz, S. S.; 
+[^6]: Faber, F. A.; Hutchison, L.; Huang, B.; Gilmer, J.; Schoenholz, S. S.; 
      Dahl, G. E.; Vinyals, O.; Kearnes, S.; Riley, P. F.; von Lilienfeld, O. A. 
      Prediction errors of molecular machine learning models lower than hybrid DFT 
      error. Journal of Chemical Theory and Computation 2017, 13, 5255–5264. 
