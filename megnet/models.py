@@ -2,7 +2,6 @@ from keras.optimizers import Adam
 from keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
 from megnet.layers import MEGNetLayer, Set2Set
 from megnet.activations import softplus2
-from megnet.losses import mse_scale
 from keras.regularizers import l2
 from keras.backend import int_shape
 from keras.models import Model
@@ -139,6 +138,7 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
+
             callbacks.extend([ReduceLRUponNan(filepath=filepath,
                                               monitor=monitor,
                                               mode=mode,
@@ -352,12 +352,12 @@ class MEGNetModel(GraphModel):
         l2_coef: (float or None) l2 regularization parameter
         is_classification: (bool) whether it is a classification task
         loss: (object or str) loss function
+        metrics: (str or list of str) metrics to monitor during training
         dropout: (float) dropout rate
         graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
         target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the target values
         optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
-
     def __init__(self,
                  nfeat_edge=None,
                  nfeat_global=None,
@@ -378,6 +378,7 @@ class MEGNetModel(GraphModel):
                  act=softplus2,
                  is_classification=False,
                  loss="mse",
+                 metrics=None,
                  l2_coef=None,
                  dropout=None,
                  graph_converter=None,
@@ -386,7 +387,7 @@ class MEGNetModel(GraphModel):
                  dropout_on_predict=False
                  ):
 
-        # Build th MEG Model
+        # Build the MEG Model
         model = make_megnet_model(nfeat_edge=nfeat_edge,
                                   nfeat_global=nfeat_global,
                                   nfeat_node=nfeat_node,
@@ -414,7 +415,7 @@ class MEGNetModel(GraphModel):
         opt_params = {'lr': lr}
         if optimizer_kwargs is not None:
             opt_params.update(optimizer_kwargs)
-        model.compile(Adam(**opt_params), loss)
+        model.compile(Adam(**opt_params), loss, metrics=metrics)
 
         if graph_converter is None:
             graph_converter = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))
