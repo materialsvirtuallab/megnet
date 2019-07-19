@@ -11,8 +11,9 @@ A full GN block has the following computation steps
 """
 
 from keras.engine import Layer
-from keras.layers import initializers, regularizers, constraints
+from keras import regularizers, constraints, initializers
 from megnet import activations
+
 
 class GraphNetworkLayer(Layer):
     """
