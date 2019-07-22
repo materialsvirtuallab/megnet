@@ -250,7 +250,7 @@ band gaps), with better converegence and lower errors. These embeddings are
 also potentially useful in developing other ML models and applications. These 
 embeddings have been made available via the following code:
 
-```
+```python
 from megnet.data.crystal import get_elemental_embeddings
 
 el_embeddings = get_elemental_embeddings()
