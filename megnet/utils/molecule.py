@@ -10,13 +10,12 @@ except:
 
 
 class MEGNetMolecule(Molecule):
-    def get_all_neighbors(self, cutoff, include_index=True, include_site=False, include_image=True, **kwargs):
+    def get_all_neighbors(self, cutoff, include_index=True, include_image=True, **kwargs):
         """
 
         Args:
             cutoff: float, cutoff radius
             include_index: bool, whether to include the site index
-            include_site: bool, whether to include site
             include_image: bool, whether to include dummy image
 
         Returns:
@@ -33,8 +32,7 @@ class MEGNetMolecule(Molecule):
             neighbor = []
             for k, l, m in zip(d, inds, images):
                 item = []
-                if include_site:
-                    item.append(self[l])
+                item.append(self[l])
                 item.append(k)
                 if include_index:
                     item += [l]
