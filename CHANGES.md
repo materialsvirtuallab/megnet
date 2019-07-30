@@ -1,4 +1,11 @@
-#v0.3.3
+# v0.3.4
+* Change `convertor` to `converter` in all model APIs
+* Improve `ReduceLRUponNan` callback function
+* @WardLT major contributions to the `MolecularGraph` class
+* Add serialization methods for `local_env` classes
+* delete `data/mp.py`  
+
+# v0.3.3
 * GraphModel and MEGNetModel now supports a metadata tag, which is included in
   the JSON. (suggestion of @mhorton).
 * Misc bug fixes for edge cases as well as improved error messages for
