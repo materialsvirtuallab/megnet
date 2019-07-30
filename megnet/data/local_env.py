@@ -35,8 +35,8 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
         neighs_dists = structure.get_neighbors(site, self.cutoff)
 
         siw = []
-        for s, dist in neighs_dists:
-            w = dist
+        for nn in neighs_dists:
+            s, w = nn.site, nn.distance
             siw.append({'site': s,
                         'image': self._get_image(structure, s),
                         'weight': w,
