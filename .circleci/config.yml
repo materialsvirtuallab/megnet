@@ -22,7 +22,7 @@ jobs:
             source activate test_env
             pip install --quiet -e .
             mkdir coverage_reports
-            pytest --cov=megnet --cov-report html:coverage_reports megnet
+            pytest --cov=megnet --cov-report html:coverage_reports --quiet megnet
             coveralls
           no_output_timeout: 3600
       - store_artifacts:
