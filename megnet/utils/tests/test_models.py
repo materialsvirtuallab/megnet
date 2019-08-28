@@ -9,7 +9,7 @@ class TestLoadModel(unittest.TestCase):
         model = load_model('Eform_MP_2019')
         self.assertIsInstance(model, GraphModel)
         with self.assertRaises(ValueError):
-            model = load_model('Eform_MP_2020')
+            _ = load_model('Eform_MP_2020')
 
     def test_load_qm9(self):
         model = load_model('QM9_G_2018')
