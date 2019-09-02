@@ -29,7 +29,7 @@ class StandardScaler(MSONable):
     def transform(self, target, n=1):
         """
         Transform numeric values according the mean and std, plus a factor n
-        
+
         Args:
             target: target numerical value
             n: number of atoms
@@ -76,6 +76,7 @@ class DummyScaler(MSONable):
     """
     Dummy scaler does nothing
     """
+
     def transform(self, target, n=1):
         return target
 
@@ -85,4 +86,3 @@ class DummyScaler(MSONable):
     @classmethod
     def from_training_data(cls, structures, targets, is_intensive=True):
         return cls()
-

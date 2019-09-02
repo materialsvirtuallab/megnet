@@ -2,9 +2,10 @@ from pymatgen import Molecule
 import numpy as np
 from pymatgen.io.babel import BabelMolAdaptor
 import logging
+
 try:
     import pybel as pb
-except:
+except ImportError:
     logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
     pb = None
 

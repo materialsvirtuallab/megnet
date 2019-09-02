@@ -10,7 +10,6 @@ import keras.backend as kb
 from megnet.utils.metrics import mae, accuracy
 from megnet.utils.preprocessing import DummyScaler
 
-
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -278,13 +277,14 @@ class ReduceLRUponNan(Callback):
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load(last_file)
                         if self.verbose:
-                            logger.info("Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-1], self.losses[-2]))
+                            logger.info(
+                                "Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-1], self.losses[-2]))
                             logger.info("Now lr is %s." % float(kb.get_value(self.model.optimizer.lr)))
 
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.get_value(self.model.optimizer.lr))
         self.model.reset_states()
-        kb.set_value(self.model.optimizer.lr, old_value*self.factor)
+        kb.set_value(self.model.optimizer.lr, old_value * self.factor)
         opt_dict = self.model.optimizer.get_config()
         self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if last_file is not None:
@@ -348,4 +348,3 @@ def _count(a):
     z = np.where(np.abs(np.diff(a)) > 0)[0]
     z = np.r_[0, z]
     return np.diff(z)
-

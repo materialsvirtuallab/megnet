@@ -6,7 +6,6 @@ from pathlib import Path
 from copy import deepcopy
 from pymatgen import Element
 
-
 MODULE_DIR = Path(__file__).parent.absolute()
 
 
@@ -15,6 +14,7 @@ class CrystalGraph(StructureGraph):
     Convert a crystal into a graph with z as atomic feature and distance as bond feature
     one can optionally include state features
     """
+
     def __init__(self,
                  nn_strategy='MinimumDistanceNNAll',
                  atom_converter=None,
@@ -36,6 +36,7 @@ class CrystalGraphWithBondTypes(StructureGraph):
     metal-metal (type 2)
 
     """
+
     def __init__(self,
                  nn_strategy='VoronoiNN',
                  atom_converter=None,
@@ -70,4 +71,3 @@ def get_elemental_embeddings():
     """
     return loadfn(MODULE_DIR / "resources" /
                   "elemental_embedding_1MEGNet_layer.json")
-

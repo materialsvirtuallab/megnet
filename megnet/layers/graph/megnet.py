@@ -22,8 +22,8 @@ class MEGNetLayer(GraphNetworkLayer):
         units_e (list of integers): the hidden layer sizes for edge update neural network
         units_u (list of integers): the hidden layer sizes for state update neural network
         pool_method (str): 'mean' or 'sum', determines how information is gathered to nodes from neighboring edges
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include 'relu', 'softmax', 'tanh', 'sigmoid'
-            and etc.
+        activation (str): Default: None. The activation function used for each sub-neural network. Examples include
+            'relu', 'softmax', 'tanh', 'sigmoid' and etc.
         use_bias (bool): Default: True. Whether to use the bias term in the neural network.
         kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
         bias_initializer (str): Default: 'zeros'

@@ -61,6 +61,7 @@ class AllAtomPairs(NearNeighbors):
     """
     Get all combinations of atoms as bonds in a molecule
     """
+
     def get_nn_info(self, molecule, n):
         site = molecule[n]
         siw = []
@@ -131,4 +132,3 @@ def get(identifier):
         return identifier
     else:
         raise ValueError('Unknown local environment ', identifier)
-

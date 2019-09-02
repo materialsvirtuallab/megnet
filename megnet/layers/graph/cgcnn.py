@@ -10,8 +10,8 @@ class CrystalGraphLayer(GraphNetworkLayer):
     Xie et al. PHYSICAL REVIEW LETTERS 120, 145301 (2018)
 
     Args:
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include 'relu', 'softmax', 'tanh', 'sigmoid'
-            and etc.
+        activation (str): Default: None. The activation function used for each sub-neural network. Examples include
+            'relu', 'softmax', 'tanh', 'sigmoid' and etc.
         use_bias (bool): Default: True. Whether to use the bias term in the neural network.
         kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
         bias_initializer (str): Default: 'zeros'

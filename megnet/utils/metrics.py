@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def mae(y_true, y_pred):
     """
     Simple mean absolute error calculations

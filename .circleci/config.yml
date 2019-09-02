@@ -23,6 +23,7 @@ jobs:
             pip install --quiet -e .
             mkdir coverage_reports
             pytest --cov=megnet --cov-report html:coverage_reports --quiet megnet
+            pycodestyle megnet
             coveralls
           no_output_timeout: 3600
       - store_artifacts:

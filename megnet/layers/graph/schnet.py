@@ -11,8 +11,8 @@ class InteractionLayer(GraphNetworkLayer):
     Schütt et al. SchNet: A continuous-filter convolutional neural network for modeling quantum interactions
 
     Args:
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include 'relu', 'softmax', 'tanh', 'sigmoid'
-            and etc.
+        activation (str): Default: None. The activation function used for each sub-neural network. Examples include
+            'relu', 'softmax', 'tanh', 'sigmoid' and etc.
         use_bias (bool): Default: True. Whether to use the bias term in the neural network.
         kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
         bias_initializer (str): Default: 'zeros'
@@ -84,11 +84,11 @@ class InteractionLayer(GraphNetworkLayer):
 
                 v_shapes = [[vdim, vdim]] + [[vdim, vdim]] * 2
                 self.phi_v_weights = [self.add_weight(shape=i,
-                                                       initializer=self.kernel_initializer,
-                                                       name='weight_v_%d' % j,
-                                                       regularizer=self.kernel_regularizer,
-                                                       constraint=self.kernel_constraint)
-                                       for j, i in enumerate(v_shapes)]
+                                                      initializer=self.kernel_initializer,
+                                                      name='weight_v_%d' % j,
+                                                      regularizer=self.kernel_regularizer,
+                                                      constraint=self.kernel_constraint)
+                                      for j, i in enumerate(v_shapes)]
                 if self.use_bias:
                     self.phi_v_biases = [self.add_weight(shape=(i[-1],),
                                                          initializer=self.bias_initializer,
@@ -130,7 +130,7 @@ class InteractionLayer(GraphNetworkLayer):
         fr = tf.gather(atomwise1, index2, axis=1)
 
         after_cfconv = atomwise1 + \
-                       tf.transpose(tf.segment_sum(tf.transpose(fr * cfconv_out, [1, 0, 2]), index1), [1, 0, 2])
+            tf.transpose(tf.segment_sum(tf.transpose(fr * cfconv_out, [1, 0, 2]), index1), [1, 0, 2])
 
         atomwise2 = self.activation(self._mlp(after_cfconv, self.phi_v_weights[1], self.phi_v_biases[1]))
         atomwise3 = self._mlp(atomwise2, self.phi_v_weights[2], self.phi_v_biases[2])

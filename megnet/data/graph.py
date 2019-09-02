@@ -176,6 +176,7 @@ class DistanceConverter(MSONable):
     """
     Base class for distance conversion. The class needs to have a convert method.
     """
+
     def convert(self, d):
         raise NotImplementedError
 
@@ -184,6 +185,7 @@ class DummyConverter(DistanceConverter):
     """
     Dummy converter as a placeholder
     """
+
     def convert(self, d):
         return d
 
@@ -232,6 +234,7 @@ class MoorseLongRange(DistanceConverter):
         cm: (list) long range coefficients in u_LR = \Sigma_i_N (cm_i / r^i)
         betas: (list) parameters determining the transition between long range and short range
     """
+
     def __init__(self, d_e=1, r_ref=2, r_eq=[1, 2, 3],
                  p=2, q=2, cm=[1, 2, 3, 4],
                  betas=[0.1, 0.2, 0.3, 0.4]):
@@ -251,22 +254,23 @@ class MoorseLongRange(DistanceConverter):
     def u(self, r):
         m_i = np.arange(1, self.n_cm + 1)
         if np.size(r) == 1:
-            return np.sum(self.cm / r**m_i)
-        return np.sum(self.cm[None, :] / r[:, None]**m_i[None, :], axis=1).ravel()
+            return np.sum(self.cm / r ** m_i)
+        return np.sum(self.cm[None, :] / r[:, None] ** m_i[None, :], axis=1).ravel()
 
     @staticmethod
     def y(r, r_ref, p):
-        return (r**p - r_ref**p) / (r**p + r_ref**p)
+        return (r ** p - r_ref ** p) / (r ** p + r_ref ** p)
 
     def beta(self, r):
         y_p_ref = self.y(r, self.r_ref, self.p)
         y_q_ref = self.y(r, self.r_ref, self.q)
-        return self.beta_inf[None, :] * y_p_ref[:, None] + (1 - y_p_ref[:, None]) * \
-            np.sum(self.betas[None, :] * y_q_ref[:,  None] ** np.arange(0, len(self.betas))[None, :], axis=1).ravel()[:, None]
+        return (self.beta_inf[None, :] * y_p_ref[:, None] + (1 - y_p_ref[:, None]) *
+                np.sum(self.betas[None, :] * y_q_ref[:, None]
+                       ** np.arange(0, len(self.betas))[None, :], axis=1).ravel()[:, None])
 
     @property
     def beta_inf(self):
-        return np.log(2*self.d_e/self.u(self.r_eq))
+        return np.log(2 * self.d_e / self.u(self.r_eq))
 
 
 class BaseGraphBatchGenerator(Sequence):
@@ -436,6 +440,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         targets: (numpy array), N*1, where N is the number of structures
         batch_size: (int) number of samples in a batch
     """
+
     def __init__(self,
                  atom_features,
                  bond_features,
@@ -471,11 +476,10 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         feature_list_temp = itemgetter_list(self.atom_features, batch_index)
         connection_list_temp = itemgetter_list(self.bond_features, batch_index)
         global_list_temp = itemgetter_list(self.state_features, batch_index)
-        index1_temp = itemgetter_list(self.index1_list,  batch_index)
+        index1_temp = itemgetter_list(self.index1_list, batch_index)
         index2_temp = itemgetter_list(self.index2_list, batch_index)
 
-        return feature_list_temp, connection_list_temp, global_list_temp, \
-               index1_temp, index2_temp
+        return feature_list_temp, connection_list_temp, global_list_temp, index1_temp, index2_temp
 
 
 class GraphBatchDistanceConvert(GraphBatchGenerator):
@@ -486,15 +490,17 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         atom_features: (list of np.array) list of atom feature matrix,
         bond_features: (list of np.array) list of bond features matrix
         state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
-        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for differentstructures
-        index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for different
-            structures, but it has to be the same as the correponding index1.
+        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different
+            structures
+        index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for
+            different structures, but it has to be the same as the correponding index1.
         targets: (numpy array), N*1, where N is the number of structures
         batch_size: (int) number of samples in a batch
         is_shuffle: (bool) whether to shuffle the structure, default to True
         distance_converter: (bool) converter for processing the distances
 
     """
+
     def __init__(self,
                  atom_features,
                  bond_features,
