@@ -4,7 +4,7 @@ pretrained megnet model
 """
 
 import os
-from megnet.models import MEGNetModel
+from megnet.models import MEGNetModel, GraphModel
 from keras.models import Model
 
 
@@ -13,7 +13,13 @@ DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), '../../mvl_models/mp-201
 
 class MEGNetDescriptor:
     def __init__(self, model_name=DEFAULT_MODEL, use_cache=True):
-        model = MEGNetModel.from_file(model_name)
+        if isinstance(model_name, str):
+            model = MEGNetModel.from_file(model_name)
+        elif isinstance(model_name, GraphModel):
+            model = model_name
+        else:
+            raise ValueError('model_name only support str or GraphModel object')
+
         layers = model.layers
         important_prefix = ['meg', 'set', 'concatenate']
         all_names = [i.name for i in layers if any([i.name.startswith(j) for j in important_prefix])]
