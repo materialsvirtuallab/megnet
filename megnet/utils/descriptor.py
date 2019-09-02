@@ -7,7 +7,6 @@ import os
 from megnet.models import MEGNetModel, GraphModel
 from keras.models import Model
 
-
 DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), '../../mvl_models/mp-2019.4.1/formation_energy.hdf5')
 
 
