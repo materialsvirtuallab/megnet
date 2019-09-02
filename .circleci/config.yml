@@ -9,19 +9,18 @@ jobs:
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
-            if [ ! -d "/root/miniconda3/envs/test_env" ]; then conda create --quiet --yes --name test_env python=3.6; fi
-            source activate test_env
-            conda install --quiet --yes numpy scipy matplotlib sympy cython
-            conda upgrade --quiet --all
-            pip install numpy --upgrade
+            conda config --set always_yes yes --set changeps1 no
+            conda update -q conda
+            conda info -a
+            conda create -q -n test-environment python=3.7 numpy scipy matplotlib sympy cython
+            source activate test-environment
+            conda update --quiet numpy scipy matplotlib sympy cython
             pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
-            export MPLBACKEND=Agg
-            source activate test_env
+            source activate test-environment
             pip install --quiet -e .
-            mkdir coverage_reports
             pytest --cov=megnet --cov-report html:coverage_reports --quiet megnet
             pycodestyle megnet
             coveralls
