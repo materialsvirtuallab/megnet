@@ -1,0 +1,37 @@
+services:
+  - mysql
+language: python
+python:
+  - "3.6"
+# command to install dependencies
+sudo: false
+install:
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - conda create -q -n test-environment python=3.7 numpy scipy matplotlib sympy cython pandas networkx pytest pip h5py tensorflow keras scikit-learn
+  - source activate test-environment
+  - conda update --quiet --yes numpy scipy matplotlib sympy cython pandas networkx pytest pip h5py tensorflow keras scikit-learn
+  - pip install --quiet --ignore-installed -r requirements.txt -r requirements-optional.txt
+before_script:
+  - pip install -e .
+# command to run tests, e.g. python setup.py test
+script:
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - source activate test-environment
+  - pytest megnet
+  - echo "pycodestyle check..."
+  - pycodestyle megnet
+  - echo "--- Done ---"
+notifications:
+  email:
+    recipients:
+      - shyuep@gmail.com
+      - chc273@eng.ucsd.edu
+    on_success: change
+    on_failure: always
