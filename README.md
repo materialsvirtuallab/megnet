@@ -148,19 +148,22 @@ please refer to ["Graph Networks as a Universal Machine Learning Framework for M
 Below is an example of crystal model usage:
 
 ```python
-from megnet.models import MEGNetModel
-from pymatgen import MPRester
+from megnet.utils.models import load_model
+from pymatgen import Structure, Lattice
 
-model = MEGNetModel.from_file('mvl_models/mp-2018.6.1/log10K.hdf5')
+# load a model in megnet.utils.models.AVAILABLE_MODELS
+model = load_model("logK_MP_2018") 
 
-# We can grab a crystal structure from the Materials Project.
-mpr = MPRester()
-structure = mpr.get_structure_by_material_id('mp-1143')
+# We can construct a structure using pymatgen
+structure = Structure(Lattice.cubic(3.167), 
+            ['Mo', 'Mo'], [[0, 0, 0], [0.5, 0.5, 0.5]])
+
 
 # Use the model to predict bulk modulus K. Note that the model is trained on
 # log10 K. So a conversion is necessary.
 predicted_K = 10 ** model.predict_structure(structure).ravel()
 print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
+
 ```
 A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb). 
 
