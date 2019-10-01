@@ -2,7 +2,7 @@
 data loaders (known as Sequence objects in Keras).
 
 Most users will not need to interact with this module."""
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from operator import itemgetter
 import numpy as np
 from megnet.utils.general import expand_1st, to_list

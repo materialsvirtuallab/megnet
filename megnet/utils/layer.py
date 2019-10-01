@@ -18,11 +18,11 @@ def _repeat(x, n, axis=1):
     """
     # get maximum repeat length in x
     assert len(n.shape) == 1
-    maxlen = tf.reduce_max(n)
-    x_shape = tf.shape(x)
+    maxlen = tf.reduce_max(input_tensor=n)
+    x_shape = tf.shape(input=x)
     x_dim = len(x.shape)
     # get the length of x
-    xlen = tf.shape(n)[0]
+    xlen = tf.shape(input=n)[0]
     # create a range with the length of x
     shape = [1] * (x_dim + 1)
     shape[axis + 1] = maxlen
@@ -39,7 +39,7 @@ def _repeat(x, n, axis=1):
     mask = tf.sequence_mask(n, maxlen)
     mask = tf.reshape(mask, (-1,))
     # mask the elements based on the sequence mask
-    return tf.boolean_mask(x_tiled, mask, axis=axis)
+    return tf.boolean_mask(tensor=x_tiled, mask=mask, axis=axis)
 
 
 def repeat_with_index(x, index, axis=1):

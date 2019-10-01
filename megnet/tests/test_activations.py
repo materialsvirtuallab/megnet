@@ -10,9 +10,8 @@ def softplus_np(x):
 
 class TestSP(unittest.TestCase):
     def test_softplus(self):
-        sess = tf.InteractiveSession()
         x = 10.0
-        self.assertAlmostEqual(sess.run(softplus2(x)), softplus_np(x), places=5)
+        self.assertAlmostEqual(softplus2(x), softplus_np(x), places=5)
 
 
 if __name__ == '__main__':

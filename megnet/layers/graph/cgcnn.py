@@ -107,7 +107,7 @@ class CrystalGraphLayer(GraphNetworkLayer):
         z1 = self._mlp(concated, self.phi_v_weights[0], self.phi_v_biases[0])
         z2 = self._mlp(concated, self.phi_v_weights[1], self.phi_v_biases[1])
         summed = tf.nn.sigmoid(z1) * self.activation(z2)
-        return tf.transpose(tf.segment_sum(tf.transpose(summed, [1, 0, 2]), index1), [1, 0, 2])
+        return tf.transpose(a=tf.math.segment_sum(tf.transpose(a=summed, perm=[1, 0, 2]), index1), perm=[1, 0, 2])
 
     def phi_v(self, b_ei_p, inputs):
         nodes, edges, u, index1, index2, gnode, gbond = inputs

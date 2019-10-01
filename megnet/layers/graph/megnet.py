@@ -77,10 +77,10 @@ class MEGNetLayer(GraphNetworkLayer):
         self.pool_method = pool_method
         if pool_method == 'mean':
             self.reduce_method = tf.reduce_mean
-            self.seg_method = tf.segment_mean
+            self.seg_method = tf.math.segment_mean
         elif pool_method == 'sum':
             self.reduce_method = tf.reduce_sum
-            self.seg_method = tf.segment_sum
+            self.seg_method = tf.math.segment_sum
         else:
             raise ValueError('Pool method: ' + pool_method + ' not understood!')
 

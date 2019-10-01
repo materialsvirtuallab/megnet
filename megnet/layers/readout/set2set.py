@@ -99,6 +99,7 @@ class Set2Set(Layer):
             constraint=self.recurrent_constraint)
         if self.use_bias:
             if self.unit_forget_bias:
+                @kb.eager
                 def bias_initializer(_, *args, **kwargs):
                     return kb.concatenate([self.bias_initializer(
                         (self.n_hidden,), *args, **kwargs),
@@ -131,30 +132,30 @@ class Set2Set(Layer):
             m += self.m_bias
 
         self.h = tf.zeros(tf.stack(
-            [tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
+            [tf.shape(input=features)[0], tf.shape(input=count)[0], self.n_hidden]))
         self.c = tf.zeros(tf.stack(
-            [tf.shape(features)[0], tf.shape(count)[0], self.n_hidden]))
+            [tf.shape(input=features)[0], tf.shape(input=count)[0], self.n_hidden]))
         q_star = tf.zeros(tf.stack(
-            [tf.shape(features)[0], tf.shape(count)[0], 2 * self.n_hidden]))
+            [tf.shape(input=features)[0], tf.shape(input=count)[0], 2 * self.n_hidden]))
         for i in range(self.T):
             self.h, c = self._lstm(q_star, self.c)
             e_i_t = tf.reduce_sum(
-                m * repeat_with_index(self.h, feature_graph_index), axis=-1)
+                input_tensor=m * repeat_with_index(self.h, feature_graph_index), axis=-1)
             exp = tf.exp(e_i_t)
             # print(exp.shape)
             seg_sum = tf.transpose(
-                tf.segment_sum(
-                    tf.transpose(exp, [1, 0]),
+                a=tf.math.segment_sum(
+                    tf.transpose(a=exp, perm=[1, 0]),
                     feature_graph_index),
-                [1, 0])
+                perm=[1, 0])
             seg_sum = tf.expand_dims(seg_sum, axis=-1)
             # print(seg_sum.shape)
             a_i_t = exp / tf.squeeze(
                 repeat_with_index(seg_sum, feature_graph_index))
             # print(a_i_t.shape)
-            r_t = tf.transpose(tf.segment_sum(
-                tf.transpose(tf.multiply(m, a_i_t[:, :, None]), [1, 0, 2]),
-                feature_graph_index), [1, 0, 2])
+            r_t = tf.transpose(a=tf.math.segment_sum(
+                tf.transpose(a=tf.multiply(m, a_i_t[:, :, None]), perm=[1, 0, 2]),
+                feature_graph_index), perm=[1, 0, 2])
             q_star = kb.concatenate([self.h, r_t], axis=-1)
         return q_star
 

@@ -13,9 +13,9 @@ class LinearWithIndex(Layer):
         super(LinearWithIndex, self).__init__(**kwargs)
         self.mode = mode
         if self.mode == 'mean':
-            self.reduce_method = tf.segment_mean
+            self.reduce_method = tf.math.segment_mean
         elif self.mode == 'sum':
-            self.reduce_method = tf.segment_sum
+            self.reduce_method = tf.math.segment_sum
         else:
             raise ValueError('Only sum and mean are supported at the moment!')
 
@@ -25,9 +25,9 @@ class LinearWithIndex(Layer):
     def call(self, inputs, mask=None):
         prop, index = inputs
         index = tf.reshape(index, (-1,))
-        prop = tf.transpose(prop, [1, 0, 2])
+        prop = tf.transpose(a=prop, perm=[1, 0, 2])
         out = self.reduce_method(prop, index)
-        out = tf.transpose(out, [1, 0, 2])
+        out = tf.transpose(a=out, perm=[1, 0, 2])
         return out
 
     def compute_output_shape(self, input_shape):

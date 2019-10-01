@@ -58,6 +58,8 @@ class GraphModel:
               callbacks=None,
               scrub_failed_structures=False,
               prev_model=None,
+              save_checkpoint=True,
+              automatic_correction=True,
               lr_scaling_factor=0.5,
               patience=500,
               **kwargs):
@@ -73,6 +75,8 @@ class GraphModel:
             callbacks: (list) megnet or keras callback functions for training
             scrub_failed_structures: (bool) whether to scrub structures with failed graph computation
             prev_model: (str) file name for previously saved model
+            save_checkpoint: (bool) whether to save checkpoint
+            automatic_correction: (bool) correct nan errors
             lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
             **kwargs:
@@ -96,6 +100,8 @@ class GraphModel:
                                prev_model=prev_model,
                                lr_scaling_factor=lr_scaling_factor,
                                patience=patience,
+                               save_checkpoint=save_checkpoint,
+                               automatic_correction=automatic_correction,
                                **kwargs
                                )
 
@@ -111,6 +117,8 @@ class GraphModel:
                           prev_model=None,
                           lr_scaling_factor=0.5,
                           patience=500,
+                          save_checkpoint=True,
+                          automatic_correction=True,
                           **kwargs
                           ):
 
@@ -138,20 +146,22 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
-            callbacks.extend([ReduceLRUponNan(filepath=filepath,
-                                              monitor=monitor,
-                                              mode=mode,
-                                              factor=lr_scaling_factor,
-                                              patience=patience,
-                                              )])
-            callbacks.extend([ModelCheckpointMAE(filepath=filepath,
-                                                 monitor=monitor,
-                                                 mode=mode,
-                                                 save_best_only=True,
-                                                 save_weights_only=False,
-                                                 val_gen=val_generator,
-                                                 steps_per_val=steps_per_val,
-                                                 target_scaler=self.target_scaler)])
+            if automatic_correction:
+                callbacks.extend([ReduceLRUponNan(filepath=filepath,
+                                                  monitor=monitor,
+                                                  mode=mode,
+                                                  factor=lr_scaling_factor,
+                                                  patience=patience,
+                                                  )])
+            if save_checkpoint:
+                callbacks.extend([ModelCheckpointMAE(filepath=filepath,
+                                                     monitor=monitor,
+                                                     mode=mode,
+                                                     save_best_only=True,
+                                                     save_weights_only=False,
+                                                     val_gen=val_generator,
+                                                     steps_per_val=steps_per_val,
+                                                     target_scaler=self.target_scaler)])
         else:
             val_generator = None
             steps_per_val = None
