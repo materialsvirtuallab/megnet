@@ -36,11 +36,11 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
 
         siw = []
         for nn in neighs_dists:
-            s, w = nn.site, nn.distance
-            siw.append({'site': s,
-                        'image': self._get_image(structure, s),
-                        'weight': w,
-                        'site_index': self._get_original_site(structure, s)})
+            neighbor, d, index, image  = nn[0], nn[1]
+            siw.append({'site': neighbor,
+                        'image': image 
+                        'weight': d,
+                        'site_index': index 
         return siw
 
     def get_all_nn_info(self, structure):
