@@ -70,7 +70,7 @@ def update_changelog(ctx):
 def release(ctx, notest=False):
     ctx.run("rm -r dist build megnet.egg-info", warn=True)
     if not notest:
-        ctx.run("nosetests")
+        ctx.run("pytest megnet")
     publish(ctx)
     release_github(ctx)
 

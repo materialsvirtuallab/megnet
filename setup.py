@@ -18,7 +18,7 @@ setup(
     download_url='https://github.com/materialsvirtuallab/megnet',
     license='BSD',
     install_requires=['keras', 'numpy', 'tensorflow', "scikit-learn",
-                      'pymatgen', 'monty'],
+                      'pymatgen>=2019.10.3', 'monty'],
     extras_require={
         'model_saving': ['h5py'],
         'molecules': ['openbabel', 'rdkit']
