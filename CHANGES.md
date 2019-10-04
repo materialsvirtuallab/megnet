@@ -1,3 +1,6 @@
+# v0.4.0
+* Tensorflow 2.0 version.
+
 # v0.3.4
 * Change `convertor` to `converter` in all model APIs
 * Improve `ReduceLRUponNan` callback function
