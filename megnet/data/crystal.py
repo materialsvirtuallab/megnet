@@ -1,4 +1,4 @@
-from megnet.data.graph import StructureGraph
+from megnet.data.graph import StructureGraph, StructureGraphFixedRadius
 import numpy as np
 from megnet.data.graph import GaussianDistance
 from monty.serialization import loadfn
@@ -9,7 +9,7 @@ from pymatgen import Element
 MODULE_DIR = Path(__file__).parent.absolute()
 
 
-class CrystalGraph(StructureGraph):
+class CrystalGraph(StructureGraphFixedRadius):
     """
     Convert a crystal into a graph with z as atomic feature and distance as bond feature
     one can optionally include state features

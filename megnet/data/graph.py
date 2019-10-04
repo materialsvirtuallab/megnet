@@ -6,6 +6,7 @@ from abc import abstractmethod
 from operator import itemgetter
 import numpy as np
 from megnet.utils.general import expand_1st, to_list
+from megnet.utils.data import get_graphs_within_cutoff
 from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
@@ -170,6 +171,47 @@ class StructureGraph(MSONable):
             d.update({'nn_strategy': nn_strategy_obj})
             return super().from_dict(d)
         return super().from_dict(d)
+
+
+class StructureGraphFixedRadius(StructureGraph):
+    """
+    This one uses a short cut to call find_points_in_spheres cython function in
+    pymatgen. It is orders of magnitude faster than previous implementations
+    """
+
+    def convert(self, structure, state_attributes=None):
+        """
+        Take a pymatgen structure and convert it to a index-type graph representation
+        The graph will have node, distance, index1, index2, where node is a vector of Z number
+        of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
+        distance.
+        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
+        take default [[0, 0]]
+
+        Args:
+            state_attributes: (list) state attributes
+            structure: (pymatgen structure)
+            (dictionary)
+        """
+        state_attributes = state_attributes or [[0, 0]]
+        atoms = [i.specie.Z for i in structure]
+        index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
+
+        if np.size(np.unique(index1)) < len(atoms):
+            raise RuntimeError("Isolated atoms found in the structure")
+        else:
+            return {'atom': np.array(atoms, dtype='int32').tolist(),
+                    'bond': bonds,
+                    'state': state_attributes,
+                    'index1': index1,
+                    'index2': index2
+                    }
+
+    @classmethod
+    def from_structure_graph(cls, structure_graph):
+        return cls(nn_strategy=structure_graph.nn_strategy,
+                   atom_converter=structure_graph.atom_converter,
+                   bond_converter=structure_graph.bond_converter)
 
 
 class DistanceConverter(MSONable):
