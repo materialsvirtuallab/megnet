@@ -9,7 +9,7 @@ with open(os.path.join(this_dir, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='megnet',
-    version='0.4.0',
+    version='1.0.0',
     description='MatErials Graph Networks for machine learning of molecules and crystals.',
     long_description=long_description,
     long_description_content_type='text/markdown',
