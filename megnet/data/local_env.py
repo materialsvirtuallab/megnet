@@ -42,7 +42,7 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
                         'site_index': self._get_original_site(structure, nn)})
         return siw
 
-    def get_all_nn_info(self, structure):
+    def get_all_nn_info_old(self, structure):
         nn_info = []
         all_neighbors = structure.get_all_neighbors(self.cutoff, include_index=True,
                                                     include_image=True)
