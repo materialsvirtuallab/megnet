@@ -1,4 +1,7 @@
-# v0.4.0
+# v1.0.1
+* New find_points_in_spheres algorithm in pymatgen for graph construction 
+
+# v1.0.0
 * Tensorflow 2.0 version.
 
 # v0.3.4
