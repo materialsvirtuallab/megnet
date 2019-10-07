@@ -1,5 +1,8 @@
 from pymatgen.analysis.local_env import *
 from inspect import getfullargspec
+from pymatgen import Structure, Molecule
+
+from typing import List, Dict, Union
 
 
 class MinimumDistanceNNAll(MinimumDistanceNN):
@@ -11,10 +14,10 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
             near-neighbor sites (default: 4.0).
     """
 
-    def __init__(self, cutoff=4.0):
+    def __init__(self, cutoff: float = 4.0):
         self.cutoff = cutoff
 
-    def get_nn_info(self, structure, n):
+    def get_nn_info(self, structure: Structure, n: int) -> Dict:
         """
         Get all near-neighbor sites as well as the associated image locations
         and weights of the site with index n using the closest neighbor
@@ -42,7 +45,7 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
                         'site_index': self._get_original_site(structure, nn)})
         return siw
 
-    def get_all_nn_info_old(self, structure):
+    def get_all_nn_info_old(self, structure: Structure) -> List[Dict]:
         nn_info = []
         all_neighbors = structure.get_all_neighbors(self.cutoff, include_index=True,
                                                     include_image=True)
@@ -61,7 +64,7 @@ class AllAtomPairs(NearNeighbors):
     Get all combinations of atoms as bonds in a molecule
     """
 
-    def get_nn_info(self, molecule, n):
+    def get_nn_info(self, molecule: Molecule, n: int) -> Dict:
         site = molecule[n]
         siw = []
         for i, s in enumerate(molecule):
@@ -73,7 +76,7 @@ class AllAtomPairs(NearNeighbors):
         return siw
 
 
-def serialize(identifier):
+def serialize(identifier: Union[str, NearNeighbors]):
     """
     Serialize the local env objects to a dictionary
     Args:
@@ -105,7 +108,7 @@ def serialize(identifier):
         raise ValueError('Unknown identifier for local environment ', identifier)
 
 
-def deserialize(config):
+def deserialize(config: Dict):
     """
     Deserialize the config dict to object
     Args:
@@ -124,7 +127,7 @@ def deserialize(config):
     return cls_(**data)
 
 
-def get(identifier):
+def get(identifier: Union[str, NearNeighbors]):
     if isinstance(identifier, str):
         return globals()[identifier]
     elif isinstance(identifier, NearNeighbors):

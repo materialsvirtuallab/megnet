@@ -6,7 +6,7 @@ import numpy as np
 
 
 def get_graphs_within_cutoff(structure: Union[Structure, MEGNetMolecule, Molecule],
-                             cutoff: float = 5.0, numerical_tol: float = 1e-8):
+                             cutoff: float = 5.0, numerical_tol: float = 1e-8) -> tuple[np.ndarray]:
     """
     Get graph representations from structure within cutoff
     Args:

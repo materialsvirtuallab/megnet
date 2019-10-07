@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from megnet.models import MEGNetModel
+from megnet.models import MEGNetModel, GraphModel
 
 
 MODEL_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../mvl_models')
@@ -24,7 +24,7 @@ for i, j in MODEL_MAPPING.items():
 AVAILABLE_MODELS = list(MODEL_MAPPING.keys())
 
 
-def load_model(model_name):
+def load_model(model_name: str) -> GraphModel:
     """
     load the model by user friendly name as in megnet.utils.models.AVAILABEL_MODELS
 

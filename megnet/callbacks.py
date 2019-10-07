@@ -8,7 +8,9 @@ import numpy as np
 from keras.callbacks import Callback
 import keras.backend as kb
 from megnet.utils.metrics import mae, accuracy
-from megnet.utils.preprocessing import DummyScaler
+from megnet.utils.preprocessing import DummyScaler, Scaler
+
+from typing import Iterable, List, Dict
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -33,9 +35,16 @@ class GeneratorLog(Callback):
         is_pa: (bool) whether it is a per-atom quantity
     """
 
-    def __init__(self, train_gen, steps_per_train=None,
-                 val_gen=None, steps_per_val=None, y_scaler=None, n_every=5,
-                 val_names=None, val_units=None, is_pa=False):
+    def __init__(self,
+                 train_gen: Iterable,
+                 steps_per_train: int = None,
+                 val_gen: Iterable = None,
+                 steps_per_val: int = None,
+                 y_scaler: Scaler = None,
+                 n_every: int = 5,
+                 val_names: List[str] = None,
+                 val_units: List[str] = None,
+                 is_pa: bool = False):
         super().__init__()
         self.train_gen = train_gen
         self.val_gen = val_gen
@@ -51,7 +60,7 @@ class GeneratorLog(Callback):
         if self.yscaler is None:
             self.yscaler = DummyScaler()
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
         """
         Standard keras callback interface, executed at the end of epoch
         """
@@ -106,16 +115,16 @@ class ModelCheckpointMAE(Callback):
     """
 
     def __init__(self,
-                 filepath='./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
-                 monitor='val_mae',
-                 verbose=0,
-                 save_best_only=True,
-                 save_weights_only=False,
-                 val_gen=None,
-                 steps_per_val=None,
-                 target_scaler=None,
-                 period=1,
-                 mode='auto'):
+                 filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
+                 monitor: str = 'val_mae',
+                 verbose: int = 0,
+                 save_best_only: bool = True,
+                 save_weights_only: bool = False,
+                 val_gen: Iterable = None,
+                 steps_per_val: int = None,
+                 target_scaler: Scaler = None,
+                 period: int = 1,
+                 mode: str = 'auto'):
         super().__init__()
         if val_gen is None:
             raise ValueError('No validation data is provided!')
@@ -155,7 +164,7 @@ class ModelCheckpointMAE(Callback):
                 self.monitor_op = np.less
                 self.best = np.Inf
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
         logs = logs or {}
         self.epochs_since_last_save += 1
         if self.epochs_since_last_save >= self.period:
@@ -201,7 +210,7 @@ class ManualStop(Callback):
     Stop the training manually by putting a "STOP" file in the directory
     """
 
-    def on_batch_end(self, epoch, logs=None):
+    def on_batch_end(self, epoch: int, logs: Dict = None) -> None:
         if os.path.isfile('STOP'):
             self.model.stop_training = True
 
@@ -224,12 +233,12 @@ class ReduceLRUponNan(Callback):
     """
 
     def __init__(self,
-                 filepath='./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
-                 factor=0.5,
-                 verbose=1,
-                 patience=500,
-                 monitor='val_mae',
-                 mode='auto'):
+                 filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
+                 factor: float = 0.5,
+                 verbose: int = 1,
+                 patience: int = 500,
+                 monitor: str = 'val_mae',
+                 mode: str = 'auto'):
         self.filepath = filepath
         self.verbose = verbose
         self.factor = factor
@@ -255,7 +264,7 @@ class ReduceLRUponNan(Callback):
         if self.monitor not in self.variable_names:
             raise ValueError("The monitored metric should be in the name pattern")
 
-    def on_epoch_end(self, epoch, logs=None):
+    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
         logs = logs or {}
         loss = logs.get('loss')
         last_saved_epoch, last_metric, last_file = self._get_checkpoints()
@@ -314,7 +323,7 @@ class ReduceLRUponNan(Callback):
             return None, None, None
 
 
-def _print_mae(target_names, maes, units):
+def _print_mae(target_names: List[str], maes: List[float], units: List[str]):
     """
     format printing the MAE for each variable
 
@@ -333,7 +342,7 @@ def _print_mae(target_names, maes, units):
     return True
 
 
-def _count(a):
+def _count(a: np.ndarray) -> np.ndarray:
     """
     count number of appearance for each element in a
 

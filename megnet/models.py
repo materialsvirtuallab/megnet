@@ -4,15 +4,20 @@ from megnet.layers import MEGNetLayer, Set2Set
 from megnet.activations import softplus2
 from keras.regularizers import l2
 from keras.backend import int_shape
+from keras.callbacks import Callback
 from keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
+from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance, \
+    StructureGraph
 from megnet.data.crystal import CrystalGraph
-from megnet.utils.preprocessing import DummyScaler
+from megnet.utils.preprocessing import DummyScaler, Scaler
 import numpy as np
 import os
 from warnings import warn
 from monty.serialization import dumpfn, loadfn
+from pymatgen import Structure
+
+from typing import Dict, List, Union, Callable
 
 
 class GraphModel:
@@ -34,10 +39,10 @@ class GraphModel:
     """
 
     def __init__(self,
-                 model,
-                 graph_converter,
-                 target_scaler=DummyScaler(),
-                 metadata=None,
+                 model: Model,
+                 graph_converter: StructureGraph,
+                 target_scaler: Scaler = DummyScaler(),
+                 metadata: Dict = None,
                  **kwargs):
         self.model = model
         self.graph_converter = graph_converter
@@ -48,21 +53,21 @@ class GraphModel:
         return getattr(self.model, p)
 
     def train(self,
-              train_structures,
-              train_targets,
-              validation_structures=None,
-              validation_targets=None,
-              epochs=1000,
-              batch_size=128,
-              verbose=1,
-              callbacks=None,
-              scrub_failed_structures=False,
-              prev_model=None,
-              save_checkpoint=True,
-              automatic_correction=True,
-              lr_scaling_factor=0.5,
-              patience=500,
-              **kwargs):
+              train_structures: List[Structure],
+              train_targets: List[float],
+              validation_structures: List[Structure] = None,
+              validation_targets: List[float] = None,
+              epochs: int = 1000,
+              batch_size: int = 128,
+              verbose: int = 1,
+              callbacks: List[Callback] = None,
+              scrub_failed_structures: bool = False,
+              prev_model: str = None,
+              save_checkpoint: bool = True,
+              automatic_correction: bool = True,
+              lr_scaling_factor: float = 0.5,
+              patience: int = 500,
+              **kwargs) -> None:
         """
         Args:
             train_structures: (list) list of pymatgen structures
@@ -106,21 +111,21 @@ class GraphModel:
                                )
 
     def train_from_graphs(self,
-                          train_graphs,
-                          train_targets,
-                          validation_graphs=None,
-                          validation_targets=None,
-                          epochs=1000,
-                          batch_size=128,
-                          verbose=1,
-                          callbacks=None,
-                          prev_model=None,
-                          lr_scaling_factor=0.5,
-                          patience=500,
-                          save_checkpoint=True,
-                          automatic_correction=True,
+                          train_graphs: List[Dict],
+                          train_targets: List[float],
+                          validation_graphs: List[Dict] = None,
+                          validation_targets: List[float] = None,
+                          epochs: int = 1000,
+                          batch_size: int = 128,
+                          verbose: int = 1,
+                          callbacks: List[Callback] = None,
+                          prev_model: str = None,
+                          lr_scaling_factor: float = 0.5,
+                          patience: int = 500,
+                          save_checkpoint: bool = True,
+                          automatic_correction: bool = True,
                           **kwargs
-                          ):
+                          ) -> None:
 
         # load from saved model
         if prev_model:
@@ -174,7 +179,7 @@ class GraphModel:
                            validation_data=val_generator, validation_steps=steps_per_val,
                            epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
 
-    def check_dimension(self, graph):
+    def check_dimension(self, graph: Dict) -> bool:
         """
         Check the model dimension against the graph converter dimension
         Args:
@@ -209,7 +214,9 @@ class GraphModel:
                 raise ValueError("The data dimension for %s is %s and does not match model "
                                  "required shape of %s" % (i, str(j), str(k)))
 
-    def get_all_graphs_targets(self, structures, targets, scrub_failed_structures=False):
+    def get_all_graphs_targets(self, structures: List[Structure],
+                               targets: List[float],
+                               scrub_failed_structures: bool = False) -> tuple:
         """
         Compute the graphs from structures and spit out (graphs, targets) with options to
         automatically remove structures with failed graph computations
@@ -240,7 +247,7 @@ class GraphModel:
                     raise RuntimeError(str(e))
         return graphs_valid, targets_valid
 
-    def predict_structure(self, structure):
+    def predict_structure(self, structure: Structure) -> np.ndarray:
         """
         Predict property from structure
 
@@ -253,7 +260,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_graph(self, graph):
+    def predict_graph(self, graph: Dict) -> np.ndarray:
         """
         Predict property from graph
 
@@ -267,14 +274,14 @@ class GraphModel:
         inp = self.graph_converter.graph_to_input(graph)
         return self.target_scaler.inverse_transform(self.predict(inp).ravel(), len(graph['atom']))
 
-    def _create_generator(self, *args, **kwargs):
+    def _create_generator(self, *args, **kwargs) -> Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
         if hasattr(self.graph_converter, 'bond_converter'):
             kwargs.update({'distance_converter': self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)
         else:
             return GraphBatchGenerator(*args, **kwargs)
 
-    def save_model(self, filename):
+    def save_model(self, filename: str) -> None:
         """
         Save the model to a keras model hdf5 and a json config for additional
         converters
@@ -296,7 +303,7 @@ class GraphModel:
         )
 
     @classmethod
-    def from_file(cls, filename):
+    def from_file(cls, filename: str) -> 'GraphModel':
         """
         Class method to load model from
             filename for keras model
@@ -316,7 +323,7 @@ class GraphModel:
         return GraphModel(**configs)
 
     @classmethod
-    def from_url(cls, url):
+    def from_url(cls, url: str) -> 'GraphModel':
         """
         Download and load a model from a URL. E.g.
         https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5
@@ -371,32 +378,32 @@ class MEGNetModel(GraphModel):
     """
 
     def __init__(self,
-                 nfeat_edge=None,
-                 nfeat_global=None,
-                 nfeat_node=None,
-                 nblocks=3,
-                 lr=1e-3,
-                 n1=64,
-                 n2=32,
-                 n3=16,
-                 nvocal=95,
-                 embedding_dim=16,
-                 nbvocal=None,
-                 bond_embedding_dim=None,
-                 ngvocal=None,
-                 global_embedding_dim=None,
-                 npass=3,
-                 ntarget=1,
-                 act=softplus2,
-                 is_classification=False,
-                 loss="mse",
-                 metrics=None,
-                 l2_coef=None,
-                 dropout=None,
-                 graph_converter=None,
-                 target_scaler=DummyScaler(),
-                 optimizer_kwargs=None,
-                 dropout_on_predict=False
+                 nfeat_edge: int = None,
+                 nfeat_global: int = None,
+                 nfeat_node: int = None,
+                 nblocks: int = 3,
+                 lr: float = 1e-3,
+                 n1: int = 64,
+                 n2: int = 32,
+                 n3: int = 16,
+                 nvocal: int = 95,
+                 embedding_dim: int = 16,
+                 nbvocal: int = None,
+                 bond_embedding_dim: int = None,
+                 ngvocal: int = None,
+                 global_embedding_dim: int = None,
+                 npass: int = 3,
+                 ntarget: int = 1,
+                 act: Callable = softplus2,
+                 is_classification: bool = False,
+                 loss: str = "mse",
+                 metrics: List[str] = None,
+                 l2_coef: float = None,
+                 dropout: float = None,
+                 graph_converter: StructureGraph = None,
+                 target_scaler: Scaler = DummyScaler(),
+                 optimizer_kwargs: Dict = None,
+                 dropout_on_predict: bool = False
                  ):
 
         # Build the MEG Model
@@ -435,11 +442,27 @@ class MEGNetModel(GraphModel):
         super().__init__(model=model, target_scaler=target_scaler, graph_converter=graph_converter)
 
 
-def make_megnet_model(nfeat_edge=None, nfeat_global=None, nfeat_node=None, nblocks=3,
-                      n1=64, n2=32, n3=16, nvocal=95, embedding_dim=16, nbvocal=None,
-                      bond_embedding_dim=None, ngvocal=None, global_embedding_dim=None,
-                      npass=3, ntarget=1, act=softplus2, is_classification=False,
-                      l2_coef=None, dropout=None, dropout_on_predict=False):
+def make_megnet_model(nfeat_edge: int = None,
+                      nfeat_global: int = None,
+                      nfeat_node: int = None,
+                      nblocks: int = 3,
+                      n1: int = 64,
+                      n2: int = 32,
+                      n3: int = 16,
+                      nvocal: int = 95,
+                      embedding_dim: int = 16,
+                      nbvocal: int = None,
+                      bond_embedding_dim: int = None,
+                      ngvocal: int = None,
+                      global_embedding_dim: int = None,
+                      npass: int = 3,
+                      ntarget: int = 1,
+                      act: Callable = softplus2,
+                      is_classification: bool = False,
+                      l2_coef: float = None,
+                      dropout: float = None,
+                      dropout_on_predict: bool = False
+                      ) -> Model:
     """Make a MEGNet Model
 
     Args:

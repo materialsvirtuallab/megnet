@@ -6,12 +6,15 @@ pretrained megnet model
 import os
 from megnet.models import MEGNetModel, GraphModel
 from keras.models import Model
+from pymatgen import Structure
+import numpy as np
+
 
 DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), '../../mvl_models/mp-2019.4.1/formation_energy.hdf5')
 
 
 class MEGNetDescriptor:
-    def __init__(self, model_name=DEFAULT_MODEL, use_cache=True):
+    def __init__(self, model_name: str = DEFAULT_MODEL, use_cache: bool = True):
         if isinstance(model_name, str):
             model = MEGNetModel.from_file(model_name)
         elif isinstance(model_name, GraphModel):
@@ -42,12 +45,12 @@ class MEGNetDescriptor:
         self._cache = {}
         self.use_cache = use_cache
 
-    def _predict_structure(self, structure):
+    def _predict_structure(self, structure: Structure) -> np.ndarray:
         graph = self.model.graph_converter.convert(structure)
         inp = self.model.graph_converter.graph_to_input(graph)
         return self.model.predict(inp)
 
-    def _predict_feature(self, structure):
+    def _predict_feature(self, structure: Structure) -> np.ndarray:
         if not self.use_cache:
             return self._predict_structure(structure)
 
@@ -59,7 +62,11 @@ class MEGNetDescriptor:
             self._cache[s] = result
             return result
 
-    def _get_features(self, structure, prefix, level, index=None):
+    def _get_features(self,
+                      structure: Structure,
+                      prefix: str,
+                      level: int,
+                      index: int = None) -> np.ndarray:
         name = prefix + "_%d" % level
         if index is not None:
             name += '_%d' % index
@@ -70,7 +77,7 @@ class MEGNetDescriptor:
         out_all = self._predict_feature(structure)
         return out_all[ind][0]
 
-    def get_atom_features(self, structure, level=2):
+    def get_atom_features(self, structure: Structure, level: int = 2) -> np.ndarray:
         """
         Get megnet atom features from structure
         Args:
@@ -83,7 +90,7 @@ class MEGNetDescriptor:
         """
         return self._get_features(structure, prefix='meg_net_layer', level=level, index=0)
 
-    def get_bond_features(self, structure, level=2):
+    def get_bond_features(self, structure: Structure, level: int = 2) -> np.ndarray:
         """
         Get bond features at megnet block level
         Args:
@@ -96,7 +103,7 @@ class MEGNetDescriptor:
         """
         return self._get_features(structure, prefix='meg_net_layer', level=level, index=1)
 
-    def get_global_features(self, structure, level=2):
+    def get_global_features(self, structure: Structure, level: int = 2) -> np.ndarray:
         """
         Get state features at megnet block level
         Args:
@@ -109,9 +116,9 @@ class MEGNetDescriptor:
         """
         return self._get_features(structure, prefix='meg_net_layer', level=level, index=2)
 
-    def get_set2set(self, structure, ftype='atom'):
+    def get_set2set(self, structure: Structure, ftype: str = 'atom') -> np.ndarray:
         mapping = {'atom': 1, 'bond': 2}
         return self._get_features(structure, prefix='set2_set', level=mapping[ftype])
 
-    def get_structure_features(self, structure):
+    def get_structure_features(self, structure: Structure) -> np.ndarray:
         return self._get_features(structure, prefix='concatenate', level=1)

@@ -1,6 +1,8 @@
 import keras.backend as kb
 from keras.activations import get as keras_get
-from keras.activations import deserialize, serialize
+from keras.activations import deserialize
+
+from typing import Union, Callable
 
 
 def softplus2(x):
@@ -17,7 +19,7 @@ def softplus2(x):
     return kb.relu(x) + kb.log(0.5*kb.exp(-kb.abs(x)) + 0.5)
 
 
-def get(identifier):
+def get(identifier: Union[str, Callable]) -> Callable:
     try:
         return keras_get(identifier)
     except ValueError:

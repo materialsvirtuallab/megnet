@@ -9,9 +9,12 @@ except ImportError:
     logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
     pb = None
 
+from typing import List
+
 
 class MEGNetMolecule(Molecule):
-    def get_all_neighbors(self, cutoff, include_index=True, include_image=True, **kwargs):
+    def get_all_neighbors(self, cutoff: float, include_index: bool = True,
+                          include_image: bool = True, **kwargs) -> List[List]:
         """
 
         Args:
@@ -44,12 +47,12 @@ class MEGNetMolecule(Molecule):
         return neighbors
 
     @classmethod
-    def from_pymatgen(cls, mol):
+    def from_pymatgen(cls, mol: Molecule) -> 'MEGNetMolecule':
         sites = mol._sites
         return cls.from_sites(sites)
 
 
-def get_pmg_mol_from_smiles(smiles):
+def get_pmg_mol_from_smiles(smiles: str) -> Molecule:
     """
     Get a pymatgen molecule from smiles representation
     Args:

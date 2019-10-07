@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def mae(y_true, y_pred):
+def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     Simple mean absolute error calculations
 
@@ -14,7 +14,7 @@ def mae(y_true, y_pred):
     return np.mean(np.abs(y_true - y_pred))
 
 
-def accuracy(y_true, y_pred):
+def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     Simple accuracy calculation
 
