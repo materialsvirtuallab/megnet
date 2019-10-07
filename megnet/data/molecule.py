@@ -140,7 +140,7 @@ class MolecularGraph(StructureGraph):
         self.distance_converter = distance_converter
 
     def convert(self,
-                mol: pybel.Molecule,  # type: ignore
+                mol,  # type: ignore
                 state_attributes: List = None,
                 full_pair_matrix: bool = True) -> Dict:
         """
@@ -288,8 +288,8 @@ class MolecularGraph(StructureGraph):
         return dijkstra_distance(bonds)
 
     def get_atom_feature(self,
-                         mol: pybel.Molecule,  # type: ignore
-                         atom: pybel.Atom) -> Dict:  # type: ignore
+                         mol,  # type: ignore
+                         atom) -> Dict:  # type: ignore
         """
         Generate all features of a particular atom
 
@@ -334,7 +334,7 @@ class MolecularGraph(StructureGraph):
 
         return output
 
-    def create_bond_feature(self, mol: pybel.Molecule, bid: int, eid: int):
+    def create_bond_feature(self, mol, bid: int, eid: int):
         """
         Create information for a bond for a pair of atoms that are not actually bonded
 
@@ -352,7 +352,7 @@ class MolecularGraph(StructureGraph):
                 "same_ring": True if same_ring else False,
                 "spatial_distance": a1.GetDistance(a2)}
 
-    def get_pair_feature(self, mol: pybel.Molecule, bid: int,
+    def get_pair_feature(self, mol, bid: int,
                          eid: int, full_pair_matrix: bool):
         """
         Get the features for a certain bond
@@ -386,7 +386,7 @@ class MolecularGraph(StructureGraph):
                 "same_ring": True if same_ring else False,
                 "spatial_distance": a1.GetDistance(a2)}
 
-    def _get_rdk_mol(self, mol: pybel.Molecule, format: str = 'smiles'):
+    def _get_rdk_mol(self, mol, format: str = 'smiles'):
         """
         Return: RDKit Mol (w/o H)
         """
@@ -395,7 +395,7 @@ class MolecularGraph(StructureGraph):
         elif format == 'smiles':
             return Chem.rdmolfiles.MolFromSmiles(mol.write("smiles"))
 
-    def _get_chiral_centers(self, mol: pybel.Molecule):
+    def _get_chiral_centers(self, mol):
         """
         Use RDKit to find the chiral centers with CIP(R/S) label
 
@@ -451,13 +451,13 @@ def dijkstra_distance(bonds: List[List[int]]) -> np.ndarray:
     return graph_dist
 
 
-def mol_from_smiles(smiles: str) -> pybel.Molecule:
+def mol_from_smiles(smiles: str):
     mol = pybel.readstring(format='smi', string=smiles)
     mol.make3D()
     return mol
 
 
-def mol_from_pymatgen(mol: Molecule) -> pybel.Molecule:
+def mol_from_pymatgen(mol: Molecule):
     """
     Args:
         mol(Molecule)
@@ -467,7 +467,7 @@ def mol_from_pymatgen(mol: Molecule) -> pybel.Molecule:
     return mol
 
 
-def mol_from_file(file_path: str, file_format: str = 'xyz') -> pybel.Molecule:
+def mol_from_file(file_path: str, file_format: str = 'xyz'):
     """
     Args:
         file_path(str)
