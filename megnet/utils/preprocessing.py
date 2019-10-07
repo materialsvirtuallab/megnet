@@ -3,6 +3,7 @@ from monty.json import MSONable
 
 from typing import Any
 
+
 class Scaler(MSONable):
     def inverse_transform(self, x: Any):
         raise NotImplementedError

@@ -1,12 +1,12 @@
 from pymatgen.optimization.neighbors import find_points_in_spheres
 from pymatgen import Structure, Molecule
 from megnet.utils.molecule import MEGNetMolecule
-from typing import Union
+from typing import Union, Tuple
 import numpy as np
 
 
 def get_graphs_within_cutoff(structure: Union[Structure, MEGNetMolecule, Molecule],
-                             cutoff: float = 5.0, numerical_tol: float = 1e-8) -> tuple[np.ndarray]:
+                             cutoff: float = 5.0, numerical_tol: float = 1e-8) -> Tuple[np.ndarray]:
     """
     Get graph representations from structure within cutoff
     Args:
