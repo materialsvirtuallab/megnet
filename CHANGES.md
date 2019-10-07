@@ -1,3 +1,6 @@
+# v1.0.2
+* Add mypy typing hint for non-tensorflow codes
+
 # v1.0.1
 * New find_points_in_spheres algorithm in pymatgen for graph construction 
 
