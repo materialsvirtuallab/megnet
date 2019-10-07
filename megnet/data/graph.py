@@ -17,8 +17,6 @@ from pymatgen import Structure
 from typing import Union, Dict, List, Any
 
 
-
-
 class Converter(MSONable):
     """
     Base class for atom or bond converter

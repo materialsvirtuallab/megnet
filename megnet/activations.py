@@ -1,6 +1,6 @@
 import keras.backend as kb
 from keras.activations import get as keras_get
-from keras.activations import deserialize, serialize # serialize is needed here
+from keras.activations import deserialize, serialize  # serialize is needed here
 
 from typing import Union, Callable
 
