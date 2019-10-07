@@ -9,13 +9,22 @@ from megnet.utils.general import expand_1st, to_list
 from megnet.utils.data import get_graphs_within_cutoff
 from monty.json import MSONable
 from megnet.data import local_env
-from megnet.data.graph import Converter
 from inspect import signature
 from pymatgen.analysis.local_env import NearNeighbors
 from keras.utils import Sequence
 from pymatgen import Structure
 
 from typing import Union, Dict, List, Any
+
+
+
+
+class Converter(MSONable):
+    """
+    Base class for atom or bond converter
+    """
+    def convert(self, d: Any) -> Any:
+        raise NotImplementedError
 
 
 class StructureGraph(MSONable):
@@ -216,14 +225,6 @@ class StructureGraphFixedRadius(StructureGraph):
         return cls(nn_strategy=structure_graph.nn_strategy,
                    atom_converter=structure_graph.atom_converter,
                    bond_converter=structure_graph.bond_converter)
-
-
-class Converter(MSONable):
-    """
-    Base class for atom or bond converter
-    """
-    def convert(self, d: Any) -> Any:
-        raise NotImplementedError
 
 
 class DummyConverter(Converter):
