@@ -1,23 +1,30 @@
+"""
+Implements various GraphModels.
+"""
+
+import os
+from warnings import warn
+from typing import Dict, List, Union, Callable
+
+from monty.serialization import dumpfn, loadfn
+
+import numpy as np
+
 from keras.optimizers import Adam
 from keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
-from megnet.layers import MEGNetLayer, Set2Set
-from megnet.activations import softplus2
 from keras.regularizers import l2
 from keras.backend import int_shape
 from keras.callbacks import Callback
 from keras.models import Model
+
+from megnet.layers import MEGNetLayer, Set2Set
+from megnet.activations import softplus2
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance, \
-    StructureGraph
+from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance, StructureGraph
 from megnet.data.crystal import CrystalGraph
 from megnet.utils.preprocessing import DummyScaler, Scaler
-import numpy as np
-import os
-from warnings import warn
-from monty.serialization import dumpfn, loadfn
-from pymatgen import Structure
 
-from typing import Dict, List, Union, Callable
+from pymatgen import Structure
 
 
 class GraphModel:
@@ -25,17 +32,6 @@ class GraphModel:
     Composition of keras model and converter class for transfering structure
     object to input tensors. We add methods to train the model from
     (structures, targets) pairs
-
-    Args:
-        model: (keras model)
-        graph_converter: (object) a object that turns a structure to a graph,
-            check `megnet.data.crystal`
-        target_scaler: (object) a scaler object for converting targets, check
-            `megnet.utils.preprocessing`
-        metadata: (dict) An optional dict of metadata associated with the model.
-            Recommended to incorporate some basic information such as units,
-            MAE performance, etc.
-
     """
 
     def __init__(self,
@@ -44,6 +40,17 @@ class GraphModel:
                  target_scaler: Scaler = DummyScaler(),
                  metadata: Dict = None,
                  **kwargs):
+        """
+        Args:
+            model: (keras model)
+            graph_converter: (object) a object that turns a structure to a graph,
+                check `megnet.data.crystal`
+            target_scaler: (object) a scaler object for converting targets, check
+                `megnet.utils.preprocessing`
+            metadata: (dict) An optional dict of metadata associated with the model.
+                Recommended to incorporate some basic information such as units,
+                MAE performance, etc.
+        """
         self.model = model
         self.graph_converter = graph_converter
         self.target_scaler = target_scaler
@@ -126,7 +133,24 @@ class GraphModel:
                           automatic_correction: bool = True,
                           **kwargs
                           ) -> None:
-
+        """
+        # TODO write doc...
+        :param train_graphs:
+        :param train_targets:
+        :param validation_graphs:
+        :param validation_targets:
+        :param epochs:
+        :param batch_size:
+        :param verbose:
+        :param callbacks:
+        :param prev_model:
+        :param lr_scaling_factor:
+        :param patience:
+        :param save_checkpoint:
+        :param automatic_correction:
+        :param kwargs:
+        :return:
+        """
         # load from saved model
         if prev_model:
             self.load_weights(prev_model)
@@ -346,35 +370,6 @@ class MEGNetModel(GraphModel):
     Construct a graph network model with or without explicit atom features
     if n_feature is specified then a general graph model is assumed,
     otherwise a crystal graph model with z number as atom feature is assumed.
-
-    Args:
-        nfeat_edge: (int) number of bond features
-        nfeat_global: (int) number of state features
-        nfeat_node: (int) number of atom features
-        nblocks: (int) number of MEGNetLayer blocks
-        lr: (float) learning rate
-        n1: (int) number of hidden units in layer 1 in MEGNetLayer
-        n2: (int) number of hidden units in layer 2 in MEGNetLayer
-        n3: (int) number of hidden units in layer 3 in MEGNetLayer
-        nvocal: (int) number of total element
-        embedding_dim: (int) number of embedding dimension
-        nbvocal: (int) number of bond types if bond attributes are types
-        bond_embedding_dim: (int) number of bond embedding dimension
-        ngvocal: (int) number of global types if global attributes are types
-        global_embedding_dim: (int) number of global embedding dimension
-        npass: (int) number of recurrent steps in Set2Set layer
-        ntarget: (int) number of output targets
-        act: (object) activation function
-        l2_coef: (float or None) l2 regularization parameter
-        is_classification: (bool) whether it is a classification task
-        loss: (object or str) loss function
-        metrics: (list or dict) List or dictionary of Keras metrics to be evaluated by the model during training and
-            testing
-        dropout: (float) dropout rate
-        graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
-        target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming the
-            target values
-        optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
     """
 
     def __init__(self,
@@ -405,6 +400,36 @@ class MEGNetModel(GraphModel):
                  optimizer_kwargs: Dict = None,
                  dropout_on_predict: bool = False
                  ):
+        """
+        Args:
+            nfeat_edge: (int) number of bond features
+            nfeat_global: (int) number of state features
+            nfeat_node: (int) number of atom features
+            nblocks: (int) number of MEGNetLayer blocks
+            lr: (float) learning rate
+            n1: (int) number of hidden units in layer 1 in MEGNetLayer
+            n2: (int) number of hidden units in layer 2 in MEGNetLayer
+            n3: (int) number of hidden units in layer 3 in MEGNetLayer
+            nvocal: (int) number of total element
+            embedding_dim: (int) number of embedding dimension
+            nbvocal: (int) number of bond types if bond attributes are types
+            bond_embedding_dim: (int) number of bond embedding dimension
+            ngvocal: (int) number of global types if global attributes are types
+            global_embedding_dim: (int) number of global embedding dimension
+            npass: (int) number of recurrent steps in Set2Set layer
+            ntarget: (int) number of output targets
+            act: (object) activation function
+            l2_coef: (float or None) l2 regularization parameter
+            is_classification: (bool) whether it is a classification task
+            loss: (object or str) loss function
+            metrics: (list or dict) List or dictionary of Keras metrics to be evaluated by the model during training
+                and testing
+            dropout: (float) dropout rate
+            graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
+            target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming
+                the target values
+            optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
+        """
 
         # Build the MEG Model
         model = make_megnet_model(nfeat_edge=nfeat_edge,
