@@ -6,19 +6,59 @@ Author: Shyue Ping Ong
 
 
 from invoke import task
-import glob
 import os
 import json
-import webbrowser
 import requests
 import re
 import subprocess
-import datetime
-
-from monty.os import cd
 import megnet
+import glob
+from monty.os import cd
+
 
 NEW_VER = megnet.__version__
+
+@task
+def make_doc(ctx):
+    with cd("docs_rst"):
+        ctx.run("sphinx-apidoc --separate -d 6 -o . -f ../megnet")
+        for f in glob.glob("*.rst"):
+            if f.startswith('megnet') and f.endswith('rst'):
+                newoutput = []
+                suboutput = []
+                subpackage = False
+                with open(f, 'r') as fid:
+                    for line in fid:
+                        clean = line.strip()
+                        if clean == "Subpackages":
+                            subpackage = True
+                        if not subpackage and not clean.endswith("tests"):
+                            newoutput.append(line)
+                        else:
+                            if not clean.endswith("tests"):
+                                suboutput.append(line)
+                            if clean.startswith(
+                                    "megnet") and not clean.endswith("tests"):
+                                newoutput.extend(suboutput)
+                                subpackage = False
+                                suboutput = []
+
+                with open(f, 'w') as fid:
+                    fid.write("".join(newoutput))
+        ctx.run("make html")
+
+        # ctx.run("cp _static/* ../docs/html/_static")
+
+    with cd("docs"):
+        ctx.run("cp -r html/* .")
+        ctx.run("rm -r html")
+        ctx.run("rm -r doctrees")
+        ctx.run("rm -r _sources")
+
+        # This makes sure pymatgen.org works to redirect to the Gihub page
+        # ctx.run("echo \"pymatgen.org\" > CNAME")
+        # Avoid the use of jekyll so that _dir works as intended.
+        ctx.run("touch .nojekyll")
 
 
 @task
@@ -51,7 +91,6 @@ def release_github(ctx):
 
 @task
 def update_changelog(ctx):
-
     output = subprocess.check_output(["git", "log", "--pretty=format:%s",
                                       "v%s..HEAD" % CURRENT_VER])
     lines = ["* " + l for l in output.decode("utf-8").strip().split("\n")]

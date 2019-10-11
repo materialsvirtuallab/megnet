@@ -1,0 +1,645 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Introduction &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet package" href="megnet.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.html" title="megnet package"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">megnet 1.0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>This repository represents the efforts of the [Materials Virtual Lab](<a class="reference external" href="http://www.materialsvirtuallab.org">http://www.materialsvirtuallab.org</a>)
+in developing graph networks for machine learning in materials science. It is a
+work in progress and the models we have developed thus far are only based on
+our best efforts. We welcome efforts by anyone to build and test models using
+our code and data, all of which are publicly available. Any comments or
+suggestions are also welcome (please post on the Github Issues page.)</p>
+<p>A web app using our pre-trained MEGNet models for property prediction in
+crystals is available at <a class="reference external" href="http://megnet.crystals.ai">http://megnet.crystals.ai</a>.</p>
+</div>
+<div class="section" id="megnet-framework">
+<h1>MEGNet framework<a class="headerlink" href="#megnet-framework" title="Permalink to this headline">¶</a></h1>
+<p>The MatErials Graph Network (MEGNet) is an implementation of DeepMind’s graph
+networks[1] for universal machine learning in materials science. We have
+demonstrated its success in achieving very low prediction errors in a broad
+array of properties in both molecules and crystals (see
+[“Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals”](<a class="reference external" href="https://doi.org/10.1021/acs.chemmater.9b01294)[2">https://doi.org/10.1021/acs.chemmater.9b01294)[2</a>]).</p>
+<p>Briefly, Figure 1 shows the sequential update steps of the graph network,
+whereby bonds, atoms, and global state attributes are updated using information
+from each other, generating an output graph.</p>
+<p>![GraphModel diagram](resources/model_diagram_small.jpg)
+&lt;div align=’center’&gt;&lt;strong&gt;Figure 1. The graph network update function.&lt;/strong&gt;&lt;/div&gt;</p>
+<p>Figure 2 shows the overall schematic of the MEGNet. Each graph network module
+is preceded by two multi-layer perceptrons (known as Dense layers in Keras
+terminology), constituting a MEGNet block. Multiple MEGNet blocks can be
+stacked, allowing for information flow across greater spatial distances. The
+number of blocks required depend on the range of interactions necessary to
+predict a target property. In the final step, a <cite>set2set</cite> is used to map the
+output to a scalar/vector property.</p>
+<p>![GraphModel architecture](resources/model_arch_small.jpg)
+&lt;div align=’center’&gt;&lt;strong&gt;Figure 2. Schematic of MatErials Graph Network.&lt;/strong&gt;&lt;/div&gt;</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Megnet can be installed via pip for the latest stable version:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">megnet</span>
+</pre></div>
+</div>
+<p>For the latest dev version, please clone this repo and install using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>Our current implementation supports a variety of use cases for users with
+different requirements and experience with deep learning. Please also visit
+the [notebooks directory](notebooks) for Jupyter notebooks with more detailed code examples.</p>
+<div class="section" id="using-pre-built-models">
+<h2>Using pre-built models<a class="headerlink" href="#using-pre-built-models" title="Permalink to this headline">¶</a></h2>
+<p>In our work, we have already built MEGNet models for the QM9 data set and
+Materials Project dataset. These models are provided as serialized HDF5+JSON
+files. Users who are purely interested in using these models for prediction
+can quickly load and use them via the convenient <cite>MEGNetModel.from_file</cite>
+method. These models are available in the <cite>mvl_models</cite> folder of this repo.
+The following models are available:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>QM9 molecule data:</dt><dd><ul>
+<li><p>HOMO: Highest occupied molecular orbital energy</p></li>
+<li><p>LUMO: Lowest unoccupied molecular orbital energy</p></li>
+<li><p>Gap: energy gap</p></li>
+<li><p>ZPVE: zero point vibrational energy</p></li>
+<li><p>µ: dipole moment</p></li>
+<li><p>α: isotropic polarizability</p></li>
+<li><p>&lt;R2&gt;: electronic spatial extent</p></li>
+<li><p>U0: internal energy at 0 K</p></li>
+<li><p>U: internal energy at 298 K</p></li>
+<li><p>H: enthalpy at 298 K</p></li>
+<li><p>G: Gibbs free energy at 298 K</p></li>
+<li><p>Cv: heat capacity at 298 K</p></li>
+<li><p>ω1: highest vibrational frequency.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Materials Project data:</dt><dd><ul>
+<li><p>Formation energy from the elements</p></li>
+<li><p>Band gap</p></li>
+<li><p>Log 10 of Bulk Modulus (K)</p></li>
+<li><p>Log 10 of Shear Modulus (G)</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The MAEs on the various models are given below:</p>
+<div class="section" id="performance-of-qm9-megnet-simple-models">
+<h3>Performance of QM9 MEGNet-Simple models<a class="headerlink" href="#performance-of-qm9-megnet-simple-models" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Property | Units      | MAE   |</div>
+</div>
+<p><a href="#id1"><span class="problematic" id="id2">|----------|</span></a>————<a href="#id3"><span class="problematic" id="id4">|-------|</span></a>
+| HOMO     | eV         | 0.043 |
+| LUMO     | eV         | 0.044 |
+| Gap      | eV         | 0.066 |
+| ZPVE     | meV        | 1.43  |
+| µ        | Debye      | 0.05  |
+| α        | Bohr^3     | 0.081 |
+| &lt;R2&gt;   | Bohr^2     | 0.302 |
+| U0       | eV         | 0.012 |
+| U        | eV         | 0.013 |
+| H        | eV         | 0.012 |
+| G        | eV         | 0.012 |
+| Cv       | cal/(molK) | 0.029 |
+| ω1       | cm^-1      | 1.18  |</p>
+</div>
+<div class="section" id="performance-of-mp-2018-6-1">
+<h3>Performance of MP-2018.6.1<a class="headerlink" href="#performance-of-mp-2018-6-1" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Property | Units      | MAE   |</div>
+</div>
+<p><a href="#id5"><span class="problematic" id="id6">|----------|</span></a>————<a href="#id7"><span class="problematic" id="id8">|-------|</span></a>
+| Ef       | eV/atom    | 0.028 |
+| Eg       | eV         | 0.33  |
+| K_VRH    | log10(GPa) | 0.050 |
+| G_VRH    | log10(GPa) | 0.079 |</p>
+</div>
+<div class="section" id="performance-of-mp-2019-4-1">
+<h3>Performance of MP-2019.4.1<a class="headerlink" href="#performance-of-mp-2019-4-1" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Property | Units      | MAE   |</div>
+</div>
+<p><a href="#id9"><span class="problematic" id="id10">|----------|</span></a>————<a href="#id11"><span class="problematic" id="id12">|-------|</span></a>
+| Ef       | eV/atom    | 0.026 |
+| Efermi   | eV         | 0.288 |</p>
+<p>New models will be added as they are developed in the [mvl_models](mvl_models)
+folder. Each folder contains a summary of model details and benchmarks. For
+the initial models and bencharmks comparison to previous models,
+please refer to [“Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals”](<a class="reference external" href="https://doi.org/10.1021/acs.chemmater.9b01294)[2">https://doi.org/10.1021/acs.chemmater.9b01294)[2</a>].</p>
+<p>Below is an example of crystal model usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">megnet.utils.models</span> <span class="k">import</span> <span class="n">load_model</span>
+<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">Lattice</span>
+
+<span class="c1"># load a model in megnet.utils.models.AVAILABLE_MODELS</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;logK_MP_2018&quot;</span><span class="p">)</span>
+
+<span class="c1"># We can construct a structure using pymatgen</span>
+<span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">Lattice</span><span class="o">.</span><span class="n">cubic</span><span class="p">(</span><span class="mf">3.167</span><span class="p">),</span>
+            <span class="p">[</span><span class="s1">&#39;Mo&#39;</span><span class="p">,</span> <span class="s1">&#39;Mo&#39;</span><span class="p">],</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+
+<span class="c1"># Use the model to predict bulk modulus K. Note that the model is trained on</span>
+<span class="c1"># log10 K. So a conversion is necessary.</span>
+<span class="n">predicted_K</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The predicted K for </span><span class="si">{}</span><span class="s1"> is </span><span class="si">{}</span><span class="s1"> GPa&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">structure</span><span class="o">.</span><span class="n">formula</span><span class="p">,</span> <span class="n">predicted_K</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb).</p>
+<p>For molecular models, we have an example in
+[notebooks/qm9_pretrained.ipynb](notebooks/qm9_pretrained.ipynb).
+We support prediction directly from a pymatgen molecule object. With a few more
+lines of code, the model can predict from <cite>SMILES</cite> representation of molecules,
+as shown in the example. It is also straightforward to load a <cite>xyz</cite> molecule
+file with pymatgen and predict the properties using the models. However, the
+users are generally not advised to use the <cite>qm9</cite> molecule models for other
+molecules outside the <cite>qm9</cite> datasets, since the training data coverage is
+limited.</p>
+<p>Below is an example of predicting the “HOMO” of a smiles representation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">megnet.utils.molecule</span> <span class="k">import</span> <span class="n">get_pmg_mol_from_smiles</span>
+<span class="kn">from</span> <span class="nn">megnet.models</span> <span class="k">import</span> <span class="n">MEGNetModel</span>
+
+<span class="c1"># same model API for molecule and crystals</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MEGNetModel</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s1">&#39;mvl_models/qm9-2018.6.1/HOMO.hdf5&#39;</span><span class="p">)</span>
+<span class="c1"># Need to convert SMILES into pymatgen Molecule</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="n">get_pmg_mol_from_smiles</span><span class="p">(</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">predict_structure</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="training-a-new-megnetmodel-from-structures">
+<h2>Training a new MEGNetModel from structures<a class="headerlink" href="#training-a-new-megnetmodel-from-structures" title="Permalink to this headline">¶</a></h2>
+<p>For users who wish to build a new model from a set of crystal structures with
+corresponding properties, there is a convenient <cite>MEGNetModel</cite> class for setting
+up and training the model. By default, the number of MEGNet blocks is 3 and the
+atomic number Z is used as the only node feature (with embedding):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">megnet.models</span> <span class="k">import</span> <span class="n">MEGNetModel</span>
+<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="n">GaussianDistance</span>
+<span class="kn">from</span> <span class="nn">megnet.data.crystal</span> <span class="k">import</span> <span class="n">CrystalGraph</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">nfeat_bond</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">nfeat_global</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">r_cutoff</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">gaussian_centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">r_cutoff</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nfeat_bond</span><span class="p">)</span>
+<span class="n">gaussian_width</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">distance_converter</span> <span class="o">=</span> <span class="n">GaussianDistance</span><span class="p">(</span><span class="n">gaussian_centers</span><span class="p">,</span> <span class="n">gaussian_width</span><span class="p">)</span>
+<span class="n">graph_converter</span> <span class="o">=</span> <span class="n">CrystalGraph</span><span class="p">(</span><span class="n">bond_converter</span><span class="o">=</span><span class="n">distance_converter</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="n">r_cutoff</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">MEGNetModel</span><span class="p">(</span><span class="n">nfeat_bond</span><span class="p">,</span> <span class="n">nfeat_global</span><span class="p">,</span>
+                    <span class="n">graph_converter</span><span class="o">=</span><span class="n">graph_converter</span><span class="p">)</span>
+
+<span class="c1"># Model training</span>
+<span class="c1"># Here, `structures` is a list of pymatgen Structure objects.</span>
+<span class="c1"># `targets` is a corresponding list of properties.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Predict the property of a new structure</span>
+<span class="n">pred_target</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict_structure</span><span class="p">(</span><span class="n">new_structure</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that for realistic models, the <cite>nfeat_bond</cite> can be set to 100 and <cite>epochs</cite> can be 1000.
+In some cases, some structures within the training pool may not be valid (containing isolated atoms),
+then one needs to use <cite>train_from_graphs</cite> method by training only on the valid graphs.</p>
+<p>Following the previous example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">MEGNetModel</span><span class="p">(</span><span class="n">nfeat_bond</span><span class="p">,</span> <span class="n">nfeat_global</span><span class="p">,</span> <span class="n">graph_converter</span><span class="o">=</span><span class="n">graph_converter</span><span class="p">)</span>
+<span class="n">graphs_valid</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">targets_valid</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">structures_invalid</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">structures</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">graph_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">graphs_valid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="n">targets_valid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">structures_invalid</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+<span class="c1"># train the model using valid graphs and targets</span>
+<span class="n">model</span><span class="o">.</span><span class="n">train_from_graphs</span><span class="p">(</span><span class="n">graphs_valid</span><span class="p">,</span> <span class="n">targets_valid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For model details and benchmarks, please refer to [“Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals”](<a class="reference external" href="https://doi.org/10.1021/acs.chemmater.9b01294)[2">https://doi.org/10.1021/acs.chemmater.9b01294)[2</a>]</p>
+</div>
+<div class="section" id="pre-trained-elemental-embeddings">
+<h2>Pre-trained elemental embeddings<a class="headerlink" href="#pre-trained-elemental-embeddings" title="Permalink to this headline">¶</a></h2>
+<p>A key finding of our work is that element embeddings from trained formation
+energy models encode useful chemical information that can be transferred
+learned to develop models with smaller datasets (e.g. elastic constants,
+band gaps), with better converegence and lower errors. These embeddings are
+also potentially useful in developing other ML models and applications. These
+embeddings have been made available via the following code:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">megnet.data.crystal</span> <span class="k">import</span> <span class="n">get_elemental_embeddings</span>
+
+<span class="n">el_embeddings</span> <span class="o">=</span> <span class="n">get_elemental_embeddings</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>An example of transfer learning using the elemental embedding from formation
+energy to other models, please check [notebooks/transfer_learning.ipynb](notebooks/transfer_learning.ipynb).</p>
+</div>
+<div class="section" id="customized-graph-network-models">
+<h2>Customized Graph Network Models<a class="headerlink" href="#customized-graph-network-models" title="Permalink to this headline">¶</a></h2>
+<p>For users who are familiar with deep learning and Keras and wish to build
+customized graph network based models, the following example outlines how a
+custom model can be constructed from <cite>MEGNetLayer</cite>, which is essentially our
+implementation of the graph network using neural networks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="k">import</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">megnet.layers</span> <span class="k">import</span> <span class="n">MEGNetLayer</span><span class="p">,</span> <span class="n">Set2Set</span>
+
+<span class="n">n_atom_feature</span><span class="o">=</span> <span class="mi">20</span>
+<span class="n">n_bond_feature</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">n_global_feature</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="c1"># Define model inputs</span>
+<span class="n">int32</span> <span class="o">=</span> <span class="s1">&#39;int32&#39;</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_atom_feature</span><span class="p">))</span> <span class="c1"># atom feature placeholder</span>
+<span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_bond_feature</span><span class="p">))</span> <span class="c1"># bond feature placeholder</span>
+<span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_global_feature</span><span class="p">))</span> <span class="c1"># global feature placeholder</span>
+<span class="n">x4</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span> <span class="c1"># bond index1 placeholder</span>
+<span class="n">x5</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span> <span class="c1"># bond index2 placeholder</span>
+<span class="n">x6</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span> <span class="c1"># atom_ind placeholder</span>
+<span class="n">x7</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">)</span> <span class="c1"># bond_ind placeholder</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">,</span> <span class="n">x7</span><span class="p">]</span>
+
+<span class="c1"># Pass the inputs to the MEGNetLayer layer</span>
+<span class="c1"># Here the list are the hidden units + the output unit,</span>
+<span class="c1"># you can have others like [n1] or [n1, n2, n3 ...] if you want.</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">MEGNetLayer</span><span class="p">([</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="n">pool_method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">)(</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="c1"># the output is a tuple of new graphs V, E and u</span>
+<span class="c1"># Since u is a per-structure quantity,</span>
+<span class="c1"># we can directly use it to predict per-structure property</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">)(</span><span class="n">out</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="c1"># Set up the model and compile it!</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">xs</span><span class="p">,</span> <span class="n">outputs</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With less than 20 lines of code, you have built a graph network model that is
+ready for materials property prediction!</p>
+</div>
+</div>
+<div class="section" id="implementation-details">
+<h1>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h1>
+<p>Graph networks[1] are a superclass of graph-based neural networks. There are a
+few innovations compared to conventional graph-based neural neworks.</p>
+<ul class="simple">
+<li><p>Global state attributes are added to the node/edge graph representation.
+These features work as a portal for structure-independent features such as
+temperature, pressure etc and also are an information exchange placeholder
+that facilitates information passing across longer spatial domains.</p></li>
+<li><p>The update function involves the message interchange among all three levels
+of information, i.e., the node, bond and state information. It is therefore a
+highly general model.</p></li>
+</ul>
+<p>The <cite>MEGNet</cite> model implements two major components: (a) the <cite>graph network</cite>
+layer and (b) the <cite>set2set</cite> layer.[3] The layers are based on
+[keras](<a class="reference external" href="https://keras.io/">https://keras.io/</a>) API and is thus compatible with other keras modules.</p>
+<p>Different crystals/molecules have different number of atoms. Therefore it is
+impossible to use data batches without padding the structures to make them
+uniform in atom number. <cite>MEGNet</cite> takes a different approach. Instead of making
+structure batches, we assemble many structures into one giant structure, and
+this structure has a vector output with each entry being the target value for
+the corresponding structure. Therefore, the batch number is always 1.</p>
+<p>Assuming a structure has N atoms and M bonds, a structure graph is represented
+as <strong>V</strong> (nodes/vertices, representing atoms), <strong>E</strong> (edges, representing bonds)
+and <strong>u</strong> (global state vector). <strong>V</strong> is a N*Nv matrix. <strong>E</strong> comprises of a
+M*Nm matrix for the bond attributes and index pairs (rk, sk) for atoms
+connected by each bond. <strong>u</strong> is a vector with length Nu. We vectorize rk and
+sk to form <cite>index1</cite> and <cite>index2</cite>, both are vectors with length M. In summary,
+the graph is a data structure with <strong>V</strong> (N*Nv), <strong>E</strong> (M*Nm), <strong>u</strong>
+(Nu, ), <cite>index1</cite> (M, ) and <cite>index2</cite> (M, ).</p>
+<p>We then assemble several structures together. For <strong>V</strong>, we directly append the
+atomic attributes from all structures, forming a matrix (1*N’*Nv), where
+N’ &gt; N. To indicate the belongingness of each atom attribute vector, we use a
+<cite>atom_ind</cite> vector. For example if <cite>N’=5</cite> and the first 3 atoms belongs to the
+first structure and the remainings the second structure, our <cite>atom_ind</cite> vector
+would be <cite>[0, 0, 0, 1, 1]</cite>. For the bond attribute, we perform the same
+appending method, and use <cite>bond_ind</cite> vector to indicate the bond belongingness.
+For <cite>index1</cite> and <cite>index2</cite>, we need to shift the integer values. For example,
+if <cite>index1</cite> and <cite>index2</cite> are <cite>[0, 0, 1, 1]</cite> and <cite>[1, 1, 0, 0]</cite> for structure 1
+and are <cite>[0, 0, 1, 1]</cite> and <cite>[1, 1, 0, 0]</cite> for structure two. The assembled
+indices are <cite>[0, 0, 1, 1, 2, 2, 3, 3]</cite> and <cite>[1, 1, 0, 0, 3, 3, 2, 2]</cite>. Finally,
+<strong>u</strong> expands a new dimension to take into account of the number of structures,
+and becomes a 1*Ng*Nu tensor, where Ng is the number of structures. <cite>1</cite> is
+added as the first dimension of all inputs because we fixed the batch size to
+be 1 (1 giant graph) to comply the keras inputs requirements.</p>
+<p>In summary the inputs for the model is <strong>V</strong> (1*N’*Nv), <strong>E</strong> (1*M’*Nm),
+<strong>u</strong> (1*Ng*Nu), <cite>index1</cite> (1*M’), <cite>index2</cite> (1*M’), <cite>atom_ind</cite> (1*N’), and
+<cite>bond_ind</cite> (1*M’). For Z-only atomic features, <strong>V</strong> is a (1*N’) vector.</p>
+</div>
+<div class="section" id="data-sets">
+<h1>Data sets<a class="headerlink" href="#data-sets" title="Permalink to this headline">¶</a></h1>
+<p>To aid others in reproducing (and improving on) our results, we have provided
+our MP-crystals-2018.6.1 crystal data set via [figshare](<a class="reference external" href="https://figshare.com/articles/Graphs_of_materials_project/7451351)[4">https://figshare.com/articles/Graphs_of_materials_project/7451351)[4</a>].
+The MP-crystals-2018.6.1 data set comprises the DFT-computed energies and
+band gaps of 69,640 crystals from the [Materials Project](<a class="reference external" href="http://www.materialsproject.org">http://www.materialsproject.org</a>)
+obtained via the [Python Materials Genomics (pymatgen)](<a class="reference external" href="http://pymatgen.org">http://pymatgen.org</a>)
+interface to the Materials Application Programming Interface (API)[5] on
+June 1, 2018. The crystal graphs were constructed using a radius cut-oﬀ of 4
+angstroms. Using this cut-oﬀ, 69,239 crystals do not form isolated atoms and
+are used in the models. A subset of 5,830 structures have elasticity data that
+do not have calculation warnings and will be used for elasticity models.</p>
+<p>The molecule data set used in this work is the QM9 data set 30 processed by
+Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation
+results on 130,462 small organic molecules containing up to 9 heavy atoms.</p>
+</div>
+<div class="section" id="computing-requirements">
+<h1>Computing requirements<a class="headerlink" href="#computing-requirements" title="Permalink to this headline">¶</a></h1>
+<p>Training: It should be noted that training MEGNet models, like other deep
+learning models, is fairly computationally intensive with large datasets. In
+our work, we use dedicated GPU resources to train MEGNet models with 100,000
+crystals/molecules. It is recommended that you do the same.</p>
+<p>Prediction: Once trained, prediction using MEGNet models are fairly cheap.
+For example, the <a class="reference external" href="http://megnet.crystals.ai">http://megnet.crystals.ai</a> web app runs on a single hobby dyno
+on Heroku and provides the prediction for any crystal within seconds.</p>
+</div>
+<div class="section" id="known-limitations">
+<h1>Known limitations<a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><cite>isolated atoms</cite> error. This error occurs when using the given cutoff in the model (4A for</p></li>
+</ul>
+<p>2018 models and 5A for 2019 models), the crystal structure contains isolated atoms, i.e.,
+no neighboring atoms are within the distance of <cite>cutoff</cite>. Most of the time, we can just
+discard the structure, since we found that those structures tend to have a high energy above
+hull (less stable). If you think this error is an essential issue for a particular problem,
+please feel free to email us and we will consider releasing a new model with increased cutoff.</p>
+</div>
+<div class="section" id="contributors">
+<h1>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>Chi Chen from the Materials Virtual Lab is the lead developer of MEGNet.</p></li>
+<li><p>Shyue Ping Ong and other members of the Materials Virtual Lab contributes to general improvements
+of MEGNet and its applications.</p></li>
+<li><p>Logan Ward has made extensive contributions, especially to the development of molecular graph
+portions of MEGNet.</p></li>
+</ol>
+</div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li><p>Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.;
+Zambaldi, V.; Malinowski, M.; Tacchetti, A.; Raposo, D.; Santoro, A.;
+Faulkner, R.; et al. Relational inductive biases, deep learning, and graph
+networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)</p></li>
+<li><p>Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. Graph Networks as a
+Universal Machine Learning Framework for Molecules and Crystals. Chemistry
+of Materials 2019, 31(9), 3564-3572.
+[doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)</p></li>
+<li><p>Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for
+sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)</p></li>
+<li><p><a class="reference external" href="https://figshare.com/articles/Graphs_of_materials_project/7451351">https://figshare.com/articles/Graphs_of_materials_project/7451351</a></p></li>
+<li><p>Ong, S. P.; Cholia, S.; Jain, A.; Brafman, M.; Gunter, D.; Ceder, G.;
+Persson, K. A. The Materials Application Programming Interface (API): A
+simple, flexible and efficient API for materials data based on
+REpresentational State Transfer (REST) principles. Comput. Mater. Sci. 2015,
+97, 209–215 DOI: [10.1016/j.commatsci.2014.10.037](<a class="reference external" href="http://dx.doi.org/10.1016/j.commatsci.2014.10.037">http://dx.doi.org/10.1016/j.commatsci.2014.10.037</a>).</p></li>
+<li><p>Faber, F. A.; Hutchison, L.; Huang, B.; Gilmer, J.; Schoenholz, S. S.;
+Dahl, G. E.; Vinyals, O.; Kearnes, S.; Riley, P. F.; von Lilienfeld, O. A.
+Prediction errors of molecular machine learning models lower than hybrid DFT
+error. Journal of Chemical Theory and Computation 2017, 13, 5255–5264.
+DOI: [10.1021/acs.jctc.7b00577](<a class="reference external" href="http://dx.doi.org/10.1021/acs.jctc.7b00577">http://dx.doi.org/10.1021/acs.jctc.7b00577</a>)</p></li>
+</ol>
+</div>
+<div class="section" id="api-docs">
+<h1>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="megnet.html">megnet package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="megnet.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="megnet.data.html">megnet.data package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="megnet.data.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="megnet.data.crystal.html">megnet.data.crystal module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.data.graph.html">megnet.data.graph module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.data.local_env.html">megnet.data.local_env module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.data.molecule.html">megnet.data.molecule module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.data.qm9.html">megnet.data.qm9 module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="megnet.data.html#module-megnet.data">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="megnet.layers.html">megnet.layers package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="megnet.layers.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="megnet.layers.graph.html">megnet.layers.graph package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="megnet.layers.graph.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.graph.base.html">megnet.layers.graph.base module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.graph.cgcnn.html">megnet.layers.graph.cgcnn module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.graph.megnet.html">megnet.layers.graph.megnet module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.graph.schnet.html">megnet.layers.graph.schnet module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="megnet.layers.graph.html#module-megnet.layers.graph">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.layers.readout.html">megnet.layers.readout package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="megnet.layers.readout.html#submodules">Submodules</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.readout.linear.html">megnet.layers.readout.linear module</a></li>
+<li class="toctree-l7"><a class="reference internal" href="megnet.layers.readout.set2set.html">megnet.layers.readout.set2set module</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="megnet.layers.readout.html#module-megnet.layers.readout">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="megnet.layers.html#module-megnet.layers">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="megnet.utils.html">megnet.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="megnet.utils.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.data.html">megnet.utils.data module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.descriptor.html">megnet.utils.descriptor module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.general.html">megnet.utils.general module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.layer.html">megnet.utils.layer module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.metrics.html">megnet.utils.metrics module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.models.html">megnet.utils.models module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.molecule.html">megnet.utils.molecule module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="megnet.utils.preprocessing.html">megnet.utils.preprocessing module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="megnet.utils.html#module-megnet.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="megnet.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="megnet.activations.html">megnet.activations module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="megnet.callbacks.html">megnet.callbacks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="megnet.losses.html">megnet.losses module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="megnet.models.html">megnet.models module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="megnet.html#module-megnet">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
+<p>Contributions to Monty are always welcome. Feel free to visit the <a class="reference external" href="https://github.com/materialsvirtuallab/megnet">Megnet
+Github repo</a> to fork the
+repo or to submit Issues.</p>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>Megnet is released under the BSD-3 Clause License. The terms of the license are as
+follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Copyright</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="mi">2015</span><span class="p">,</span> <span class="n">Regents</span> <span class="n">of</span> <span class="n">the</span> <span class="n">University</span> <span class="n">of</span> <span class="n">California</span>
+<span class="n">All</span> <span class="n">rights</span> <span class="n">reserved</span><span class="o">.</span>
+
+<span class="n">Redistribution</span> <span class="ow">and</span> <span class="n">use</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">binary</span> <span class="n">forms</span><span class="p">,</span> <span class="k">with</span> <span class="ow">or</span> <span class="n">without</span> <span class="n">modification</span><span class="p">,</span>
+<span class="n">are</span> <span class="n">permitted</span> <span class="n">provided</span> <span class="n">that</span> <span class="n">the</span> <span class="n">following</span> <span class="n">conditions</span> <span class="n">are</span> <span class="n">met</span><span class="p">:</span>
+
+<span class="mf">1.</span> <span class="n">Redistributions</span> <span class="n">of</span> <span class="n">source</span> <span class="n">code</span> <span class="n">must</span> <span class="n">retain</span> <span class="n">the</span> <span class="n">above</span> <span class="n">copyright</span> <span class="n">notice</span><span class="p">,</span> <span class="n">this</span>
+   <span class="nb">list</span> <span class="n">of</span> <span class="n">conditions</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">following</span> <span class="n">disclaimer</span><span class="o">.</span>
+
+<span class="mf">2.</span> <span class="n">Redistributions</span> <span class="ow">in</span> <span class="n">binary</span> <span class="n">form</span> <span class="n">must</span> <span class="n">reproduce</span> <span class="n">the</span> <span class="n">above</span> <span class="n">copyright</span> <span class="n">notice</span><span class="p">,</span>
+   <span class="n">this</span> <span class="nb">list</span> <span class="n">of</span> <span class="n">conditions</span> <span class="ow">and</span> <span class="n">the</span> <span class="n">following</span> <span class="n">disclaimer</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">documentation</span>
+   <span class="ow">and</span><span class="o">/</span><span class="ow">or</span> <span class="n">other</span> <span class="n">materials</span> <span class="n">provided</span> <span class="k">with</span> <span class="n">the</span> <span class="n">distribution</span><span class="o">.</span>
+
+<span class="mf">3.</span> <span class="n">Neither</span> <span class="n">the</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">copyright</span> <span class="n">holder</span> <span class="n">nor</span> <span class="n">the</span> <span class="n">names</span> <span class="n">of</span> <span class="n">its</span> <span class="n">contributors</span>
+   <span class="n">may</span> <span class="n">be</span> <span class="n">used</span> <span class="n">to</span> <span class="n">endorse</span> <span class="ow">or</span> <span class="n">promote</span> <span class="n">products</span> <span class="n">derived</span> <span class="kn">from</span> <span class="nn">this</span> <span class="n">software</span>
+   <span class="n">without</span> <span class="n">specific</span> <span class="n">prior</span> <span class="n">written</span> <span class="n">permission</span><span class="o">.</span>
+
+<span class="n">THIS</span> <span class="n">SOFTWARE</span> <span class="n">IS</span> <span class="n">PROVIDED</span> <span class="n">BY</span> <span class="n">THE</span> <span class="n">COPYRIGHT</span> <span class="n">HOLDERS</span> <span class="n">AND</span> <span class="n">CONTRIBUTORS</span> <span class="s2">&quot;AS IS&quot;</span> <span class="n">AND</span>
+<span class="n">ANY</span> <span class="n">EXPRESS</span> <span class="n">OR</span> <span class="n">IMPLIED</span> <span class="n">WARRANTIES</span><span class="p">,</span> <span class="n">INCLUDING</span><span class="p">,</span> <span class="n">BUT</span> <span class="n">NOT</span> <span class="n">LIMITED</span> <span class="n">TO</span><span class="p">,</span> <span class="n">THE</span> <span class="n">IMPLIED</span>
+<span class="n">WARRANTIES</span> <span class="n">OF</span> <span class="n">MERCHANTABILITY</span> <span class="n">AND</span> <span class="n">FITNESS</span> <span class="n">FOR</span> <span class="n">A</span> <span class="n">PARTICULAR</span> <span class="n">PURPOSE</span> <span class="n">ARE</span>
+<span class="n">DISCLAIMED</span><span class="o">.</span> <span class="n">IN</span> <span class="n">NO</span> <span class="n">EVENT</span> <span class="n">SHALL</span> <span class="n">THE</span> <span class="n">COPYRIGHT</span> <span class="n">HOLDER</span> <span class="n">OR</span> <span class="n">CONTRIBUTORS</span> <span class="n">BE</span> <span class="n">LIABLE</span>
+<span class="n">FOR</span> <span class="n">ANY</span> <span class="n">DIRECT</span><span class="p">,</span> <span class="n">INDIRECT</span><span class="p">,</span> <span class="n">INCIDENTAL</span><span class="p">,</span> <span class="n">SPECIAL</span><span class="p">,</span> <span class="n">EXEMPLARY</span><span class="p">,</span> <span class="n">OR</span> <span class="n">CONSEQUENTIAL</span>
+<span class="n">DAMAGES</span> <span class="p">(</span><span class="n">INCLUDING</span><span class="p">,</span> <span class="n">BUT</span> <span class="n">NOT</span> <span class="n">LIMITED</span> <span class="n">TO</span><span class="p">,</span> <span class="n">PROCUREMENT</span> <span class="n">OF</span> <span class="n">SUBSTITUTE</span> <span class="n">GOODS</span> <span class="n">OR</span>
+<span class="n">SERVICES</span><span class="p">;</span> <span class="n">LOSS</span> <span class="n">OF</span> <span class="n">USE</span><span class="p">,</span> <span class="n">DATA</span><span class="p">,</span> <span class="n">OR</span> <span class="n">PROFITS</span><span class="p">;</span> <span class="n">OR</span> <span class="n">BUSINESS</span> <span class="n">INTERRUPTION</span><span class="p">)</span> <span class="n">HOWEVER</span>
+<span class="n">CAUSED</span> <span class="n">AND</span> <span class="n">ON</span> <span class="n">ANY</span> <span class="n">THEORY</span> <span class="n">OF</span> <span class="n">LIABILITY</span><span class="p">,</span> <span class="n">WHETHER</span> <span class="n">IN</span> <span class="n">CONTRACT</span><span class="p">,</span> <span class="n">STRICT</span> <span class="n">LIABILITY</span><span class="p">,</span>
+<span class="n">OR</span> <span class="n">TORT</span> <span class="p">(</span><span class="n">INCLUDING</span> <span class="n">NEGLIGENCE</span> <span class="n">OR</span> <span class="n">OTHERWISE</span><span class="p">)</span> <span class="n">ARISING</span> <span class="n">IN</span> <span class="n">ANY</span> <span class="n">WAY</span> <span class="n">OUT</span> <span class="n">OF</span> <span class="n">THE</span> <span class="n">USE</span>
+<span class="n">OF</span> <span class="n">THIS</span> <span class="n">SOFTWARE</span><span class="p">,</span> <span class="n">EVEN</span> <span class="n">IF</span> <span class="n">ADVISED</span> <span class="n">OF</span> <span class="n">THE</span> <span class="n">POSSIBILITY</span> <span class="n">OF</span> <span class="n">SUCH</span> <span class="n">DAMAGE</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#megnet-framework">MEGNet framework</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a><ul>
+<li><a class="reference internal" href="#using-pre-built-models">Using pre-built models</a><ul>
+<li><a class="reference internal" href="#performance-of-qm9-megnet-simple-models">Performance of QM9 MEGNet-Simple models</a></li>
+<li><a class="reference internal" href="#performance-of-mp-2018-6-1">Performance of MP-2018.6.1</a></li>
+<li><a class="reference internal" href="#performance-of-mp-2019-4-1">Performance of MP-2019.4.1</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#training-a-new-megnetmodel-from-structures">Training a new MEGNetModel from structures</a></li>
+<li><a class="reference internal" href="#pre-trained-elemental-embeddings">Pre-trained elemental embeddings</a></li>
+<li><a class="reference internal" href="#customized-graph-network-models">Customized Graph Network Models</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#implementation-details">Implementation details</a></li>
+<li><a class="reference internal" href="#data-sets">Data sets</a></li>
+<li><a class="reference internal" href="#computing-requirements">Computing requirements</a></li>
+<li><a class="reference internal" href="#known-limitations">Known limitations</a></li>
+<li><a class="reference internal" href="#contributors">Contributors</a></li>
+<li><a class="reference internal" href="#references">References</a></li>
+<li><a class="reference internal" href="#api-docs">API docs</a></li>
+<li><a class="reference internal" href="#contributing">Contributing</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="megnet.html" title="next chapter">megnet package</a></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

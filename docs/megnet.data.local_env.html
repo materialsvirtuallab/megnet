@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.data.local_env module &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.data.molecule module" href="megnet.data.molecule.html" />
+    <link rel="prev" title="megnet.data.graph module" href="megnet.data.graph.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.data.molecule.html" title="megnet.data.molecule module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.data.graph.html" title="megnet.data.graph module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="megnet.data.html" accesskey="U">megnet.data package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-megnet.data.local_env">
+<span id="megnet-data-local-env-module"></span><h1>megnet.data.local_env module<a class="headerlink" href="#module-megnet.data.local_env" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="megnet.data.local_env.AllAtomPairs">
+<em class="property">class </em><code class="sig-name descname">AllAtomPairs</code><a class="reference internal" href="_modules/megnet/data/local_env.html#AllAtomPairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.AllAtomPairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.analysis.local_env.NearNeighbors</span></code></p>
+<p>Get all combinations of atoms as bonds in a molecule</p>
+<dl class="method">
+<dt id="megnet.data.local_env.AllAtomPairs.get_nn_info">
+<code class="sig-name descname">get_nn_info</code><span class="sig-paren">(</span><em class="sig-param">molecule: pymatgen.core.structure.Molecule</em>, <em class="sig-param">n: int</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/local_env.html#AllAtomPairs.get_nn_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.AllAtomPairs.get_nn_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all near-neighbor sites as well as the associated image locations
+and weights of the site with index n.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure</strong> (<em>Structure</em>) – input structure.</p></li>
+<li><p><strong>n</strong> (<em>integer</em>) – index of site for which to determine near-neighbor
+information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>each dictionary provides information</dt><dd><p>about a single near neighbor, where key ‘site’ gives
+access to the corresponding Site object, ‘image’ gives
+the image location, and ‘weight’ provides the weight
+that a given near-neighbor site contributes
+to the coordination number (1 or smaller), ‘site_index’
+gives index of the corresponding site in
+the original structure.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>siw (list of dicts)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.data.local_env.MinimumDistanceNNAll">
+<em class="property">class </em><code class="sig-name descname">MinimumDistanceNNAll</code><span class="sig-paren">(</span><em class="sig-param">cutoff: float = 4.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/local_env.html#MinimumDistanceNNAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.MinimumDistanceNNAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pymatgen.analysis.local_env.MinimumDistanceNN</span></code></p>
+<p>Determine bonded sites by fixed cutoff</p>
+<dl class="simple">
+<dt>Args:.</dt><dd><dl class="simple">
+<dt>cutoff (float): cutoff radius in Angstrom to look for trial</dt><dd><p>near-neighbor sites (default: 4.0).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>Args:
+tol (float): tolerance parameter for neighbor identification</p>
+<blockquote>
+<div><p>(default: 0.1).</p>
+</div></blockquote>
+<dl class="simple">
+<dt>cutoff (float): cutoff radius in Angstrom to look for trial</dt><dd><p>near-neighbor sites (default: 10.0).</p>
+</dd>
+<dt>get_all_sites (boolean): If this is set to True then the neighbor</dt><dd><p>sites are only determined by the cutoff radius, tol is ignored</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="megnet.data.local_env.MinimumDistanceNNAll.get_all_nn_info_old">
+<code class="sig-name descname">get_all_nn_info_old</code><span class="sig-paren">(</span><em class="sig-param">structure: pymatgen.core.structure.Structure</em><span class="sig-paren">)</span> &#x2192; List[Dict]<a class="reference internal" href="_modules/megnet/data/local_env.html#MinimumDistanceNNAll.get_all_nn_info_old"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.MinimumDistanceNNAll.get_all_nn_info_old" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="megnet.data.local_env.MinimumDistanceNNAll.get_nn_info">
+<code class="sig-name descname">get_nn_info</code><span class="sig-paren">(</span><em class="sig-param">structure: pymatgen.core.structure.Structure</em>, <em class="sig-param">n: int</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/local_env.html#MinimumDistanceNNAll.get_nn_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.MinimumDistanceNNAll.get_nn_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all near-neighbor sites as well as the associated image locations
+and weights of the site with index n using the closest neighbor
+distance-based method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>structure</strong> (<em>Structure</em>) – input structure.</p></li>
+<li><p><strong>n</strong> (<em>integer</em>) – index of site for which to determine near
+neighbors.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>tuples, each one</dt><dd><p>of which represents a neighbor site, its image location,
+and its weight.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>siw (list of tuples (Site, array, float))</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="megnet.data.local_env.deserialize">
+<code class="sig-name descname">deserialize</code><span class="sig-paren">(</span><em class="sig-param">config: Dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/local_env.html#deserialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deserialize the config dict to object
+:param config: (dict) nn_strategy config dict from seralize function</p>
+<p>Returns: object</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="megnet.data.local_env.get">
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">identifier: Union[str, pymatgen.analysis.local_env.NearNeighbors]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/local_env.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="megnet.data.local_env.serialize">
+<code class="sig-name descname">serialize</code><span class="sig-paren">(</span><em class="sig-param">identifier: Union[str, pymatgen.analysis.local_env.NearNeighbors]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/local_env.html#serialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.local_env.serialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Serialize the local env objects to a dictionary
+:param identifier: (NearNeighbors object/str/None)</p>
+<p>Returns: dictionary or None</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+  <li><a href="megnet.data.html">megnet.data package</a><ul>
+      <li>Previous: <a href="megnet.data.graph.html" title="previous chapter">megnet.data.graph module</a></li>
+      <li>Next: <a href="megnet.data.molecule.html" title="next chapter">megnet.data.molecule module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.data.local_env.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

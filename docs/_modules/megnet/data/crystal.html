@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.data.crystal &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for megnet.data.crystal</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="n">StructureGraph</span><span class="p">,</span> <span class="n">StructureGraphFixedRadius</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="n">GaussianDistance</span><span class="p">,</span> <span class="n">Converter</span>
+<span class="kn">from</span> <span class="nn">monty.serialization</span> <span class="k">import</span> <span class="n">loadfn</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="k">import</span> <span class="n">NearNeighbors</span>
+<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Structure</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+
+<span class="n">MODULE_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="CrystalGraph"><a class="viewcode-back" href="../../../megnet.data.crystal.html#megnet.data.crystal.CrystalGraph">[docs]</a><span class="k">class</span> <span class="nc">CrystalGraph</span><span class="p">(</span><span class="n">StructureGraphFixedRadius</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a crystal into a graph with z as atomic feature and distance as bond feature</span>
+<span class="sd">    one can optionally include state features</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;MinimumDistanceNNAll&#39;</span><span class="p">,</span>
+                 <span class="n">atom_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bond_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span>
+                 <span class="p">):</span>
+        <span class="k">if</span> <span class="n">bond_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bond_converter</span> <span class="o">=</span> <span class="n">GaussianDistance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nn_strategy</span><span class="o">=</span><span class="n">nn_strategy</span><span class="p">,</span> <span class="n">atom_converter</span><span class="o">=</span><span class="n">atom_converter</span><span class="p">,</span>
+                         <span class="n">bond_converter</span><span class="o">=</span><span class="n">bond_converter</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CrystalGraphWithBondTypes"><a class="viewcode-back" href="../../../megnet.data.crystal.html#megnet.data.crystal.CrystalGraphWithBondTypes">[docs]</a><span class="k">class</span> <span class="nc">CrystalGraphWithBondTypes</span><span class="p">(</span><span class="n">StructureGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Overwrite the bond attributes with bond types, defined simply by</span>
+<span class="sd">    the metallicity of the atoms forming the bond. Three types of</span>
+<span class="sd">    scenario is considered, nonmetal-nonmetal (type 0), metal-nonmetal (type 1), and</span>
+<span class="sd">    metal-metal (type 2)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;VoronoiNN&#39;</span><span class="p">,</span>
+                 <span class="n">atom_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bond_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nn_strategy</span><span class="o">=</span><span class="n">nn_strategy</span><span class="p">,</span> <span class="n">atom_converter</span><span class="o">=</span><span class="n">atom_converter</span><span class="p">,</span>
+                         <span class="n">bond_converter</span><span class="o">=</span><span class="n">bond_converter</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CrystalGraphWithBondTypes.convert"><a class="viewcode-back" href="../../../megnet.data.crystal.html#megnet.data.crystal.CrystalGraphWithBondTypes.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">state_attributes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="n">graph</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">state_attributes</span><span class="o">=</span><span class="n">state_attributes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bond_type</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_bond_type</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="n">new_graph</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
+        <span class="n">elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">Element</span><span class="o">.</span><span class="n">from_Z</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;atom&#39;</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;index1&#39;</span><span class="p">],</span> <span class="n">graph</span><span class="p">[</span><span class="s1">&#39;index2&#39;</span><span class="p">])):</span>
+            <span class="n">new_graph</span><span class="p">[</span><span class="s1">&#39;bond&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_metal</span> <span class="o">+</span> <span class="n">elements</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">is_metal</span>
+        <span class="k">return</span> <span class="n">new_graph</span></div>
+
+
+<div class="viewcode-block" id="get_elemental_embeddings"><a class="viewcode-back" href="../../../megnet.data.crystal.html#megnet.data.crystal.get_elemental_embeddings">[docs]</a><span class="k">def</span> <span class="nf">get_elemental_embeddings</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides the pre-trained elemental embeddings using formation energies,</span>
+<span class="sd">    which can be used to speed up the training of other models. The embeddings</span>
+<span class="sd">    are also extremely useful elemental descriptors that encode chemical</span>
+<span class="sd">    similarity that may be used in other ways. See</span>
+
+<span class="sd">    &quot;Graph Networks as a Universal Machine Learning Framework for Molecules</span>
+<span class="sd">    and Crystals&quot;, https://arxiv.org/abs/1812.05055</span>
+
+<span class="sd">    :return: Dict of elemental embeddings as {symbol: length 16 string}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">loadfn</span><span class="p">(</span><span class="n">MODULE_DIR</span> <span class="o">/</span> <span class="s2">&quot;resources&quot;</span> <span class="o">/</span>
+                  <span class="s2">&quot;elemental_embedding_1MEGNet_layer.json&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

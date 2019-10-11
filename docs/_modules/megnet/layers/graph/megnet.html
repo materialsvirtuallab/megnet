@@ -1,0 +1,295 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.layers.graph.megnet &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for megnet.layers.graph.megnet</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">megnet.layers.graph</span> <span class="k">import</span> <span class="n">GraphNetworkLayer</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.layer</span> <span class="k">import</span> <span class="n">repeat_with_index</span>
+
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Chi Chen&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2018, Materials Virtual Lab &quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;0.1&quot;</span>
+<span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;Dec 1, 2018&quot;</span>
+
+
+<div class="viewcode-block" id="MEGNetLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer">[docs]</a><span class="k">class</span> <span class="nc">MEGNetLayer</span><span class="p">(</span><span class="n">GraphNetworkLayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The MEGNet graph implementation as described in the paper</span>
+
+<span class="sd">    Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping.</span>
+<span class="sd">    Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals,</span>
+<span class="sd">    2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        units_v (list of integers): the hidden layer sizes for node update neural network</span>
+<span class="sd">        units_e (list of integers): the hidden layer sizes for edge update neural network</span>
+<span class="sd">        units_u (list of integers): the hidden layer sizes for state update neural network</span>
+<span class="sd">        pool_method (str): &#39;mean&#39; or &#39;sum&#39;, determines how information is gathered to nodes from neighboring edges</span>
+<span class="sd">        activation (str): Default: None. The activation function used for each sub-neural network. Examples include</span>
+<span class="sd">            &#39;relu&#39;, &#39;softmax&#39;, &#39;tanh&#39;, &#39;sigmoid&#39; and etc.</span>
+<span class="sd">        use_bias (bool): Default: True. Whether to use the bias term in the neural network.</span>
+<span class="sd">        kernel_initializer (str): Default: &#39;glorot_uniform&#39;. Initialization function for the layer kernel weights,</span>
+<span class="sd">        bias_initializer (str): Default: &#39;zeros&#39;</span>
+<span class="sd">        activity_regularizer (str): Default: None. The regularization function for the output</span>
+<span class="sd">        kernel_constraint (str): Default: None. Keras constraint for kernel values</span>
+<span class="sd">        bias_constraint (str): Default: None .Keras constraint for bias values</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        call(inputs, mask=None): the logic of the layer, returns the final graph</span>
+<span class="sd">        compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes</span>
+<span class="sd">        build(input_shape): initialize the weights and biases for each function</span>
+<span class="sd">        phi_e(inputs): update function for bonds and returns updated bond attribute e_p</span>
+<span class="sd">        rho_e_v(e_p, inputs): aggregate updated bonds e_p to per atom attributes, b_e_p</span>
+<span class="sd">        phi_v(b_e_p, inputs): update the atom attributes by the results from previous step b_e_p and all the inputs</span>
+<span class="sd">            returns v_p.</span>
+<span class="sd">        rho_e_u(e_p, inputs): aggregate bonds to global attribute</span>
+<span class="sd">        rho_v_u(v_p, inputs): aggregate atom to global attributes</span>
+<span class="sd">        get_config(): part of keras interface for serialization</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">units_v</span><span class="p">,</span>
+                 <span class="n">units_e</span><span class="p">,</span>
+                 <span class="n">units_u</span><span class="p">,</span>
+                 <span class="n">pool_method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span>
+                 <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">use_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">,</span>
+                 <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">&#39;zeros&#39;</span><span class="p">,</span>
+                 <span class="n">kernel_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bias_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">activity_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">kernel_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bias_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">activation</span><span class="o">=</span><span class="n">activation</span><span class="p">,</span>
+                         <span class="n">use_bias</span><span class="o">=</span><span class="n">use_bias</span><span class="p">,</span>
+                         <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">kernel_initializer</span><span class="p">,</span>
+                         <span class="n">bias_initializer</span><span class="o">=</span><span class="n">bias_initializer</span><span class="p">,</span>
+                         <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">kernel_regularizer</span><span class="p">,</span>
+                         <span class="n">bias_regularizer</span><span class="o">=</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                         <span class="n">activity_regularizer</span><span class="o">=</span><span class="n">activity_regularizer</span><span class="p">,</span>
+                         <span class="n">kernel_constraint</span><span class="o">=</span><span class="n">kernel_constraint</span><span class="p">,</span>
+                         <span class="n">bias_constraint</span><span class="o">=</span><span class="n">bias_constraint</span><span class="p">,</span>
+                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span> <span class="o">=</span> <span class="n">units_v</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_e</span> <span class="o">=</span> <span class="n">units_e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units_u</span> <span class="o">=</span> <span class="n">units_u</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_method</span> <span class="o">=</span> <span class="n">pool_method</span>
+        <span class="k">if</span> <span class="n">pool_method</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reduce_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_mean</span>
+        <span class="k">elif</span> <span class="n">pool_method</span> <span class="o">==</span> <span class="s1">&#39;sum&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reduce_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Pool method: &#39;</span> <span class="o">+</span> <span class="n">pool_method</span> <span class="o">+</span> <span class="s1">&#39; not understood!&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MEGNetLayer.build"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shapes</span><span class="p">):</span>
+        <span class="n">vdim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">edim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">udim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="n">kb</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">kb</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;phi_v&#39;</span><span class="p">):</span>
+                <span class="n">v_shapes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">units_e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">vdim</span> <span class="o">+</span> <span class="n">udim</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span>
+                <span class="n">v_shapes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">v_shapes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">v_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_weights</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                                      <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
+                                                      <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight_v_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                      <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
+                                                      <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">)</span>
+                                      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v_shapes</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_biases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
+                                                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
+                                                         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bias_v_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                                                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+                                         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v_shapes</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_biases</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">with</span> <span class="n">kb</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;phi_e&#39;</span><span class="p">):</span>
+                <span class="n">e_shapes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">vdim</span> <span class="o">+</span> <span class="n">edim</span> <span class="o">+</span> <span class="n">udim</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_e</span>
+                <span class="n">e_shapes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">e_shapes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">e_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_weights</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                                      <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
+                                                      <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight_e_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                      <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
+                                                      <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">)</span>
+                                      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">e_shapes</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_biases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
+                                                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
+                                                         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bias_e_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                                                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+                                         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">e_shapes</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_biases</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="k">with</span> <span class="n">kb</span><span class="o">.</span><span class="n">name_scope</span><span class="p">(</span><span class="s1">&#39;phi_u&#39;</span><span class="p">):</span>
+                <span class="n">u_shapes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">units_e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span><span class="p">[</span>
+                    <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">udim</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_u</span>
+                <span class="n">u_shapes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">u_shapes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">u_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_weights</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                                                      <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
+                                                      <span class="n">name</span><span class="o">=</span><span class="s1">&#39;weight_u_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                      <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
+                                                      <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">)</span>
+                                      <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">u_shapes</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_biases</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
+                                                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
+                                                         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bias_u_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                                                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                                                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+                                         <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">u_shapes</span><span class="p">)]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_biases</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.compute_output_shape"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.compute_output_shape">[docs]</a>    <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="n">node_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">edge_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">state_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">output_shape</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">node_feature_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">node_feature_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">edge_feature_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edge_feature_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_e</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="p">(</span><span class="n">state_feature_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state_feature_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="k">return</span> <span class="n">output_shape</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">index1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="n">index2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index2</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="n">fs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fr</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">concate_node</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">fs</span><span class="p">,</span> <span class="n">fr</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">u_expand</span> <span class="o">=</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">gbond</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">concate_node</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u_expand</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_biases</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">index1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">index1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">u_expand</span> <span class="o">=</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">b_ei_p</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">u_expand</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_biases</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">gbond</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">gbond</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
+        <span class="n">gnode</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">v_p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">gnode</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MEGNetLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+        <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_biases</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_mlp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">biases</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">biases</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+        <span class="n">act</span> <span class="o">=</span> <span class="n">input_</span>
+        <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">biases</span><span class="p">):</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">kb</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">act</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="n">b</span>
+            <span class="n">act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="MEGNetLayer.get_config"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;units_e&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_e</span><span class="p">,</span>
+            <span class="s1">&#39;units_v&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span><span class="p">,</span>
+            <span class="s1">&#39;units_u&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_u</span><span class="p">,</span>
+            <span class="s1">&#39;pool_method&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_method</span>
+        <span class="p">}</span>
+
+        <span class="n">base_config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_config</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

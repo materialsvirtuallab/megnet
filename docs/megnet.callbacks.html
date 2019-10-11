@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.callbacks module &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.losses module" href="megnet.losses.html" />
+    <link rel="prev" title="megnet.activations module" href="megnet.activations.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.losses.html" title="megnet.losses module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.activations.html" title="megnet.activations module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-megnet.callbacks">
+<span id="megnet-callbacks-module"></span><h1>megnet.callbacks module<a class="headerlink" href="#module-megnet.callbacks" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="megnet.callbacks.GeneratorLog">
+<em class="property">class </em><code class="sig-name descname">GeneratorLog</code><span class="sig-paren">(</span><em class="sig-param">train_gen: Iterable</em>, <em class="sig-param">steps_per_train: int = None</em>, <em class="sig-param">val_gen: Iterable = None</em>, <em class="sig-param">steps_per_val: int = None</em>, <em class="sig-param">y_scaler: megnet.utils.preprocessing.Scaler = None</em>, <em class="sig-param">n_every: int = 5</em>, <em class="sig-param">val_names: List[str] = None</em>, <em class="sig-param">val_units: List[str] = None</em>, <em class="sig-param">is_pa: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#GeneratorLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.GeneratorLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
+<p>This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
+The default keras training log does not contain method to rescale the results, thus is not physically
+intuitive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_gen</strong> – (generator), yield (x, y) pairs for training</p></li>
+<li><p><strong>steps_per_train</strong> – (int) number of generator steps per training epoch</p></li>
+<li><p><strong>val_gen</strong> – (generator), yield (x, y) pairs for validation.</p></li>
+<li><p><strong>steps_per_val</strong> – (int) number of generator steps per epoch for validation data</p></li>
+<li><p><strong>y_scaler</strong> – (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale</p></li>
+<li><p><strong>n_every</strong> – (int) epoch interval for showing the log</p></li>
+<li><p><strong>val_names</strong> – (list of string) variable names</p></li>
+<li><p><strong>val_units</strong> – (list of string) variable units</p></li>
+<li><p><strong>is_pa</strong> – (bool) whether it is a per-atom quantity</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="megnet.callbacks.GeneratorLog.on_epoch_end">
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#GeneratorLog.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.GeneratorLog.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard keras callback interface, executed at the end of epoch</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.callbacks.ManualStop">
+<em class="property">class </em><code class="sig-name descname">ManualStop</code><a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
+<p>Stop the training manually by putting a “STOP” file in the directory</p>
+<dl class="method">
+<dt id="megnet.callbacks.ManualStop.on_batch_end">
+<code class="sig-name descname">on_batch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop.on_batch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop.on_batch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>A backwards compatibility alias for <cite>on_train_batch_end</cite>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.callbacks.ModelCheckpointMAE">
+<em class="property">class </em><code class="sig-name descname">ModelCheckpointMAE</code><span class="sig-paren">(</span><em class="sig-param">filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</em>, <em class="sig-param">monitor: str = 'val_mae'</em>, <em class="sig-param">verbose: int = 0</em>, <em class="sig-param">save_best_only: bool = True</em>, <em class="sig-param">save_weights_only: bool = False</em>, <em class="sig-param">val_gen: Iterable = None</em>, <em class="sig-param">steps_per_val: int = None</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = None</em>, <em class="sig-param">period: int = 1</em>, <em class="sig-param">mode: str = 'auto'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
+<p>Save the best MAE model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – (string) path to save the model file with format. For example</p></li>
+<li><p><strong>`weights.{epoch</strong> – <p>02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and val_mae in the filename</p>
+</p></li>
+<li><p><strong>monitor</strong> – (string) quantity to monitor, default to “val_mae”</p></li>
+<li><p><strong>verbose</strong> – (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log</p></li>
+<li><p><strong>save_best_only</strong> – (bool) whether to save only the best model</p></li>
+<li><p><strong>save_weights_only</strong> – (bool) whether to save the weights only excluding model structure</p></li>
+<li><p><strong>val_gen</strong> – (generator) validation generator</p></li>
+<li><p><strong>steps_per_val</strong> – (int) steps per epoch for validation generator</p></li>
+<li><p><strong>target_scaler</strong> – (object) exposing inverse_transform method to scale the output</p></li>
+<li><p><strong>period</strong> – (int) number of epoch interval for this callback</p></li>
+<li><p><strong>mode</strong> – (string) choose from “min”, “max” or “auto”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="megnet.callbacks.ModelCheckpointMAE.on_epoch_end">
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of an epoch.</p>
+<p>Subclasses should override for any actions to run. This function should only
+be called during train mode.</p>
+<dl>
+<dt># Arguments</dt><dd><p>epoch: integer, index of epoch.
+logs: dict, metric results for this training epoch, and for the</p>
+<blockquote>
+<div><p>validation epoch if validation is performed. Validation result keys
+are prefixed with <cite>val_</cite>.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.callbacks.ReduceLRUponNan">
+<em class="property">class </em><code class="sig-name descname">ReduceLRUponNan</code><span class="sig-paren">(</span><em class="sig-param">filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</em>, <em class="sig-param">factor: float = 0.5</em>, <em class="sig-param">verbose: int = 1</em>, <em class="sig-param">patience: int = 500</em>, <em class="sig-param">monitor: str = 'val_mae'</em>, <em class="sig-param">mode: str = 'auto'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
+<p>This callback function solves a problem that when doing regression, an nan loss may occur, or the
+loss suddenly shoot up
+If such things happen, the model will reduce the learning rate and load the last best model during the
+training process.
+It has an extra function that patience for early stopping. This will move to indepedent callback in the
+future.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> – (str) filepath for saved model checkpoint, should be consistent with checkpoint callback</p></li>
+<li><p><strong>factor</strong> – (float) a value &lt; 1 for scaling the learning rate</p></li>
+<li><p><strong>verbose</strong> – (int) whether to show the loading event</p></li>
+<li><p><strong>patience</strong> – (int) number of steps that the val mae does not change. It is a criteria for early stopping</p></li>
+<li><p><strong>track_metric</strong> – (string) the variable to track</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="megnet.callbacks.ReduceLRUponNan.on_epoch_end">
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called at the end of an epoch.</p>
+<p>Subclasses should override for any actions to run. This function should only
+be called during train mode.</p>
+<dl>
+<dt># Arguments</dt><dd><p>epoch: integer, index of epoch.
+logs: dict, metric results for this training epoch, and for the</p>
+<blockquote>
+<div><p>validation epoch if validation is performed. Validation result keys
+are prefixed with <cite>val_</cite>.</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+      <li>Previous: <a href="megnet.activations.html" title="previous chapter">megnet.activations module</a></li>
+      <li>Next: <a href="megnet.losses.html" title="next chapter">megnet.losses module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.callbacks.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

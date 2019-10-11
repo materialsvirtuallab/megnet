@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.utils.preprocessing module &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.activations module" href="megnet.activations.html" />
+    <link rel="prev" title="megnet.utils.molecule module" href="megnet.utils.molecule.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.activations.html" title="megnet.activations module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.utils.molecule.html" title="megnet.utils.molecule module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-megnet.utils.preprocessing">
+<span id="megnet-utils-preprocessing-module"></span><h1>megnet.utils.preprocessing module<a class="headerlink" href="#module-megnet.utils.preprocessing" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="megnet.utils.preprocessing.DummyScaler">
+<em class="property">class </em><code class="sig-name descname">DummyScaler</code><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">monty.json.MSONable</span></code></p>
+<p>Dummy scaler does nothing</p>
+<dl class="method">
+<dt id="megnet.utils.preprocessing.DummyScaler.from_training_data">
+<em class="property">classmethod </em><code class="sig-name descname">from_training_data</code><span class="sig-paren">(</span><em class="sig-param">structures</em>, <em class="sig-param">targets</em>, <em class="sig-param">is_intensive=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.from_training_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.from_training_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="megnet.utils.preprocessing.DummyScaler.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param">transformed_target</em>, <em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="megnet.utils.preprocessing.DummyScaler.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.utils.preprocessing.Scaler">
+<em class="property">class </em><code class="sig-name descname">Scaler</code><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">monty.json.MSONable</span></code></p>
+<dl class="method">
+<dt id="megnet.utils.preprocessing.Scaler.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param">x: Any</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="megnet.utils.preprocessing.StandardScaler">
+<em class="property">class </em><code class="sig-name descname">StandardScaler</code><span class="sig-paren">(</span><em class="sig-param">mean=0</em>, <em class="sig-param">std=1</em>, <em class="sig-param">is_intensive=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#megnet.utils.preprocessing.Scaler" title="megnet.utils.preprocessing.Scaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.utils.preprocessing.Scaler</span></code></a></p>
+<p>Standard scaler with consideration of extensive/intensive quantity
+For intensive quantity, the mean is just the mean of training data, and std
+is the std of training data
+For extensive quantity, the mean is the mean of target/atom, and std is the
+std for target/atom</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>float</em>) – mean value of target</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – standard deviation of target</p></li>
+<li><p><strong>is_intensive</strong> (<em>bool</em>) – whether the target is already an intensive property</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="megnet.utils.preprocessing.StandardScaler.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">target</em>, <em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>standard scaling the target and</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="megnet.utils.preprocessing.StandardScaler.from_training_data">
+<em class="property">classmethod </em><code class="sig-name descname">from_training_data</code><span class="sig-paren">(</span><em class="sig-param">structures</em>, <em class="sig-param">targets</em>, <em class="sig-param">is_intensive=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.from_training_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.from_training_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="megnet.utils.preprocessing.StandardScaler.inverse_transform">
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param">transformed_target</em>, <em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inverse transform of the target</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transformed_target</strong> – transformed target</p></li>
+<li><p><strong>n</strong> – number of atoms</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>original target</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">target</em>, <em class="sig-param">n=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Transform numeric values according the mean and std, plus a factor n</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – target numerical value</p></li>
+<li><p><strong>n</strong> – number of atoms</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scaled target</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+  <li><a href="megnet.utils.html">megnet.utils package</a><ul>
+      <li>Previous: <a href="megnet.utils.molecule.html" title="previous chapter">megnet.utils.molecule module</a></li>
+      <li>Next: <a href="megnet.activations.html" title="next chapter">megnet.activations module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.utils.preprocessing.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

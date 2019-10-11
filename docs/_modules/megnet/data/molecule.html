@@ -1,0 +1,671 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.data.molecule &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for megnet.data.molecule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tools for creating graph inputs from molecule data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">pymatgen.io.babel</span> <span class="k">import</span> <span class="n">BabelMolAdaptor</span>
+<span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="k">import</span> <span class="n">NearNeighbors</span>
+
+<span class="kn">from</span> <span class="nn">megnet.data.qm9</span> <span class="k">import</span> <span class="n">ring_to_vector</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.general</span> <span class="k">import</span> <span class="n">fast_label_binarize</span>
+<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="p">(</span><span class="n">StructureGraph</span><span class="p">,</span> <span class="n">GaussianDistance</span><span class="p">,</span>
+                               <span class="n">BaseGraphBatchGenerator</span><span class="p">,</span> <span class="n">GraphBatchGenerator</span><span class="p">,</span> <span class="n">Converter</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pybel</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">pybel</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">rdkit</span> <span class="k">import</span> <span class="n">Chem</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">Chem</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="n">__date__</span> <span class="o">=</span> <span class="s1">&#39;12/01/2018&#39;</span>
+
+<span class="c1"># List of features to use by default for each atom</span>
+<span class="n">_ATOM_FEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;element&#39;</span><span class="p">,</span> <span class="s1">&#39;chirality&#39;</span><span class="p">,</span> <span class="s1">&#39;formal_charge&#39;</span><span class="p">,</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;hybridization&#39;</span><span class="p">,</span> <span class="s1">&#39;donor&#39;</span><span class="p">,</span> <span class="s1">&#39;acceptor&#39;</span><span class="p">,</span> <span class="s1">&#39;aromatic&#39;</span><span class="p">]</span>
+
+<span class="c1"># List of features to use by default for each bond</span>
+<span class="n">_BOND_FEATURES</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;bond_type&#39;</span><span class="p">,</span> <span class="s1">&#39;same_ring&#39;</span><span class="p">,</span> <span class="s1">&#39;spatial_distance&#39;</span><span class="p">,</span> <span class="s1">&#39;graph_distance&#39;</span><span class="p">]</span>
+
+<span class="c1"># List of elements in library to use by default</span>
+<span class="n">_ELEMENTS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="SimpleMolGraph"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.SimpleMolGraph">[docs]</a><span class="k">class</span> <span class="nc">SimpleMolGraph</span><span class="p">(</span><span class="n">StructureGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Default using all atom pairs as bonds. The distance between atoms are used</span>
+<span class="sd">    as bond features. By default the distance is expanded using a Gaussian</span>
+<span class="sd">    expansion with centers at np.linspace(0, 4, 20) and width of 0.5</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;AllAtomPairs&#39;</span><span class="p">,</span>
+                 <span class="n">atom_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bond_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="p">):</span>
+        <span class="k">if</span> <span class="n">bond_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bond_converter</span> <span class="o">=</span> <span class="n">GaussianDistance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nn_strategy</span><span class="o">=</span><span class="n">nn_strategy</span><span class="p">,</span> <span class="n">atom_converter</span><span class="o">=</span><span class="n">atom_converter</span><span class="p">,</span>
+                         <span class="n">bond_converter</span><span class="o">=</span><span class="n">bond_converter</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MolecularGraph"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraph">[docs]</a><span class="k">class</span> <span class="nc">MolecularGraph</span><span class="p">(</span><span class="n">StructureGraph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class for generating the graph inputs from a molecule</span>
+
+<span class="sd">    Computes many different features for the atoms and bonds in a molecule, and prepares them</span>
+<span class="sd">    in a form compatible with MEGNet models. The :meth:`convert` method takes a OpenBabel molecule</span>
+<span class="sd">    and, besides computing features, also encodes them in a form compatible with machine learning.</span>
+<span class="sd">    Namely, the `convert` method one-hot encodes categorical variables and concatenates</span>
+<span class="sd">    the atomic features</span>
+
+<span class="sd">    ## Atomic Features</span>
+
+<span class="sd">    This class can compute the following features for each atom</span>
+
+<span class="sd">    - `atomic_num`: The atomic number</span>
+<span class="sd">    - `element`: (categorical) Element identity. (Unlike `atomic_num`, element is one-hot-encoded)</span>
+<span class="sd">    - `chirality`: (categorical) R, S, or not a Chiral center (one-hot encoded).</span>
+<span class="sd">    - `formal_charge`: Formal charge of the atom</span>
+<span class="sd">    - `ring_sizes`: For rings with 9 or fewer atoms, how many unique rings</span>
+<span class="sd">    of each size include this atom</span>
+<span class="sd">    - `hybridization`: (categorical) Hybridization of atom: sp, sp2, sp3, sq.</span>
+<span class="sd">    planer, trig, octahedral, or hydrogen</span>
+<span class="sd">    - `donor`: (boolean) Whether the atom is a hydrogen bond donor</span>
+<span class="sd">    - `acceptor`: (boolean) Whether the atom is a hydrogen bond acceptor</span>
+<span class="sd">    - `aromatic`: (boolean) Whether the atom is part of an aromatic system</span>
+
+<span class="sd">    ## Atom Pair Features</span>
+
+<span class="sd">    The class also computes features for each pair of atoms</span>
+
+<span class="sd">    - `bond_type`: (categorical) Whether the pair are unbonded, or in a single, double, triple, or aromatic bond</span>
+<span class="sd">    - `same_ring`: (boolean) Whether the atoms are in the same aromatic ring</span>
+<span class="sd">    - `graph_distance`: Distance of shortest path between atoms on the bonding graph</span>
+<span class="sd">    - `spatial_distance`: Euclidean distance between the atoms. By default, this distance is expanded into</span>
+<span class="sd">        a vector of 20 different values computed using the `GaussianDistance` converter</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">atom_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">bond_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">distance_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">known_elements</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            atom_features ([str]): List of atom features to compute</span>
+<span class="sd">            bond_features ([str]): List of bond features to compute</span>
+<span class="sd">            distance_converter (DistanceCovertor): Tool used to expand distances</span>
+<span class="sd">                from a single scalar vector to an array of values</span>
+<span class="sd">            known_elements ([str]): List of elements expected to be in dataset. Used only if the</span>
+<span class="sd">                feature `element` is used to describe each atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if openbabel and RDKit are installed</span>
+        <span class="k">if</span> <span class="n">Chem</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">pybel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;RDKit and openbabel must be installed&#39;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">bond_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bond_features</span> <span class="o">=</span> <span class="n">_BOND_FEATURES</span>
+        <span class="k">if</span> <span class="n">atom_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">atom_features</span> <span class="o">=</span> <span class="n">_ATOM_FEATURES</span>
+        <span class="k">if</span> <span class="n">distance_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">distance_converter</span> <span class="o">=</span> <span class="n">GaussianDistance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">known_elements</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">known_elements</span> <span class="o">=</span> <span class="n">_ELEMENTS</span>
+
+        <span class="c1"># Check if all feature names are valid</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ATOM_FEATURES</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_features</span><span class="p">):</span>
+            <span class="n">bad_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">atom_features</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">_ATOM_FEATURES</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized atom features: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bad_features</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_features</span> <span class="o">=</span> <span class="n">atom_features</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_BOND_FEATURES</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bond_features</span><span class="p">):</span>
+            <span class="n">bad_features</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">bond_features</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">_BOND_FEATURES</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized bond features: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bad_features</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bond_features</span> <span class="o">=</span> <span class="n">bond_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">known_elements</span> <span class="o">=</span> <span class="n">known_elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span> <span class="o">=</span> <span class="n">distance_converter</span>
+
+<div class="viewcode-block" id="MolecularGraph.convert"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraph.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                <span class="n">mol</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                <span class="n">state_attributes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">full_pair_matrix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the representation for a molecule</span>
+
+<span class="sd">        Args：</span>
+<span class="sd">            mol (pybel.Molecule): Molecule to generate features for</span>
+<span class="sd">            state_attributes (list): State attributes. Uses average mass and number of bonds per atom as default</span>
+<span class="sd">            full_pair_matrix (bool): Whether to generate info for all atom pairs, not just bonded ones</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (dict): Dictionary of features</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the features features for all atoms and bonds</span>
+        <span class="n">atom_features</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">atom_pairs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom_feature</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">atom</span><span class="p">)</span>
+            <span class="n">atom_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">atom_features</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">atom_features</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;coordid&quot;</span><span class="p">])</span>
+        <span class="n">num_atoms</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">NumAtoms</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_atoms</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">bond_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pair_feature</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">full_pair_matrix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">bond_feature</span><span class="p">:</span>
+                <span class="n">atom_pairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond_feature</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="c1"># Compute the graph distance, if desired</span>
+        <span class="k">if</span> <span class="s1">&#39;graph_distance&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bond_features</span><span class="p">:</span>
+            <span class="n">graph_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dijkstra_distance</span><span class="p">(</span><span class="n">atom_pairs</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_pairs</span><span class="p">:</span>
+                <span class="n">i</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;graph_distance&#39;</span><span class="p">:</span> <span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s1">&#39;a_idx&#39;</span><span class="p">],</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;b_idx&#39;</span><span class="p">]]})</span>
+
+        <span class="c1"># Generate the state attributes (that describe the whole network)</span>
+        <span class="n">state_attributes</span> <span class="o">=</span> <span class="n">state_attributes</span> <span class="ow">or</span> <span class="p">[</span>
+            <span class="p">[</span><span class="n">mol</span><span class="o">.</span><span class="n">molwt</span> <span class="o">/</span> <span class="n">num_atoms</span><span class="p">,</span>
+             <span class="nb">len</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_pairs</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s1">&#39;bond_type&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">num_atoms</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Get the atom features in the order they are requested by the user as a 2D array</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atom_features</span><span class="p">:</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_atom_feature_vector</span><span class="p">(</span><span class="n">atom</span><span class="p">))</span>
+
+        <span class="c1"># Get the bond features in the order request by the user</span>
+        <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index1_temp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">index2_temp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">atom_pairs</span><span class="p">:</span>
+            <span class="c1"># Store the index of each bond</span>
+            <span class="n">index1_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;a_idx&#39;</span><span class="p">))</span>
+            <span class="n">index2_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;b_idx&#39;</span><span class="p">))</span>
+
+            <span class="c1"># Get the desired bond features</span>
+            <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_create_pair_feature_vector</span><span class="p">(</span><span class="n">bond</span><span class="p">))</span>
+
+        <span class="c1"># Given the bonds (i,j), make it so (i,j) == (j, i)</span>
+        <span class="n">index1</span> <span class="o">=</span> <span class="n">index1_temp</span> <span class="o">+</span> <span class="n">index2_temp</span>
+        <span class="n">index2</span> <span class="o">=</span> <span class="n">index2_temp</span> <span class="o">+</span> <span class="n">index1_temp</span>
+        <span class="n">bonds</span> <span class="o">=</span> <span class="n">bonds</span> <span class="o">+</span> <span class="n">bonds</span>
+
+        <span class="c1"># Sort the arrays by the beginning index</span>
+        <span class="n">sorted_arg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">index1</span><span class="p">)</span>
+        <span class="n">index1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index1</span><span class="p">)[</span><span class="n">sorted_arg</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">index2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index2</span><span class="p">)[</span><span class="n">sorted_arg</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">bonds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">bonds</span><span class="p">)[</span><span class="n">sorted_arg</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;atom&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span>
+                <span class="s1">&#39;bond&#39;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span>
+                <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span>
+                <span class="s1">&#39;index1&#39;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span>
+                <span class="s1">&#39;index2&#39;</span><span class="p">:</span> <span class="n">index2</span><span class="p">}</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_pair_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bond</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Generate the feature vector from the bond feature dictionary</span>
+
+<span class="sd">        Handles the binarization of categorical variables, and performing the distance conversion</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bond (dict): Features for a certain pair of atoms</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ([float]) Values converted to a vector</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="n">bond_temp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bond_features</span><span class="p">:</span>
+            <span class="c1"># Some features require conversion (e.g., binarization)</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bond</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="s2">&quot;bond_type&quot;</span><span class="p">:</span>
+                    <span class="n">bond_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fast_label_binarize</span><span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]))</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="s2">&quot;same_ring&quot;</span><span class="p">:</span>
+                    <span class="n">bond_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+                <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="s2">&quot;spatial_distance&quot;</span><span class="p">:</span>
+                    <span class="n">expanded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">([</span><span class="n">bond</span><span class="p">[</span><span class="n">i</span><span class="p">]])[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expanded</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                        <span class="c1"># If we use a distance expansion</span>
+                        <span class="n">bond_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">expanded</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># If not</span>
+                        <span class="n">bond_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">expanded</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">bond_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bond</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bond_temp</span>
+
+    <span class="k">def</span> <span class="nf">_create_atom_feature_vector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Generate the feature vector from the atomic feature dictionary</span>
+
+<span class="sd">        Handles the binarization of categorical variables, and transforming the ring_sizes to a list</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            atom (dict): Dictionary of atomic features</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ([int]): Atomic feature vector</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atom_temp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_features</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="s1">&#39;chirality&#39;</span><span class="p">:</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fast_label_binarize</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="s1">&#39;element&#39;</span><span class="p">:</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fast_label_binarize</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_elements</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;aromatic&#39;</span><span class="p">,</span> <span class="s1">&#39;donor&#39;</span><span class="p">,</span> <span class="s1">&#39;acceptor&#39;</span><span class="p">]:</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="s1">&#39;hybridization&#39;</span><span class="p">:</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">fast_label_binarize</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">:</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ring_to_vector</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># It is a scalar</span>
+                <span class="n">atom_temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">atom_temp</span>
+
+    <span class="k">def</span> <span class="nf">_dijkstra_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the graph distance between each pair of atoms,</span>
+<span class="sd">        using the network defined by the bonded atoms.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pairs ([dict]): List of bond information</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ([int]) Distance for each pair of bonds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;bond_type&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;a_idx&#39;</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;b_idx&#39;</span><span class="p">]])</span>
+        <span class="k">return</span> <span class="n">dijkstra_distance</span><span class="p">(</span><span class="n">bonds</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MolecularGraph.get_atom_feature"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraph.get_atom_feature">[docs]</a>    <span class="k">def</span> <span class="nf">get_atom_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">mol</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                         <span class="n">atom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate all features of a particular atom</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mol (pybel.Molecule): Molecule being evaluated</span>
+<span class="sd">            atom (pybel.Atom): Specific atom being evaluated</span>
+<span class="sd">        Return:</span>
+<span class="sd">            (dict): All features for that atom</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the link to the OpenBabel representation of the atom</span>
+        <span class="n">obatom</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">OBAtom</span>
+        <span class="n">atom_idx</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># (pybel atoms indices start from 1)</span>
+
+        <span class="c1"># Get the element</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">from_Z</span><span class="p">(</span><span class="n">obatom</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">())</span><span class="o">.</span><span class="n">symbol</span>
+
+        <span class="c1"># Get the fast-to-compute properties</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;element&quot;</span><span class="p">:</span> <span class="n">element</span><span class="p">,</span>
+                  <span class="s2">&quot;atomic_num&quot;</span><span class="p">:</span> <span class="n">obatom</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">(),</span>
+                  <span class="s2">&quot;formal_charge&quot;</span><span class="p">:</span> <span class="n">obatom</span><span class="o">.</span><span class="n">GetFormalCharge</span><span class="p">(),</span>
+                  <span class="s2">&quot;hybridization&quot;</span><span class="p">:</span> <span class="mi">6</span> <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="s1">&#39;H&#39;</span> <span class="k">else</span> <span class="n">obatom</span><span class="o">.</span><span class="n">GetHyb</span><span class="p">(),</span>
+                  <span class="s2">&quot;acceptor&quot;</span><span class="p">:</span> <span class="n">obatom</span><span class="o">.</span><span class="n">IsHbondAcceptor</span><span class="p">(),</span>
+                  <span class="s2">&quot;donor&quot;</span><span class="p">:</span> <span class="n">obatom</span><span class="o">.</span><span class="n">IsHbondDonorH</span><span class="p">()</span> <span class="k">if</span> <span class="n">atom</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;H&#39;</span> <span class="k">else</span> <span class="n">obatom</span><span class="o">.</span><span class="n">IsHbondDonor</span><span class="p">(),</span>
+                  <span class="s2">&quot;aromatic&quot;</span><span class="p">:</span> <span class="n">obatom</span><span class="o">.</span><span class="n">IsAromatic</span><span class="p">(),</span>
+                  <span class="s2">&quot;coordid&quot;</span><span class="p">:</span> <span class="n">atom</span><span class="o">.</span><span class="n">coordidx</span><span class="p">}</span>
+
+        <span class="c1"># Get the chirality, if desired</span>
+        <span class="k">if</span> <span class="s1">&#39;chirality&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_features</span><span class="p">:</span>
+            <span class="c1"># Determine whether the molecule has chiral centers</span>
+            <span class="n">chiral_cc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_chiral_centers</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">atom_idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">chiral_cc</span><span class="p">:</span>
+                <span class="n">output</span><span class="p">[</span><span class="s1">&#39;chirality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># 1 --&gt; &#39;R&#39;, 2 --&gt; &#39;S&#39;</span>
+                <span class="n">output</span><span class="p">[</span><span class="s1">&#39;chirality&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">chiral_cc</span><span class="p">[</span><span class="n">atom_idx</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;R&#39;</span> <span class="k">else</span> <span class="mi">2</span>
+
+        <span class="c1"># Find the rings, if desired</span>
+        <span class="k">if</span> <span class="s1">&#39;ring_sizes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_features</span><span class="p">:</span>
+            <span class="n">rings</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetSSSR</span><span class="p">()</span>  <span class="c1"># OpenBabel caches ring computation internally, no need to cache ourselves</span>
+            <span class="n">output</span><span class="p">[</span><span class="s1">&#39;ring_sizes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">Size</span><span class="p">()</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rings</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">IsInRing</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">idx</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="MolecularGraph.create_bond_feature"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraph.create_bond_feature">[docs]</a>    <span class="k">def</span> <span class="nf">create_bond_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">bid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">eid</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create information for a bond for a pair of atoms that are not actually bonded</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mol (pybel.Molecule): Molecule being featurized</span>
+<span class="sd">            bid (int): Index of atom beginning of the bond</span>
+<span class="sd">            eid (int): Index of atom at the end of the bond</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetAtom</span><span class="p">(</span><span class="n">bid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">a2</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetAtom</span><span class="p">(</span><span class="n">eid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">same_ring</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">AreInSameRing</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a_idx&quot;</span><span class="p">:</span> <span class="n">bid</span><span class="p">,</span>
+                <span class="s2">&quot;b_idx&quot;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span>
+                <span class="s2">&quot;bond_type&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s2">&quot;same_ring&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">same_ring</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;spatial_distance&quot;</span><span class="p">:</span> <span class="n">a1</span><span class="o">.</span><span class="n">GetDistance</span><span class="p">(</span><span class="n">a2</span><span class="p">)}</span></div>
+
+<div class="viewcode-block" id="MolecularGraph.get_pair_feature"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraph.get_pair_feature">[docs]</a>    <span class="k">def</span> <span class="nf">get_pair_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="n">bid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                         <span class="n">eid</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">full_pair_matrix</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the features for a certain bond</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mol (pybel.Molecule): Molecule being featurized</span>
+<span class="sd">            bid (int): Index of atom beginning of the bond</span>
+<span class="sd">            eid (int): Index of atom at the end of the bond</span>
+<span class="sd">            full_pair_matrix (bool): Whether to compute the matrix for every atom - even those that</span>
+<span class="sd">                are not actually bonded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find the bonded pair of atoms</span>
+        <span class="n">bond</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetBond</span><span class="p">(</span><span class="n">bid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">eid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bond</span><span class="p">:</span>  <span class="c1"># If the bond is ordered in the other direction</span>
+            <span class="n">bond</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetBond</span><span class="p">(</span><span class="n">eid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># If the atoms are not bonded</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bond</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">full_pair_matrix</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_bond_feature</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">bid</span><span class="p">,</span> <span class="n">eid</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Compute bond features</span>
+        <span class="n">a1</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetAtom</span><span class="p">(</span><span class="n">bid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">a2</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">GetAtom</span><span class="p">(</span><span class="n">eid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">same_ring</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">OBMol</span><span class="o">.</span><span class="n">AreInSameRing</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;a_idx&quot;</span><span class="p">:</span> <span class="n">bid</span><span class="p">,</span>
+                <span class="s2">&quot;b_idx&quot;</span><span class="p">:</span> <span class="n">eid</span><span class="p">,</span>
+                <span class="s2">&quot;bond_type&quot;</span><span class="p">:</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">IsAromatic</span><span class="p">()</span> <span class="k">else</span> <span class="n">bond</span><span class="o">.</span><span class="n">GetBondOrder</span><span class="p">(),</span>
+                <span class="s2">&quot;same_ring&quot;</span><span class="p">:</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">same_ring</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="s2">&quot;spatial_distance&quot;</span><span class="p">:</span> <span class="n">a1</span><span class="o">.</span><span class="n">GetDistance</span><span class="p">(</span><span class="n">a2</span><span class="p">)}</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_rdk_mol</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;smiles&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return: RDKit Mol (w/o H)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;pdb&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolfiles</span><span class="o">.</span><span class="n">MolFromPDBBlock</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;pdb&quot;</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">format</span> <span class="o">==</span> <span class="s1">&#39;smiles&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Chem</span><span class="o">.</span><span class="n">rdmolfiles</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;smiles&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_get_chiral_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mol</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use RDKit to find the chiral centers with CIP(R/S) label</span>
+
+<span class="sd">        This provides the absolute stereochemistry.  The chiral label obtained</span>
+<span class="sd">        from pybabel and rdkit.mol.getchiraltag is relative positions of the bonds as provided</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mol (Molecule): Molecule to asses</span>
+<span class="sd">        Return:</span>
+<span class="sd">            (dict): Keys are the atom index and values are the CIP label</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mol_rdk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rdk_mol</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="s1">&#39;smiles&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mol_rdk</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Conversion to RDKit has failed</span>
+            <span class="k">return</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">chiral_cc</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">FindMolChiralCenters</span><span class="p">(</span><span class="n">mol_rdk</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">chiral_cc</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dijkstra_distance"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.dijkstra_distance">[docs]</a><span class="k">def</span> <span class="nf">dijkstra_distance</span><span class="p">(</span><span class="n">bonds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the graph distance based on the dijkstra algorithm</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bonds: (list of list), for example [[0, 1], [1, 2]] means two bonds formed by atom 0, 1 and atom 1, 2</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        full graph distance matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nb_atom</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">bonds</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">graph_dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">nb_atom</span><span class="p">,</span> <span class="n">nb_atom</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">infty</span>
+    <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonds</span><span class="p">:</span>
+        <span class="n">graph_dist</span><span class="p">[</span><span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">graph_dist</span><span class="p">[</span><span class="n">bond</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bond</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>  <span class="c1"># Queue used in all loops</span>
+    <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Used in all loops</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb_atom</span><span class="p">):</span>
+        <span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">visited</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">queue</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">graph_dist</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="p">:]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+                    <span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">],</span>
+                                           <span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">graph_dist</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">graph_dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">graph_dist</span></div>
+
+
+<div class="viewcode-block" id="mol_from_smiles"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.mol_from_smiles">[docs]</a><span class="k">def</span> <span class="nf">mol_from_smiles</span><span class="p">(</span><span class="n">smiles</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">pybel</span><span class="o">.</span><span class="n">readstring</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;smi&#39;</span><span class="p">,</span> <span class="n">string</span><span class="o">=</span><span class="n">smiles</span><span class="p">)</span>
+    <span class="n">mol</span><span class="o">.</span><span class="n">make3D</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">mol</span></div>
+
+
+<div class="viewcode-block" id="mol_from_pymatgen"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.mol_from_pymatgen">[docs]</a><span class="k">def</span> <span class="nf">mol_from_pymatgen</span><span class="p">(</span><span class="n">mol</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        mol(Molecule)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">pybel</span><span class="o">.</span><span class="n">Molecule</span><span class="p">(</span><span class="n">BabelMolAdaptor</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span><span class="o">.</span><span class="n">openbabel_mol</span><span class="p">)</span>
+    <span class="n">mol</span><span class="o">.</span><span class="n">make3D</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">mol</span></div>
+
+
+<div class="viewcode-block" id="mol_from_file"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.mol_from_file">[docs]</a><span class="k">def</span> <span class="nf">mol_from_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;xyz&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        file_path(str)</span>
+<span class="sd">        file_format(str): allow formats that open babel supports</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">pybel</span><span class="o">.</span><span class="n">readfile</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="n">file_format</span><span class="p">,</span>
+                                     <span class="n">filename</span><span class="o">=</span><span class="n">file_path</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">mol</span></div>
+
+
+<span class="k">def</span> <span class="nf">_convert_mol</span><span class="p">(</span><span class="n">mol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">molecule_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">converter</span><span class="p">:</span> <span class="n">MolecularGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert a molecule from string to its graph features</span>
+
+<span class="sd">    Utility function used in the graph generator.</span>
+
+<span class="sd">    The parse and convert operations are both in this function due to Pybel objects</span>
+<span class="sd">    not being serializable. By not using the Pybel representation of each molecule</span>
+<span class="sd">    as an input to this function, we can use multiprocessing to parallelize conversion</span>
+<span class="sd">    over molecules as strings can be passed as pickle objects to the worker threads but</span>
+<span class="sd">    but Pybel objects cannot.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mol (str): String representation of a molecule</span>
+<span class="sd">        molecule_format (str): Format of the string representation</span>
+<span class="sd">        converter (MolecularGraph): Tool used to generate graph representation</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict): Graph representation of the molecule</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Convert molecule into pybel format</span>
+    <span class="k">if</span> <span class="n">molecule_format</span> <span class="o">==</span> <span class="s1">&#39;smiles&#39;</span><span class="p">:</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="n">mol_from_smiles</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>  <span class="c1"># Used to generate 3D coordinates/H atoms</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mol</span> <span class="o">=</span> <span class="n">pybel</span><span class="o">.</span><span class="n">readstring</span><span class="p">(</span><span class="n">molecule_format</span><span class="p">,</span> <span class="n">mol</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MolecularGraphBatchGenerator"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraphBatchGenerator">[docs]</a><span class="k">class</span> <span class="nc">MolecularGraphBatchGenerator</span><span class="p">(</span><span class="n">BaseGraphBatchGenerator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generator that creates batches of molecular data by computing graph properties on demand</span>
+
+<span class="sd">    If your dataset is small enough that the descriptions of the whole dataset fit in memory,</span>
+<span class="sd">    we recommend using :class:`megnet.data.graph.GraphBatchGenerator` instead to avoid</span>
+<span class="sd">    the computational cost of dynamically computing graphs.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">mols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">targets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">converter</span><span class="p">:</span> <span class="n">MolecularGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">molecule_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;xyz&#39;</span><span class="p">,</span>
+                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+                 <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                 <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            mols ([str]): List of the string reprensetations of each molecule</span>
+<span class="sd">            targets ([ndarray]): Properties of each molecule to be predicted</span>
+<span class="sd">            converter (MolecularGraph): Converter used to generate graph features</span>
+<span class="sd">            molecule_format (str): Format of each of the string representations in `mols`</span>
+<span class="sd">            batch_size (int): Target size for each batch</span>
+<span class="sd">            shuffle (bool): Whether to shuffle the training data after each epoch</span>
+<span class="sd">            n_jobs (int): Number of worker threads (None to use all threads).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mols</span><span class="p">),</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mols</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">converter</span> <span class="o">=</span> <span class="n">MolecularGraph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converter</span> <span class="o">=</span> <span class="n">converter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule_format</span> <span class="o">=</span> <span class="n">molecule_format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">=</span> <span class="n">n_jobs</span>
+
+        <span class="k">def</span> <span class="nf">mute</span><span class="p">():</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">initializer</span><span class="o">=</span><span class="n">mute</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_jobs</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>  <span class="c1"># Kill thread pool if generator is deleted</span>
+
+    <span class="k">def</span> <span class="nf">_generate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="c1"># Get the molecules for this batch</span>
+        <span class="n">mols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">[</span><span class="n">batch_index</span><span class="p">]</span>
+
+        <span class="c1"># Generate the graphs</span>
+        <span class="n">graphs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_graphs</span><span class="p">(</span><span class="n">mols</span><span class="p">)</span>
+
+        <span class="c1"># Return them as flattened into array format</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">get_flat_data</span><span class="p">(</span><span class="n">graphs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_graphs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mols</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Generate graphs for a certain collection of molecules</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            mols ([string]): Molecules to process</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            ([dict]): Graphs for all of the molecules</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">graphs</span> <span class="o">=</span> <span class="p">[</span><span class="n">_convert_mol</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">mols</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">func</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">_convert_mol</span><span class="p">,</span> <span class="n">molecule_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_format</span><span class="p">,</span>
+                           <span class="n">converter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="p">)</span>
+            <span class="n">graphs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">mols</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">graphs</span>
+
+<div class="viewcode-block" id="MolecularGraphBatchGenerator.create_cached_generator"><a class="viewcode-back" href="../../../megnet.data.molecule.html#megnet.data.molecule.MolecularGraphBatchGenerator.create_cached_generator">[docs]</a>    <span class="k">def</span> <span class="nf">create_cached_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphBatchGenerator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Generates features for all of the molecules and stores them in memory</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (GraphBatchGenerator) Graph genereator that relies on having the graphs in memory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Make all the graphs</span>
+        <span class="n">graphs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_graphs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mols</span><span class="p">)</span>
+
+        <span class="c1"># Turn them into a fat array</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">get_flat_data</span><span class="p">(</span><span class="n">graphs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">GraphBatchGenerator</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">,</span> <span class="n">is_shuffle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span><span class="p">,</span>
+                                   <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

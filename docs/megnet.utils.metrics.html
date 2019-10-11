@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.utils.metrics module &#8212; megnet 1.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.utils.models module" href="megnet.utils.models.html" />
+    <link rel="prev" title="megnet.utils.layer module" href="megnet.utils.layer.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.utils.models.html" title="megnet.utils.models module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.utils.layer.html" title="megnet.utils.layer module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-megnet.utils.metrics">
+<span id="megnet-utils-metrics-module"></span><h1>megnet.utils.metrics module<a class="headerlink" href="#module-megnet.utils.metrics" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="megnet.utils.metrics.accuracy">
+<code class="sig-name descname">accuracy</code><span class="sig-paren">(</span><em class="sig-param">y_true: numpy.ndarray</em>, <em class="sig-param">y_pred: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/metrics.html#accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.metrics.accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple accuracy calculation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> – numpy array of 0 and 1’s</p></li>
+<li><p><strong>y_pred</strong> – numpy array of predict sigmoid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(float) accuracy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="megnet.utils.metrics.mae">
+<code class="sig-name descname">mae</code><span class="sig-paren">(</span><em class="sig-param">y_true: numpy.ndarray</em>, <em class="sig-param">y_pred: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/metrics.html#mae"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.metrics.mae" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple mean absolute error calculations</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> – (numpy array) ground truth</p></li>
+<li><p><strong>y_pred</strong> – (numpy array) predicted values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(float) mean absolute error</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+  <li><a href="megnet.utils.html">megnet.utils package</a><ul>
+      <li>Previous: <a href="megnet.utils.layer.html" title="previous chapter">megnet.utils.layer module</a></li>
+      <li>Next: <a href="megnet.utils.models.html" title="next chapter">megnet.utils.models module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.utils.metrics.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>
