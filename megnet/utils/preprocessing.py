@@ -1,8 +1,15 @@
 import numpy as np
 from monty.json import MSONable
 
+from typing import Any
 
-class StandardScaler(MSONable):
+
+class Scaler(MSONable):
+    def inverse_transform(self, x: Any):
+        raise NotImplementedError
+
+
+class StandardScaler(Scaler):
     """
     Standard scaler with consideration of extensive/intensive quantity
     For intensive quantity, the mean is just the mean of training data, and std

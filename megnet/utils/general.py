@@ -1,8 +1,9 @@
 import numpy as np
 from collections import Iterable
+from typing import Union, List
 
 
-def to_list(x):
+def to_list(x: Union[Iterable, np.ndarray]) -> List:
     """
     If x is not a list, convert it to list
     """
@@ -14,7 +15,7 @@ def to_list(x):
         return [x]
 
 
-def expand_1st(x):
+def expand_1st(x: np.ndarray) -> np.ndarray:
     """
     Adding an extra first dimension
 
@@ -26,7 +27,7 @@ def expand_1st(x):
     return np.expand_dims(x, axis=0)
 
 
-def fast_label_binarize(value, labels):
+def fast_label_binarize(value: List, labels: List) -> List[int]:
     """Faster version of label binarize
 
     `label_binarize` from scikit-learn is slow when run 1 label at a time.

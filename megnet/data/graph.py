@@ -6,11 +6,23 @@ from abc import abstractmethod
 from operator import itemgetter
 import numpy as np
 from megnet.utils.general import expand_1st, to_list
+from megnet.utils.data import get_graphs_within_cutoff
 from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
 from pymatgen.analysis.local_env import NearNeighbors
 from keras.utils import Sequence
+from pymatgen import Structure
+
+from typing import Union, Dict, List, Any
+
+
+class Converter(MSONable):
+    """
+    Base class for atom or bond converter
+    """
+    def convert(self, d: Any) -> Any:
+        raise NotImplementedError
 
 
 class StructureGraph(MSONable):
@@ -29,9 +41,9 @@ class StructureGraph(MSONable):
     # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
 
     def __init__(self,
-                 nn_strategy=None,
-                 atom_converter=None,
-                 bond_converter=None,
+                 nn_strategy: Union[str, NearNeighbors] = None,
+                 atom_converter: Converter = None,
+                 bond_converter: Converter = None,
                  **kwargs):
 
         if isinstance(nn_strategy, str):
@@ -57,7 +69,7 @@ class StructureGraph(MSONable):
         if self.bond_converter is None:
             self.bond_converter = self._get_dummy_converter()
 
-    def convert(self, structure, state_attributes=None):
+    def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
@@ -95,17 +107,17 @@ class StructureGraph(MSONable):
                     'index2': index2
                     }
 
-    def __call__(self, structure):
+    def __call__(self, structure: Structure) -> Dict:
         return self.convert(structure)
 
-    def get_input(self, structure):
+    def get_input(self, structure: Structure) -> List[np.ndarray]:
         """
         Turns a structure into model input
         """
         graph = self.convert(structure)
         return self.graph_to_input(graph)
 
-    def graph_to_input(self, graph):
+    def graph_to_input(self, graph: Dict) -> List[np.ndarray]:
         """
         Turns a graph into model input
 
@@ -125,7 +137,7 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(gnode)),
                 expand_1st(np.array(gbond))]
 
-    def get_flat_data(self, graphs, targets=None):
+    def get_flat_data(self, graphs: List[Dict], targets: List = None) -> tuple:
         """
         Expand the graph dictionary to form a list of features and targets tensors.
         This is useful when the model is trained on assembled graphs on the fly.
@@ -152,10 +164,10 @@ class StructureGraph(MSONable):
         return tuple(output)
 
     @staticmethod
-    def _get_dummy_converter():
+    def _get_dummy_converter() -> 'DummyConverter':
         return DummyConverter()
 
-    def as_dict(self):
+    def as_dict(self) -> Dict:
         all_dict = super().as_dict()
         if 'nn_strategy' in all_dict:
             nn_strategy = all_dict.pop('nn_strategy')
@@ -163,7 +175,7 @@ class StructureGraph(MSONable):
         return all_dict
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls, d: Dict) -> 'StructureGraph':
         if 'nn_strategy' in d:
             nn_strategy = d.pop('nn_strategy')
             nn_strategy_obj = local_env.deserialize(nn_strategy)
@@ -172,25 +184,57 @@ class StructureGraph(MSONable):
         return super().from_dict(d)
 
 
-class DistanceConverter(MSONable):
+class StructureGraphFixedRadius(StructureGraph):
     """
-    Base class for distance conversion. The class needs to have a convert method.
+    This one uses a short cut to call find_points_in_spheres cython function in
+    pymatgen. It is orders of magnitude faster than previous implementations
     """
 
-    def convert(self, d):
-        raise NotImplementedError
+    def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
+        """
+        Take a pymatgen structure and convert it to a index-type graph representation
+        The graph will have node, distance, index1, index2, where node is a vector of Z number
+        of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
+        distance.
+        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
+        take default [[0, 0]]
+
+        Args:
+            state_attributes: (list) state attributes
+            structure: (pymatgen structure)
+            (dictionary)
+        """
+        state_attributes = state_attributes or [[0, 0]]
+        atoms = [i.specie.Z for i in structure]
+        index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
+
+        if np.size(np.unique(index1)) < len(atoms):
+            raise RuntimeError("Isolated atoms found in the structure")
+        else:
+            return {'atom': np.array(atoms, dtype='int32').tolist(),
+                    'bond': bonds,
+                    'state': state_attributes,
+                    'index1': index1,
+                    'index2': index2
+                    }
+
+    @classmethod
+    def from_structure_graph(cls, structure_graph: StructureGraph) -> 'StructureGraphFixedRadius':
+        return cls(nn_strategy=structure_graph.nn_strategy,
+                   atom_converter=structure_graph.atom_converter,
+                   bond_converter=structure_graph.bond_converter)
 
 
-class DummyConverter(DistanceConverter):
+class DummyConverter(Converter):
     """
     Dummy converter as a placeholder
     """
 
-    def convert(self, d):
+    def convert(self, d: Any) -> Any:
         return d
 
 
-class GaussianDistance(DistanceConverter):
+class GaussianDistance(Converter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
 
@@ -199,11 +243,11 @@ class GaussianDistance(DistanceConverter):
         width: (float)
     """
 
-    def __init__(self, centers=np.linspace(0, 5, 100), width=0.5):
+    def __init__(self, centers: np.ndarray = np.linspace(0, 5, 100), width=0.5):
         self.centers = centers
         self.width = width
 
-    def convert(self, d):
+    def convert(self, d: np.ndarray) -> np.ndarray:
         """
         expand distance vector d with given parameters
 
@@ -217,7 +261,7 @@ class GaussianDistance(DistanceConverter):
         return np.exp(-(d[:, None] - self.centers[None, :]) ** 2 / self.width ** 2)
 
 
-class MoorseLongRange(DistanceConverter):
+class MoorseLongRange(Converter):
     """
     This is an attempt to implement a Moorse/long range interactomic potential like
     distance expansion. The distance is expanded with this basis at different equilibrium
@@ -284,7 +328,8 @@ class BaseGraphBatchGenerator(Sequence):
     the features for each atom, bond, and global features when creating a batch.
     """
 
-    def __init__(self, dataset_size, targets, batch_size=128, shuffle=True):
+    def __init__(self, dataset_size: int, targets: np.ndarray,
+                 batch_size: int = 128, shuffle: bool = True):
         """
         Args:
             dataset_size (int): Number of entries in dataset
@@ -304,11 +349,15 @@ class BaseGraphBatchGenerator(Sequence):
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.max_step
 
-    def _combine_graph_data(self, feature_list_temp, connection_list_temp, global_list_temp,
-                            index1_temp, index2_temp):
+    def _combine_graph_data(self,
+                            feature_list_temp: List[np.ndarray],
+                            connection_list_temp: List[np.ndarray],
+                            global_list_temp: List[np.ndarray],
+                            index1_temp: List[np.ndarray],
+                            index2_temp: List[np.ndarray]) -> List:
         """Compile the matrices describing each graph into single matrices for the entire graph
 
         Beyond concatenating the graph descriptions, this operation updates the indices of each
@@ -375,16 +424,16 @@ class BaseGraphBatchGenerator(Sequence):
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 
-    def process_atom_feature(self, x):
+    def process_atom_feature(self, x: np.ndarray) -> np.ndarray:
         return x
 
-    def process_bond_feature(self, x):
+    def process_bond_feature(self, x: np.ndarray) -> np.ndarray:
         return x
 
-    def process_state_feature(self, x):
+    def process_state_feature(self, x: np.ndarray) -> np.ndarray:
         return x
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: int) -> tuple:
         # Get the indices for this batch
         batch_index = self.mol_index[index * self.batch_size:(index + 1) * self.batch_size]
 
@@ -406,7 +455,7 @@ class BaseGraphBatchGenerator(Sequence):
             return inputs, expand_1st(target_temp)
 
     @abstractmethod
-    def _generate_inputs(self, batch_index):
+    def _generate_inputs(self, batch_index: int) -> tuple:
         """Get the graph descriptions for each batch
 
         Args:
@@ -442,14 +491,14 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
     """
 
     def __init__(self,
-                 atom_features,
-                 bond_features,
-                 state_features,
-                 index1_list,
-                 index2_list,
-                 targets=None,
-                 batch_size=128,
-                 is_shuffle=True):
+                 atom_features: List[np.ndarray],
+                 bond_features: List[np.ndarray],
+                 state_features: List[np.ndarray],
+                 index1_list: List[int],
+                 index2_list: List[int],
+                 targets: np.ndarray = None,
+                 batch_size: int = 128,
+                 is_shuffle: bool = True):
         super().__init__(len(atom_features), targets, batch_size, is_shuffle)
         self.atom_features = atom_features
         self.bond_features = bond_features
@@ -457,7 +506,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         self.index1_list = index1_list
         self.index2_list = index2_list
 
-    def _generate_inputs(self, batch_index):
+    def _generate_inputs(self, batch_index: int) -> tuple:
         """Get the graph descriptions for each batch
 
         Args:
@@ -502,15 +551,15 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
     """
 
     def __init__(self,
-                 atom_features,
-                 bond_features,
-                 state_features,
-                 index1_list,
-                 index2_list,
-                 targets=None,
-                 batch_size=128,
-                 is_shuffle=True,
-                 distance_converter=None):
+                 atom_features: List[np.ndarray],
+                 bond_features: List[np.ndarray],
+                 state_features: List[np.ndarray],
+                 index1_list: List[int],
+                 index2_list: List[int],
+                 targets: np.ndarray = None,
+                 batch_size: int = 128,
+                 is_shuffle: bool = True,
+                 distance_converter: Converter = None):
         super().__init__(atom_features=atom_features,
                          bond_features=bond_features,
                          state_features=state_features,
@@ -521,11 +570,11 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                          is_shuffle=is_shuffle)
         self.distance_converter = distance_converter
 
-    def process_bond_feature(self, x):
+    def process_bond_feature(self, x) -> np.ndarray:
         return self.distance_converter.convert(x)
 
 
-def itemgetter_list(l, indices):
+def itemgetter_list(l, indices: List) -> tuple:
     """
     Get indices of l and return a tuple
 

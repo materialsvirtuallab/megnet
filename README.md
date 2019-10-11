@@ -418,7 +418,7 @@ please feel free to email us and we will consider releasing a new model with inc
    networks. 2018, 1–38. [arXiv:1806.01261](https://arxiv.org/abs/1806.01261)
 2. Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. Graph Networks as a 
    Universal Machine Learning Framework for Molecules and Crystals. Chemistry 
-   of Materials 2019, acs.chemmater.9b01294. 
+   of Materials 2019, 31(9), 3564-3572. 
    [doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)
 3. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for 
    sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)

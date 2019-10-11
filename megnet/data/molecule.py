@@ -13,11 +13,12 @@ from multiprocessing import Pool
 import numpy as np
 from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
+from pymatgen.analysis.local_env import NearNeighbors
 
 from megnet.data.qm9 import ring_to_vector
 from megnet.utils.general import fast_label_binarize
 from megnet.data.graph import (StructureGraph, GaussianDistance,
-                               BaseGraphBatchGenerator, GraphBatchGenerator)
+                               BaseGraphBatchGenerator, GraphBatchGenerator, Converter)
 
 try:
     import pybel
@@ -28,6 +29,8 @@ try:
     from rdkit import Chem
 except ImportError:
     Chem = None
+
+from typing import List, Dict, Union
 
 __date__ = '12/01/2018'
 
@@ -49,9 +52,9 @@ class SimpleMolGraph(StructureGraph):
     expansion with centers at np.linspace(0, 4, 20) and width of 0.5
     """
     def __init__(self,
-                 nn_strategy='AllAtomPairs',
-                 atom_converter=None,
-                 bond_converter=None
+                 nn_strategy: Union[str, NearNeighbors] = 'AllAtomPairs',
+                 atom_converter: Converter = None,
+                 bond_converter: Converter = None,
                  ):
         if bond_converter is None:
             bond_converter = GaussianDistance(np.linspace(0, 4, 20), 0.5)
@@ -95,8 +98,11 @@ class MolecularGraph(StructureGraph):
         a vector of 20 different values computed using the `GaussianDistance` converter
 
     """
-    def __init__(self, atom_features=None, bond_features=None, distance_converter=None,
-                 known_elements=None):
+    def __init__(self,
+                 atom_features: List[str] = None,
+                 bond_features: List[str] = None,
+                 distance_converter: Converter = None,
+                 known_elements: List[str] = None):
         """
         Args:
             atom_features ([str]): List of atom features to compute
@@ -133,7 +139,10 @@ class MolecularGraph(StructureGraph):
         self.known_elements = known_elements
         self.distance_converter = distance_converter
 
-    def convert(self, mol, state_attributes=None, full_pair_matrix=True):
+    def convert(self,
+                mol,  # type: ignore
+                state_attributes: List = None,
+                full_pair_matrix: bool = True) -> Dict:
         """
         Compute the representation for a molecule
 
@@ -206,7 +215,7 @@ class MolecularGraph(StructureGraph):
                 'index1': index1,
                 'index2': index2}
 
-    def _create_pair_feature_vector(self, bond: dict) -> List[float]:
+    def _create_pair_feature_vector(self, bond: Dict) -> List[float]:
         """Generate the feature vector from the bond feature dictionary
 
         Handles the binarization of categorical variables, and performing the distance conversion
@@ -262,7 +271,7 @@ class MolecularGraph(StructureGraph):
                 atom_temp.append(atom[i])
         return atom_temp
 
-    def _dijkstra_distance(self, pairs):
+    def _dijkstra_distance(self, pairs: List[Dict]) -> List[int]:
         """
         Compute the graph distance between each pair of atoms,
         using the network defined by the bonded atoms.
@@ -278,7 +287,9 @@ class MolecularGraph(StructureGraph):
                 bonds.append([p['a_idx'], p['b_idx']])
         return dijkstra_distance(bonds)
 
-    def get_atom_feature(self, mol, atom):
+    def get_atom_feature(self,
+                         mol,  # type: ignore
+                         atom) -> Dict:  # type: ignore
         """
         Generate all features of a particular atom
 
@@ -323,7 +334,7 @@ class MolecularGraph(StructureGraph):
 
         return output
 
-    def create_bond_feature(self, mol, bid, eid):
+    def create_bond_feature(self, mol, bid: int, eid: int):
         """
         Create information for a bond for a pair of atoms that are not actually bonded
 
@@ -341,7 +352,8 @@ class MolecularGraph(StructureGraph):
                 "same_ring": True if same_ring else False,
                 "spatial_distance": a1.GetDistance(a2)}
 
-    def get_pair_feature(self, mol, bid, eid, full_pair_matrix):
+    def get_pair_feature(self, mol, bid: int,
+                         eid: int, full_pair_matrix: bool):
         """
         Get the features for a certain bond
 
@@ -374,7 +386,7 @@ class MolecularGraph(StructureGraph):
                 "same_ring": True if same_ring else False,
                 "spatial_distance": a1.GetDistance(a2)}
 
-    def _get_rdk_mol(self, mol, format='smiles'):
+    def _get_rdk_mol(self, mol, format: str = 'smiles'):
         """
         Return: RDKit Mol (w/o H)
         """
@@ -404,7 +416,7 @@ class MolecularGraph(StructureGraph):
             return dict(chiral_cc)
 
 
-def dijkstra_distance(bonds):
+def dijkstra_distance(bonds: List[List[int]]) -> np.ndarray:
     """
     Compute the graph distance based on the dijkstra algorithm
 
@@ -439,13 +451,13 @@ def dijkstra_distance(bonds):
     return graph_dist
 
 
-def mol_from_smiles(smiles):
+def mol_from_smiles(smiles: str):
     mol = pybel.readstring(format='smi', string=smiles)
     mol.make3D()
     return mol
 
 
-def mol_from_pymatgen(mol):
+def mol_from_pymatgen(mol: Molecule):
     """
     Args:
         mol(Molecule)
@@ -455,7 +467,7 @@ def mol_from_pymatgen(mol):
     return mol
 
 
-def mol_from_file(file_path, file_format='xyz'):
+def mol_from_file(file_path: str, file_format: str = 'xyz'):
     """
     Args:
         file_path(str)
@@ -466,7 +478,7 @@ def mol_from_file(file_path, file_format='xyz'):
     return mol
 
 
-def _convert_mol(mol, molecule_format, converter):
+def _convert_mol(mol: str, molecule_format: str, converter: MolecularGraph) -> Dict:
     """Convert a molecule from string to its graph features
 
     Utility function used in the graph generator.
@@ -501,8 +513,14 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
     we recommend using :class:`megnet.data.graph.GraphBatchGenerator` instead to avoid
     the computational cost of dynamically computing graphs."""
 
-    def __init__(self, mols, targets=None, converter=None, molecule_format='xyz',
-                 batch_size=128, shuffle=True, n_jobs=1):
+    def __init__(self,
+                 mols: List[str],
+                 targets: List[np.ndarray] = None,
+                 converter: MolecularGraph = None,
+                 molecule_format: str = 'xyz',
+                 batch_size: int = 128,
+                 shuffle: bool = True,
+                 n_jobs: int = 1):
         """
         Args:
             mols ([str]): List of the string reprensetations of each molecule
@@ -531,7 +549,7 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         if self.pool is not None:
             self.pool.close()  # Kill thread pool if generator is deleted
 
-    def _generate_inputs(self, batch_index):
+    def _generate_inputs(self, batch_index: int) -> np.ndarray:
         # Get the molecules for this batch
         mols = self.mols[batch_index]
 
@@ -541,7 +559,7 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         # Return them as flattened into array format
         return self.converter.get_flat_data(graphs)
 
-    def _generate_graphs(self, mols):
+    def _generate_graphs(self, mols: List[str]) -> List[Dict]:
         """Generate graphs for a certain collection of molecules
 
         Args:
