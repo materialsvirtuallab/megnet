@@ -204,7 +204,7 @@ class StructureGraphFixedRadius(StructureGraph):
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]] 
+        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
         atoms = [i.specie.Z for i in structure]
         index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
 
