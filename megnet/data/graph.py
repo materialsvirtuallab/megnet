@@ -83,7 +83,7 @@ class StructureGraph(MSONable):
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or [[0, 0]]
+        state_attributes = state_attributes or getattr(structure, 'state') or [[0, 0]]
         index1 = []
         index2 = []
         bonds = []
