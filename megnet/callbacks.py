@@ -174,7 +174,9 @@ class ModelCheckpointMAE(Callback):
             for i in range(self.steps_per_val):
                 val_data = self.val_gen[i]
                 nb_atom = _count(np.array(val_data[0][-2]))
+                stop_training = self.model.stop_training  # save stop_trainings state
                 pred_ = self.model.predict(val_data[0])
+                self.model.stop_training = stop_training
                 val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :], nb_atom[:, None]))
                 val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :], nb_atom[:, None]))
             current = self.metric(np.concatenate(val_y, axis=0), np.concatenate(val_pred, axis=0))
