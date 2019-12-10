@@ -44,4 +44,9 @@ setup(
         "Topic :: Scientific/Engineering :: Chemistry",
         "Topic :: Software Development :: Libraries :: Python Modules"
     ],
+    entry_points={
+        'console_scripts': [
+            'meg = megnet.cli.meg:main',
+        ]
+    }
 )
