@@ -134,22 +134,21 @@ class GraphModel:
                           **kwargs
                           ) -> None:
         """
-        # TODO write doc...
-        :param train_graphs:
-        :param train_targets:
-        :param validation_graphs:
-        :param validation_targets:
-        :param epochs:
-        :param batch_size:
-        :param verbose:
-        :param callbacks:
-        :param prev_model:
-        :param lr_scaling_factor:
-        :param patience:
-        :param save_checkpoint:
-        :param automatic_correction:
-        :param kwargs:
-        :return:
+        Args:
+            train_graphs: (list) list of graph dictionaries
+            train_targets: (list) list of target values
+            validation_graphs: (list) list of graphs as validation
+            validation_targets: (list) list of validation targets
+            epochs: (int) number of epochs
+            batch_size: (int) training batch size
+            verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
+            callbacks: (list) megnet or keras callback functions for training
+            prev_model: (str) file name for previously saved model
+            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
+            patience: (int) patience for early stopping
+            save_checkpoint: (bool) whether to save checkpoint
+            automatic_correction: (bool) correct nan errors
+            **kwargs:
         """
         # load from saved model
         if prev_model:
