@@ -11,8 +11,8 @@ MODEL_MAPPING = {'Eform_MP_2019': 'mp-2019.4.1/formation_energy.hdf5',
                  'Bandgap_classifier_MP_2018': 'mp-2018.6.1/band_classification.hdf5',
                  'Bandgap_MP_2018': 'mp-2018.6.1/band_gap_regression.hdf5',
                  'logK_MP_2018': 'mp-2018.6.1/log10K.hdf5',
-                 'logG_MP_2018': 'mp-2018.6.1/log10G.hdf5', 
-                 'logK_MP_2019': 'mp-2019.4.1/log10K.hdf5', 
+                 'logG_MP_2018': 'mp-2018.6.1/log10G.hdf5',
+                 'logK_MP_2019': 'mp-2019.4.1/log10K.hdf5',
                  'logG_MP_2019': 'mp-2019.4.1/log10G.hdf5'}
 
 qm9_models = glob(os.path.join(MODEL_PATH, 'qm9-2018.6.1/*.hdf5'))
