@@ -520,68 +520,70 @@ def make_megnet_model(nfeat_edge: int = None,
     # Create the input blocks
     int32 = 'int32'
     if nfeat_node is None:
-        x1 = Input(shape=(None,), dtype=int32)  # only z as feature
-        x1_ = Embedding(nvocal, embedding_dim)(x1)
+        x1 = Input(shape=(None,), dtype=int32, name='atom_int_input')  # only z as feature
+        x1_ = Embedding(nvocal, embedding_dim, name='atom_embedding')(x1)
     else:
-        x1 = Input(shape=(None, nfeat_node))
+        x1 = Input(shape=(None, nfeat_node), name='atom_feature_input')
         x1_ = x1
     if nfeat_edge is None:
-        x2 = Input(shape=(None,), dtype=int32)
-        x2_ = Embedding(nbvocal, bond_embedding_dim)(x2)
+        x2 = Input(shape=(None,), dtype=int32, name='bond_int_input')
+        x2_ = Embedding(nbvocal, bond_embedding_dim, name='bond_embedding')(x2)
     else:
-        x2 = Input(shape=(None, nfeat_edge))
+        x2 = Input(shape=(None, nfeat_edge), name='bond_feature_input')
         x2_ = x2
     if nfeat_global is None:
-        x3 = Input(shape=(None,), dtype=int32)
-        x3_ = Embedding(ngvocal, global_embedding_dim)(x3)
+        x3 = Input(shape=(None,), dtype=int32, name='state_int_input')
+        x3_ = Embedding(ngvocal, global_embedding_dim, name='state_embedding')(x3)
     else:
-        x3 = Input(shape=(None, nfeat_global))
+        x3 = Input(shape=(None, nfeat_global), name='state_feature_input')
         x3_ = x3
-    x4 = Input(shape=(None,), dtype=int32)
-    x5 = Input(shape=(None,), dtype=int32)
-    x6 = Input(shape=(None,), dtype=int32)
-    x7 = Input(shape=(None,), dtype=int32)
+    x4 = Input(shape=(None,), dtype=int32, name='bond_index_1_input')
+    x5 = Input(shape=(None,), dtype=int32, name='bond_index_2_input')
+    x6 = Input(shape=(None,), dtype=int32, name='atom_graph_index_input')
+    x7 = Input(shape=(None,), dtype=int32, name='bond_graph_index_input')
     if l2_coef is not None:
         reg = l2(l2_coef)
     else:
         reg = None
 
     # two feedforward layers
-    def ff(x, n_hiddens=[n1, n2]):
+    def ff(x, n_hiddens=[n1, n2], name_prefix=None):
+        if name_prefix is None:
+            name_prefix = 'FF'
         out = x
-        for i in n_hiddens:
-            out = Dense(i, activation=act, kernel_regularizer=reg)(out)
+        for k, i in enumerate(n_hiddens):
+            out = Dense(i, activation=act, kernel_regularizer=reg, name='%s_%d' % (name_prefix, k))(out)
         return out
 
     # a block corresponds to two feedforward layers + one MEGNetLayer layer
     # Note the first block does not contain the feedforward layer since
     # it will be explicitly added before the block
-    def one_block(a, b, c, has_ff=True):
+    def one_block(a, b, c, has_ff=True, block_index=0):
         if has_ff:
-            x1_ = ff(a)
-            x2_ = ff(b)
-            x3_ = ff(c)
+            x1_ = ff(a, name_prefix='block_%d_atom_ff' % block_index)
+            x2_ = ff(b, name_prefix='block_%d_bond_ff' % block_index)
+            x3_ = ff(c, name_prefix='block_%d_state_ff' % block_index)
         else:
             x1_ = a
             x2_ = b
             x3_ = c
         out = MEGNetLayer(
             [n1, n1, n2], [n1, n1, n2], [n1, n1, n2],
-            pool_method='mean', activation=act, kernel_regularizer=reg)(
+            pool_method='mean', activation=act, kernel_regularizer=reg, name='megnet_%d' % block_index)(
             [x1_, x2_, x3_, x4, x5, x6, x7])
 
         x1_temp = out[0]
         x2_temp = out[1]
         x3_temp = out[2]
         if dropout:
-            x1_temp = Dropout(dropout)(x1_temp, training=dropout_training)
-            x2_temp = Dropout(dropout)(x2_temp, training=dropout_training)
-            x3_temp = Dropout(dropout)(x3_temp, training=dropout_training)
+            x1_temp = Dropout(dropout, name='dropout_atom_%d' % block_index)(x1_temp, training=dropout_training)
+            x2_temp = Dropout(dropout, name='dropout_bond_%d' % block_index)(x2_temp, training=dropout_training)
+            x3_temp = Dropout(dropout, name='dropout_state_%d' % block_index)(x3_temp, training=dropout_training)
         return x1_temp, x2_temp, x3_temp
 
-    x1_ = ff(x1_)
-    x2_ = ff(x2_)
-    x3_ = ff(x3_)
+    x1_ = ff(x1_, name_prefix='preblock_atom')
+    x2_ = ff(x2_, name_prefix='preblock_bond')
+    x3_ = ff(x3_, name_prefix='preblock_state')
     for i in range(nblocks):
         if i == 0:
             has_ff = False
@@ -590,25 +592,25 @@ def make_megnet_model(nfeat_edge: int = None,
         x1_1 = x1_
         x2_1 = x2_
         x3_1 = x3_
-        x1_1, x2_1, x3_1 = one_block(x1_1, x2_1, x3_1, has_ff)
+        x1_1, x2_1, x3_1 = one_block(x1_1, x2_1, x3_1, has_ff, block_index=i)
         # skip connection
-        x1_ = Add()([x1_, x1_1])
-        x2_ = Add()([x2_, x2_1])
-        x3_ = Add()([x3_, x3_1])
+        x1_ = Add(name='block_%d_add_atom' % i)([x1_, x1_1])
+        x2_ = Add(name='block_%d_add_bond' % i)([x2_, x2_1])
+        x3_ = Add(name='block_%d_add_state' % i)([x3_, x3_1])
     # set2set for both the atom and bond
-    node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x1_, x6])
-    edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg)([x2_, x7])
+    node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_atom')([x1_, x6])
+    edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_bond')([x2_, x7])
     # concatenate atom, bond, and global
     final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])
     if dropout:
-        final_vec = Dropout(dropout)(final_vec, training=dropout_training)
+        final_vec = Dropout(dropout, name='dropout_final')(final_vec, training=dropout_training)
     # final dense layers
-    final_vec = Dense(n2, activation=act, kernel_regularizer=reg)(final_vec)
-    final_vec = Dense(n3, activation=act, kernel_regularizer=reg)(final_vec)
+    final_vec = Dense(n2, activation=act, kernel_regularizer=reg, name='readout_0')(final_vec)
+    final_vec = Dense(n3, activation=act, kernel_regularizer=reg, name='readout_1')(final_vec)
     if is_classification:
         final_act = 'sigmoid'
     else:
         final_act = None
-    out = Dense(ntarget, activation=final_act)(final_vec)
+    out = Dense(ntarget, activation=final_act, name='readout_2')(final_vec)
     model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
     return model
