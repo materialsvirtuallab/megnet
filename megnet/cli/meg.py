@@ -9,12 +9,15 @@ A master convenience script with many tools for vasp and structure analysis.
 
 import argparse
 import sys
-import itertools
-
-from tabulate import tabulate, tabulate_formats
-from pymatgen import Structure
+from difflib import SequenceMatcher
 from pathlib import Path
+
+from tabulate import tabulate
+from pymatgen import Structure
 from megnet.utils.models import MEGNetModel
+
+DEFAULT_MODEL_PATH = Path(__file__).parent / ".." / ".." / "mvl_models" / "mp-2019.4.1"
+DEFAULT_MODELS = [str(f) for f in DEFAULT_MODEL_PATH.glob("*.hdf5")]
 
 
 def predict(args):
@@ -26,17 +29,25 @@ def predict(args):
     headers = ["Filename"]
     output = []
     models = []
-    for mn in args.models:
+    prefix = ""
+    for i, mn in enumerate(args.models):
         model = MEGNetModel.from_file(mn)
         models.append(model)
-        headers.append("%s (%s)" % (mn, str(model.metadata["unit"]).strip("log10")))
+        if i == 0:
+            prefix = mn
+        else:
+            sm = SequenceMatcher(None, prefix, mn)
+            match = sm.find_longest_match(0, len(prefix), 0, len(mn))
+            prefix = prefix[0: match.size]
+        headers.append("%s (%s)" % (mn, str(model.metadata.get("unit", "")).strip("log10")))
+    headers = [h.lstrip(prefix) for h in headers]
 
     for fn in args.structures:
         structure = Structure.from_file(fn)
         row = [fn]
         for model in models:
             val = model.predict_structure(structure).ravel()
-            if "log10" in str(model.metadata["unit"]):
+            if "log10" in str(model.metadata.get("unit", "")):
                 val = 10 ** val
             row.append(val)
         output.append(row)
@@ -63,7 +74,7 @@ def main():
                                 type=str, nargs="+",
                                 help="Structures to process")
     parser_predict.add_argument(
-        "-m", "--models", dest="models", type=str, nargs="+", required=True,
+        "-m", "--models", dest="models", type=str, nargs="+", default=DEFAULT_MODELS,
         help="Models to run.")
     parser_predict.set_defaults(func=predict)
 
