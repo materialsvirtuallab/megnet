@@ -95,7 +95,7 @@ class StructureGraph(MSONable):
                 index2.append(neighbor['site_index'])
                 bonds.append(neighbor['weight'])
 
-        atoms = [i.specie.Z for i in structure]
+        atoms = self.get_atom_features(structure)
 
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
@@ -106,6 +106,19 @@ class StructureGraph(MSONable):
                     'index1': index1,
                     'index2': index2
                     }
+
+    @staticmethod
+    def get_atom_features(structure) -> List[int]:
+        """
+        Get atom features from structure, may be overwritten
+
+        Args:
+            structure: (Pymatgen.Structure) pymatgen structure
+
+        Returns:
+            List of atomic numbers
+        """
+        return [i.specie.Z for i in structure]
 
     def __call__(self, structure: Structure) -> Dict:
         return self.convert(structure)
@@ -205,7 +218,7 @@ class StructureGraphFixedRadius(StructureGraph):
             (dictionary)
         """
         state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
-        atoms = [i.specie.Z for i in structure]
+        atoms = self.get_atom_features(structure)
         index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
 
         if np.size(np.unique(index1)) < len(atoms):
