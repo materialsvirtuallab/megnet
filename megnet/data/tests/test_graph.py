@@ -1,7 +1,6 @@
-import tensorflow as tf
 import unittest
 from megnet.data.graph import GaussianDistance, GraphBatchGenerator, GraphBatchDistanceConvert, \
-    MoorseLongRange
+    MoorseLongRange, EmbeddingMap
 import numpy as np
 
 
@@ -62,6 +61,12 @@ class TestGraph(unittest.TestCase):
         self.assertListEqual(list(data[0][3].shape), [1, 3])
         self.assertListEqual(list(data[0][4].shape), [1, 3])
         self.assertListEqual(list(data[1].shape), [1, 2, 1])
+
+    def test_embedding_map(self):
+        m = EmbeddingMap(np.array([[1, 2], [3, 4]]))
+        res = m.convert(np.array([0, 0, 1, 1]))
+        self.assertListEqual(res[0].tolist(), [1, 2])
+        self.assertListEqual(res[2].tolist(), [3, 4])
 
 
 if __name__ == "__main__":

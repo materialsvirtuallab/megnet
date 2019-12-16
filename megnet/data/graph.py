@@ -234,6 +234,30 @@ class DummyConverter(Converter):
         return d
 
 
+class EmbeddingMap(Converter):
+    """
+    Convert an integer to a row vector in a feature matrix
+
+    Args:
+        feature_matrix: (np.ndarray) A matrix of shape (N, M)
+    """
+
+    def __init__(self, feature_matrix: np.ndarray):
+        self.feature_matrix = np.array(feature_matrix)
+
+    def convert(self, int_array: np.ndarray) -> np.ndarray:
+        """
+        convert atomic number to row vectors in the feature_matrix
+
+        Args:
+            int_array: (1d array) number array of length L
+
+        Returns
+            (matrix) L*M matrix with N the length of d and M the length of centers
+        """
+        return self.feature_matrix[int_array]
+
+
 class GaussianDistance(Converter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
