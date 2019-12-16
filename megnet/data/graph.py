@@ -100,7 +100,7 @@ class StructureGraph(MSONable):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': np.array(atoms, dtype='int32').tolist(),
+            return {'atom': atoms,
                     'bond': bonds,
                     'state': state_attributes,
                     'index1': index1,
@@ -118,7 +118,8 @@ class StructureGraph(MSONable):
         Returns:
             List of atomic numbers
         """
-        return [i.specie.Z for i in structure]
+        return np.array([i.specie.Z for i in structure],
+                        dtype='int32').tolist()
 
     def __call__(self, structure: Structure) -> Dict:
         return self.convert(structure)
@@ -224,7 +225,7 @@ class StructureGraphFixedRadius(StructureGraph):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': np.array(atoms, dtype='int32').tolist(),
+            return {'atom': atoms,
                     'bond': bonds,
                     'state': state_attributes,
                     'index1': index1,
