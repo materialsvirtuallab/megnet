@@ -1,3 +1,6 @@
+# v1.1.0
+* Bug fix and version correction
+
 # v1.0.3
 * Fix bug brought by migrating to tensorflow 2.0
 * New elasticity models trained on 2019 MP data base
