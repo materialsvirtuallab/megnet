@@ -1,3 +1,8 @@
+# v1.0.3
+* Fix bug brought by migrating to tensorflow 2.0
+* New elasticity models trained on 2019 MP data base
+* Add meg command line tools 
+
 # v1.0.2
 * Add mypy typing hint for non-tensorflow codes
 * Update keras to 2.3.1 to fix thread-safety issues
