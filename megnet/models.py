@@ -608,10 +608,7 @@ def make_megnet_model(nfeat_edge: int = None,
     final_vec = Dense(n2, activation=act, kernel_regularizer=reg, name='readout_0')(final_vec)
     final_vec = Dense(n3, activation=act, kernel_regularizer=reg, name='readout_1')(final_vec)
     if is_classification:
-        if ntarget > 1:
-            final_act = 'softmax'
-        else:
-            final_act = 'sigmoid'
+        final_act = 'sigmoid'
     else:
         final_act = None
     out = Dense(ntarget, activation=final_act, name='readout_2')(final_vec)
