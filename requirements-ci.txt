@@ -3,6 +3,6 @@ pytest-cov==2.8.1
 coverage==5.0
 coveralls==1.9.2
 pycodestyle==2.5.0
-mypy==0.760
+mypy==0.761
 pydocstyle==5.0.1
 flake8==3.7.9
