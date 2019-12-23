@@ -3,5 +3,5 @@ pymatgen==2019.12.3
 tensorflow==2.0.0
 keras==2.3.1
 scikit-learn==0.22
-numpy==1.17.4
+numpy==1.18.0
 monty==3.0.2
