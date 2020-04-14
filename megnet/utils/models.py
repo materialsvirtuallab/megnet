@@ -1,7 +1,19 @@
 import os
+import requests
 from glob import glob
+from zipfile import ZipFile
+import logging
+
 from megnet.models import MEGNetModel, GraphModel
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
+CWD = os.path.dirname(os.path.abspath(__file__))
+TEMP_PATH = os.path.join(CWD, "./mvl_models.zip")
+LOCAL_MODEL_PATH = os.path.join(CWD, "./mvl_models")
 
 MODEL_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../../mvl_models')
 
@@ -20,8 +32,6 @@ qm9_models = glob(os.path.join(MODEL_PATH, 'qm9-2018.6.1/*.hdf5'))
 MODEL_MAPPING.update({'QM9_%s_2018' % i: 'qm9-2018.6.1/%s.hdf5' % i for i in
                       [j.split('/')[-1].split('.')[0] for j in qm9_models]})
 
-for i, j in MODEL_MAPPING.items():
-    MODEL_MAPPING[i] = os.path.join(MODEL_PATH, j)
 
 AVAILABLE_MODELS = list(MODEL_MAPPING.keys())
 
@@ -38,6 +48,36 @@ def load_model(model_name: str) -> GraphModel:
     """
 
     if model_name in AVAILABLE_MODELS:
-        return MEGNetModel.from_file(MODEL_MAPPING[model_name])
+        mvl_path = os.path.join(MODEL_PATH, MODEL_MAPPING[model_name])
+        if os.path.isfile(mvl_path):
+            return MEGNetModel.from_file(mvl_path)
+
+        logger.info("Package-level mvl_models not included, trying temperary mvl_models downloads..")
+        local_mvl_path = os.path.join(LOCAL_MODEL_PATH, MODEL_MAPPING[model_name])
+        if os.path.isfile(local_mvl_path):
+            logger.info("Model found in local mvl_models path")
+            return MEGNetModel.from_file(local_mvl_path)
+        _download_models()
+        return load_model(model_name)
     else:
         raise ValueError('model name %s not in available model list %s' % (model_name, AVAILABLE_MODELS))
+
+
+def _download_models(url="https://ndownloader.figshare.com/files/22291785",
+                     file_path=TEMP_PATH):
+    """
+    Download machine learning model files
+    Args:
+        url: (str) url link for the models
+    """
+
+    logger.info("Fetching {} from {} to {}".format(
+        os.path.basename(file_path), url, file_path))
+
+    import urllib.request
+
+    urllib.request.urlretrieve(url, file_path)
+
+    logger.info("Start extracting models...")
+    with ZipFile(file_path, 'r') as zip_obj:
+        zip_obj.extractall(os.path.dirname(file_path))

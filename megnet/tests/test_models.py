@@ -158,6 +158,13 @@ class TestModel(PymatgenTest):
             self.assertAlmostEqual(float(model.predict_structure(li2o)),
                                    -2.0152957439422607, places=4)
 
+    def test_from_mvl_models(self):
+        with ScratchDir("."):
+            model = MEGNetModel.from_mvl_models('Eform_MP_2019')
+            li2o = self.get_structure("Li2O")
+            self.assertAlmostEqual(float(model.predict_structure(li2o)),
+                                   -2.0152957439422607, places=4)
+
 
 if __name__ == "__main__":
     unittest.main()

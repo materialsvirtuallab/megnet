@@ -345,24 +345,6 @@ class GraphModel:
         configs.update({'model': model})
         return GraphModel(**configs)
 
-    @classmethod
-    def from_url(cls, url: str) -> 'GraphModel':
-        """
-        Download and load a model from a URL. E.g.
-        https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5
-
-        Args:
-            url: (str) url link of the model
-
-        Returns:
-            GraphModel
-        """
-        import urllib.request
-        fname = url.split("/")[-1]
-        urllib.request.urlretrieve(url, fname)
-        urllib.request.urlretrieve(url + ".json", fname + ".json")
-        return cls.from_file(fname)
-
 
 class MEGNetModel(GraphModel):
     """
@@ -464,6 +446,33 @@ class MEGNetModel(GraphModel):
             graph_converter = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))
 
         super().__init__(model=model, target_scaler=target_scaler, graph_converter=graph_converter)
+
+    @classmethod
+    def from_url(cls, url: str) -> 'MEGNetModel':
+        """
+        Download and load a model from a URL. E.g.
+        https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5
+
+        Args:
+            url: (str) url link of the model
+
+        Returns:
+            GraphModel
+        """
+        import urllib.request
+        fname = url.split("/")[-1]
+        urllib.request.urlretrieve(url, fname)
+        urllib.request.urlretrieve(url + ".json", fname + ".json")
+        return cls.from_file(fname)
+
+    @classmethod
+    def from_mvl_models(cls, name: str) -> 'MEGNetModel':
+        from megnet.utils.models import MODEL_MAPPING
+        if name not in MODEL_MAPPING:
+            raise KeyError("model name %s is not in available models: " % str(name),
+                           list(MODEL_MAPPING.keys()))
+        return cls.from_url('https://github.com/materialsvirtuallab/megnet/raw/master/mvl_models/' +
+                            MODEL_MAPPING[name])
 
 
 def make_megnet_model(nfeat_edge: int = None,
