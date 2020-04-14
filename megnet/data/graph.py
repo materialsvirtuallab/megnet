@@ -559,7 +559,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         """
 
         # Get the features and connectivity lists for this batch
-        it = itemgetter(*batch_index)
         feature_list_temp = itemgetter_list(self.atom_features, batch_index)
         connection_list_temp = itemgetter_list(self.bond_features, batch_index)
         global_list_temp = itemgetter_list(self.state_features, batch_index)
