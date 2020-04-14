@@ -1,15 +1,30 @@
 from setuptools import setup
 from setuptools import find_packages
 import os
+import re
 
 this_dir = os.path.abspath(os.path.dirname(__file__))
 
 with open(os.path.join(this_dir, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
+
+with open('megnet/__init__.py', encoding='utf-8') as fd:
+    try:
+        lines = ''
+        for item in fd.readlines():
+            item = item
+            lines += item + '\n'
+    except Exception as exc:
+        raise Exception('Caught exception {}'.format(exc))
+
+
+version = re.search('__version__ = "(.*)"', lines).group(1)
+
+
 setup(
     name='megnet',
-    version='1.1.2',
+    version=version,
     description='MatErials Graph Networks for machine learning of molecules and crystals.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -28,7 +43,6 @@ setup(
     packages=find_packages(),
     package_data={
         "megnet": ["*.json", "*.md"],
-        "mvl_models": ["*/*.json", "*/*.md", "*/*.hdf5"],
     },
     keywords=["materials", "science", "machine", "learning", "deep", "graph", "networks", "neural"],
     classifiers=[
