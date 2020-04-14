@@ -4,6 +4,7 @@ jobs:
     working_directory: ~/megnet
     docker:
       - image: materialsvirtuallab/circle-ci-pmg-py3:0.0.2
+    resource_class: medium+
     steps:
       - checkout
       - run:
@@ -30,7 +31,6 @@ jobs:
           destination: tr1
       - store_test_results:
           path: coverage_reports/
-
 workflows:
   version: 2
   build_and_test:
