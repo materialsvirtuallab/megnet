@@ -1,3 +1,6 @@
+# v1.1.2
+* Add mvl_models in wheel release file
+
 # v1.1.0
 * Bug fix and version correction
 
