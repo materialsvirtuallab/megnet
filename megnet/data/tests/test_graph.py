@@ -43,6 +43,14 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(7, len(data))  # Should only be the inputs
         self.assertListEqual(list(data[0].shape), [1, 5, 4])
 
+        # when bonds are one dimension arrays
+
+        bond = [np.random.normal(size=(2,)), np.random.normal(size=(1,))]
+        gen = GraphBatchGenerator(feature, bond, glob_features, index1, index2, targets,
+                                  batch_size=2)
+        data = gen[0]
+        self.assertListEqual(list(data[0][1].shape), [1, 3])
+
     def test_graph_batch_distance_converter(self):
         feature = [np.random.normal(size=(3, 4)), np.random.normal(size=(2, 4))]
         bond = [np.random.normal(size=(2, )), np.random.normal(size=(1, ))]
