@@ -27,7 +27,8 @@ setup(
     },
     packages=find_packages(),
     package_data={
-        "megnet": ["*.json", "*.md"]
+        "megnet": ["*.json", "*.md"],
+        "mvl_models": ["*/*.json", "*/*.md", "*/*.hdf5"],
     },
     keywords=["materials", "science", "machine", "learning", "deep", "graph", "networks", "neural"],
     classifiers=[
