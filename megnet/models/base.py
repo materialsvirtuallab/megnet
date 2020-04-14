@@ -9,9 +9,9 @@ from typing import Dict, List, Union
 from monty.serialization import dumpfn, loadfn
 import numpy as np
 
-from keras.backend import int_shape
-from keras.callbacks import Callback
-from keras.models import Model
+from tensorflow.keras.backend import int_shape
+from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.models import Model
 
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph
@@ -191,9 +191,9 @@ class GraphModel:
         self.check_dimension(train_graphs[0])
         train_generator = self._create_generator(*train_inputs, batch_size=batch_size)
         steps_per_train = int(np.ceil(len(train_graphs) / batch_size))
-        self.fit_generator(train_generator, steps_per_epoch=steps_per_train,
-                           validation_data=val_generator, validation_steps=steps_per_val,
-                           epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
+        self.fit(train_generator, steps_per_epoch=steps_per_train,
+                 validation_data=val_generator, validation_steps=steps_per_val,
+                 epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
 
     def check_dimension(self, graph: Dict) -> bool:
         """
@@ -332,7 +332,7 @@ class GraphModel:
             GraphModel
         """
         configs = loadfn(filename + '.json')
-        from keras.models import load_model
+        from tensorflow.keras.models import load_model
         from megnet.layers import _CUSTOM_OBJECTS
         model = load_model(filename, custom_objects=_CUSTOM_OBJECTS)
         configs.update({'model': model})

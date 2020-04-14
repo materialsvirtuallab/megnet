@@ -4,6 +4,8 @@ data loaders (known as Sequence objects in Keras).
 Most users will not need to interact with this module."""
 from abc import abstractmethod
 from operator import itemgetter
+from tensorflow.keras.utils import Sequence
+
 import numpy as np
 from megnet.utils.general import expand_1st, to_list
 from megnet.utils.data import get_graphs_within_cutoff
@@ -11,7 +13,6 @@ from monty.json import MSONable
 from megnet.data import local_env
 from inspect import signature
 from pymatgen.analysis.local_env import NearNeighbors
-from keras.utils import Sequence
 from pymatgen import Structure
 
 from typing import Union, Dict, List, Any

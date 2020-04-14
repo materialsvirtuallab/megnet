@@ -1,6 +1,7 @@
-from megnet.layers.graph import GraphNetworkLayer
 import tensorflow as tf
-import keras.backend as kb
+import tensorflow.keras.backend as kb
+
+from megnet.layers.graph import GraphNetworkLayer
 from megnet.utils.layer import repeat_with_index
 
 __author__ = "Chi Chen"

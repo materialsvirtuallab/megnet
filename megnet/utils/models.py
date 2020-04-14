@@ -1,5 +1,4 @@
 import os
-import requests
 from glob import glob
 from zipfile import ZipFile
 import logging

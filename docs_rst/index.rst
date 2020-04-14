@@ -257,8 +257,8 @@ customized graph network based models, the following example outlines how a
 custom model can be constructed from `MEGNetLayer`, which is essentially our
 implementation of the graph network using neural networks::
 
-   from keras.layers import Input, Dense
-   from keras.models import Model
+   from tensorflow.keras.layers import Input, Dense
+   from tensorflow.keras.models import Model
    from megnet.layers import MEGNetLayer, Set2Set
 
    n_atom_feature= 20

@@ -1,5 +1,5 @@
-from keras.engine import Layer
 import tensorflow as tf
+from tensorflow.keras.layers import Layer
 
 
 class LinearWithIndex(Layer):

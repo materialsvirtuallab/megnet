@@ -1,7 +1,7 @@
 from megnet.layers import LinearWithIndex
 import numpy as np
-from keras.layers import Input
-from keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
 import unittest
 
 

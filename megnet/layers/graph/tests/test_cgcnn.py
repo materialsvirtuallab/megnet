@@ -1,6 +1,6 @@
 from megnet.layers import CrystalGraphLayer
-from keras.layers import Input
-from keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
 import numpy as np
 import unittest
 
@@ -24,10 +24,12 @@ class TestLayer(unittest.TestCase):
     def test_layer(self):
         layer = CrystalGraphLayer()
         out = layer(self.x)
-        self.assertListEqual([i._keras_shape[-1] for i in out], [self.n_features, self.n_bond_features, self.n_global_features])
+        self.assertListEqual([i.shape[-1] for i in out],
+                             [self.n_features, self.n_bond_features, self.n_global_features])
         new_layer = CrystalGraphLayer.from_config(layer.get_config())
         out2 = new_layer(self.x)
-        self.assertListEqual([i._keras_shape[-1] for i in out2], [self.n_features, self.n_bond_features, self.n_global_features])
+        self.assertListEqual([i.shape[-1] for i in out2],
+                             [self.n_features, self.n_bond_features, self.n_global_features])
 
         int32 = 'int32'
         x1 = np.random.rand(1, 5, 10)

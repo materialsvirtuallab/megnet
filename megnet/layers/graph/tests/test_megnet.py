@@ -1,6 +1,6 @@
 from megnet.layers import MEGNetLayer
-from keras.layers import Input
-from keras.models import Model
+from tensorflow.keras.layers import Input
+from tensorflow.keras.models import Model
 import numpy as np
 import unittest
 
@@ -27,10 +27,10 @@ class TestLayer(unittest.TestCase):
         units_u = [13, 14, 18]
         layer = MEGNetLayer(units_v, units_e, units_u)
         out = layer(self.x)
-        self.assertListEqual([i._keras_shape[-1] for i in out], [units_v[-1], units_e[-1], units_u[-1]])
+        self.assertListEqual([i.shape[-1] for i in out], [units_v[-1], units_e[-1], units_u[-1]])
         new_layer = MEGNetLayer.from_config(layer.get_config())
         out2 = new_layer(self.x)
-        self.assertListEqual([i._keras_shape[-1] for i in out2], [units_v[-1], units_e[-1], units_u[-1]])
+        self.assertListEqual([i.shape[-1] for i in out2], [units_v[-1], units_e[-1], units_u[-1]])
 
         int32 = 'int32'
         x1 = np.random.rand(1, 5, 10)

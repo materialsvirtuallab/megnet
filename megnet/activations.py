@@ -1,6 +1,6 @@
-import keras.backend as kb
-from keras.activations import get as keras_get
-from keras.activations import deserialize, serialize  # serialize is needed here
+import tensorflow.keras.backend as kb
+from tensorflow.keras.activations import get as keras_get
+from tensorflow.keras.activations import deserialize, serialize  # serialize is needed here
 
 from typing import Union, Callable
 

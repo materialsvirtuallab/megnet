@@ -3,7 +3,7 @@ from pymatgen import Structure, Lattice
 
 
 from megnet.utils.descriptor import MEGNetDescriptor, DEFAULT_MODEL
-from keras.models import Model
+from tensorflow.keras.models import Model
 
 
 class TestGeneralUtils(unittest.TestCase):

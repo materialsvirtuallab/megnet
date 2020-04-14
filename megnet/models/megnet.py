@@ -6,10 +6,10 @@ from typing import Dict, List, Callable
 
 import numpy as np
 
-from keras.optimizers import Adam
-from keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
-from keras.regularizers import l2
-from keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras.models import Model
 
 from megnet.layers import MEGNetLayer, Set2Set
 from megnet.activations import softplus2
@@ -280,8 +280,12 @@ def make_megnet_model(nfeat_edge: int = None,
         x1_ = Add(name='block_%d_add_atom' % i)([x1_, x1_1])
         x2_ = Add(name='block_%d_add_bond' % i)([x2_, x2_1])
         x3_ = Add(name='block_%d_add_state' % i)([x3_, x3_1])
+
+    # print(Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_atom'
+    #             ).compute_output_shape([i.shape for i in [x1_, x6]]))
     # set2set for both the atom and bond
     node_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_atom')([x1_, x6])
+    # print('Node vec', node_vec)
     edge_vec = Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_bond')([x2_, x7])
     # concatenate atom, bond, and global
     final_vec = Concatenate(axis=-1)([node_vec, edge_vec, x3_])

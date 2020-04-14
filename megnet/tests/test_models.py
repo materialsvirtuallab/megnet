@@ -9,7 +9,7 @@ import os
 from pymatgen import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
-from keras.utils import Sequence
+from tensorflow.keras.utils import Sequence
 from pymatgen.util.testing import PymatgenTest
 
 cwd = os.path.dirname(os.path.abspath(__file__))

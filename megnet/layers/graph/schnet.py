@@ -1,7 +1,8 @@
+import tensorflow as tf
+import tensorflow.keras.backend as kb
+
 from megnet.layers.graph.base import GraphNetworkLayer
 from megnet.activations import softplus2
-import keras.backend as kb
-import tensorflow as tf
 
 
 class InteractionLayer(GraphNetworkLayer):

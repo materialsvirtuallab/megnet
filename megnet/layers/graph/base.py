@@ -10,8 +10,8 @@ A full GN block has the following computation steps
 [1] https://arxiv.org/pdf/1806.01261.pdf
 """
 
-from keras.engine import Layer
-from keras import regularizers, constraints, initializers
+from tensorflow.keras.layers import Layer
+from tensorflow.keras import regularizers, constraints, initializers
 from megnet import activations
 
 

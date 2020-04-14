@@ -5,7 +5,7 @@ pretrained megnet model
 
 import os
 from megnet.models import MEGNetModel, GraphModel
-from keras.models import Model
+from tensorflow.keras.models import Model
 from pymatgen import Structure
 import numpy as np
 

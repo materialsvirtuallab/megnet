@@ -5,8 +5,8 @@ import warnings
 from glob import glob
 from collections import deque
 import numpy as np
-from keras.callbacks import Callback
-import keras.backend as kb
+from tensorflow.keras.callbacks import Callback
+import tensorflow.keras.backend as kb
 from megnet.utils.metrics import mae, accuracy
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
@@ -295,7 +295,8 @@ class ReduceLRUponNan(Callback):
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.get_value(self.model.optimizer.lr))
         self.model.reset_states()
-        kb.set_value(self.model.optimizer.lr, old_value * self.factor)
+        self.model.optimizer.lr = old_value * self.factor
+
         opt_dict = self.model.optimizer.get_config()
         self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if last_file is not None:
