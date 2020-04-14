@@ -1,3 +1,6 @@
+# v1.1.3
+* Download mvl_models from figshare if not present
+
 # v1.1.2
 * Add mvl_models in wheel release file
 
