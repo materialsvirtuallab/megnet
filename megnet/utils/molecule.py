@@ -1,7 +1,8 @@
+import logging
+
 from pymatgen import Molecule
 import numpy as np
 from pymatgen.io.babel import BabelMolAdaptor
-import logging
 
 try:
     import pybel as pb

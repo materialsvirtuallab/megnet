@@ -1,4 +1,3 @@
-import tensorflow as tf
 import unittest
 import os
 import json
@@ -9,7 +8,7 @@ from pymatgen import Molecule
 import numpy as np
 
 from megnet.data.molecule import MolecularGraph, MolecularGraphBatchGenerator,\
-    pybel, mol_from_smiles
+    pybel, mol_from_smiles, ring_to_vector
 
 if pybel is None:
     import_failed = True
@@ -36,6 +35,11 @@ class QM9Test(unittest.TestCase):
         self.assertTrue(np.allclose(graph['bond'], [1, 2, 1, 1, 2, 1]))
         self.assertListEqual(graph['index1'], [0, 0, 1, 1, 2, 2])
         self.assertListEqual(graph['index2'], [1, 2, 0, 2, 0, 1])
+
+    def test_ring_to_vector(self):
+        x = [2, 2, 3]
+        expected = [0, 2, 1, 0, 0, 0, 0, 0, 0]
+        self.assertListEqual(expected, ring_to_vector(x))
 
 
 class MolecularGraphTest(unittest.TestCase):

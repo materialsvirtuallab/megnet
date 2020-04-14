@@ -5,7 +5,6 @@ Tools for creating graph inputs from molecule data
 import os
 import sys
 import itertools
-from typing import List
 from functools import partial
 from collections import deque
 from multiprocessing import Pool
@@ -15,10 +14,11 @@ from pymatgen import Molecule, Element
 from pymatgen.io.babel import BabelMolAdaptor
 from pymatgen.analysis.local_env import NearNeighbors
 
-from megnet.data.qm9 import ring_to_vector
 from megnet.utils.general import fast_label_binarize
 from megnet.data.graph import (StructureGraph, GaussianDistance,
                                BaseGraphBatchGenerator, GraphBatchGenerator, Converter)
+from .qm9 import ring_to_vector
+
 
 try:
     import pybel
