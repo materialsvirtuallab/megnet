@@ -314,7 +314,7 @@ class MoorseLongRange(Converter):
         r_eq: (list) equilibrium bond length
         p: (int) exponential term in the original equation, see ref
         q: (int) exponential term in the original equaiton, see ref
-        cm: (list) long range coefficients in u_LR = \Sigma_i_N (cm_i / r^i)
+        cm: (list) long range coefficients in u_LR = Sigma_i_N (cm_i / r^i)
         betas: (list) parameters determining the transition between long range and short range
     """
 

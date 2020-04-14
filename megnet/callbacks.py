@@ -307,8 +307,8 @@ class ReduceLRUponNan(Callback):
             logger.info("No weights were loaded")
 
     def _get_checkpoints(self):
-        file_pattern = re.sub('{(.+?)}', '([0-9\.]+)', self.filepath)
-        glob_pattern = re.sub('{(.+?)}', '*', self.filepath)
+        file_pattern = re.sub(r'{(.+?)}', r'([0-9\.]+)', self.filepath)
+        glob_pattern = re.sub(r'{(.+?)}', r'*', self.filepath)
         all_check_points = glob(glob_pattern)
 
         if len(all_check_points) > 0:
