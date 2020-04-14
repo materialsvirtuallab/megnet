@@ -141,12 +141,8 @@ class MEGNetModel(GraphModel):
 
     @classmethod
     def from_mvl_models(cls, name: str) -> 'MEGNetModel':
-        from megnet.utils.models import MODEL_MAPPING
-        if name not in MODEL_MAPPING:
-            raise KeyError("model name %s is not in available models: " % str(name),
-                           list(MODEL_MAPPING.keys()))
-        return cls.from_url('https://github.com/materialsvirtuallab/megnet/raw/master/mvl_models/' +
-                            MODEL_MAPPING[name])
+        from megnet.utils.models import load_model
+        return load_model(name)
 
 
 def make_megnet_model(nfeat_edge: int = None,
