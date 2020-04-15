@@ -1,3 +1,6 @@
+# v1.1.4
+* Update to tensorflow.keras API instead of using keras
+
 # v1.1.3
 * Download mvl_models from figshare if not present
 
