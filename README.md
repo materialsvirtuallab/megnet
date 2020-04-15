@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/materialsvirtuallab/megnet.svg?branch=master)](https://travis-ci.org/materialsvirtuallab/megnet)
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=svg)](https://circleci.com/gh/materialsvirtuallab/megnet)
 [![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
 
