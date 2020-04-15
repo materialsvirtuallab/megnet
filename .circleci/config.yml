@@ -20,6 +20,7 @@ jobs:
             conda update --quiet --yes numpy scipy matplotlib sympy cython tensorflow 
             pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
             conda install -c openbabel openbabel
+            conda install -c conda-forge rdkit
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
