@@ -3,25 +3,27 @@ jobs:
   py3test:
     working_directory: ~/megnet
     docker:
-      - image: materialsvirtuallab/circle-ci-pmg-py3:0.0.2
-    resource_class: medium+
+      - image: materialsvirtuallab/circle-ci-pmg-py3:3.7.3 
+    resource_class: medium
     steps:
       - checkout
       - run:
           command: |
+            pip install pip --upgrade
+            pip install --quiet pycodestyle
             export PATH=$HOME/miniconda3/bin:$PATH
             conda config --set always_yes yes --set changeps1 no
             conda update -q conda
             conda info -a
-            conda create -q -n test-environment python=3.7 numpy scipy matplotlib sympy cython pandas networkx pytest pip h5py tensorflow keras scikit-learn
+            conda create -q -n test-environment python=3.7 numpy scipy matplotlib sympy cython tensorflow
             source activate test-environment
-            conda update --quiet --yes numpy scipy matplotlib sympy cython pandas networkx pytest pip h5py tensorflow keras scikit-learn
+            conda update --quiet --yes numpy scipy matplotlib sympy cython tensorflow 
             pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
       - run:
           command: |
             export PATH=$HOME/miniconda3/bin:$PATH
             source activate test-environment
-            pip install -e .
+            pip install --quiet -e .
             pytest --cov=megnet --cov-report html:coverage_reports megnet
             pycodestyle megnet
             coveralls
@@ -29,8 +31,6 @@ jobs:
       - store_artifacts:
           path: coverage_reports/
           destination: tr1
-      - store_test_results:
-          path: coverage_reports/
 workflows:
   version: 2
   build_and_test:
