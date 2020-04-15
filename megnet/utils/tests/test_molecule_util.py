@@ -1,8 +1,10 @@
 import os
 import unittest
+from pymatgen import Molecule
+
 from megnet.utils.molecule import MEGNetMolecule, get_pmg_mol_from_smiles, pb
 from megnet.models import MEGNetModel
-from pymatgen import Molecule
+
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 

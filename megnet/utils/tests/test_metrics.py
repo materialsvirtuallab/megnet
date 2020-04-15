@@ -1,6 +1,7 @@
-from megnet.utils.metrics import mae, accuracy
 import unittest
 import numpy as np
+
+from megnet.utils.metrics import mae, accuracy
 
 
 class TestCase(unittest.TestCase):

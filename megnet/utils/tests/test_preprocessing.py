@@ -1,5 +1,6 @@
-from megnet.utils.preprocessing import StandardScaler
 import unittest
+
+from megnet.utils.preprocessing import StandardScaler
 
 
 class TestPreprocessing(unittest.TestCase):

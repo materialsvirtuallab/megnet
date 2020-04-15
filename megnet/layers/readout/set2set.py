@@ -1,9 +1,10 @@
-import tensorflow as tf
 from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as kb
 from tensorflow.keras import activations, initializers, regularizers, constraints
 
 from megnet.utils.layer import repeat_with_index
+
+import tensorflow as tf
 
 
 class Set2Set(Layer):

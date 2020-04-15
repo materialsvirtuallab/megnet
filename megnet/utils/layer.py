@@ -1,3 +1,4 @@
+import numpy as np  # type: ignore
 import tensorflow as tf
 
 

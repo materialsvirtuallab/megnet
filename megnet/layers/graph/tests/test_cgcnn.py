@@ -1,8 +1,10 @@
+import unittest
+
+import numpy as np
+
 from megnet.layers import CrystalGraphLayer
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
-import numpy as np
-import unittest
 
 
 class TestLayer(unittest.TestCase):

@@ -6,8 +6,8 @@ import os
 from warnings import warn
 from typing import Dict, List, Union
 
-from monty.serialization import dumpfn, loadfn
 import numpy as np
+from monty.serialization import dumpfn, loadfn
 
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback

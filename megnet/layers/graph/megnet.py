@@ -1,8 +1,9 @@
-import tensorflow as tf
 import tensorflow.keras.backend as kb
 
 from megnet.layers.graph import GraphNetworkLayer
 from megnet.utils.layer import repeat_with_index
+
+import tensorflow as tf
 
 __author__ = "Chi Chen"
 __copyright__ = "Copyright 2018, Materials Virtual Lab "

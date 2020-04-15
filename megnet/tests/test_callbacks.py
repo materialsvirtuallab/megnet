@@ -1,10 +1,12 @@
 import unittest
+import numpy as np
+
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.layers import MEGNetLayer
 from megnet.utils.preprocessing import StandardScaler
-import numpy as np
+
 import os
 import glob
 import tensorflow.keras.backend as kb

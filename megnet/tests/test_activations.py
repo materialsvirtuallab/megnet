@@ -1,7 +1,6 @@
 import unittest
 from megnet.activations import softplus2
 import numpy as np
-import tensorflow as tf
 
 
 def softplus_np(x):

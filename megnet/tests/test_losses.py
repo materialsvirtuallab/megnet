@@ -1,7 +1,7 @@
 import unittest
-from megnet.losses import mean_squared_error_with_scale
 import numpy as np
-import tensorflow as tf
+
+from megnet.losses import mean_squared_error_with_scale
 
 
 class TestLosses(unittest.TestCase):

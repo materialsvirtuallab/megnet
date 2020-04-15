@@ -1,5 +1,6 @@
-import tensorflow as tf
 from tensorflow.keras.layers import Layer
+
+import tensorflow as tf
 
 
 class LinearWithIndex(Layer):

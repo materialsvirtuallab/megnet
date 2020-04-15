@@ -1,6 +1,7 @@
+import unittest
+
 from megnet.utils.models import load_model
 from megnet.models import GraphModel
-import unittest
 
 
 class TestLoadModel(unittest.TestCase):

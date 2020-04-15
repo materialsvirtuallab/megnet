@@ -1,8 +1,8 @@
+from typing import Union, Callable
+
 import tensorflow.keras.backend as kb
 from tensorflow.keras.activations import get as keras_get
 from tensorflow.keras.activations import deserialize, serialize  # serialize is needed here
-
-from typing import Union, Callable
 
 
 def softplus2(x):
