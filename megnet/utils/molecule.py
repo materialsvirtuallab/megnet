@@ -2,13 +2,14 @@ import logging
 
 from pymatgen import Molecule
 import numpy as np
-from pymatgen.io.babel import BabelMolAdaptor
 
 try:
     import pybel as pb
+    import openbabel as ob
 except ImportError:
     logging.warning("Openbabel is needed for molecule models, try 'conda install -c openbabel openbabel' to install it")
     pb = None
+    ob = None
 
 from typing import List
 
@@ -62,5 +63,9 @@ def get_pmg_mol_from_smiles(smiles: str) -> Molecule:
     b_mol = pb.readstring('smi', smiles)
     b_mol.make3D()
     b_mol = b_mol.OBMol
-    p_mol = BabelMolAdaptor(b_mol).pymatgen_mol
-    return p_mol
+    sp = []
+    coords = []
+    for atom in ob.OBMolAtomIter(b_mol):
+        sp.append(atom.GetAtomicNum())
+        coords.append([atom.GetX(), atom.GetY(), atom.GetZ()])
+    return Molecule(sp, coords)
