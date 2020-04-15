@@ -18,6 +18,7 @@ from monty.os import cd
 
 NEW_VER = megnet.__version__
 
+
 @task
 def make_doc(ctx):
     with cd("docs_rst"):
@@ -112,4 +113,3 @@ def release(ctx, notest=False):
         ctx.run("pytest megnet")
     publish(ctx)
     release_github(ctx)
-

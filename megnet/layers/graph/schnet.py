@@ -5,6 +5,7 @@ from megnet.activations import softplus2
 
 import tensorflow as tf
 
+
 class InteractionLayer(GraphNetworkLayer):
     """
     The Continuous filter InteractionLayer in Schnet
