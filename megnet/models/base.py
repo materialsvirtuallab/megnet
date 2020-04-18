@@ -183,6 +183,9 @@ class GraphModel:
                                                      val_gen=val_generator,
                                                      steps_per_val=steps_per_val,
                                                      target_scaler=self.target_scaler)])
+                # avoid running validation twice in an epoch
+                val_generator = None
+                steps_per_val = None
         else:
             val_generator = None
             steps_per_val = None
