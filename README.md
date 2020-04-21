@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/github/license/materialsvirtuallab/megnet)]()
 [![Build Status](https://travis-ci.org/materialsvirtuallab/megnet.svg?branch=master)](https://travis-ci.org/materialsvirtuallab/megnet)
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=shield)](https://circleci.com/gh/materialsvirtuallab/megnet)
-[![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master&service=github)
 
 # Table of Contents
 * [Introduction](#introduction)
