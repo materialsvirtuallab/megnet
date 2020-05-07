@@ -448,7 +448,6 @@ class BaseGraphBatchGenerator(Sequence):
             index1 += [i + offset_ind for i in ind1]
             index2 += [i + offset_ind for i in ind2]
             offset_ind += (max(ind1) + 1)
-        
         # Compile the inputs in needed order
         inputs = [expand_1st(feature_list_temp),
                   expand_1st(connection_list_temp),
