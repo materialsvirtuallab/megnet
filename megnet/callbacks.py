@@ -93,6 +93,8 @@ class ModelCheckpointMAE(Callback):
             epoch (int): epoch id
             logs (dict): logs of training
 
+        Returns:
+            None
         """
         self.epochs_since_last_save += 1
         if self.epochs_since_last_save >= self.period:
@@ -146,10 +148,10 @@ class ManualStop(Callback):
         """
         Codes called at the end of a batch
         Args:
-            epoch:
-            logs:
+            epoch (int): epoch id
+            logs (Dict): log dict
 
-        Returns:
+        Returns: None
 
         """
         if os.path.isfile('STOP'):
@@ -209,6 +211,15 @@ class ReduceLRUponNan(Callback):
             raise ValueError("The monitored metric should be in the name pattern")
 
     def on_epoch_end(self, epoch: int, logs: Dict = None):
+        """
+        Check the loss value at the end of an epoch
+        Args:
+            epoch (int): epoch id
+            logs (dict): log history
+
+        Returns: None
+
+        """
         logs = logs or {}
         loss = logs.get('loss')
         last_saved_epoch, last_metric, last_file = self._get_checkpoints()
