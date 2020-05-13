@@ -44,4 +44,4 @@ def get_graphs_within_cutoff(structure: StructureOrMolecule,
                                lattice=lattice_matrix, tol=numerical_tol)
     exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
     return center_indices[exclude_self], neighbor_indices[exclude_self], \
-           images[exclude_self], distances[exclude_self]
+        images[exclude_self], distances[exclude_self]
