@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from megnet.models import MEGNetModel, GraphModel
-from megnet.callbacks import ModelCheckpointMAE, GeneratorLog, ManualStop
+from megnet.callbacks import ModelCheckpointMAE, ManualStop
 from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
 from glob import glob
@@ -140,9 +140,6 @@ class TestModel(PymatgenTest):
                                         save_best_only=True,
                                         val_gen=self.train_gen_crystal,
                                         steps_per_val=1),
-                     GeneratorLog(self.train_gen_crystal, 1,
-                                  self.train_gen_crystal, 1,
-                                  val_names=['Ef'], val_units=['eV/atom']),
                      ManualStop()]
 
         self.model.fit_generator(generator=self.train_gen_crystal, steps_per_epoch=1, epochs=2, verbose=1,
