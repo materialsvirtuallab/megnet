@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.graph.megnet &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.layers.graph.megnet &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -42,10 +42,12 @@
           <div class="body" role="main">
             
   <h1>Source code for megnet.layers.graph.megnet</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">megnet.layers.graph</span> <span class="k">import</span> <span class="n">GraphNetworkLayer</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
+<span></span><span class="kn">import</span> <span class="nn">tensorflow.keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
+
+<span class="kn">from</span> <span class="nn">megnet.layers.graph</span> <span class="k">import</span> <span class="n">GraphNetworkLayer</span>
 <span class="kn">from</span> <span class="nn">megnet.utils.layer</span> <span class="k">import</span> <span class="n">repeat_with_index</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Chi Chen&quot;</span>
 <span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2018, Materials Virtual Lab &quot;</span>
@@ -53,7 +55,7 @@
 <span class="n">__date__</span> <span class="o">=</span> <span class="s2">&quot;Dec 1, 2018&quot;</span>
 
 
-<div class="viewcode-block" id="MEGNetLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer">[docs]</a><span class="k">class</span> <span class="nc">MEGNetLayer</span><span class="p">(</span><span class="n">GraphNetworkLayer</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer">[docs]</a><span class="k">class</span> <span class="nc">MEGNetLayer</span><span class="p">(</span><span class="n">GraphNetworkLayer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The MEGNet graph implementation as described in the paper</span>
 
@@ -128,7 +130,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Pool method: &#39;</span> <span class="o">+</span> <span class="n">pool_method</span> <span class="o">+</span> <span class="s1">&#39; not understood!&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="MEGNetLayer.build"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shapes</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.build"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shapes</span><span class="p">):</span>
         <span class="n">vdim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">edim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">udim</span> <span class="o">=</span> <span class="n">input_shapes</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
@@ -193,7 +195,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_biases</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">built</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.compute_output_shape"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.compute_output_shape">[docs]</a>    <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.compute_output_shape"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.compute_output_shape">[docs]</a>    <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
         <span class="n">node_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">edge_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">state_feature_shape</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -203,7 +205,7 @@
             <span class="p">(</span><span class="n">state_feature_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state_feature_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span>
         <span class="k">return</span> <span class="n">output_shape</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">index1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
         <span class="n">index2</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index2</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
@@ -214,28 +216,28 @@
         <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">concate_node</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u_expand</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_e_biases</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">node</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">index1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">index1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">u_expand</span> <span class="o">=</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">b_ei_p</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">u_expand</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_v_biases</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">gbond</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">gbond</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">gnode</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">v_p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">gnode</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="n">concated</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mlp</span><span class="p">(</span><span class="n">concated</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_u_biases</span><span class="p">)</span></div>
 
@@ -248,7 +250,7 @@
             <span class="n">act</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span>
 
-<div class="viewcode-block" id="MEGNetLayer.get_config"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.graph.megnet.MEGNetLayer.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MEGNetLayer.get_config"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;units_e&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_e</span><span class="p">,</span>
             <span class="s1">&#39;units_v&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_v</span><span class="p">,</span>
@@ -280,7 +282,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

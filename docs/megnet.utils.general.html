@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.general module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.utils.general module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.utils.layer module" href="megnet.utils.layer.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.utils.descriptor.html" title="megnet.utils.descriptor module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li> 
       </ul>
@@ -52,9 +52,10 @@
             
   <div class="section" id="module-megnet.utils.general">
 <span id="megnet-utils-general-module"></span><h1>megnet.utils.general module<a class="headerlink" href="#module-megnet.utils.general" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<p>Operation utilities on lists and arrays</p>
+<dl class="py function">
 <dt id="megnet.utils.general.expand_1st">
-<code class="sig-name descname">expand_1st</code><span class="sig-paren">(</span><em class="sig-param">x: numpy.ndarray</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/general.html#expand_1st"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.expand_1st" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">expand_1st</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/general.html#expand_1st"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.expand_1st" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adding an extra first dimension</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -66,9 +67,9 @@
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.utils.general.fast_label_binarize">
-<code class="sig-name descname">fast_label_binarize</code><span class="sig-paren">(</span><em class="sig-param">value: List</em>, <em class="sig-param">labels: List</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="reference internal" href="_modules/megnet/utils/general.html#fast_label_binarize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.fast_label_binarize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">fast_label_binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">List</span></em>, <em class="sig-param"><span class="n">labels</span><span class="p">:</span> <span class="n">List</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>int<span class="p">]</span><a class="reference internal" href="_modules/megnet/utils/general.html#fast_label_binarize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.fast_label_binarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Faster version of label binarize</p>
 <p><cite>label_binarize</cite> from scikit-learn is slow when run 1 label at a time.
 <cite>label_binarize</cite> also is efficient for large numbers of classes, which is not
@@ -89,9 +90,9 @@ common in <cite>megnet</cite></p>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.utils.general.to_list">
-<code class="sig-name descname">to_list</code><span class="sig-paren">(</span><em class="sig-param">x: Union[collections.abc.Iterable, numpy.ndarray]</em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/megnet/utils/general.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.to_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>collections.abc.Iterable<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/megnet/utils/general.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.to_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>If x is not a list, convert it to list</p>
 </dd></dl>
 
@@ -129,7 +130,7 @@ common in <cite>megnet</cite></p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

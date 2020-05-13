@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.descriptor &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.utils.descriptor &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -48,28 +48,50 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">megnet.models</span> <span class="k">import</span> <span class="n">MEGNetModel</span><span class="p">,</span> <span class="n">GraphModel</span>
-<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
+
 <span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Structure</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="k">import</span> <span class="n">Model</span>
+
+<span class="kn">from</span> <span class="nn">megnet.models</span> <span class="k">import</span> <span class="n">MEGNetModel</span><span class="p">,</span> <span class="n">GraphModel</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="k">import</span> <span class="n">StructureOrMolecule</span>
 
 
-<span class="n">DEFAULT_MODEL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;../../mvl_models/mp-2019.4.1/formation_energy.hdf5&#39;</span><span class="p">)</span>
+<span class="n">DEFAULT_MODEL</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+    <span class="s1">&#39;../../mvl_models/mp-2019.4.1/formation_energy.hdf5&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="MEGNetDescriptor"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor">[docs]</a><span class="k">class</span> <span class="nc">MEGNetDescriptor</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_MODEL</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    MEGNet descriptors. This class takes a trained model and</span>
+<span class="sd">    then compute the intermediate outputs as structure features</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        model_name (str or MEGNetModel): trained model. If it is</span>
+<span class="sd">            str, then only models in mvl_models are used.</span>
+<span class="sd">        use_cache (bool): whether to use cache for structure</span>
+<span class="sd">            graph calculations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">model_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">GraphModel</span><span class="p">,</span>
+                                   <span class="n">MEGNetModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_MODEL</span><span class="p">,</span>
+                 <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">MEGNetModel</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">GraphModel</span><span class="p">):</span>
             <span class="n">model</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;model_name only support str or GraphModel object&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;model_name only support str &#39;</span>
+                             <span class="s1">&#39;or GraphModel object&#39;</span><span class="p">)</span>
 
         <span class="n">layers</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">layers</span>
         <span class="n">important_prefix</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;set&#39;</span><span class="p">,</span> <span class="s1">&#39;concatenate&#39;</span><span class="p">]</span>
-        <span class="n">all_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">layers</span> <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">important_prefix</span><span class="p">])]</span>
-        <span class="n">valid_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">output</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">layers</span> <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">important_prefix</span><span class="p">])]</span>
+        <span class="n">all_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">layers</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">important_prefix</span><span class="p">])]</span>
+        <span class="n">valid_outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">output</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">layers</span> <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">important_prefix</span><span class="p">])]</span>
 
         <span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">valid_names</span> <span class="o">=</span> <span class="p">[]</span>
@@ -89,12 +111,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span> <span class="o">=</span> <span class="n">use_cache</span>
 
-    <span class="k">def</span> <span class="nf">_predict_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_predict_structure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">graph_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">inp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">graph_converter</span><span class="o">.</span><span class="n">graph_to_input</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_predict_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_predict_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_cache</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_structure</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 
@@ -107,7 +129,7 @@
             <span class="k">return</span> <span class="n">result</span>
 
     <span class="k">def</span> <span class="nf">_get_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                      <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span>
+                      <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">,</span>
                       <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                       <span class="n">level</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                       <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -121,20 +143,24 @@
         <span class="n">out_all</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_feature</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out_all</span><span class="p">[</span><span class="n">ind</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
-<div class="viewcode-block" id="MEGNetDescriptor.get_atom_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_atom_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_atom_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MEGNetDescriptor.get_atom_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_atom_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_atom_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">,</span>
+                          <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get megnet atom features from structure</span>
 <span class="sd">        Args:</span>
-<span class="sd">            structure: pymatgen structure</span>
-<span class="sd">            level: int, indicating the block number of megnet, starting from 1</span>
+<span class="sd">            structure: pymatgen structure or molecule</span>
+<span class="sd">            level: int, indicating the block number of megnet, starting</span>
+<span class="sd">                from 1</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            nxm atomic feature matrix</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span>
+                                  <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetDescriptor.get_bond_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_bond_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_bond_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MEGNetDescriptor.get_bond_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_bond_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_bond_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">,</span>
+                          <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get bond features at megnet block level</span>
 <span class="sd">        Args:</span>
@@ -145,27 +171,57 @@
 <span class="sd">            n_bond x m bond feature matrix</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span>
+                                  <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetDescriptor.get_global_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_global_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MEGNetDescriptor.get_global_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_global_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_global_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">,</span>
+                            <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get state features at megnet block level</span>
 <span class="sd">        Args:</span>
-<span class="sd">            structure: pymatgen structure</span>
+<span class="sd">            structure: pymatgen structure or molecule</span>
 <span class="sd">            level: int</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            1 x m_g global feature vector</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;meg_net_layer&#39;</span><span class="p">,</span>
+                                  <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="MEGNetDescriptor.get_set2set"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_set2set">[docs]</a>    <span class="k">def</span> <span class="nf">get_set2set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">ftype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;atom&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="MEGNetDescriptor.get_set2set"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_set2set">[docs]</a>    <span class="k">def</span> <span class="nf">get_set2set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">,</span>
+                    <span class="n">ftype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;atom&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get set2set output as features</span>
+<span class="sd">        Args:</span>
+<span class="sd">            structure (StructureOrMolecule): pymatgen structure</span>
+<span class="sd">                or molecule</span>
+<span class="sd">            ftype (str): atom or bond</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            feature matrix, each row is a vector for an atom</span>
+<span class="sd">            or bond</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;atom&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;bond&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;set2_set&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">mapping</span><span class="p">[</span><span class="n">ftype</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;set2_set&#39;</span><span class="p">,</span>
+                                  <span class="n">level</span><span class="o">=</span><span class="n">mapping</span><span class="p">[</span><span class="n">ftype</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="MEGNetDescriptor.get_structure_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_structure_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;concatenate&#39;</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="MEGNetDescriptor.get_structure_features"><a class="viewcode-back" href="../../../megnet.utils.descriptor.html#megnet.utils.descriptor.MEGNetDescriptor.get_structure_features">[docs]</a>    <span class="k">def</span> <span class="nf">get_structure_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">structure</span><span class="p">:</span> <span class="n">StructureOrMolecule</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get structure level feature vector</span>
+<span class="sd">        Args:</span>
+<span class="sd">            structure (StructureOrMolecule): pymatgen structure</span>
+<span class="sd">                or molecule</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            one feature vector for the structure</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_features</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;concatenate&#39;</span><span class="p">,</span>
+                                  <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -188,7 +244,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

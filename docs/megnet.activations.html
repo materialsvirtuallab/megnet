@@ -1,21 +1,21 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.activations module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.activations module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.callbacks module" href="megnet.callbacks.html" />
-    <link rel="prev" title="megnet.utils.preprocessing module" href="megnet.utils.preprocessing.html" />
+    <link rel="prev" title="megnet.utils.typing module" href="megnet.utils.typing.html" />
 
    
   
@@ -37,9 +37,9 @@
           <a href="megnet.callbacks.html" title="megnet.callbacks module"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="megnet.utils.preprocessing.html" title="megnet.utils.preprocessing module"
+          <a href="megnet.utils.typing.html" title="megnet.utils.typing module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
       </ul>
     </div>  
@@ -51,14 +51,23 @@
             
   <div class="section" id="module-megnet.activations">
 <span id="megnet-activations-module"></span><h1>megnet.activations module<a class="headerlink" href="#module-megnet.activations" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.activations.get">
-<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param">identifier: Union[str, Callable]</em><span class="sig-paren">)</span> &#x2192; Callable<a class="reference internal" href="_modules/megnet/activations.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.activations.get" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">identifier</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Callable[[…], Any]<a class="reference internal" href="_modules/megnet/activations.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.activations.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get activations by identifier</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>identifier</strong> (<em>str</em><em> or </em><em>callable</em>) – the identifier of activations</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>callable activation</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.activations.softplus2">
-<code class="sig-name descname">softplus2</code><span class="sig-paren">(</span><em class="sig-param">x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/activations.html#softplus2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.activations.softplus2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">softplus2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/activations.html#softplus2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.activations.softplus2" title="Permalink to this definition">¶</a></dt>
 <dd><p>out = log(exp(x)+1) - log(2)
 softplus function that is 0 at x=0, the implementation aims at avoiding overflow</p>
 <dl class="field-list simple">
@@ -82,7 +91,7 @@ softplus function that is 0 at x=0, the implementation aims at avoiding overflow
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="megnet.html">megnet package</a><ul>
-      <li>Previous: <a href="megnet.utils.preprocessing.html" title="previous chapter">megnet.utils.preprocessing module</a></li>
+      <li>Previous: <a href="megnet.utils.typing.html" title="previous chapter">megnet.utils.typing module</a></li>
       <li>Next: <a href="megnet.callbacks.html" title="next chapter">megnet.callbacks module</a></li>
   </ul></li>
   </ul></li>
@@ -103,7 +112,7 @@ softplus function that is 0 at x=0, the implementation aims at avoiding overflow
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

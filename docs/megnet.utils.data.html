@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.data module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.utils.data module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.utils.descriptor module" href="megnet.utils.descriptor.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.utils.html" title="megnet.utils package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li> 
       </ul>
@@ -52,13 +52,17 @@
             
   <div class="section" id="module-megnet.utils.data">
 <span id="megnet-utils-data-module"></span><h1>megnet.utils.data module<a class="headerlink" href="#module-megnet.utils.data" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
+<p>Data utitlities</p>
+<dl class="py function">
 <dt id="megnet.utils.data.get_graphs_within_cutoff">
-<code class="sig-name descname">get_graphs_within_cutoff</code><span class="sig-paren">(</span><em class="sig-param">structure: Union[pymatgen.core.structure.Structure, megnet.utils.molecule.MEGNetMolecule, pymatgen.core.structure.Molecule], cutoff: float = 5.0, numerical_tol: float = 1e-08</em><span class="sig-paren">)</span> &#x2192; Tuple[numpy.ndarray]<a class="reference internal" href="_modules/megnet/utils/data.html#get_graphs_within_cutoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.data.get_graphs_within_cutoff" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_graphs_within_cutoff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">cutoff</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">numerical_tol</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1e-08</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="reference internal" href="_modules/megnet/utils/data.html#get_graphs_within_cutoff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.data.get_graphs_within_cutoff" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get graph representations from structure within cutoff
-:param structure: (pymatgen Structure)
-:param cutoff: (float) cutoff radius
-:param numerical_tol: (float) numerical tolerance</p>
+:param structure:
+:type structure: pymatgen Structure or molecule
+:param cutoff: cutoff radius
+:type cutoff: float
+:param numerical_tol: numerical tolerance
+:type numerical_tol: float</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>center_indices, neighbor_indices, images, distances</p>
@@ -100,7 +104,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

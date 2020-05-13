@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.crystal module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.data.crystal module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.data.graph module" href="megnet.data.graph.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.data.html" title="megnet.data package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.data.html" accesskey="U">megnet.data package</a> &#187;</li> 
       </ul>
@@ -52,25 +52,25 @@
             
   <div class="section" id="module-megnet.data.crystal">
 <span id="megnet-data-crystal-module"></span><h1>megnet.data.crystal module<a class="headerlink" href="#module-megnet.data.crystal" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.data.crystal.CrystalGraph">
-<em class="property">class </em><code class="sig-name descname">CrystalGraph</code><span class="sig-paren">(</span><em class="sig-param">nn_strategy: Union[str</em>, <em class="sig-param">pymatgen.analysis.local_env.NearNeighbors] = 'MinimumDistanceNNAll'</em>, <em class="sig-param">atom_converter: megnet.data.graph.Converter = None</em>, <em class="sig-param">bond_converter: megnet.data.graph.Converter = None</em>, <em class="sig-param">cutoff: float = 4.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CrystalGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>pymatgen.analysis.local_env.NearNeighbors<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'MinimumDistanceNNAll'</span></em>, <em class="sig-param"><span class="n">atom_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cutoff</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">4.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.StructureGraphFixedRadius" title="megnet.data.graph.StructureGraphFixedRadius"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.data.graph.StructureGraphFixedRadius</span></code></a></p>
 <p>Convert a crystal into a graph with z as atomic feature and distance as bond feature
 one can optionally include state features</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.data.crystal.CrystalGraphWithBondTypes">
-<em class="property">class </em><code class="sig-name descname">CrystalGraphWithBondTypes</code><span class="sig-paren">(</span><em class="sig-param">nn_strategy: Union[str</em>, <em class="sig-param">pymatgen.analysis.local_env.NearNeighbors] = 'VoronoiNN'</em>, <em class="sig-param">atom_converter: megnet.data.graph.Converter = None</em>, <em class="sig-param">bond_converter: megnet.data.graph.Converter = None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraphWithBondTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraphWithBondTypes" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CrystalGraphWithBondTypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>pymatgen.analysis.local_env.NearNeighbors<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'VoronoiNN'</span></em>, <em class="sig-param"><span class="n">atom_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraphWithBondTypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraphWithBondTypes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.StructureGraph" title="megnet.data.graph.StructureGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.data.graph.StructureGraph</span></code></a></p>
 <p>Overwrite the bond attributes with bond types, defined simply by
 the metallicity of the atoms forming the bond. Three types of
 scenario is considered, nonmetal-nonmetal (type 0), metal-nonmetal (type 1), and
 metal-metal (type 2)</p>
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.data.crystal.CrystalGraphWithBondTypes.convert">
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">structure: pymatgen.core.structure.Structure</em>, <em class="sig-param">state_attributes: List = None</em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraphWithBondTypes.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraphWithBondTypes.convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">pymatgen.core.structure.Structure</span></em>, <em class="sig-param"><span class="n">state_attributes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/crystal.html#CrystalGraphWithBondTypes.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.CrystalGraphWithBondTypes.convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take a pymatgen structure and convert it to a index-type graph representation
 The graph will have node, distance, index1, index2, where node is a vector of Z number
 of atoms in the structure, index1 and index2 mark the atom indices forming the bond and separated by
@@ -90,7 +90,7 @@ take default [[0, 0]]</p>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.data.crystal.get_elemental_embeddings">
 <code class="sig-name descname">get_elemental_embeddings</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/crystal.html#get_elemental_embeddings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.crystal.get_elemental_embeddings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Provides the pre-trained elemental embeddings using formation energies,
@@ -140,7 +140,7 @@ and Crystals”, <a class="reference external" href="https://arxiv.org/abs/1812.
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

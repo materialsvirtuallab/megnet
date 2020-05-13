@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>tensorflow.python.keras.layers.serialization &#8212; megnet 1.1.4 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tensorflow.python.keras.layers.serialization</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2015 The TensorFlow Authors. All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1"># ==============================================================================</span>
+<span class="sd">&quot;&quot;&quot;Layer serialization/deserialization functions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># pylint: disable=wildcard-import</span>
+<span class="c1"># pylint: disable=unused-import</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="k">import</span> <span class="n">tf2</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.engine.base_layer</span> <span class="k">import</span> <span class="n">AddLoss</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.engine.base_layer</span> <span class="k">import</span> <span class="n">AddMetric</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.engine.base_layer</span> <span class="k">import</span> <span class="n">TensorFlowOpLayer</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.engine.input_layer</span> <span class="k">import</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.engine.input_layer</span> <span class="k">import</span> <span class="n">InputLayer</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.advanced_activations</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.convolutional</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.convolutional_recurrent</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.core</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.cudnn_recurrent</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.dense_attention</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.embeddings</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.local</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.merge</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.noise</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.normalization</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.pooling</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.preprocessing.image_preprocessing</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.preprocessing.normalization_v1</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.recurrent</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.rnn_cell_wrapper_v2</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.wrappers</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.utils.generic_utils</span> <span class="k">import</span> <span class="n">deserialize_keras_object</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.keras.utils.generic_utils</span> <span class="k">import</span> <span class="n">serialize_keras_object</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.util.tf_export</span> <span class="k">import</span> <span class="n">keras_export</span>
+
+<span class="k">if</span> <span class="n">tf2</span><span class="o">.</span><span class="n">enabled</span><span class="p">():</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.normalization_v2</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.recurrent_v2</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras.layers.preprocessing.normalization</span> <span class="k">import</span> <span class="o">*</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+
+<span class="c1"># This deserialization table is added for backward compatibility, as in TF 1.13,</span>
+<span class="c1"># BatchNormalizationV1 and BatchNormalizationV2 are used as class name for v1</span>
+<span class="c1"># and v2 version of BatchNormalization, respectively. Here we explicitly convert</span>
+<span class="c1"># them to the canonical name in the config of deserialization.</span>
+<span class="n">_DESERIALIZATION_TABLE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;BatchNormalizationV1&#39;</span><span class="p">:</span> <span class="s1">&#39;BatchNormalization&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BatchNormalizationV2&#39;</span><span class="p">:</span> <span class="s1">&#39;BatchNormalization&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="nd">@keras_export</span><span class="p">(</span><span class="s1">&#39;keras.layers.serialize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">layer</span><span class="p">):</span>
+  <span class="k">return</span> <span class="n">serialize_keras_object</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+
+
+<span class="nd">@keras_export</span><span class="p">(</span><span class="s1">&#39;keras.layers.deserialize&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">custom_objects</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Instantiates a layer from a config dictionary.</span>
+
+<span class="sd">  Arguments:</span>
+<span class="sd">      config: dict of the form {&#39;class_name&#39;: str, &#39;config&#39;: dict}</span>
+<span class="sd">      custom_objects: dict mapping class names (or function names)</span>
+<span class="sd">          of custom (non-Keras) objects to class/functions</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">      Layer instance (may be Model, Sequential, Network, Layer...)</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="c1"># Prevent circular dependencies.</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras</span> <span class="k">import</span> <span class="n">models</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras.premade.linear</span> <span class="k">import</span> <span class="n">LinearModel</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.keras.premade.wide_deep</span> <span class="k">import</span> <span class="n">WideDeepModel</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.feature_column</span> <span class="k">import</span> <span class="n">dense_features</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+  <span class="kn">from</span> <span class="nn">tensorflow.python.feature_column</span> <span class="k">import</span> <span class="n">sequence_feature_column</span> <span class="k">as</span> <span class="n">sfc</span>  <span class="c1"># pylint: disable=g-import-not-at-top</span>
+
+  <span class="n">globs</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>  <span class="c1"># All layers.</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;Network&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Network</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;Model&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Model</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;Sequential&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Sequential</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;LinearModel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">LinearModel</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;WideDeepModel&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WideDeepModel</span>
+
+  <span class="c1"># Prevent circular dependencies with FeatureColumn serialization.</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;DenseFeatures&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dense_features</span><span class="o">.</span><span class="n">DenseFeatures</span>
+  <span class="n">globs</span><span class="p">[</span><span class="s1">&#39;SequenceFeatures&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sfc</span><span class="o">.</span><span class="n">SequenceFeatures</span>
+
+  <span class="n">layer_class_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;class_name&#39;</span><span class="p">]</span>
+  <span class="k">if</span> <span class="n">layer_class_name</span> <span class="ow">in</span> <span class="n">_DESERIALIZATION_TABLE</span><span class="p">:</span>
+    <span class="n">config</span><span class="p">[</span><span class="s1">&#39;class_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_DESERIALIZATION_TABLE</span><span class="p">[</span><span class="n">layer_class_name</span><span class="p">]</span>
+
+  <span class="k">return</span> <span class="n">deserialize_keras_object</span><span class="p">(</span>
+      <span class="n">config</span><span class="p">,</span>
+      <span class="n">module_objects</span><span class="o">=</span><span class="n">globs</span><span class="p">,</span>
+      <span class="n">custom_objects</span><span class="o">=</span><span class="n">custom_objects</span><span class="p">,</span>
+      <span class="n">printable_module_name</span><span class="o">=</span><span class="s1">&#39;layer&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.qm9 &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.data.qm9 &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -43,33 +43,9 @@
             
   <h1>Source code for megnet.data.qm9</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The data processing is based on the data shared by Faber, Felix A., et al.</span>
-<span class="sd">&quot;Prediction errors of molecular machine learning models lower than hybrid DFT error.&quot;</span>
-<span class="sd">Journal of chemical theory and computation 13.11 (2017): 5255-5264..</span>
-
-<span class="sd">Visit https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU. for access</span>
-
+<span class="sd">Simple qm9 utils, kept here for historical reasons</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">StandardScaler</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">LabelBinarizer</span>
-<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">itemgetter</span>
-<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="n">GaussianDistance</span>
 <span class="kn">from</span> <span class="nn">monty.json</span> <span class="k">import</span> <span class="n">MSONable</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="n">atom_attri</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;chirality&#39;</span><span class="p">,</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">,</span> <span class="s1">&#39;hybridization&#39;</span><span class="p">,</span> <span class="s1">&#39;acceptor&#39;</span><span class="p">,</span>
-              <span class="s2">&quot;donor&quot;</span><span class="p">,</span> <span class="s2">&quot;aromatic&quot;</span><span class="p">]</span>
-<span class="n">bond_attri</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;a_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;b_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;bond_type&#39;</span><span class="p">,</span> <span class="s2">&quot;graph_distance&quot;</span><span class="p">,</span> <span class="s1">&#39;same_ring&#39;</span><span class="p">,</span>
-              <span class="s1">&#39;spatial_distance&#39;</span><span class="p">]</span>
-<span class="n">target_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mu&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;HOMO&#39;</span><span class="p">,</span> <span class="s1">&#39;LUMO&#39;</span><span class="p">,</span> <span class="s1">&#39;gap&#39;</span><span class="p">,</span> <span class="s1">&#39;R2&#39;</span><span class="p">,</span> <span class="s1">&#39;ZPVE&#39;</span><span class="p">,</span> <span class="s1">&#39;U0&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span>
-               <span class="s1">&#39;H&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;Cv&#39;</span><span class="p">,</span> <span class="s1">&#39;omega1&#39;</span><span class="p">]</span>
-
-<span class="n">chem_accuracy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.043</span><span class="p">,</span> <span class="mf">0.043</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.0012</span><span class="p">,</span> <span class="mf">0.043</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
-
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">handlers</span><span class="o">=</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()])</span>
 
 <span class="n">ATOMNUM2TYPE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;6&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;7&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;8&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;9&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">}</span>
 
@@ -85,111 +61,14 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span></div></div>
 
 
-<div class="viewcode-block" id="load_qm9_faber"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.load_qm9_faber">[docs]</a><span class="k">def</span> <span class="nf">load_qm9_faber</span><span class="p">(</span><span class="n">db_connection</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">atom_attri</span><span class="o">=</span><span class="n">atom_attri</span><span class="p">,</span>
-                   <span class="n">bond_attri</span><span class="o">=</span><span class="n">bond_attri</span><span class="p">,</span>
-                   <span class="n">graph_dist</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">restrict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                   <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load the qm9 dataset from faber</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        db_connection: mongodb collection pointing to the qm9 data</span>
-<span class="sd">        atom_attri: (list of string) atom attributes used as feature</span>
-<span class="sd">        bond_attri: (list of string) bond attributes used as feature</span>
-<span class="sd">        graph_dist: (list of integer) graph distances considered. Basically</span>
-<span class="sd">        bonded atoms have graph distance of 1, second nearest neighbors are 2 etc.</span>
-<span class="sd">        restrict: (dict) extra constraints for the query</span>
-<span class="sd">        verbose: (bool) show the progress</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        atom_features, bond_features, global_features, bond_atom_index1, bond_atom_index2, targets</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># connection is necessary</span>
-    <span class="k">if</span> <span class="n">db_connection</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="n">features_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">connection_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">global_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">index1_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">index2_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">smiles</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">qm9</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">targets</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="c1"># a_idx and b_idx are the index of atom connecting the bonds, they are not explicit features</span>
-    <span class="n">bond_attri</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bond_attri</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;a_idx&#39;</span><span class="p">,</span> <span class="s1">&#39;b_idx&#39;</span><span class="p">]]</span>
-    <span class="c1"># if no graph dist constraint is given, use all (max in data is 7)</span>
-    <span class="k">if</span> <span class="n">graph_dist</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">graph_dist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start querying...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">for</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">db_connection</span><span class="o">.</span><span class="n">find</span><span class="p">():</span>
-        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">index</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-th molecule finished&#39;</span> <span class="o">%</span> <span class="n">index</span><span class="p">)</span>
-        <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">connect</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">index1</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">index2</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">smiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">])</span>
-        <span class="n">qm9</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur</span><span class="p">[</span><span class="s1">&#39;qm9&#39;</span><span class="p">])</span>
-        <span class="n">targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cur</span><span class="p">[</span><span class="s1">&#39;mol_info&#39;</span><span class="p">])</span>
-
-        <span class="n">total_weight</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="n">total_atom</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">for</span> <span class="n">atoms</span> <span class="ow">in</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;atoms&#39;</span><span class="p">]:</span>
-            <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">atom_attri</span><span class="p">])</span>
-            <span class="n">total_weight</span> <span class="o">+=</span> <span class="n">atoms</span><span class="p">[</span><span class="s1">&#39;atomic_num&#39;</span><span class="p">]</span>
-            <span class="n">total_atom</span> <span class="o">+=</span> <span class="mi">1</span>
-
-        <span class="n">total_bonds</span> <span class="o">=</span> <span class="mf">0.</span>
-        <span class="k">for</span> <span class="n">bonds</span> <span class="ow">in</span> <span class="n">cur</span><span class="p">[</span><span class="s1">&#39;atom_pairs&#39;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">bonds</span><span class="p">[</span><span class="s1">&#39;graph_distance&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">graph_dist</span><span class="p">:</span>
-                <span class="n">index1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bonds</span><span class="p">[</span><span class="s1">&#39;a_idx&#39;</span><span class="p">])</span>
-                <span class="n">index2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bonds</span><span class="p">[</span><span class="s1">&#39;b_idx&#39;</span><span class="p">])</span>
-                <span class="n">connect</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">bonds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">bond_attri</span><span class="p">])</span>
-                <span class="n">total_bonds</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="c1"># construct the complete bond info for all bonds</span>
-        <span class="c1"># when 1 is bonded to 2, then 2 is bonded to 1</span>
-        <span class="n">index1</span> <span class="o">=</span> <span class="n">index1</span> <span class="o">+</span> <span class="n">index2</span>
-        <span class="n">index2</span> <span class="o">=</span> <span class="n">index2</span> <span class="o">+</span> <span class="n">index1</span>
-        <span class="n">connect</span> <span class="o">+=</span> <span class="n">connect</span>
-        <span class="c1"># sort the index according to index 1</span>
-        <span class="n">sort_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">index1</span><span class="p">)</span>
-        <span class="n">it</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">sort_index</span><span class="p">)</span>
-        <span class="n">index1</span> <span class="o">=</span> <span class="n">it</span><span class="p">(</span><span class="n">index1</span><span class="p">)</span>
-        <span class="n">index2</span> <span class="o">=</span> <span class="n">it</span><span class="p">(</span><span class="n">index2</span><span class="p">)</span>
-        <span class="n">connect</span> <span class="o">=</span> <span class="n">it</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span>
-        <span class="n">features_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">features</span><span class="p">)</span>
-        <span class="n">global_list</span><span class="o">.</span><span class="n">append</span><span class="p">([[</span><span class="n">total_weight</span> <span class="o">/</span> <span class="n">total_atom</span><span class="p">,</span>
-                             <span class="n">total_bonds</span> <span class="o">/</span> <span class="n">total_atom</span><span class="p">]])</span>  <span class="c1"># weight/atom, bond/atom</span>
-        <span class="n">connection_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">connect</span><span class="p">)</span>
-        <span class="n">index1_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index1</span><span class="p">)</span>
-        <span class="n">index2_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">index2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">restrict</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="n">restrict</span><span class="p">:</span>
-                <span class="k">break</span>
-    <span class="n">targets</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
-    <span class="n">targets</span><span class="p">[</span><span class="s1">&#39;smiles&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">smiles</span>
-    <span class="n">targets</span><span class="p">[</span><span class="s1">&#39;qm9&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">qm9</span>
-    <span class="k">return</span> <span class="n">features_list</span><span class="p">,</span> <span class="n">connection_list</span><span class="p">,</span> <span class="n">global_list</span><span class="p">,</span> <span class="n">index1_list</span><span class="p">,</span> <span class="n">index2_list</span><span class="p">,</span> <span class="n">targets</span></div>
-
-
 <div class="viewcode-block" id="ring_to_vector"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.ring_to_vector">[docs]</a><span class="k">def</span> <span class="nf">ring_to_vector</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert the ring sizes vector to a fixed length vector</span>
 <span class="sd">    For example, l can be [3, 5, 5], meaning that the atom is involved</span>
 <span class="sd">    in 1 3-sized ring and 2 5-sized ring. This function will convert it into</span>
 <span class="sd">    [ 0, 0, 1, 0, 2, 0, 0, 0, 0, 0].</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        l: (list of integer) ring_sizes attributes</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        (list of integer) fixed size list with the i-1 th element indicates number of</span>
 <span class="sd">            i-sized ring this atom is involved in.</span>
@@ -199,184 +78,6 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
             <span class="n">return_l</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">return_l</span></div>
-
-
-<div class="viewcode-block" id="FeatureClean"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.FeatureClean">[docs]</a><span class="k">class</span> <span class="nc">FeatureClean</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Clean the features and convert them to model inputs</span>
-
-<span class="sd">    Args</span>
-<span class="sd">        categorical: (list of string) variables that will be considered as categorical</span>
-<span class="sd">        feature_labels: (list of string) all features</span>
-<span class="sd">        distance_converter: (object) convert the spatial distance to expanded Gaussians</span>
-<span class="sd">        is_norm_dist: (bool) whether to normalize the distance features</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">categorical</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="s1">&#39;chirality&#39;</span><span class="p">,</span> <span class="s1">&#39;hybridization&#39;</span><span class="p">,</span> <span class="s1">&#39;donor&#39;</span><span class="p">,</span>
-                              <span class="s1">&#39;acceptor&#39;</span><span class="p">,</span> <span class="s1">&#39;aromatic&#39;</span><span class="p">],</span>
-                 <span class="n">feature_labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;chirality&#39;</span><span class="p">,</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">,</span>
-                                 <span class="s1">&#39;hybridization&#39;</span><span class="p">,</span>
-                                 <span class="s1">&#39;acceptor&#39;</span><span class="p">,</span> <span class="s2">&quot;donor&quot;</span><span class="p">,</span> <span class="s1">&#39;aromatic&#39;</span><span class="p">],</span>
-                 <span class="n">distance_converter</span><span class="o">=</span><span class="n">GaussianDistance</span><span class="p">(),</span>
-                 <span class="n">is_norm_dist</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span> <span class="o">=</span> <span class="n">categorical</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">feature_labels</span> <span class="o">=</span> <span class="n">feature_labels</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">binarizer</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">scaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span> <span class="o">=</span> <span class="n">distance_converter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">has_numeric</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_norm_dist</span> <span class="o">=</span> <span class="n">is_norm_dist</span>
-
-<div class="viewcode-block" id="FeatureClean.fit"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.FeatureClean.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        sklearn transformer interface</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            X: list of feature list, e.g., [[5, 0, [3, 5], 0, 0, 1, 1], [5, 0, [3, 5], 0, 0, 1, 1]] for the default</span>
-<span class="sd">            feature labels</span>
-<span class="sd">        Returns:</span>
-<span class="sd">            (np.array) converted feature matrix</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">concated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">X</span><span class="p">],</span>
-                                  <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">concated</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_labels</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Feature label dimension does not match data!&#39;</span><span class="p">)</span>
-        <span class="n">numerical_array</span> <span class="o">=</span> <span class="p">[]</span>
-
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_labels</span><span class="p">):</span>
-            <span class="c1"># categorical features will be converted using LabelBinarizer in sklearn</span>
-            <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">:</span>
-                <span class="n">column</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">concated</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
-                <span class="n">binarizer</span> <span class="o">=</span> <span class="n">LabelBinarizer</span><span class="p">()</span>
-                <span class="n">binarizer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">binarizer</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">binarizer</span><span class="o">.</span><span class="n">classes_</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;c&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">binarizer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">binarizer</span>
-            <span class="c1"># ring_sizes feature will be converted using our diy converter</span>
-            <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;c&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">9</span><span class="p">)</span>
-            <span class="c1"># spatial distance is converted by Gaussian expansion, note that this class works for</span>
-            <span class="c1"># both atom and bond features</span>
-            <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;spatial_distance&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_norm_dist</span><span class="p">:</span>
-                    <span class="n">dist_symbol</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">dist_symbol</span> <span class="o">=</span> <span class="s1">&#39;c&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">dist_symbol</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span><span class="o">.</span><span class="n">centers</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-                <span class="k">if</span> <span class="n">dist_symbol</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">:</span>
-                    <span class="n">numerical_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">concated</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;n&#39;</span><span class="p">)</span>
-                <span class="n">numerical_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">concated</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">])</span>
-        <span class="c1"># print([i.shape for i in numerical_array])</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">numerical_array</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">numerical_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">numerical_array</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">numerical_array</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">has_numeric</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">has_numeric</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-<div class="viewcode-block" id="FeatureClean.transform"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.FeatureClean.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Transform new data according to learnt logics</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            X: list of features</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            feature dimension</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">X_transformed</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-            <span class="n">x_transformed</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_labels</span><span class="p">):</span>
-                <span class="n">column</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical</span><span class="p">:</span>
-                    <span class="n">x_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">binarizer</span><span class="p">[</span><span class="n">label</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">column</span><span class="p">)))</span>
-                <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;ring_sizes&#39;</span><span class="p">:</span>
-                    <span class="n">ring_sizes</span> <span class="o">=</span> <span class="p">[]</span>
-                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">column</span><span class="p">:</span>
-                        <span class="n">ring_sizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ring_to_vector</span><span class="p">(</span><span class="n">l</span><span class="p">))</span>
-                    <span class="n">x_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ring_sizes</span><span class="p">))</span>
-
-                <span class="k">elif</span> <span class="n">label</span> <span class="o">==</span> <span class="s1">&#39;spatial_distance&#39;</span><span class="p">:</span>
-                    <span class="n">x_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">x_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">])</span>
-                    <span class="c1"># print([i.shape for i in x_transformed])</span>
-            <span class="n">concated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">x_transformed</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_numeric</span><span class="p">:</span>
-                <span class="n">n_columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_labels</span><span class="p">)</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">]</span>
-                <span class="n">concated</span><span class="p">[:,</span> <span class="n">n_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scaler</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span>
-                    <span class="n">concated</span><span class="p">[:,</span> <span class="n">n_columns</span><span class="p">])</span>
-            <span class="n">X_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">concated</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">X_transformed</span></div>
-
-<div class="viewcode-block" id="FeatureClean.find_index"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.FeatureClean.find_index">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">find_index</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">label</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div></div>
-
-
-<div class="viewcode-block" id="Scaler"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.Scaler">[docs]</a><span class="k">class</span> <span class="nc">Scaler</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Simple numerical scaler for list of features</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ss</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
-
-<div class="viewcode-block" id="Scaler.fit"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.Scaler.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="n">concated</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">X</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ss</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">concated</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
-
-<div class="viewcode-block" id="Scaler.transform"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.Scaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
-        <span class="n">X_transformed</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">X</span><span class="p">:</span>
-            <span class="n">X_transformed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ss</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">X_transformed</span></div></div>
-
-
-<div class="viewcode-block" id="sublist_from_qm9"><a class="viewcode-back" href="../../../megnet.data.qm9.html#megnet.data.qm9.sublist_from_qm9">[docs]</a><span class="k">def</span> <span class="nf">sublist_from_qm9</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="o">*</span><span class="n">features</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    select a subset of the data according to the qm9 id.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        ids: (list of string) qm9 id list</span>
-<span class="sd">        targets: (pandas DataFrame) data frame of targets</span>
-<span class="sd">        features: (list）list of graph features</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">         subset of targets, features</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">def</span> <span class="nf">get_from_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
-        <span class="n">it</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">idx</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">it</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">id_from_qm9</span><span class="p">(</span><span class="n">qm9_id</span><span class="p">,</span> <span class="n">targets</span><span class="p">):</span>
-        <span class="n">targets</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">targets</span><span class="p">)))</span>
-        <span class="n">true_index</span> <span class="o">=</span> <span class="n">targets</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;qm9&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">qm9_id</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;index&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">true_index</span><span class="o">.</span><span class="n">values</span>
-
-    <span class="n">true_index</span> <span class="o">=</span> <span class="n">id_from_qm9</span><span class="p">(</span><span class="n">ids</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
-    <span class="n">new_features</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">features</span><span class="p">:</span>
-        <span class="n">new_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_from_list</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">true_index</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">targets</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;qm9&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ids</span><span class="p">],</span> <span class="n">new_features</span></div>
 </pre></div>
 
           </div>
@@ -399,7 +100,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 6
 
    megnet.layers.graph.base
    megnet.layers.graph.cgcnn

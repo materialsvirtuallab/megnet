@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.callbacks module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.callbacks module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.losses module" href="megnet.losses.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.activations.html" title="megnet.activations module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
       </ul>
     </div>  
@@ -51,127 +51,97 @@
             
   <div class="section" id="module-megnet.callbacks">
 <span id="megnet-callbacks-module"></span><h1>megnet.callbacks module<a class="headerlink" href="#module-megnet.callbacks" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="megnet.callbacks.GeneratorLog">
-<em class="property">class </em><code class="sig-name descname">GeneratorLog</code><span class="sig-paren">(</span><em class="sig-param">train_gen: Iterable</em>, <em class="sig-param">steps_per_train: int = None</em>, <em class="sig-param">val_gen: Iterable = None</em>, <em class="sig-param">steps_per_val: int = None</em>, <em class="sig-param">y_scaler: megnet.utils.preprocessing.Scaler = None</em>, <em class="sig-param">n_every: int = 5</em>, <em class="sig-param">val_names: List[str] = None</em>, <em class="sig-param">val_units: List[str] = None</em>, <em class="sig-param">is_pa: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#GeneratorLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.GeneratorLog" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
-<p>This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
-The default keras training log does not contain method to rescale the results, thus is not physically
-intuitive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>train_gen</strong> – (generator), yield (x, y) pairs for training</p></li>
-<li><p><strong>steps_per_train</strong> – (int) number of generator steps per training epoch</p></li>
-<li><p><strong>val_gen</strong> – (generator), yield (x, y) pairs for validation.</p></li>
-<li><p><strong>steps_per_val</strong> – (int) number of generator steps per epoch for validation data</p></li>
-<li><p><strong>y_scaler</strong> – (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale</p></li>
-<li><p><strong>n_every</strong> – (int) epoch interval for showing the log</p></li>
-<li><p><strong>val_names</strong> – (list of string) variable names</p></li>
-<li><p><strong>val_units</strong> – (list of string) variable units</p></li>
-<li><p><strong>is_pa</strong> – (bool) whether it is a per-atom quantity</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="megnet.callbacks.GeneratorLog.on_epoch_end">
-<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#GeneratorLog.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.GeneratorLog.on_epoch_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Standard keras callback interface, executed at the end of epoch</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.callbacks.ManualStop">
 <em class="property">class </em><code class="sig-name descname">ManualStop</code><a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.callbacks.Callback</span></code></p>
 <p>Stop the training manually by putting a “STOP” file in the directory</p>
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.callbacks.ManualStop.on_batch_end">
-<code class="sig-name descname">on_batch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop.on_batch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop.on_batch_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>A backwards compatibility alias for <cite>on_train_batch_end</cite>.</p>
+<code class="sig-name descname">on_batch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop.on_batch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop.on_batch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Codes called at the end of a batch
+:param epoch: epoch id
+:type epoch: int
+:param logs: log dict
+:type logs: Dict</p>
+<p>Returns: None</p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.callbacks.ModelCheckpointMAE">
-<em class="property">class </em><code class="sig-name descname">ModelCheckpointMAE</code><span class="sig-paren">(</span><em class="sig-param">filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</em>, <em class="sig-param">monitor: str = 'val_mae'</em>, <em class="sig-param">verbose: int = 0</em>, <em class="sig-param">save_best_only: bool = True</em>, <em class="sig-param">save_weights_only: bool = False</em>, <em class="sig-param">val_gen: Iterable = None</em>, <em class="sig-param">steps_per_val: int = None</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = None</em>, <em class="sig-param">period: int = 1</em>, <em class="sig-param">mode: str = 'auto'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
-<p>Save the best MAE model</p>
+<em class="property">class </em><code class="sig-name descname">ModelCheckpointMAE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">save_best_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_weights_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">val_gen</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">steps_per_val</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler" title="megnet.utils.preprocessing.Scaler">megnet.utils.preprocessing.Scaler</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.callbacks.Callback</span></code></p>
+<p>Save the best MAE model with target scaler</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> – (string) path to save the model file with format. For example</p></li>
-<li><p><strong>`weights.{epoch</strong> – <p>02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and val_mae in the filename</p>
-</p></li>
-<li><p><strong>monitor</strong> – (string) quantity to monitor, default to “val_mae”</p></li>
-<li><p><strong>verbose</strong> – (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log</p></li>
-<li><p><strong>save_best_only</strong> – (bool) whether to save only the best model</p></li>
-<li><p><strong>save_weights_only</strong> – (bool) whether to save the weights only excluding model structure</p></li>
-<li><p><strong>val_gen</strong> – (generator) validation generator</p></li>
-<li><p><strong>steps_per_val</strong> – (int) steps per epoch for validation generator</p></li>
-<li><p><strong>target_scaler</strong> – (object) exposing inverse_transform method to scale the output</p></li>
-<li><p><strong>period</strong> – (int) number of epoch interval for this callback</p></li>
+<li><p><strong>filepath</strong> (<em>string</em>) – path to save the model file with format. For example
+<cite>weights.{epoch:02d}-{val_mae:.6f}.hdf5</cite> will save the corresponding epoch and
+val_mae in the filename</p></li>
+<li><p><strong>monitor</strong> (<em>string</em>) – quantity to monitor, default to “val_mae”</p></li>
+<li><p><strong>verbose</strong> (<em>int</em>) – 0 for no training log, 1 for only epoch-level log and 2 for batch-level log</p></li>
+<li><p><strong>save_best_only</strong> (<em>bool</em>) – whether to save only the best model</p></li>
+<li><p><strong>save_weights_only</strong> (<em>bool</em>) – whether to save the weights only excluding model structure</p></li>
+<li><p><strong>val_gen</strong> (<em>generator</em>) – validation generator</p></li>
+<li><p><strong>steps_per_val</strong> (<em>int</em>) – steps per epoch for validation generator</p></li>
+<li><p><strong>target_scaler</strong> (<em>object</em>) – exposing inverse_transform method to scale the output</p></li>
+<li><p><strong>period</strong> (<em>int</em>) – number of epoch interval for this callback</p></li>
 <li><p><strong>mode</strong> – (string) choose from “min”, “max” or “auto”</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.callbacks.ModelCheckpointMAE.on_epoch_end">
-<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE.on_epoch_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called at the end of an epoch.</p>
-<p>Subclasses should override for any actions to run. This function should only
-be called during train mode.</p>
-<dl>
-<dt># Arguments</dt><dd><p>epoch: integer, index of epoch.
-logs: dict, metric results for this training epoch, and for the</p>
-<blockquote>
-<div><p>validation epoch if validation is performed. Validation result keys
-are prefixed with <cite>val_</cite>.</p>
-</div></blockquote>
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Codes called by the callback at the end of epoch
+:param epoch: epoch id
+:type epoch: int
+:param logs: logs of training
+:type logs: dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.callbacks.ReduceLRUponNan">
-<em class="property">class </em><code class="sig-name descname">ReduceLRUponNan</code><span class="sig-paren">(</span><em class="sig-param">filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</em>, <em class="sig-param">factor: float = 0.5</em>, <em class="sig-param">verbose: int = 1</em>, <em class="sig-param">patience: int = 500</em>, <em class="sig-param">monitor: str = 'val_mae'</em>, <em class="sig-param">mode: str = 'auto'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.callbacks.callbacks.Callback</span></code></p>
-<p>This callback function solves a problem that when doing regression, an nan loss may occur, or the
-loss suddenly shoot up
-If such things happen, the model will reduce the learning rate and load the last best model during the
-training process.
-It has an extra function that patience for early stopping. This will move to indepedent callback in the
-future.</p>
+<em class="property">class </em><code class="sig-name descname">ReduceLRUponNan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.callbacks.Callback</span></code></p>
+<p>This callback function solves a problem that when doing regression,
+an nan loss may occur, or the loss suddenly shoot up.
+If such things happen, the model will reduce the learning rate
+and load the last best model during the training process.
+It has an extra function that patience for early stopping.
+This will move to indepedent callback in the future.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> – (str) filepath for saved model checkpoint, should be consistent with checkpoint callback</p></li>
-<li><p><strong>factor</strong> – (float) a value &lt; 1 for scaling the learning rate</p></li>
-<li><p><strong>verbose</strong> – (int) whether to show the loading event</p></li>
-<li><p><strong>patience</strong> – (int) number of steps that the val mae does not change. It is a criteria for early stopping</p></li>
-<li><p><strong>track_metric</strong> – (string) the variable to track</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – filepath for saved model checkpoint, should be consistent with
+checkpoint callback</p></li>
+<li><p><strong>factor</strong> (<em>float</em>) – a value &lt; 1 for scaling the learning rate</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – whether to show the loading event</p></li>
+<li><p><strong>patience</strong> (<em>int</em>) – number of steps that the val mae does not change.
+It is a criteria for early stopping</p></li>
+<li><p><strong>monitor</strong> (<em>str</em>) – target metric to monitor</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – min, max or auto</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.callbacks.ReduceLRUponNan.on_epoch_end">
-<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param">epoch: int</em>, <em class="sig-param">logs: Dict = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan.on_epoch_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Called at the end of an epoch.</p>
-<p>Subclasses should override for any actions to run. This function should only
-be called during train mode.</p>
-<dl>
-<dt># Arguments</dt><dd><p>epoch: integer, index of epoch.
-logs: dict, metric results for this training epoch, and for the</p>
-<blockquote>
-<div><p>validation epoch if validation is performed. Validation result keys
-are prefixed with <cite>val_</cite>.</p>
-</div></blockquote>
-</dd>
-</dl>
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the loss value at the end of an epoch
+:param epoch: epoch id
+:type epoch: int
+:param logs: log history
+:type logs: dict</p>
+<p>Returns: None</p>
 </dd></dl>
 
 </dd></dl>
@@ -208,7 +178,7 @@ are prefixed with <cite>val_</cite>.</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

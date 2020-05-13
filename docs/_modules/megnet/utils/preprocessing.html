@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.preprocessing &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.utils.preprocessing &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../../../_static/jquery.js"></script>
-    <script type="text/javascript" src="../../../_static/underscore.js"></script>
-    <script type="text/javascript" src="../../../_static/doctools.js"></script>
-    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
       </ul>
     </div>  
@@ -42,48 +42,85 @@
           <div class="body" role="main">
             
   <h1>Source code for megnet.utils.preprocessing</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Preprocessing codes</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">monty.json</span> <span class="k">import</span> <span class="n">MSONable</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">.typing</span> <span class="k">import</span> <span class="n">StructureOrMolecule</span><span class="p">,</span> <span class="n">VectorLike</span>
 
 
 <div class="viewcode-block" id="Scaler"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler">[docs]</a><span class="k">class</span> <span class="nc">Scaler</span><span class="p">(</span><span class="n">MSONable</span><span class="p">):</span>
-<div class="viewcode-block" id="Scaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base Scaler class. It implements transform and</span>
+<span class="sd">    inverse_transform. Both methods will take number</span>
+<span class="sd">    of atom as the second parameter in addition to</span>
+<span class="sd">    the target property</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Scaler.transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform the target values into new target values</span>
+<span class="sd">        Args:</span>
+<span class="sd">            target (float): target numerical value</span>
+<span class="sd">            n (int): number of atoms</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            scaled target</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Scaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inverse transform of the target</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            transformed_target (float): transformed target</span>
+<span class="sd">            n (int): number of atoms</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="StandardScaler"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler">[docs]</a><span class="k">class</span> <span class="nc">StandardScaler</span><span class="p">(</span><span class="n">Scaler</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Standard scaler with consideration of extensive/intensive quantity</span>
-<span class="sd">    For intensive quantity, the mean is just the mean of training data, and std</span>
-<span class="sd">    is the std of training data</span>
-<span class="sd">    For extensive quantity, the mean is the mean of target/atom, and std is the</span>
-<span class="sd">    std for target/atom</span>
+<span class="sd">    For intensive quantity, the mean is just the mean of training data,</span>
+<span class="sd">    and std is the std of training data</span>
+<span class="sd">    For extensive quantity, the mean is the mean of target/atom, and</span>
+<span class="sd">    std is the std for target/atom</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        mean (float): mean value of target</span>
 <span class="sd">        std (float): standard deviation of target</span>
-<span class="sd">        is_intensive (bool): whether the target is already an intensive property</span>
+<span class="sd">        is_intensive (bool): whether the target is already an intensive</span>
+<span class="sd">            property</span>
 
 <span class="sd">    Methods:</span>
 <span class="sd">        transform(self, target, n=1): standard scaling the target and</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">is_intensive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">is_intensive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean</span>
-        <span class="k">if</span> <span class="n">std</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">std</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">std</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">:</span>
+            <span class="n">std</span> <span class="o">=</span> <span class="mf">1.0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">=</span> <span class="n">std</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_intensive</span> <span class="o">=</span> <span class="n">is_intensive</span>
 
-<div class="viewcode-block" id="StandardScaler.transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="StandardScaler.transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transform numeric values according the mean and std, plus a factor n</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            target: target numerical value</span>
-<span class="sd">            n: number of atoms</span>
+<span class="sd">            target (float): target numerical value</span>
+<span class="sd">            n (int): number of atoms</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            scaled target</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -91,13 +128,14 @@
             <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">target</span> <span class="o">/</span> <span class="n">n</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span></div>
 
-<div class="viewcode-block" id="StandardScaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_target</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="StandardScaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Inverse transform of the target</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            transformed_target: transformed target</span>
-<span class="sd">            n: number of atoms</span>
+<span class="sd">            transformed_target (float): transformed target</span>
+<span class="sd">            n (int): number of atoms</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            original target</span>
@@ -107,17 +145,33 @@
         <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="n">transformed_target</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StandardScaler.from_training_data"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.StandardScaler.from_training_data">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_training_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">is_intensive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_training_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StructureOrMolecule</span><span class="p">],</span>
+                           <span class="n">targets</span><span class="p">:</span> <span class="n">VectorLike</span><span class="p">,</span> <span class="n">is_intensive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> \
+            <span class="o">-&gt;</span> <span class="s1">&#39;StandardScaler&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a target scaler from a list of input structures/molecules,</span>
+<span class="sd">        a target value vector and an indicator for intensiveness of the</span>
+<span class="sd">        property</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            structures (list): list of structures/molecules</span>
+<span class="sd">            targets (list): vector of target properties</span>
+<span class="sd">            is_intensive (bool): whether the target is intensive</span>
+
+<span class="sd">        Returns: new instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_intensive</span><span class="p">:</span>
             <span class="n">new_targets</span> <span class="o">=</span> <span class="n">targets</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">targets</span><span class="p">,</span> <span class="n">structures</span><span class="p">)]</span>
-        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_targets</span><span class="p">)</span>
-        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">new_targets</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">new_targets</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">new_targets</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">,</span> <span class="n">is_intensive</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;StandardScaler(mean=</span><span class="si">%.3f</span><span class="s2">, std=</span><span class="si">%.3f</span><span class="s2">, is_intensive=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_intensive</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;StandardScaler(mean=</span><span class="si">%.3f</span><span class="s2">, std=</span><span class="si">%.3f</span><span class="s2">, is_intensive=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> \
+               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mean</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">std</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_intensive</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -127,15 +181,43 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Dummy scaler does nothing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="DummyScaler.transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.DummyScaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyScaler.transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.DummyScaler.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            target (float): target numerical value</span>
+<span class="sd">            n (int): number of atoms</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">target</span></div>
 
-<div class="viewcode-block" id="DummyScaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.DummyScaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_target</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="DummyScaler.inverse_transform"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.DummyScaler.inverse_transform">[docs]</a>    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transformed_target</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return as it is</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            transformed_target (float): transformed target</span>
+<span class="sd">            n (int): number of atoms</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            transformed_target</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">transformed_target</span></div>
 
 <div class="viewcode-block" id="DummyScaler.from_training_data"><a class="viewcode-back" href="../../../megnet.utils.preprocessing.html#megnet.utils.preprocessing.DummyScaler.from_training_data">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_training_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structures</span><span class="p">,</span> <span class="n">targets</span><span class="p">,</span> <span class="n">is_intensive</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_training_data</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">StructureOrMolecule</span><span class="p">],</span>
+                           <span class="n">targets</span><span class="p">:</span> <span class="n">VectorLike</span><span class="p">,</span>
+                           <span class="n">is_intensive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            structures (list): list of structures/molecules</span>
+<span class="sd">            targets (list): vector of target properties</span>
+<span class="sd">            is_intensive (bool): whether the target is intensive</span>
+
+<span class="sd">        Returns: DummyScaler</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span></div></div>
 </pre></div>
 
@@ -159,7 +241,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

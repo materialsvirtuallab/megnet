@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 6
 
    megnet.utils.data
    megnet.utils.descriptor
@@ -14,6 +15,7 @@ Submodules
    megnet.utils.models
    megnet.utils.molecule
    megnet.utils.preprocessing
+   megnet.utils.typing
 
 Module contents
 ---------------

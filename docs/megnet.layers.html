@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers package &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.layers package &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.layers.graph package" href="megnet.layers.graph.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.data.qm9.html" title="megnet.data.qm9 module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
       </ul>
     </div>  
@@ -80,6 +80,911 @@
 </div>
 <div class="section" id="module-megnet.layers">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-megnet.layers" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="megnet.layers.MEGNetLayer">
+<em class="property">class </em><code class="sig-name descname">MEGNetLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">units_v</span></em>, <em class="sig-param"><span class="n">units_e</span></em>, <em class="sig-param"><span class="n">units_u</span></em>, <em class="sig-param"><span class="n">pool_method</span><span class="o">=</span><span class="default_value">'mean'</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="o">=</span><span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="o">=</span><span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activity_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="megnet.layers.graph.base.html#megnet.layers.graph.base.GraphNetworkLayer" title="megnet.layers.graph.base.GraphNetworkLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.layers.graph.base.GraphNetworkLayer</span></code></a></p>
+<p>The MEGNet graph implementation as described in the paper</p>
+<p>Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping.
+Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals,
+2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units_v</strong> (<em>list of integers</em>) – the hidden layer sizes for node update neural network</p></li>
+<li><p><strong>units_e</strong> (<em>list of integers</em>) – the hidden layer sizes for edge update neural network</p></li>
+<li><p><strong>units_u</strong> (<em>list of integers</em>) – the hidden layer sizes for state update neural network</p></li>
+<li><p><strong>pool_method</strong> (<em>str</em>) – ‘mean’ or ‘sum’, determines how information is gathered to nodes from neighboring edges</p></li>
+<li><p><strong>activation</strong> (<em>str</em>) – Default: None. The activation function used for each sub-neural network. Examples include
+‘relu’, ‘softmax’, ‘tanh’, ‘sigmoid’ and etc.</p></li>
+<li><p><strong>use_bias</strong> (<em>bool</em>) – Default: True. Whether to use the bias term in the neural network.</p></li>
+<li><p><strong>kernel_initializer</strong> (<em>str</em>) – Default: ‘glorot_uniform’. Initialization function for the layer kernel weights,</p></li>
+<li><p><strong>bias_initializer</strong> (<em>str</em>) – Default: ‘zeros’</p></li>
+<li><p><strong>activity_regularizer</strong> (<em>str</em>) – Default: None. The regularization function for the output</p></li>
+<li><p><strong>kernel_constraint</strong> (<em>str</em>) – Default: None. Keras constraint for kernel values</p></li>
+<li><p><strong>bias_constraint</strong> (<em>str</em>) – Default: None .Keras constraint for bias values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.MEGNetLayer.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>the logic of the layer, returns the final graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute static output shapes, returns list of tuple shapes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize the weights and biases for each function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.phi_e">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>update function for bonds and returns updated bond attribute e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.rho_e_v">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate updated bonds e_p to per atom attributes, b_e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.phi_v">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the atom attributes by the results from previous step b_e_p and all the inputs
+returns v_p.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.rho_e_u">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate bonds to global attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.rho_v_u">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate atom to global attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>part of keras interface for serialization</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id0">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shapes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
+<cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id1">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the output shape of the layer.</p>
+<p>If the layer has not been built, this method will call <cite>build</cite> on the
+layer. This assumes that the layer will later be used with inputs that
+match the input shape provided here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
+or list of shape tuples (one per output tensor of the layer).
+Shape tuples can include None for free dimensions,
+instead of an integer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An input shape tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id2">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Part of keras layer interface, where the signature is converted into a dict
+:returns: configurational dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id3">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for updating the edge attributes
+ek’ = phi_e(ek, vrk, vsk, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated edge/bond attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.MEGNetLayer.phi_u">
+<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">b_v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.MEGNetLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>u’ = phi_u(ar e’, ar v’, u)
+:param b_e_p: edge/bond to global aggregated tensor
+:type b_e_p: tf.Tensor
+:param b_v_p: node/atom to global aggregated tensor
+:type b_v_p: tf.Tensor
+:param inputs: list or tuple for the graph inputs
+:type inputs: Sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>updated globa/state attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id4">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step 3. Compute updated node attributes
+v_i’ = phi_v(ar e_i, vi, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_ei_p</strong> (<em>tf.Tensor</em>) – edge-to-node aggregated tensor</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated node/atom attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id5">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dd><p>let V’ = {v’} i = 1:Nv
+let E’ = {(e_k’, rk, sk)} k = 1:Ne
+ar e’ = rho_e_u(E’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – updated edge/bond attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id6">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for step 2, aggregate edge attributes per node
+Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – the updated edge attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to node/atom aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id7">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/megnet.html#MEGNetLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dd><p>ar v’ = rho_v_u(V’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v_p</strong> (<em>tf.Tensor</em>) – updated atom/node attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>atom/node to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="megnet.layers.CrystalGraphLayer">
+<em class="property">class </em><code class="sig-name descname">CrystalGraphLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">'relu'</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="o">=</span><span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="o">=</span><span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activity_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="megnet.layers.graph.base.html#megnet.layers.graph.base.GraphNetworkLayer" title="megnet.layers.graph.base.GraphNetworkLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.layers.graph.base.GraphNetworkLayer</span></code></a></p>
+<p>The CGCNN graph implementation as described in the paper</p>
+<p>Xie et al. PHYSICAL REVIEW LETTERS 120, 145301 (2018)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>activation</strong> (<em>str</em>) – Default: None. The activation function used for each sub-neural network. Examples include
+‘relu’, ‘softmax’, ‘tanh’, ‘sigmoid’ and etc.</p></li>
+<li><p><strong>use_bias</strong> (<em>bool</em>) – Default: True. Whether to use the bias term in the neural network.</p></li>
+<li><p><strong>kernel_initializer</strong> (<em>str</em>) – Default: ‘glorot_uniform’. Initialization function for the layer kernel weights,</p></li>
+<li><p><strong>bias_initializer</strong> (<em>str</em>) – Default: ‘zeros’</p></li>
+<li><p><strong>activity_regularizer</strong> (<em>str</em>) – Default: None. The regularization function for the output</p></li>
+<li><p><strong>kernel_constraint</strong> (<em>str</em>) – Default: None. Keras constraint for kernel values</p></li>
+<li><p><strong>bias_constraint</strong> (<em>str</em>) – Default: None .Keras constraint for bias values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>the logic of the layer, returns the final graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute static output shapes, returns list of tuple shapes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize the weights and biases for each function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.phi_e">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>update function for bonds and returns updated bond attribute e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.rho_e_v">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate updated bonds e_p to per atom attributes, b_e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.phi_v">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the atom attributes by the results from previous step b_e_p and all the inputs
+returns v_p.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.rho_e_u">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate bonds to global attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.rho_v_u">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate atom to global attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>part of keras interface for serialization</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id8">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shapes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
+<cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id9">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the output shape of the layer.</p>
+<p>If the layer has not been built, this method will call <cite>build</cite> on the
+layer. This assumes that the layer will later be used with inputs that
+match the input shape provided here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
+or list of shape tuples (one per output tensor of the layer).
+Shape tuples can include None for free dimensions,
+instead of an integer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An input shape tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id10">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Part of keras layer interface, where the signature is converted into a dict
+:returns: configurational dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id11">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for updating the edge attributes
+ek’ = phi_e(ek, vrk, vsk, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated edge/bond attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.CrystalGraphLayer.phi_u">
+<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">b_v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.CrystalGraphLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>u’ = phi_u(ar e’, ar v’, u)
+:param b_e_p: edge/bond to global aggregated tensor
+:type b_e_p: tf.Tensor
+:param b_v_p: node/atom to global aggregated tensor
+:type b_v_p: tf.Tensor
+:param inputs: list or tuple for the graph inputs
+:type inputs: Sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>updated globa/state attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id12">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step 3. Compute updated node attributes
+v_i’ = phi_v(ar e_i, vi, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_ei_p</strong> (<em>tf.Tensor</em>) – edge-to-node aggregated tensor</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated node/atom attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id13">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dd><p>let V’ = {v’} i = 1:Nv
+let E’ = {(e_k’, rk, sk)} k = 1:Ne
+ar e’ = rho_e_u(E’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – updated edge/bond attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id14">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce edge attributes to node attribute, eqn 5 in the paper
+:param e_p: updated bond
+:param inputs: the whole input list</p>
+<p>Returns: summed tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id15">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
+<dd><p>ar v’ = rho_v_u(V’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v_p</strong> (<em>tf.Tensor</em>) – updated atom/node attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>atom/node to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="megnet.layers.InteractionLayer">
+<em class="property">class </em><code class="sig-name descname">InteractionLayer</code><span class="sig-paren">(</span><em class="sig-param">activation=&lt;function softplus2&gt;</em>, <em class="sig-param">use_bias=True</em>, <em class="sig-param">kernel_initializer='glorot_uniform'</em>, <em class="sig-param">bias_initializer='zeros'</em>, <em class="sig-param">kernel_regularizer=None</em>, <em class="sig-param">bias_regularizer=None</em>, <em class="sig-param">activity_regularizer=None</em>, <em class="sig-param">kernel_constraint=None</em>, <em class="sig-param">bias_constraint=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="megnet.layers.graph.base.html#megnet.layers.graph.base.GraphNetworkLayer" title="megnet.layers.graph.base.GraphNetworkLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.layers.graph.base.GraphNetworkLayer</span></code></a></p>
+<p>The Continuous filter InteractionLayer in Schnet</p>
+<p>Schütt et al. SchNet: A continuous-filter convolutional neural network for modeling quantum interactions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>activation</strong> (<em>str</em>) – Default: None. The activation function used for each sub-neural network. Examples include
+‘relu’, ‘softmax’, ‘tanh’, ‘sigmoid’ and etc.</p></li>
+<li><p><strong>use_bias</strong> (<em>bool</em>) – Default: True. Whether to use the bias term in the neural network.</p></li>
+<li><p><strong>kernel_initializer</strong> (<em>str</em>) – Default: ‘glorot_uniform’. Initialization function for the layer kernel weights,</p></li>
+<li><p><strong>bias_initializer</strong> (<em>str</em>) – Default: ‘zeros’</p></li>
+<li><p><strong>activity_regularizer</strong> (<em>str</em>) – Default: None. The regularization function for the output</p></li>
+<li><p><strong>kernel_constraint</strong> (<em>str</em>) – Default: None. Keras constraint for kernel values</p></li>
+<li><p><strong>bias_constraint</strong> (<em>str</em>) – Default: None .Keras constraint for bias values</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.InteractionLayer.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>the logic of the layer, returns the final graph</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute static output shapes, returns list of tuple shapes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>initialize the weights and biases for each function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.phi_e">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>update function for bonds and returns updated bond attribute e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.rho_e_v">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate updated bonds e_p to per atom attributes, b_e_p</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.phi_v">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the atom attributes by the results from previous step b_e_p and all the inputs
+returns v_p.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.rho_e_u">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate bonds to global attribute</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.rho_v_u">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>aggregate atom to global attributes</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>part of keras interface for serialization</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id16">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shapes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
+<cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id17">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id17" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the output shape of the layer.</p>
+<p>If the layer has not been built, this method will call <cite>build</cite> on the
+layer. This assumes that the layer will later be used with inputs that
+match the input shape provided here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
+or list of shape tuples (one per output tensor of the layer).
+Shape tuples can include None for free dimensions,
+instead of an integer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An input shape tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id18">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id18" title="Permalink to this definition">¶</a></dt>
+<dd><p>Part of keras layer interface, where the signature is converted into a dict
+:returns: configurational dictionary</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id19">
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id19" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for updating the edge attributes
+ek’ = phi_e(ek, vrk, vsk, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated edge/bond attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.InteractionLayer.phi_u">
+<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">b_v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.InteractionLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>u’ = phi_u(ar e’, ar v’, u)
+:param b_e_p: edge/bond to global aggregated tensor
+:type b_e_p: tf.Tensor
+:param b_v_p: node/atom to global aggregated tensor
+:type b_v_p: tf.Tensor
+:param inputs: list or tuple for the graph inputs
+:type inputs: Sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>updated globa/state attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id20">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id20" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step 3. Compute updated node attributes
+v_i’ = phi_v(ar e_i, vi, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_ei_p</strong> (<em>tf.Tensor</em>) – edge-to-node aggregated tensor</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated node/atom attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id21">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id21" title="Permalink to this definition">¶</a></dt>
+<dd><p>let V’ = {v’} i = 1:Nv
+let E’ = {(e_k’, rk, sk)} k = 1:Ne
+ar e’ = rho_e_u(E’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – updated edge/bond attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id22">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id22" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce edge attributes to node attribute, eqn 5 in the paper
+:param e_p: updated bond
+:param inputs: the whole input list</p>
+<p>Returns: summed tensor</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="id23">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id23" title="Permalink to this definition">¶</a></dt>
+<dd><p>ar v’ = rho_v_u(V’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v_p</strong> (<em>tf.Tensor</em>) – updated atom/node attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>atom/node to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="megnet.layers.Set2Set">
+<em class="property">class </em><code class="sig-name descname">Set2Set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">n_hidden</span><span class="o">=</span><span class="default_value">512</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activation_lstm</span><span class="o">=</span><span class="default_value">'tanh'</span></em>, <em class="sig-param"><span class="n">recurrent_activation</span><span class="o">=</span><span class="default_value">'hard_sigmoid'</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="o">=</span><span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">recurrent_initializer</span><span class="o">=</span><span class="default_value">'orthogonal'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="o">=</span><span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">unit_forget_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recurrent_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recurrent_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.Set2Set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>For a set of vectors, the set2set neural network maps it to a single vector.
+The order invariance is acheived by a attention mechanism.
+See Vinyals, Oriol, Samy Bengio, and Manjunath Kudlur.
+“Order matters: Sequence to sequence for sets.” arXiv preprint
+arXiv:1511.06391 (2015).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>T</strong> – (int) recurrent step</p></li>
+<li><p><strong>n_hidden</strong> – (int) number of hidden units</p></li>
+<li><p><strong>activation</strong> – (str or object) activation function</p></li>
+<li><p><strong>activation_lstm</strong> – (str or object) activation function for lstm</p></li>
+<li><p><strong>recurrent_activation</strong> – (str or object) activation function for recurrent step</p></li>
+<li><p><strong>kernel_initializer</strong> – (str or object) initializer for kernel weights</p></li>
+<li><p><strong>recurrent_initializer</strong> – (str or object) initializer for recurrent weights</p></li>
+<li><p><strong>bias_initializer</strong> – (str or object) initializer for biases</p></li>
+<li><p><strong>use_bias</strong> – (bool) whether to use biases</p></li>
+<li><p><strong>unit_forget_bias</strong> – (bool) whether to use basis in forget gate</p></li>
+<li><p><strong>kernel_regularizer</strong> – (str or object) regularizer for kernel weights</p></li>
+<li><p><strong>recurrent_regularizer</strong> – (str or object) regularizer for recurrent weights</p></li>
+<li><p><strong>bias_regularizer</strong> – (str or object) regularizer for biases</p></li>
+<li><p><strong>kernel_constraint</strong> – (str or object) constraint for kernel weights</p></li>
+<li><p><strong>recurrent_constraint</strong> – (str or object) constraint for recurrent weights</p></li>
+<li><p><strong>bias_constraint</strong> – (str or object) constraint for biases</p></li>
+<li><p><strong>kwargs</strong> – other inputs for keras Layer class</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.Set2Set.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.Set2Set.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
+<cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.Set2Set.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.Set2Set.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> – Input tensor, or list/tuple of input tensors.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.Set2Set.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.Set2Set.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the output shape of the layer.</p>
+<p>If the layer has not been built, this method will call <cite>build</cite> on the
+layer. This assumes that the layer will later be used with inputs that
+match the input shape provided here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
+or list of shape tuples (one per output tensor of the layer).
+Shape tuples can include None for free dimensions,
+instead of an integer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An input shape tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.Set2Set.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.Set2Set.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="megnet.layers.LinearWithIndex">
+<em class="property">class </em><code class="sig-name descname">LinearWithIndex</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">'mean'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.LinearWithIndex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>Sum or average the node/edge attributes to get a structure-level vector</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mode</strong> – (str) ‘mean’ or ‘sum’</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.LinearWithIndex.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.LinearWithIndex.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
+<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
+can override if they need a state-creation step in-between
+layer instantiation and layer call.</p>
+<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
+<cite>TensorShape</cite> if the layer expects a list of inputs
+(one instance per input).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.LinearWithIndex.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.LinearWithIndex.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is where the layer’s logic lives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> – Input tensor, or list/tuple of input tensors.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tensor or list/tuple of tensors.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.LinearWithIndex.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.LinearWithIndex.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the output shape of the layer.</p>
+<p>If the layer has not been built, this method will call <cite>build</cite> on the
+layer. This assumes that the layer will later be used with inputs that
+match the input shape provided here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
+or list of shape tuples (one per output tensor of the layer).
+Shape tuples can include None for free dimensions,
+instead of an integer.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An input shape tuple.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.LinearWithIndex.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.LinearWithIndex.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the config of the layer.</p>
+<p>A layer config is a Python dictionary (serializable)
+containing the configuration of a layer.
+The same layer can be reinstantiated later
+(without its trained weights) from this configuration.</p>
+<p>The config of a layer does not include connectivity
+information, nor the layer class name. These are handled
+by <cite>Network</cite> (one layer of abstraction above).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Python dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="megnet.layers.keras_layer_deserialize">
+<code class="sig-name descname">keras_layer_deserialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">config</span></em>, <em class="sig-param"><span class="n">custom_objects</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.keras_layer_deserialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates a layer from a config dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>config</strong> – dict of the form {‘class_name’: str, ‘config’: dict}</p></li>
+<li><p><strong>custom_objects</strong> – dict mapping class names (or function names)
+of custom (non-Keras) objects to class/functions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Layer instance (may be Model, Sequential, Network, Layer…)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="megnet.layers.mean_squared_error_with_scale">
+<code class="sig-name descname">mean_squared_error_with_scale</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y_true</span></em>, <em class="sig-param"><span class="n">y_pred</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">10000</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/losses.html#mean_squared_error_with_scale"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.mean_squared_error_with_scale" title="Permalink to this definition">¶</a></dt>
+<dd><p>Keras default log for tracking progress shows two decimal points,
+here we multiply the mse by a factor to fully show the loss in progress bar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> – (tensor) training y</p></li>
+<li><p><strong>y_pred</strong> – (tensor) predicted y</p></li>
+<li><p><strong>scale</strong> – (int or float) factor to multiply with mse</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>scaled mse (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="megnet.layers.softplus2">
+<code class="sig-name descname">softplus2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/activations.html#softplus2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.softplus2" title="Permalink to this definition">¶</a></dt>
+<dd><p>out = log(exp(x)+1) - log(2)
+softplus function that is 0 at x=0, the implementation aims at avoiding overflow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – (Tensor) input tensor</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(Tensor) output tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </div>
 
@@ -122,7 +1027,7 @@
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

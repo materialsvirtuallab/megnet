@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>megnet.models.megnet module &#8212; megnet 1.1.4 documentation</title>
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.utils package" href="megnet.utils.html" />
+    <link rel="prev" title="megnet.models.base module" href="megnet.models.base.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.utils.html" title="megnet.utils package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.models.base.html" title="megnet.models.base module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="megnet.models.html" accesskey="U">megnet.models package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-megnet.models.megnet">
+<span id="megnet-models-megnet-module"></span><h1>megnet.models.megnet module<a class="headerlink" href="#module-megnet.models.megnet" title="Permalink to this headline">¶</a></h1>
+<p>Implements megnet models.</p>
+<dl class="py class">
+<dt id="megnet.models.megnet.MEGNetModel">
+<em class="property">class </em><code class="sig-name descname">MEGNetModel</code><span class="sig-paren">(</span><em class="sig-param">nfeat_edge: int = None</em>, <em class="sig-param">nfeat_global: int = None</em>, <em class="sig-param">nfeat_node: int = None</em>, <em class="sig-param">nblocks: int = 3</em>, <em class="sig-param">lr: float = 0.001</em>, <em class="sig-param">n1: int = 64</em>, <em class="sig-param">n2: int = 32</em>, <em class="sig-param">n3: int = 16</em>, <em class="sig-param">nvocal: int = 95</em>, <em class="sig-param">embedding_dim: int = 16</em>, <em class="sig-param">nbvocal: int = None</em>, <em class="sig-param">bond_embedding_dim: int = None</em>, <em class="sig-param">ngvocal: int = None</em>, <em class="sig-param">global_embedding_dim: int = None</em>, <em class="sig-param">npass: int = 3</em>, <em class="sig-param">ntarget: int = 1</em>, <em class="sig-param">act: Callable = &lt;function softplus2&gt;</em>, <em class="sig-param">is_classification: bool = False</em>, <em class="sig-param">loss: str = 'mse'</em>, <em class="sig-param">metrics: List[str] = None</em>, <em class="sig-param">l2_coef: float = None</em>, <em class="sig-param">dropout: float = None</em>, <em class="sig-param">graph_converter: megnet.data.graph.StructureGraph = None</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = &lt;megnet.utils.preprocessing.DummyScaler object&gt;</em>, <em class="sig-param">optimizer_kwargs: Dict = None</em>, <em class="sig-param">dropout_on_predict: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.megnet.MEGNetModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.models.base.GraphModel</span></code></a></p>
+<p>Construct a graph network model with or without explicit atom features
+if n_feature is specified then a general graph model is assumed,
+otherwise a crystal graph model with z number as atom feature is assumed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nfeat_edge</strong> – (int) number of bond features</p></li>
+<li><p><strong>nfeat_global</strong> – (int) number of state features</p></li>
+<li><p><strong>nfeat_node</strong> – (int) number of atom features</p></li>
+<li><p><strong>nblocks</strong> – (int) number of MEGNetLayer blocks</p></li>
+<li><p><strong>lr</strong> – (float) learning rate</p></li>
+<li><p><strong>n1</strong> – (int) number of hidden units in layer 1 in MEGNetLayer</p></li>
+<li><p><strong>n2</strong> – (int) number of hidden units in layer 2 in MEGNetLayer</p></li>
+<li><p><strong>n3</strong> – (int) number of hidden units in layer 3 in MEGNetLayer</p></li>
+<li><p><strong>nvocal</strong> – (int) number of total element</p></li>
+<li><p><strong>embedding_dim</strong> – (int) number of embedding dimension</p></li>
+<li><p><strong>nbvocal</strong> – (int) number of bond types if bond attributes are types</p></li>
+<li><p><strong>bond_embedding_dim</strong> – (int) number of bond embedding dimension</p></li>
+<li><p><strong>ngvocal</strong> – (int) number of global types if global attributes are types</p></li>
+<li><p><strong>global_embedding_dim</strong> – (int) number of global embedding dimension</p></li>
+<li><p><strong>npass</strong> – (int) number of recurrent steps in Set2Set layer</p></li>
+<li><p><strong>ntarget</strong> – (int) number of output targets</p></li>
+<li><p><strong>act</strong> – (object) activation function</p></li>
+<li><p><strong>l2_coef</strong> – (float or None) l2 regularization parameter</p></li>
+<li><p><strong>is_classification</strong> – (bool) whether it is a classification task</p></li>
+<li><p><strong>loss</strong> – (object or str) loss function</p></li>
+<li><p><strong>metrics</strong> – (list or dict) List or dictionary of Keras metrics to be evaluated by the model during training
+and testing</p></li>
+<li><p><strong>dropout</strong> – (float) dropout rate</p></li>
+<li><p><strong>graph_converter</strong> – (object) object that exposes a “convert” method for structure to graph conversion</p></li>
+<li><p><strong>target_scaler</strong> – (object) object that exposes a “transform” and “inverse_transform” methods for transforming
+the target values</p></li>
+<li><p><strong>optimizer_kwargs</strong> (<em>dict</em>) – extra keywords for optimizer, for example clipnorm and clipvalue</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.models.megnet.MEGNetModel.from_mvl_models">
+<em class="property">classmethod </em><code class="sig-name descname">from_mvl_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel">megnet.models.megnet.MEGNetModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_mvl_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.megnet.MEGNetModel.from_mvl_models" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="megnet.models.megnet.MEGNetModel.from_url">
+<em class="property">classmethod </em><code class="sig-name descname">from_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel">megnet.models.megnet.MEGNetModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.megnet.MEGNetModel.from_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download and load a model from a URL. E.g.
+<a class="reference external" href="https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5">https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>url</strong> – (str) url link of the model</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>GraphModel</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="megnet.models.megnet.make_megnet_model">
+<code class="sig-name descname">make_megnet_model</code><span class="sig-paren">(</span><em class="sig-param">nfeat_edge: int = None</em>, <em class="sig-param">nfeat_global: int = None</em>, <em class="sig-param">nfeat_node: int = None</em>, <em class="sig-param">nblocks: int = 3</em>, <em class="sig-param">n1: int = 64</em>, <em class="sig-param">n2: int = 32</em>, <em class="sig-param">n3: int = 16</em>, <em class="sig-param">nvocal: int = 95</em>, <em class="sig-param">embedding_dim: int = 16</em>, <em class="sig-param">nbvocal: int = None</em>, <em class="sig-param">bond_embedding_dim: int = None</em>, <em class="sig-param">ngvocal: int = None</em>, <em class="sig-param">global_embedding_dim: int = None</em>, <em class="sig-param">npass: int = 3</em>, <em class="sig-param">ntarget: int = 1</em>, <em class="sig-param">act: Callable = &lt;function softplus2&gt;</em>, <em class="sig-param">is_classification: bool = False</em>, <em class="sig-param">l2_coef: float = None</em>, <em class="sig-param">dropout: float = None</em>, <em class="sig-param">dropout_on_predict: bool = False</em><span class="sig-paren">)</span> &#x2192; tensorflow.python.keras.engine.training.Model<a class="reference internal" href="_modules/megnet/models/megnet.html#make_megnet_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.megnet.make_megnet_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a MEGNet Model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nfeat_edge</strong> – (int) number of bond features</p></li>
+<li><p><strong>nfeat_global</strong> – (int) number of state features</p></li>
+<li><p><strong>nfeat_node</strong> – (int) number of atom features</p></li>
+<li><p><strong>nblocks</strong> – (int) number of MEGNetLayer blocks</p></li>
+<li><p><strong>n1</strong> – (int) number of hidden units in layer 1 in MEGNetLayer</p></li>
+<li><p><strong>n2</strong> – (int) number of hidden units in layer 2 in MEGNetLayer</p></li>
+<li><p><strong>n3</strong> – (int) number of hidden units in layer 3 in MEGNetLayer</p></li>
+<li><p><strong>nvocal</strong> – (int) number of total element</p></li>
+<li><p><strong>embedding_dim</strong> – (int) number of embedding dimension</p></li>
+<li><p><strong>nbvocal</strong> – (int) number of bond types if bond attributes are types</p></li>
+<li><p><strong>bond_embedding_dim</strong> – (int) number of bond embedding dimension</p></li>
+<li><p><strong>ngvocal</strong> – (int) number of global types if global attributes are types</p></li>
+<li><p><strong>global_embedding_dim</strong> – (int) number of global embedding dimension</p></li>
+<li><p><strong>npass</strong> – (int) number of recurrent steps in Set2Set layer</p></li>
+<li><p><strong>ntarget</strong> – (int) number of output targets</p></li>
+<li><p><strong>act</strong> – (object) activation function</p></li>
+<li><p><strong>l2_coef</strong> – (float or None) l2 regularization parameter</p></li>
+<li><p><strong>is_classification</strong> – (bool) whether it is a classification task</p></li>
+<li><p><strong>dropout</strong> – (float) dropout rate</p></li>
+<li><p><strong>dropout_on_predict</strong> (<em>bool</em>) – Whether to use dropout during prediction and training</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>(Model) Keras model, ready to run</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+  <li><a href="megnet.models.html">megnet.models package</a><ul>
+      <li>Previous: <a href="megnet.models.base.html" title="previous chapter">megnet.models.base module</a></li>
+      <li>Next: <a href="megnet.utils.html" title="next chapter">megnet.utils package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.models.megnet.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

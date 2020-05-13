@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.graph.base module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.layers.graph.base module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.layers.graph.cgcnn module" href="megnet.layers.graph.cgcnn.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.layers.graph.html" title="megnet.layers.graph package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="megnet.layers.graph.html" accesskey="U">megnet.layers.graph package</a> &#187;</li> 
@@ -65,10 +65,10 @@
 </dd>
 </dl>
 <p>[1] <a class="reference external" href="https://arxiv.org/pdf/1806.01261.pdf">https://arxiv.org/pdf/1806.01261.pdf</a></p>
-<dl class="class">
+<dl class="py class">
 <dt id="megnet.layers.graph.base.GraphNetworkLayer">
-<em class="property">class </em><code class="sig-name descname">GraphNetworkLayer</code><span class="sig-paren">(</span><em class="sig-param">activation=None</em>, <em class="sig-param">use_bias=True</em>, <em class="sig-param">kernel_initializer='glorot_uniform'</em>, <em class="sig-param">bias_initializer='zeros'</em>, <em class="sig-param">kernel_regularizer=None</em>, <em class="sig-param">bias_regularizer=None</em>, <em class="sig-param">activity_regularizer=None</em>, <em class="sig-param">kernel_constraint=None</em>, <em class="sig-param">bias_constraint=None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">keras.engine.base_layer.Layer</span></code></p>
+<em class="property">class </em><code class="sig-name descname">GraphNetworkLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">activation</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activity_regularizer</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="p">:</span> <span class="n">Union[str, Callable[[…], Any], None]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
 <p>Implementation of a graph network layer. Current implementation is based on
 neural networks for each update function, and sum or mean for each
 aggregation function</p>
@@ -106,108 +106,130 @@ rho_v_u(v_p, inputs): aggregate atom to global attributes
 get_config(): part of keras interface for serialization</p>
 </dd>
 </dl>
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">input_shape</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the layer weights.</p>
-<p>Must be implemented on all layers that have weights.</p>
-<dl class="simple">
-<dt># Arguments</dt><dd><dl class="simple">
-<dt>input_shape: Keras tensor (future input to layer)</dt><dd><p>or list/tuple of Keras tensors to reference
-for weight shape computations.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.layers.graph.base.GraphNetworkLayer.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param">inputs</em>, <em class="sig-param">mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.call" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Sequence<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is where the layer’s logic lives.</p>
-<dl class="simple">
-<dt># Arguments</dt><dd><p>inputs: Input tensor, or list/tuple of input tensors.
-<a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: Additional keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> – Input tensor, or list/tuple of input tensors.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
+</ul>
 </dd>
-<dt># Returns</dt><dd><p>A tensor or list/tuple of tensors.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.compute_output_shape">
-<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param">input_shape</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the output shape of the layer.</p>
-<p>Assumes that the layer will be built
-to match that input shape provided.</p>
-<dl class="simple">
-<dt># Arguments</dt><dd><dl class="simple">
-<dt>input_shape: Shape tuple (tuple of integers)</dt><dd><p>or list of shape tuples (one per output tensor of the layer).
-Shape tuples can include None for free dimensions,
-instead of an integer.</p>
-</dd>
-</dl>
-</dd>
-<dt># Returns</dt><dd><p>An output shape tuple.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tensor or list/tuple of tensors.</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.layers.graph.base.GraphNetworkLayer.get_config">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Part of keras layer interface, where the signature is converted into a dict
-:return:</p>
+:returns: configurational dictionary</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_e">
-<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_e" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is for updating the edge attributes
-ek’ = phi_e(ek, vrk, vsk, u)
-:return:</p>
+ek’ = phi_e(ek, vrk, vsk, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated edge/bond attributes</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_u">
-<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param">b_e_p</em>, <em class="sig-param">b_v_p</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">b_v_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>u’ = phi_u(ar e’, ar v’, u)
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_v">
-<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param">b_e_p</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_v" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step 3. Compute updated node attributes
-v_i’ = phi_v(ar e_i, vi, u)
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_u">
-<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param">e_p</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
-<dd><p>let V’ = {v’} i = 1:Nv
-let E’ = {(e_k’, rk, sk)} k = 1:Ne
-ar e’ = rho_e_u(E’)
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_v">
-<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param">e_p</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is for step 2, aggregate edge attributes per node
-Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
-<p>ar e_i’ = rho_e_v(Ei’)
-:return:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_v_u">
-<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param">v_p</em>, <em class="sig-param">inputs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
-<dd><p>ar v’ = rho_v_u(V’)</p>
+:param b_e_p: edge/bond to global aggregated tensor
+:type b_e_p: tf.Tensor
+:param b_v_p: node/atom to global aggregated tensor
+:type b_v_p: tf.Tensor
+:param inputs: list or tuple for the graph inputs
+:type inputs: Sequence</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
+<dd class="field-odd"><p>updated globa/state attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_v">
+<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Step 3. Compute updated node attributes
+v_i’ = phi_v(ar e_i, vi, u)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_ei_p</strong> (<em>tf.Tensor</em>) – edge-to-node aggregated tensor</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated node/atom attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_u">
+<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>let V’ = {v’} i = 1:Nv
+let E’ = {(e_k’, rk, sk)} k = 1:Ne
+ar e’ = rho_e_u(E’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – updated edge/bond attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to global/state aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_v">
+<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for step 2, aggregate edge attributes per node
+Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – the updated edge attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>edge/bond to node/atom aggregated tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_v_u">
+<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dd><p>ar v’ = rho_v_u(V’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v_p</strong> (<em>tf.Tensor</em>) – updated atom/node attributes</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>atom/node to global/state aggregated tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -250,7 +272,7 @@ Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>

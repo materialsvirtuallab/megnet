@@ -5,6 +5,7 @@ Submodules
 ----------
 
 .. toctree::
+   :maxdepth: 6
 
    megnet.layers.readout.linear
    megnet.layers.readout.set2set

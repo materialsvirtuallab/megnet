@@ -1,17 +1,17 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.qm9 module &#8212; megnet 1.0.1 documentation</title>
+    <title>megnet.data.qm9 module &#8212; megnet 1.1.4 documentation</title>
     <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.layers package" href="megnet.layers.html" />
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="megnet.data.molecule.html" title="megnet.data.molecule module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.data.html" accesskey="U">megnet.data package</a> &#187;</li> 
       </ul>
@@ -52,146 +52,34 @@
             
   <div class="section" id="module-megnet.data.qm9">
 <span id="megnet-data-qm9-module"></span><h1>megnet.data.qm9 module<a class="headerlink" href="#module-megnet.data.qm9" title="Permalink to this headline">¶</a></h1>
-<p>The data processing is based on the data shared by Faber, Felix A., et al.
-“Prediction errors of molecular machine learning models lower than hybrid DFT error.”
-Journal of chemical theory and computation 13.11 (2017): 5255-5264..</p>
-<p>Visit <a class="reference external" href="https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU">https://drive.google.com/open?id=0Bzn36Iqm8hZscHFJcVh5aC1mZFU</a>. for access</p>
-<dl class="class">
+<p>Simple qm9 utils, kept here for historical reasons</p>
+<dl class="py class">
 <dt id="megnet.data.qm9.AtomNumberToTypeConverter">
-<em class="property">class </em><code class="sig-name descname">AtomNumberToTypeConverter</code><span class="sig-paren">(</span><em class="sig-param">mapping={'1': 1</em>, <em class="sig-param">'6': 2</em>, <em class="sig-param">'7': 4</em>, <em class="sig-param">'8': 6</em>, <em class="sig-param">'9': 8}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#AtomNumberToTypeConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.AtomNumberToTypeConverter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">AtomNumberToTypeConverter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mapping</span><span class="o">=</span><span class="default_value">{'1': 1, '6': 2, '7': 4, '8': 6, '9': 8}</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#AtomNumberToTypeConverter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.AtomNumberToTypeConverter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">monty.json.MSONable</span></code></p>
 <p>Convert atomic number Z into the atomic type in the QM9 dataset</p>
-<dl class="method">
+<dl class="py method">
 <dt id="megnet.data.qm9.AtomNumberToTypeConverter.convert">
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#AtomNumberToTypeConverter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.AtomNumberToTypeConverter.convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#AtomNumberToTypeConverter.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.AtomNumberToTypeConverter.convert" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="megnet.data.qm9.FeatureClean">
-<em class="property">class </em><code class="sig-name descname">FeatureClean</code><span class="sig-paren">(</span><em class="sig-param">categorical=['type', 'chirality', 'hybridization', 'donor', 'acceptor', 'aromatic'], feature_labels=['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor', 'donor', 'aromatic'], distance_converter=&lt;megnet.data.graph.GaussianDistance object&gt;, is_norm_dist=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#FeatureClean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.FeatureClean" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code></p>
-<p>Clean the features and convert them to model inputs</p>
-<dl class="simple">
-<dt>Args</dt><dd><p>categorical: (list of string) variables that will be considered as categorical
-feature_labels: (list of string) all features
-distance_converter: (object) convert the spatial distance to expanded Gaussians
-is_norm_dist: (bool) whether to normalize the distance features</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="megnet.data.qm9.FeatureClean.find_index">
-<em class="property">static </em><code class="sig-name descname">find_index</code><span class="sig-paren">(</span><em class="sig-param">label</em>, <em class="sig-param">labels</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#FeatureClean.find_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.FeatureClean.find_index" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="megnet.data.qm9.FeatureClean.fit">
-<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#FeatureClean.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.FeatureClean.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>sklearn transformer interface</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> – list of feature list, e.g., [[5, 0, [3, 5], 0, 0, 1, 1], [5, 0, [3, 5], 0, 0, 1, 1]] for the default</p></li>
-<li><p><strong>labels</strong> (<em>feature</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>(np.array) converted feature matrix</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="megnet.data.qm9.FeatureClean.transform">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#FeatureClean.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.FeatureClean.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform new data according to learnt logics</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>X</strong> – list of features</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>feature dimension</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="megnet.data.qm9.Scaler">
-<em class="property">class </em><code class="sig-name descname">Scaler</code><a class="reference internal" href="_modules/megnet/data/qm9.html#Scaler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.Scaler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.BaseEstimator</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.base.TransformerMixin</span></code></p>
-<p>Simple numerical scaler for list of features</p>
-<dl class="method">
-<dt id="megnet.data.qm9.Scaler.fit">
-<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#Scaler.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.Scaler.fit" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="megnet.data.qm9.Scaler.transform">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param">X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#Scaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.Scaler.transform" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="megnet.data.qm9.load_qm9_faber">
-<code class="sig-name descname">load_qm9_faber</code><span class="sig-paren">(</span><em class="sig-param">db_connection=None, atom_attri=['type', 'chirality', 'ring_sizes', 'hybridization', 'acceptor', 'donor', 'aromatic'], bond_attri=['a_idx', 'b_idx', 'bond_type', 'graph_distance', 'same_ring', 'spatial_distance'], graph_dist=None, restrict=None, verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#load_qm9_faber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.load_qm9_faber" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load the qm9 dataset from faber</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>db_connection</strong> – mongodb collection pointing to the qm9 data</p></li>
-<li><p><strong>atom_attri</strong> – (list of string) atom attributes used as feature</p></li>
-<li><p><strong>bond_attri</strong> – (list of string) bond attributes used as feature</p></li>
-<li><p><strong>graph_dist</strong> – (list of integer) graph distances considered. Basically</p></li>
-<li><p><strong>atoms have graph distance of 1</strong><strong>, </strong><strong>second nearest neighbors are 2 etc.</strong> (<em>bonded</em>) – </p></li>
-<li><p><strong>restrict</strong> – (dict) extra constraints for the query</p></li>
-<li><p><strong>verbose</strong> – (bool) show the progress</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>atom_features, bond_features, global_features, bond_atom_index1, bond_atom_index2, targets</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
+<dl class="py function">
 <dt id="megnet.data.qm9.ring_to_vector">
-<code class="sig-name descname">ring_to_vector</code><span class="sig-paren">(</span><em class="sig-param">l</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#ring_to_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.ring_to_vector" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ring_to_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">l</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#ring_to_vector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.ring_to_vector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the ring sizes vector to a fixed length vector
 For example, l can be [3, 5, 5], meaning that the atom is involved
 in 1 3-sized ring and 2 5-sized ring. This function will convert it into
-[ 0, 0, 1, 0, 2, 0, 0, 0, 0, 0].</p>
+[ 0, 0, 1, 0, 2, 0, 0, 0, 0, 0].
+:param l: (list of integer) ring_sizes attributes</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>l</strong> – (list of integer) ring_sizes attributes</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl class="simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><dl class="simple">
 <dt>(list of integer) fixed size list with the i-1 th element indicates number of</dt><dd><p>i-sized ring this atom is involved in.</p>
 </dd>
 </dl>
 </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="megnet.data.qm9.sublist_from_qm9">
-<code class="sig-name descname">sublist_from_qm9</code><span class="sig-paren">(</span><em class="sig-param">ids</em>, <em class="sig-param">targets</em>, <em class="sig-param">*features</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/qm9.html#sublist_from_qm9"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.qm9.sublist_from_qm9" title="Permalink to this definition">¶</a></dt>
-<dd><p>select a subset of the data according to the qm9 id.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ids</strong> – (list of string) qm9 id list</p></li>
-<li><p><strong>targets</strong> – (pandas DataFrame) data frame of targets</p></li>
-<li><p><strong>features</strong> – (list）list of graph features</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>subset of targets, features</p>
 </dd>
 </dl>
 </dd></dl>
@@ -230,7 +118,7 @@ in 1 3-sized ring and 2 5-sized ring. This function will convert it into
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
