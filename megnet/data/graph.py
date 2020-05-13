@@ -101,11 +101,11 @@ class StructureGraph(MSONable):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': np.array(atoms, dtype=np.int32),
-                    'bond': np.array(bonds, dtype=np.float32),
-                    'state': np.array(state_attributes, dtype=np.float32),
-                    'index1': np.array(index1, dtype=np.int32),
-                    'index2': np.array(index2, dtype=np.int32)
+            return {'atom': atoms,
+                    'bond': bonds,
+                    'state': state_attributes,
+                    'index1': index1,
+                    'index2': index2
                     }
 
     @staticmethod
@@ -226,11 +226,11 @@ class StructureGraphFixedRadius(StructureGraph):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': np.array(atoms, dtype=np.int32),
-                    'bond': np.array(bonds, dtype=np.float32),
-                    'state': np.array(state_attributes, dtype=np.float32),
-                    'index1': np.array(index1, dtype=np.int32),
-                    'index2': np.array(index2, dtype=np.int32)
+            return {'atom': atoms,
+                    'bond': bonds,
+                    'state': state_attributes,
+                    'index1': index1,
+                    'index2': index2
                     }
 
     @classmethod
