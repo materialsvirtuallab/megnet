@@ -1,5 +1,6 @@
 import unittest
 from megnet.data.graph import GaussianDistance
+from megnet.utils.general import to_list
 from megnet.data.crystal import CrystalGraph, get_elemental_embeddings, CrystalGraphWithBondTypes
 from pymatgen import Structure
 import os
@@ -24,9 +25,9 @@ class TestGraph(unittest.TestCase):
         cg2 = CrystalGraph(cutoff=6)
         self.assertEqual(cg2.cutoff, 6)
         graph2 = cg2.convert(self.structures[0])
-        self.assertListEqual(graph2['state'][0], [0, 0])
+        self.assertListEqual(to_list(graph2['state'][0]), [0, 0])
         graph3 = cg(self.structures[0])
-        self.assertListEqual(graph['atom'], graph3['atom'])
+        np.testing.assert_almost_equal(graph['atom'], graph3['atom'])
 
     def test_crystal_graph_with_bond_types(self):
         graph = {'atom': [11, 8, 8],
@@ -36,13 +37,13 @@ class TestGraph(unittest.TestCase):
                  'state': [[0, 0]]}
         cgbt = CrystalGraphWithBondTypes(nn_strategy='VoronoiNN')
         new_graph = cgbt._get_bond_type(graph)
-        self.assertListEqual(new_graph['bond'], [2, 1, 0, 0, 0, 0])
+        self.assertListEqual(to_list(new_graph['bond']), [2, 1, 0, 0, 0, 0])
 
 
     def test_convert(self):
         cg = CrystalGraph(cutoff=4)
         graph = cg.convert(self.structures[0])
-        self.assertListEqual(graph['atom'], [i.specie.Z for i in self.structures[0]])
+        self.assertListEqual(to_list(graph['atom']), [i.specie.Z for i in self.structures[0]])
 
     def test_get_input(self):
         cg = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))

@@ -101,11 +101,11 @@ class StructureGraph(MSONable):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': atoms,
-                    'bond': bonds,
-                    'state': state_attributes,
-                    'index1': index1,
-                    'index2': index2
+            return {'atom': np.array(atoms, dtype=np.int32),
+                    'bond': np.array(bonds, dtype=np.float32),
+                    'state': np.array(state_attributes, dtype=np.float32),
+                    'index1': np.array(index1, dtype=np.int32),
+                    'index2': np.array(index2, dtype=np.int32)
                     }
 
     @staticmethod
@@ -149,8 +149,8 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(graph['state'])),
                 expand_1st(np.array(graph['index1'])),
                 expand_1st(np.array(graph['index2'])),
-                expand_1st(np.array(gnode)),
-                expand_1st(np.array(gbond))]
+                expand_1st(np.array(gnode, dtype=np.int32)),
+                expand_1st(np.array(gbond, dtype=np.int32))]
 
     def get_flat_data(self, graphs: List[Dict], targets: List = None) -> tuple:
         """
@@ -226,11 +226,11 @@ class StructureGraphFixedRadius(StructureGraph):
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
-            return {'atom': atoms,
-                    'bond': bonds,
-                    'state': state_attributes,
-                    'index1': index1,
-                    'index2': index2
+            return {'atom': np.array(atoms, dtype=np.int32),
+                    'bond': np.array(bonds, dtype=np.float32),
+                    'state': np.array(state_attributes, dtype=np.float32),
+                    'index1': np.array(index1, dtype=np.int32),
+                    'index2': np.array(index2, dtype=np.int32)
                     }
 
     @classmethod
@@ -392,15 +392,14 @@ class BaseGraphBatchGenerator(Sequence):
             index1 += [i + offset_ind for i in ind1]
             index2 += [i + offset_ind for i in ind2]
             offset_ind += (max(ind1) + 1)
-
         # Compile the inputs in needed order
         inputs = [expand_1st(feature_list_temp),
                   expand_1st(connection_list_temp),
                   expand_1st(global_list_temp),
-                  expand_1st(index1),
-                  expand_1st(index2),
-                  expand_1st(gnode),
-                  expand_1st(gbond)]
+                  expand_1st(np.array(index1, dtype=np.int32)),
+                  expand_1st(np.array(index2, dtype=np.int32)),
+                  expand_1st(np.array(gnode, dtype=np.int32)),
+                  expand_1st(np.array(gbond, dtype=np.int32))]
         return inputs
 
     def on_epoch_end(self):

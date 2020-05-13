@@ -4,6 +4,7 @@ import json
 
 from megnet.data.molecule import SimpleMolGraph
 from megnet.data.graph import DummyConverter
+from megnet.utils.general import to_list
 from pymatgen import Molecule
 import numpy as np
 
@@ -31,10 +32,10 @@ class QM9Test(unittest.TestCase):
     def test_simple_molecule_graph(self):
         mol = Molecule(['C', 'H', 'O'], [[0, 0, 0], [1, 0, 0], [2, 0, 0]])
         graph = SimpleMolGraph().convert(mol)
-        self.assertListEqual(graph['atom'], [6, 1, 8])
+        self.assertListEqual(to_list(graph['atom']), [6, 1, 8])
         self.assertTrue(np.allclose(graph['bond'], [1, 2, 1, 1, 2, 1]))
-        self.assertListEqual(graph['index1'], [0, 0, 1, 1, 2, 2])
-        self.assertListEqual(graph['index2'], [1, 2, 0, 2, 0, 1])
+        self.assertListEqual(to_list(graph['index1']), [0, 0, 1, 1, 2, 2])
+        self.assertListEqual(to_list(graph['index2']), [1, 2, 0, 2, 0, 1])
 
     def test_ring_to_vector(self):
         x = [2, 2, 3]
