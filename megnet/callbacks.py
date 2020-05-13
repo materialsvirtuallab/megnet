@@ -10,7 +10,7 @@ import tensorflow.keras.backend as kb
 from megnet.utils.metrics import mae, accuracy
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
-from typing import Iterable, List, Dict
+from typing import Iterable, Dict
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -22,16 +22,17 @@ class ModelCheckpointMAE(Callback):
     Save the best MAE model with target scaler
 
     Args:
-        filepath: (string) path to save the model file with format. For example
-        `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and val_mae in the filename
-        monitor: (string) quantity to monitor, default to "val_mae"
-        verbose: (int) 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
-        save_best_only: (bool) whether to save only the best model
-        save_weights_only: (bool) whether to save the weights only excluding model structure
-        val_gen: (generator) validation generator
-        steps_per_val: (int) steps per epoch for validation generator
-        target_scaler: (object) exposing inverse_transform method to scale the output
-        period: (int) number of epoch interval for this callback
+        filepath (string): path to save the model file with format. For example
+            `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and
+            val_mae in the filename
+        monitor (string): quantity to monitor, default to "val_mae"
+        verbose (int): 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
+        save_best_only (bool): whether to save only the best model
+        save_weights_only (bool): whether to save the weights only excluding model structure
+        val_gen (generator): validation generator
+        steps_per_val (int): steps per epoch for validation generator
+        target_scaler (object): exposing inverse_transform method to scale the output
+        period (int): number of epoch interval for this callback
         mode: (string) choose from "min", "max" or "auto"
     """
 
@@ -86,7 +87,13 @@ class ModelCheckpointMAE(Callback):
                 self.best = np.Inf
 
     def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
-        logs = logs or {}
+        """
+        Codes called by the callback at the end of epoch
+        Args:
+            epoch (int): epoch id
+            logs (dict): logs of training
+
+        """
         self.epochs_since_last_save += 1
         if self.epochs_since_last_save >= self.period:
             self.epochs_since_last_save = 0
@@ -98,8 +105,10 @@ class ModelCheckpointMAE(Callback):
                 stop_training = self.model.stop_training  # save stop_trainings state
                 pred_ = self.model.predict(val_data[0])
                 self.model.stop_training = stop_training
-                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :], nb_atom[:, None]))
-                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :], nb_atom[:, None]))
+                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :],
+                                                                     nb_atom[:, None]))
+                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :],
+                                                                  nb_atom[:, None]))
             current = self.metric(np.concatenate(val_y, axis=0), np.concatenate(val_pred, axis=0))
             filepath = self.filepath.format(**{"epoch": epoch + 1, self.monitor: current})
 
@@ -134,31 +143,43 @@ class ManualStop(Callback):
     """
 
     def on_batch_end(self, epoch: int, logs: Dict = None) -> None:
+        """
+        Codes called at the end of a batch
+        Args:
+            epoch:
+            logs:
+
+        Returns:
+
+        """
         if os.path.isfile('STOP'):
             self.model.stop_training = True
 
 
 class ReduceLRUponNan(Callback):
     """
-    This callback function solves a problem that when doing regression, an nan loss may occur, or the
-    loss suddenly shoot up
-    If such things happen, the model will reduce the learning rate and load the last best model during the
-    training process.
-    It has an extra function that patience for early stopping. This will move to indepedent callback in the
-    future.
+    This callback function solves a problem that when doing regression,
+    an nan loss may occur, or the loss suddenly shoot up.
+    If such things happen, the model will reduce the learning rate
+    and load the last best model during the training process.
+    It has an extra function that patience for early stopping.
+    This will move to indepedent callback in the future.
 
     Args:
-        filepath: (str) filepath for saved model checkpoint, should be consistent with checkpoint callback
-        factor: (float) a value < 1 for scaling the learning rate
-        verbose: (int) whether to show the loading event
-        patience: (int) number of steps that the val mae does not change. It is a criteria for early stopping
-        track_metric: (string) the variable to track
+        filepath (str): filepath for saved model checkpoint, should be consistent with
+            checkpoint callback
+        factor (float): a value < 1 for scaling the learning rate
+        verbose (bool): whether to show the loading event
+        patience (int): number of steps that the val mae does not change.
+            It is a criteria for early stopping
+        monitor (str): target metric to monitor
+        mode (str): min, max or auto
     """
 
     def __init__(self,
                  filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
                  factor: float = 0.5,
-                 verbose: int = 1,
+                 verbose: bool = True,
                  patience: int = 500,
                  monitor: str = 'val_mae',
                  mode: str = 'auto'):
@@ -187,14 +208,15 @@ class ReduceLRUponNan(Callback):
         if self.monitor not in self.variable_names:
             raise ValueError("The monitored metric should be in the name pattern")
 
-    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
+    def on_epoch_end(self, epoch: int, logs: Dict = None):
         logs = logs or {}
         loss = logs.get('loss')
         last_saved_epoch, last_metric, last_file = self._get_checkpoints()
         if last_saved_epoch is not None:
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                logger.info('%s does not improve after %d, stopping the fitting...' % (self.monitor, self.patience))
+                logger.info('%s does not improve after %d, stopping '
+                            'the fitting...' % (self.monitor, self.patience))
 
         if loss is not None:
             self.losses.append(loss)
@@ -203,15 +225,18 @@ class ReduceLRUponNan(Callback):
                     logger.info("Nan loss found!")
                 self._reduce_lr_and_load(last_file)
                 if self.verbose:
-                    logger.info("Now lr is %s." % float(kb.get_value(self.model.optimizer.lr)))
+                    logger.info("Now lr is %s." % float(
+                        kb.get_value(self.model.optimizer.lr)))
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load(last_file)
                         if self.verbose:
                             logger.info(
-                                "Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-1], self.losses[-2]))
-                            logger.info("Now lr is %s." % float(kb.get_value(self.model.optimizer.lr)))
+                                "Loss shot up from %.3f to %.3f! Reducing lr " % (
+                                    self.losses[-1], self.losses[-2]))
+                            logger.info("Now lr is %s." % float(
+                                kb.get_value(self.model.optimizer.lr)))
 
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.get_value(self.model.optimizer.lr))
@@ -245,6 +270,7 @@ class ReduceLRUponNan(Callback):
             return epochs[ind], metric_values[ind], all_check_points[ind]
         else:
             return None, None, None
+
 
 def _count(a: np.ndarray) -> np.ndarray:
     """

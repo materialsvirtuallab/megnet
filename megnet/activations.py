@@ -2,7 +2,7 @@ from typing import Union, Callable
 
 import tensorflow.keras.backend as kb
 from tensorflow.keras.activations import get as keras_get
-from tensorflow.keras.activations import deserialize, serialize  # serialize is needed here
+from tensorflow.keras.activations import deserialize, serialize  # noqa
 
 
 def softplus2(x):
@@ -20,6 +20,16 @@ def softplus2(x):
 
 
 def get(identifier: Union[str, Callable]) -> Callable:
+    """
+    Get activations by identifier
+
+    Args:
+        identifier (str or callable): the identifier of activations
+
+    Returns:
+        callable activation
+
+    """
     try:
         return keras_get(identifier)
     except ValueError:

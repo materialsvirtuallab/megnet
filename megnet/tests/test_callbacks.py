@@ -1,17 +1,16 @@
+import os
 import unittest
-import numpy as np
 
+import numpy as np
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
-from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
-from megnet.layers import MEGNetLayer
-from megnet.utils.preprocessing import StandardScaler
-
-import os
-import glob
 import tensorflow.keras.backend as kb
 from tensorflow.keras.utils import Sequence
+
 from monty.tempfile import ScratchDir
+
+from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
+from megnet.layers import MEGNetLayer
 
 
 class Generator(Sequence):
@@ -61,20 +60,23 @@ class TestCallBack(unittest.TestCase):
         cls.train_gen = Generator(cls.x, cls.y)
 
     def test_manual_stop(self):
-        callbacks = [ManualStop()]
-        epoch_count = 0
-        for i in range(3):
-            if not self.model.stop_training:
-                self.model.fit(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-                epoch_count += 1
-        self.assertEqual(epoch_count, 3)
-        open('STOP', 'a').close()
-        for i in range(3):
-            if not self.model.stop_training:
-                self.model.fit(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-                epoch_count += 1
-        self.assertEqual(epoch_count, 4)
-        os.remove('STOP')
+        with ScratchDir("."):
+            callbacks = [ManualStop()]
+            epoch_count = 0
+            for i in range(3):
+                if not getattr(self.model, "stop_training", False):
+                    self.model.fit(self.train_gen, steps_per_epoch=1, epochs=1,
+                                   callbacks=callbacks, verbose=0)
+                    epoch_count += 1
+            self.assertEqual(epoch_count, 3)
+            open('STOP', 'a').close()
+            for i in range(3):
+                if not getattr(self.model, 'stop_training', False):
+                    self.model.fit(self.train_gen, steps_per_epoch=1, epochs=1,
+                                   callbacks=callbacks, verbose=0)
+                    epoch_count += 1
+            self.assertEqual(epoch_count, 4)
+            os.remove('STOP')
 
     def test_reduce_lr_upon_nan(self):
         with ScratchDir('.'):
@@ -114,8 +116,10 @@ class TestCallBack(unittest.TestCase):
             y = np.random.normal(size=(1, 2, 1))
             train_gen = Generator(x, y)
 
-            callbacks = [ReduceLRUponNan(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', patience=100),
-                         ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=train_gen,
+            callbacks = [ReduceLRUponNan(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
+                                         patience=100),
+                         ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
+                                            val_gen=train_gen,
                                             steps_per_val=1)
                          ]
             # 1. involve training and saving
