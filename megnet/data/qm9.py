@@ -1,5 +1,5 @@
 """
-Simple qm9 utils
+Simple qm9 utils, kept here for historical reasons
 """
 from monty.json import MSONable
 

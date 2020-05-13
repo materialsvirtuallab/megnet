@@ -291,9 +291,11 @@ class GraphModel:
 
         """
         inp = self.graph_converter.graph_to_input(graph)
-        return self.target_scaler.inverse_transform(self.predict(inp).ravel(), len(graph['atom']))
+        return self.target_scaler.inverse_transform(self.predict(inp).ravel(),
+                                                    len(graph['atom']))
 
-    def _create_generator(self, *args, **kwargs) -> Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
+    def _create_generator(self, *args, **kwargs) -> \
+            Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
         if hasattr(self.graph_converter, 'bond_converter'):
             kwargs.update({'distance_converter': self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)

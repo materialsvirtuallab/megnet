@@ -17,88 +17,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class GeneratorLog(Callback):
-    """
-    This callback logger.info out the MAE for train_generator and validation_generator every n_every steps.
-    The default keras training log does not contain method to rescale the results, thus is not physically
-    intuitive.
-
-    Args:
-        train_gen: (generator), yield (x, y) pairs for training
-        steps_per_train: (int) number of generator steps per training epoch
-        val_gen: (generator), yield (x, y) pairs for validation.
-        steps_per_val: (int) number of generator steps per epoch for validation data
-        y_scaler: (object) y_scaler.inverse_transform is used to convert the predicted values to its original scale
-        n_every: (int) epoch interval for showing the log
-        val_names: (list of string) variable names
-        val_units: (list of string) variable units
-        is_pa: (bool) whether it is a per-atom quantity
-    """
-
-    def __init__(self,
-                 train_gen: Iterable,
-                 steps_per_train: int = None,
-                 val_gen: Iterable = None,
-                 steps_per_val: int = None,
-                 y_scaler: Scaler = None,
-                 n_every: int = 5,
-                 val_names: List[str] = None,
-                 val_units: List[str] = None,
-                 is_pa: bool = False):
-        super().__init__()
-        self.train_gen = train_gen
-        self.val_gen = val_gen
-        self.steps_per_train = steps_per_train
-        self.steps_per_val = steps_per_val
-        self.yscaler = y_scaler
-        self.epochs = []
-        self.total_epoch = 0
-        self.n_every = n_every
-        self.val_names = val_names
-        self.val_units = val_units
-        self.is_pa = is_pa
-        if self.yscaler is None:
-            self.yscaler = DummyScaler()
-
-    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
-        """
-        Standard keras callback interface, executed at the end of epoch
-        """
-        self.total_epoch += 1
-        if self.total_epoch % self.n_every == 0:
-            train_pred = []
-            train_y = []
-            for i in range(self.steps_per_train):
-                train_data = self.train_gen[i]
-                nb_atom = _count(np.array(train_data[0][-2]))
-                if not self.is_pa:
-                    nb_atom = np.ones_like(nb_atom)
-                pred_ = self.model.predict(train_data[0])
-                train_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
-                train_y.append(self.yscaler.inverse_transform(train_data[1][0, :, :]) * nb_atom[:, None])
-            train_mae = np.mean(np.abs(np.concatenate(train_pred, axis=0) - np.concatenate(train_y, axis=0)), axis=0)
-            logger.info("Train MAE")
-            _print_mae(self.val_names, train_mae, self.val_units)
-            val_pred = []
-            val_y = []
-            for i in range(self.steps_per_val):
-                val_data = self.val_gen[i]
-                nb_atom = _count(np.array(val_data[0][-2]))
-                if not self.is_pa:
-                    nb_atom = np.ones_like(nb_atom)
-                pred_ = self.model.predict(val_data[0])
-                val_pred.append(self.yscaler.inverse_transform(pred_[0, :, :]) * nb_atom[:, None])
-                val_y.append(self.yscaler.inverse_transform(val_data[1][0, :, :]) * nb_atom[:, None])
-            val_mae = np.mean(np.abs(np.concatenate(val_pred, axis=0) - np.concatenate(val_y, axis=0)), axis=0)
-            logger.info("Test MAE")
-            _print_mae(self.val_names, val_mae, self.val_units)
-            self.model.history.history.setdefault("train_mae", []).append(train_mae)
-            self.model.history.history.setdefault("val_mae", []).append(val_mae)
-
-
 class ModelCheckpointMAE(Callback):
     """
-    Save the best MAE model
+    Save the best MAE model with target scaler
 
     Args:
         filepath: (string) path to save the model file with format. For example
@@ -324,26 +245,6 @@ class ReduceLRUponNan(Callback):
             return epochs[ind], metric_values[ind], all_check_points[ind]
         else:
             return None, None, None
-
-
-def _print_mae(target_names: List[str], maes: List[float], units: List[str]):
-    """
-    format printing the MAE for each variable
-
-    Args:
-        target_names: (list of string) variable names
-        maes:  (list of numeric) MAE values for each variable
-        units:  (list of string) units for each variable
-
-    Returns:
-          bool
-    """
-    line = []
-    for i, j, k in zip(target_names, maes, units):
-        line.append(i + ': ' + '%.4f' % j + ' ' + k)
-    logger.info(' '.join(line))
-    return True
-
 
 def _count(a: np.ndarray) -> np.ndarray:
     """

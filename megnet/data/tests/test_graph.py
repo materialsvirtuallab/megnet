@@ -1,6 +1,6 @@
 import unittest
-from megnet.data.graph import GaussianDistance, GraphBatchGenerator, GraphBatchDistanceConvert, \
-    MoorseLongRange, EmbeddingMap
+from megnet.data.graph import GaussianDistance, GraphBatchGenerator, GraphBatchDistanceConvert,\
+    EmbeddingMap
 import numpy as np
 
 
@@ -12,12 +12,6 @@ class TestGraph(unittest.TestCase):
         gd = GaussianDistance(centers, width)
         out = gd.convert(x)
         self.assertListEqual(list(out.shape), [10, 20])
-
-    def test_moorse(self):
-        mlr = MoorseLongRange(r_eq=[1, 1.2, 1.3, 1.4])
-        x = np.linspace(1, 3, 10)
-        out = mlr.convert(x)
-        self.assertListEqual(list(out.shape), [10, 4])
 
     def test_graph_generator(self):
         feature = [np.random.normal(size=(3, 4)), np.random.normal(size=(2, 4))]
@@ -54,7 +48,8 @@ class TestGraph(unittest.TestCase):
     def test_graph_batch_distance_converter(self):
         feature = [np.random.normal(size=(3, 4)), np.random.normal(size=(2, 4))]
         bond = [np.random.normal(size=(2, )), np.random.normal(size=(1, ))]
-        glob_features = [np.random.normal(size=(1, 2)), np.random.normal(size=(1, 2))]
+        glob_features = [np.random.normal(size=(1, 2)),
+                         np.random.normal(size=(1, 2))]
         index1 = [np.array([0, 1]), np.array([0])]
         index2 = [np.array([1, 2]), np.array([1])]
         targets = np.random.normal(size=(2, 1))

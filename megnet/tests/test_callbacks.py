@@ -3,7 +3,7 @@ import numpy as np
 
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
-from megnet.callbacks import GeneratorLog, ModelCheckpointMAE, ManualStop, ReduceLRUponNan
+from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.layers import MEGNetLayer
 from megnet.utils.preprocessing import StandardScaler
 
@@ -60,36 +60,6 @@ class TestCallBack(unittest.TestCase):
         cls.y = np.random.normal(size=(1, 2, 1))
         cls.train_gen = Generator(cls.x, cls.y)
 
-    def test_callback(self):
-        callbacks = [GeneratorLog(self.train_gen, steps_per_train=1, val_gen=self.train_gen, steps_per_val=1,
-                                  n_every=1, val_names=['conductivity'], val_units=['S/cm']),
-                     ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
-                                        steps_per_val=1),
-                     ]
-        before_fit_file = glob.glob("./val_mae*.hdf5")
-        self.model.fit_generator(self.train_gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-        after_fit_file = glob.glob("./val_mae*.hdf5")
-
-        self.assertEqual(len(before_fit_file), 0)
-        self.assertEqual(len(after_fit_file), 1)
-        os.remove(after_fit_file[0])
-
-        callback_mae = ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
-                                          steps_per_val=1, target_scaler=StandardScaler(1, 1, is_intensive=True))
-
-        dummy_target = np.array([[1, 1], [2, 2]])
-        dummy_nb_atoms = np.array([[2], [3]])
-        transformed = callback_mae.target_scaler.inverse_transform(dummy_target, dummy_nb_atoms)
-        self.assertTrue(np.allclose(transformed, np.array([[2, 2], [3, 3]])))
-
-        callback_mae = ModelCheckpointMAE(filepath='./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5', val_gen=self.train_gen,
-                                          steps_per_val=1, target_scaler=StandardScaler(1, 1, is_intensive=False))
-
-        dummy_target = np.array([[1, 1], [2, 2]])
-        dummy_nb_atoms = np.array([[2], [3]])
-        transformed = callback_mae.target_scaler.inverse_transform(dummy_target, dummy_nb_atoms)
-        self.assertTrue(np.allclose(transformed, np.array([[4, 4], [9, 9]])))
-
     def test_manual_stop(self):
         callbacks = [ManualStop()]
         epoch_count = 0
@@ -133,7 +103,6 @@ class TestCallBack(unittest.TestCase):
             out = Dense(1)(out[2])
             model = Model(inputs=inp, outputs=out)
             model.compile(loss='mse', optimizer='adam')
-
             x = [np.random.normal(size=(1, 4, self.n_feature)),
                  np.random.normal(size=(1, 6, self.n_bond_features)),
                  np.random.normal(size=(1, 2, self.n_global_features)),
