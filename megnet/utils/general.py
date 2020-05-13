@@ -1,6 +1,10 @@
-import numpy as np
+"""
+Operation utilities on lists and arrays
+"""
 from collections import Iterable
 from typing import Union, List
+
+import numpy as np
 
 
 def to_list(x: Union[Iterable, np.ndarray]) -> List:
@@ -10,7 +14,7 @@ def to_list(x: Union[Iterable, np.ndarray]) -> List:
     if isinstance(x, Iterable):
         return list(x)
     elif isinstance(x, np.ndarray):
-        return x.tolist()
+        return x.tolist()  # noqa
     else:
         return [x]
 

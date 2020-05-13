@@ -4,29 +4,50 @@ pretrained megnet model
 """
 
 import os
+from typing import Union
+
 from pymatgen import Structure
 import numpy as np
-
-from megnet.models import MEGNetModel, GraphModel
 from tensorflow.keras.models import Model
 
+from megnet.models import MEGNetModel, GraphModel
+from megnet.utils.typing import StructureOrMolecule
 
-DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), '../../mvl_models/mp-2019.4.1/formation_energy.hdf5')
+
+DEFAULT_MODEL = os.path.join(
+    os.path.dirname(__file__),
+    '../../mvl_models/mp-2019.4.1/formation_energy.hdf5')
 
 
 class MEGNetDescriptor:
-    def __init__(self, model_name: str = DEFAULT_MODEL, use_cache: bool = True):
+    """
+    MEGNet descriptors. This class takes a trained model and
+    then compute the intermediate outputs as structure features
+
+    Args:
+        model_name (str or MEGNetModel): trained model. If it is
+            str, then only models in mvl_models are used.
+        use_cache (bool): whether to use cache for structure
+            graph calculations
+    """
+    def __init__(self,
+                 model_name: Union[str, GraphModel,
+                                   MEGNetModel] = DEFAULT_MODEL,
+                 use_cache: bool = True):
         if isinstance(model_name, str):
             model = MEGNetModel.from_file(model_name)
         elif isinstance(model_name, GraphModel):
             model = model_name
         else:
-            raise ValueError('model_name only support str or GraphModel object')
+            raise ValueError('model_name only support str '
+                             'or GraphModel object')
 
         layers = model.layers
         important_prefix = ['meg', 'set', 'concatenate']
-        all_names = [i.name for i in layers if any([i.name.startswith(j) for j in important_prefix])]
-        valid_outputs = [i.output for i in layers if any([i.name.startswith(j) for j in important_prefix])]
+        all_names = [i.name for i in layers if any(
+            [i.name.startswith(j) for j in important_prefix])]
+        valid_outputs = [i.output for i in layers if any(
+            [i.name.startswith(j) for j in important_prefix])]
 
         outputs = []
         valid_names = []
@@ -46,12 +67,12 @@ class MEGNetDescriptor:
         self._cache = {}
         self.use_cache = use_cache
 
-    def _predict_structure(self, structure: Structure) -> np.ndarray:
+    def _predict_structure(self, structure: StructureOrMolecule) -> np.ndarray:
         graph = self.model.graph_converter.convert(structure)
         inp = self.model.graph_converter.graph_to_input(graph)
         return self.model.predict(inp)
 
-    def _predict_feature(self, structure: Structure) -> np.ndarray:
+    def _predict_feature(self, structure: StructureOrMolecule) -> np.ndarray:
         if not self.use_cache:
             return self._predict_structure(structure)
 
@@ -64,7 +85,7 @@ class MEGNetDescriptor:
             return result
 
     def _get_features(self,
-                      structure: Structure,
+                      structure: StructureOrMolecule,
                       prefix: str,
                       level: int,
                       index: int = None) -> np.ndarray:
@@ -78,20 +99,24 @@ class MEGNetDescriptor:
         out_all = self._predict_feature(structure)
         return out_all[ind][0]
 
-    def get_atom_features(self, structure: Structure, level: int = 2) -> np.ndarray:
+    def get_atom_features(self, structure: StructureOrMolecule,
+                          level: int = 3) -> np.ndarray:
         """
         Get megnet atom features from structure
         Args:
-            structure: pymatgen structure
-            level: int, indicating the block number of megnet, starting from 1
+            structure: pymatgen structure or molecule
+            level: int, indicating the block number of megnet, starting
+                from 1
 
         Returns:
             nxm atomic feature matrix
 
         """
-        return self._get_features(structure, prefix='meg_net_layer', level=level, index=0)
+        return self._get_features(structure, prefix='meg_net_layer',
+                                  level=level, index=0)
 
-    def get_bond_features(self, structure: Structure, level: int = 2) -> np.ndarray:
+    def get_bond_features(self, structure: StructureOrMolecule,
+                          level: int = 3) -> np.ndarray:
         """
         Get bond features at megnet block level
         Args:
@@ -102,24 +127,54 @@ class MEGNetDescriptor:
             n_bond x m bond feature matrix
 
         """
-        return self._get_features(structure, prefix='meg_net_layer', level=level, index=1)
+        return self._get_features(structure, prefix='meg_net_layer',
+                                  level=level, index=1)
 
-    def get_global_features(self, structure: Structure, level: int = 2) -> np.ndarray:
+    def get_global_features(self, structure: StructureOrMolecule,
+                            level: int = 2) -> np.ndarray:
         """
         Get state features at megnet block level
         Args:
-            structure: pymatgen structure
+            structure: pymatgen structure or molecule
             level: int
 
         Returns:
             1 x m_g global feature vector
 
         """
-        return self._get_features(structure, prefix='meg_net_layer', level=level, index=2)
+        return self._get_features(structure, prefix='meg_net_layer',
+                                  level=level, index=2)
 
-    def get_set2set(self, structure: Structure, ftype: str = 'atom') -> np.ndarray:
+    def get_set2set(self, structure: StructureOrMolecule,
+                    ftype: str = 'atom') -> np.ndarray:
+        """
+        Get set2set output as features
+        Args:
+            structure (StructureOrMolecule): pymatgen structure
+                or molecule
+            ftype (str): atom or bond
+
+        Returns:
+            feature matrix, each row is a vector for an atom
+            or bond
+
+        """
         mapping = {'atom': 1, 'bond': 2}
-        return self._get_features(structure, prefix='set2_set', level=mapping[ftype])
+        return self._get_features(structure, prefix='set2_set',
+                                  level=mapping[ftype])
 
-    def get_structure_features(self, structure: Structure) -> np.ndarray:
-        return self._get_features(structure, prefix='concatenate', level=1)
+    def get_structure_features(self,
+                               structure: StructureOrMolecule) \
+            -> np.ndarray:
+        """
+        Get structure level feature vector
+        Args:
+            structure (StructureOrMolecule): pymatgen structure
+                or molecule
+
+        Returns:
+            one feature vector for the structure
+
+        """
+        return self._get_features(structure, prefix='concatenate',
+                                  level=1)

@@ -1,3 +1,4 @@
+"""metrics for evaluating datasets"""
 import numpy as np
 
 
@@ -11,7 +12,7 @@ def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     Returns:
          (float) mean absolute error
     """
-    return np.mean(np.abs(y_true - y_pred))
+    return np.mean(np.abs(y_true - y_pred)).item()
 
 
 def accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:

@@ -1,12 +1,17 @@
-import numpy as np  # type: ignore
+"""
+Tensorflow layer utilities
+"""
+import numpy as np  # noqa
 import tensorflow as tf
 
 
-def _repeat(x, n, axis=1):
+def _repeat(x: tf.Tensor, n: tf.Tensor, axis: int = 1) -> tf.Tensor:
     """
-    Given an tensor x (N*M*K), repeat the middle axis (axis=1) according to repetition indicator n (M, )
+    Given an tensor x (N*M*K), repeat the middle axis (axis=1)
+    according to repetition indicator n (M, )
     for example, if M = 3, axis=1, and n = Tensor([3, 1, 2]),
-    and the final tensor would have the shape (N*6*3) with the first one in M repeated 3 times,
+    and the final tensor would have the shape (N*6*3) with the
+    first one in M repeated 3 times,
     second 1 time and third 2 times.
 
      Args:
@@ -27,7 +32,8 @@ def _repeat(x, n, axis=1):
     # create a range with the length of x
     shape = [1] * (x_dim + 1)
     shape[axis + 1] = maxlen
-    # tile it to the maximum repeat length, it should be of shape [xlen, maxlen] now
+    # tile it to the maximum repeat length, it should be of shape
+    # [xlen, maxlen] now
     x_tiled = tf.tile(tf.expand_dims(x, axis + 1), tf.stack(shape))
 
     new_shape = tf.unstack(x_shape)
@@ -43,11 +49,14 @@ def _repeat(x, n, axis=1):
     return tf.boolean_mask(tensor=x_tiled, mask=mask, axis=axis)
 
 
-def repeat_with_index(x, index, axis=1):
+def repeat_with_index(x: tf.Tensor, index: tf.Tensor, axis: int = 1):
     """
-    Given an tensor x (N*M*K), repeat the middle axis (axis=1) according to the index tensor index (G, )
-    for example, if axis=1 and n = Tensor([0, 0, 0, 1, 2, 2]) then M = 3 (3 unique values),
-    and the final tensor would have the shape (N*6*3) with the first one in M repeated 3 times,
+    Given an tensor x (N*M*K), repeat the middle axis (axis=1)
+    according to the index tensor index (G, )
+    for example, if axis=1 and n = Tensor([0, 0, 0, 1, 2, 2])
+    then M = 3 (3 unique values),
+    and the final tensor would have the shape (N*6*3) with the
+    first one in M repeated 3 times,
     second 1 time and third 2 times.
 
      Args:
