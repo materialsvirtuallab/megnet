@@ -9,10 +9,14 @@ A full GN block has the following computation steps
 
 [1] https://arxiv.org/pdf/1806.01261.pdf
 """
+from typing import Dict, Sequence
 
+import tensorflow as tf
 from tensorflow.keras.layers import Layer
 from tensorflow.keras import regularizers, constraints, initializers
+
 from megnet import activations
+from megnet.utils.typing import OptStrOrCallable
 
 
 class GraphNetworkLayer(Layer):
@@ -51,19 +55,19 @@ class GraphNetworkLayer(Layer):
     """
 
     def __init__(self,
-                 activation=None,
-                 use_bias=True,
-                 kernel_initializer='glorot_uniform',
-                 bias_initializer='zeros',
-                 kernel_regularizer=None,
-                 bias_regularizer=None,
-                 activity_regularizer=None,
-                 kernel_constraint=None,
-                 bias_constraint=None,
+                 activation: OptStrOrCallable = None,
+                 use_bias: bool = True,
+                 kernel_initializer: OptStrOrCallable = 'glorot_uniform',
+                 bias_initializer: OptStrOrCallable = 'zeros',
+                 kernel_regularizer: OptStrOrCallable = None,
+                 bias_regularizer: OptStrOrCallable = None,
+                 activity_regularizer: OptStrOrCallable = None,
+                 kernel_constraint: OptStrOrCallable = None,
+                 bias_constraint: OptStrOrCallable = None,
                  **kwargs):
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
-        self.activation = activations.get(activation)
+        self.activation = activations.get(activation)  # noqa
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
         self.bias_initializer = initializers.get(bias_initializer)
@@ -74,7 +78,7 @@ class GraphNetworkLayer(Layer):
         self.bias_constraint = constraints.get(bias_constraint)
         super().__init__(**kwargs)
 
-    def call(self, inputs, mask=None):
+    def call(self, inputs: Sequence, mask=None) -> Sequence:
         e_p = self.phi_e(inputs)
         b_ei_p = self.rho_e_v(e_p, inputs)
         v_p = self.phi_v(b_ei_p, inputs)
@@ -83,66 +87,88 @@ class GraphNetworkLayer(Layer):
         u_p = self.phi_u(b_e_p, b_v_p, inputs)
         return [v_p, e_p, u_p]
 
-    def compute_output_shape(self, input_shape):
-        raise NotImplementedError
-
-    def build(self, input_shape):
-        raise NotImplementedError
-
-    def phi_e(self, inputs):
+    def phi_e(self, inputs: Sequence) -> tf.Tensor:
         """
         This is for updating the edge attributes
         ek' = phi_e(ek, vrk, vsk, u)
-        :return:
+
+        Args:
+            inputs (Sequence): list or tuple for the graph inputs
+
+        Returns:
+            updated edge/bond attributes
         """
         raise NotImplementedError
 
-    def rho_e_v(self, e_p, inputs):
+    def rho_e_v(self, e_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
         """
         This is for step 2, aggregate edge attributes per node
         Ei' = {(ek', rk, sk)} with rk =i, k=1:Ne
 
-        \bar e_i' = rho_e_v(Ei')
-        :return:
+        Args:
+            e_p (tf.Tensor): the updated edge attributes
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            edge/bond to node/atom aggregated tensor
         """
         raise NotImplementedError
 
-    def phi_v(self, b_e_p, inputs):
+    def phi_v(self, b_ei_p: tf.Tensor, inputs: Sequence):
         """
         Step 3. Compute updated node attributes
         v_i' = phi_v(\bar e_i, vi, u)
-        :return:
+
+        Args:
+            b_ei_p (tf.Tensor): edge-to-node aggregated tensor
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            updated node/atom attributes
         """
         raise NotImplementedError
 
-    def rho_e_u(self, e_p, inputs):
+    def rho_e_u(self, e_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
         """
         let V' = {v'} i = 1:Nv
         let E' = {(e_k', rk, sk)} k = 1:Ne
         \bar e' = rho_e_u(E')
-        :return:
+
+        Args:
+            e_p (tf.Tensor): updated edge/bond attributes
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            edge/bond to global/state aggregated tensor
         """
         raise NotImplementedError
 
-    def rho_v_u(self, v_p, inputs):
+    def rho_v_u(self, v_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
         """
         \bar v' = rho_v_u(V')
 
-        :return:
+        Args:
+            v_p (tf.Tensor): updated atom/node attributes
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            atom/node to global/state aggregated tensor
         """
         raise NotImplementedError
 
-    def phi_u(self, b_e_p, b_v_p, inputs):
+    def phi_u(self, b_e_p: tf.Tensor, b_v_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
         """
         u' = phi_u(\bar e', \bar v', u)
-        :return:
+        Args:
+            b_e_p (tf.Tensor): edge/bond to global aggregated tensor
+            b_v_p (tf.Tensor): node/atom to global aggregated tensor
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            updated globa/state attributes
         """
         raise NotImplementedError
 
-    def get_config(self):
+    def get_config(self) -> Dict:
         """
         Part of keras layer interface, where the signature is converted into a dict
-        :return:
+        Returns:
+            configurational dictionary
         """
         config = {
             'activation': activations.serialize(self.activation),
@@ -163,4 +189,4 @@ class GraphNetworkLayer(Layer):
         }
 
         base_config = super().get_config()
-        return dict(list(base_config.items()) + list(config.items()))
+        return dict(list(base_config.items()) + list(config.items()))  # noqa

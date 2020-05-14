@@ -1,8 +1,10 @@
-from typing import Union, Callable
+from typing import Callable, Any
 
 import tensorflow.keras.backend as kb
 from tensorflow.keras.activations import get as keras_get
 from tensorflow.keras.activations import deserialize, serialize  # noqa
+
+from megnet.utils.typing import OptStrOrCallable
 
 
 def softplus2(x):
@@ -19,7 +21,7 @@ def softplus2(x):
     return kb.relu(x) + kb.log(0.5*kb.exp(-kb.abs(x)) + 0.5)
 
 
-def get(identifier: Union[str, Callable]) -> Callable:
+def get(identifier: OptStrOrCallable = None) -> Callable[..., Any]:
     """
     Get activations by identifier
 

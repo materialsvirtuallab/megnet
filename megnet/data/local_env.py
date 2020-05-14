@@ -127,9 +127,19 @@ def deserialize(config: Dict):
     return cls_(**data)
 
 
-def get(identifier: Union[str, NearNeighbors]):
+def get(identifier: Union[str, Dict, NearNeighbors]) -> NearNeighbors:
+    """
+    Deserialize the NearNeighbors
+    Args:
+        identifier (str, dict or NearNeighbors): target for deserialize
+
+    Returns: NearNeighbors instance
+
+    """
     if isinstance(identifier, str):
         return globals()[identifier]
+    elif isinstance(identifier, dict):
+        return deserialize(identifier)
     elif isinstance(identifier, NearNeighbors):
         return identifier
     else:

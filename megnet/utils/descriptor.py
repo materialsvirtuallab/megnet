@@ -6,7 +6,6 @@ pretrained megnet model
 import os
 from typing import Union
 
-from pymatgen import Structure
 import numpy as np
 from tensorflow.keras.models import Model
 
@@ -44,10 +43,12 @@ class MEGNetDescriptor:
 
         layers = model.layers
         important_prefix = ['meg', 'set', 'concatenate']
-        all_names = [i.name for i in layers if any(
-            [i.name.startswith(j) for j in important_prefix])]
-        valid_outputs = [i.output for i in layers if any(
-            [i.name.startswith(j) for j in important_prefix])]
+
+        all_names = [i.name for i in layers
+                     if any([i.name.startswith(j) for j in important_prefix])]
+
+        valid_outputs = [i.output for i in layers
+                         if any([i.name.startswith(j) for j in important_prefix])]
 
         outputs = []
         valid_names = []
@@ -142,8 +143,8 @@ class MEGNetDescriptor:
             1 x m_g global feature vector
 
         """
-        return self._get_features(structure, prefix='meg_net_layer',
-                                  level=level, index=2)
+        return self._get_features(structure,
+                                  prefix='meg_net_layer', level=level, index=2)
 
     def get_set2set(self, structure: StructureOrMolecule,
                     ftype: str = 'atom') -> np.ndarray:
@@ -160,12 +161,9 @@ class MEGNetDescriptor:
 
         """
         mapping = {'atom': 1, 'bond': 2}
-        return self._get_features(structure, prefix='set2_set',
-                                  level=mapping[ftype])
+        return self._get_features(structure, prefix='set2_set', level=mapping[ftype])
 
-    def get_structure_features(self,
-                               structure: StructureOrMolecule) \
-            -> np.ndarray:
+    def get_structure_features(self, structure: StructureOrMolecule) -> np.ndarray:
         """
         Get structure level feature vector
         Args:
@@ -176,5 +174,4 @@ class MEGNetDescriptor:
             one feature vector for the structure
 
         """
-        return self._get_features(structure, prefix='concatenate',
-                                  level=1)
+        return self._get_features(structure, prefix='concatenate', level=1)
