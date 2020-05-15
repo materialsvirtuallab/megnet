@@ -84,8 +84,8 @@ class StructureGraph(MSONable):
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or np.array([[0.0, 0.0]], 
-                dtype='float32')
+        state_attributes = state_attributes or getattr(structure, 'state', None) or \
+            np.array([[0.0, 0.0]], dtype='float32')
         index1 = []
         index2 = []
         bonds = []
@@ -96,7 +96,6 @@ class StructureGraph(MSONable):
             for neighbor in neighbors:
                 index2.append(neighbor['site_index'])
                 bonds.append(neighbor['weight'])
-        
         atoms = self.get_atom_features(structure)
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
