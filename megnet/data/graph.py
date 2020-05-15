@@ -84,7 +84,8 @@ class StructureGraph(MSONable):
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
+        state_attributes = state_attributes or getattr(structure, 'state', None) or np.array([[0.0, 0.0]], 
+                dtype='float32')
         index1 = []
         index2 = []
         bonds = []
@@ -95,9 +96,8 @@ class StructureGraph(MSONable):
             for neighbor in neighbors:
                 index2.append(neighbor['site_index'])
                 bonds.append(neighbor['weight'])
-
+        
         atoms = self.get_atom_features(structure)
-
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
@@ -147,8 +147,8 @@ class StructureGraph(MSONable):
         return [expand_1st(self.atom_converter.convert(graph['atom'])),
                 expand_1st(self.bond_converter.convert(graph['bond'])),
                 expand_1st(np.array(graph['state'])),
-                expand_1st(np.array(graph['index1'])),
-                expand_1st(np.array(graph['index2'])),
+                expand_1st(np.array(graph['index1'], dtype=np.int32)),
+                expand_1st(np.array(graph['index2'], dtype=np.int32)),
                 expand_1st(np.array(gnode, dtype=np.int32)),
                 expand_1st(np.array(gbond, dtype=np.int32))]
 
@@ -219,7 +219,8 @@ class StructureGraphFixedRadius(StructureGraph):
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
+        state_attributes = state_attributes or getattr(structure, 'state', None) or np.array(
+                [[0.0, 0.0]], dtype='float32')
         atoms = self.get_atom_features(structure)
         index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
 
