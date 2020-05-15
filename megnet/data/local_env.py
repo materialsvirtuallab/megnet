@@ -1,11 +1,29 @@
-from pymatgen.analysis.local_env import *
+"""
+Various NearNeighbors strategies to define local environments
+of sites in structure/molecule. Most of them are directly
+from pymatgen.analysis.local_env. The suitable NearNeighbors
+should have get_nn_info method implemented and this method
+needs to return a list of dict with each entry having following keys
+['site', 'image', 'weight', 'site_index']
+
+the weight will be used as the bond attributes in subsequent graph
+construction
+
+"""
 from inspect import getfullargspec
+from typing import Dict, List, Union
+
 from pymatgen import Structure, Molecule
+from pymatgen.analysis import local_env
+from pymatgen.analysis.local_env import (
+    NearNeighbors,
+    VoronoiNN, JmolNN, MinimumDistanceNN, OpenBabelNN,
+    CovalentBondNN, MinimumVIRENN, MinimumOKeeffeNN,
+    BrunnerNN_reciprocal, BrunnerNN_real, BrunnerNN_relative,
+    EconNN, CrystalNN, CutOffDictNN, Critic2NN)
 
-from typing import List, Dict, Union
 
-
-class MinimumDistanceNNAll(MinimumDistanceNN):
+class MinimumDistanceNNAll(NearNeighbors):
     """
     Determine bonded sites by fixed cutoff
 
@@ -17,7 +35,8 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
     def __init__(self, cutoff: float = 4.0):
         self.cutoff = cutoff
 
-    def get_nn_info(self, structure: Structure, n: int) -> Dict:
+    def get_nn_info(self, structure: Structure,
+                    n: int) -> List[Dict]:
         """
         Get all near-neighbor sites as well as the associated image locations
         and weights of the site with index n using the closest neighbor
@@ -45,26 +64,13 @@ class MinimumDistanceNNAll(MinimumDistanceNN):
                         'site_index': self._get_original_site(structure, nn)})
         return siw
 
-    def get_all_nn_info_old(self, structure: Structure) -> List[Dict]:
-        nn_info = []
-        all_neighbors = structure.get_all_neighbors(self.cutoff, include_index=True,
-                                                    include_image=True)
-        for n, neighd_dists in enumerate(all_neighbors):
-            siw = []
-            for _, dist, ind, image in neighd_dists:
-                siw.append({'image': image,
-                            'weight': dist,
-                            'site_index': ind})
-            nn_info.append(siw)
-        return nn_info
-
 
 class AllAtomPairs(NearNeighbors):
     """
     Get all combinations of atoms as bonds in a molecule
     """
 
-    def get_nn_info(self, molecule: Molecule, n: int) -> Dict:
+    def get_nn_info(self, molecule: Molecule, n: int) -> List[Dict]:
         site = molecule[n]
         siw = []
         for i, s in enumerate(molecule):
@@ -119,12 +125,22 @@ def deserialize(config: Dict):
     """
     if config is None:
         return None
+    if ('@module' not in config) or ('@class' not in config):
+        raise ValueError("The config dict cannot be loaded")
     modname = config['@module']
     classname = config['@class']
     mod = __import__(modname, globals(), locals(), [classname])
     cls_ = getattr(mod, classname)
     data = {k: v for k, v in config.items() if not k.startswith('@')}
     return cls_(**data)
+
+
+NNDict = {i.__name__.lower(): i for i in [
+    NearNeighbors, VoronoiNN, JmolNN, MinimumDistanceNN,
+    OpenBabelNN, CovalentBondNN, MinimumVIRENN, MinimumOKeeffeNN,
+    BrunnerNN_reciprocal, BrunnerNN_real, BrunnerNN_relative,
+    EconNN, CrystalNN, CutOffDictNN, Critic2NN,
+    MinimumDistanceNNAll, AllAtomPairs]}
 
 
 def get(identifier: Union[str, Dict, NearNeighbors]) -> NearNeighbors:
@@ -136,11 +152,19 @@ def get(identifier: Union[str, Dict, NearNeighbors]) -> NearNeighbors:
     Returns: NearNeighbors instance
 
     """
+    # deserialize NearNeighbor from str
     if isinstance(identifier, str):
-        return globals()[identifier]
-    elif isinstance(identifier, dict):
+        if identifier.lower() in NNDict:
+            return NNDict.get(identifier.lower())
+        # try pymatgen's local_env module
+        nn = getattr(local_env, identifier, None)
+        if nn is not None:
+            return nn
+
+    if isinstance(identifier, dict):
         return deserialize(identifier)
-    elif isinstance(identifier, NearNeighbors):
+
+    if isinstance(identifier, NearNeighbors):
         return identifier
-    else:
-        raise ValueError('Unknown local environment ', identifier)
+
+    raise ValueError("%s not identified" % str(identifier))
