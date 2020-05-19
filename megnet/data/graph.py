@@ -1,6 +1,5 @@
 """Abstract classes and utility operations for building graph representations and
 data loaders (known as Sequence objects in Keras).
-
 Most users will not need to interact with this module."""
 from abc import abstractmethod
 from operator import itemgetter
@@ -36,7 +35,6 @@ class StructureGraph(MSONable):
             This method convert a structure directly to a model input
         3. get_flat_data(self, graphs, targets)
             This method process graphs and targets pairs and output model input list.
-
     """
 
     # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
@@ -78,13 +76,13 @@ class StructureGraph(MSONable):
         distance.
         For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
         take default [[0, 0]]
-
         Args:
             state_attributes: (list) state attributes
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
+        state_attributes = state_attributes or getattr(structure, 'state', None) or \
+            np.array([[0.0, 0.0]], dtype='float32')
         index1 = []
         index2 = []
         bonds = []
@@ -95,9 +93,7 @@ class StructureGraph(MSONable):
             for neighbor in neighbors:
                 index2.append(neighbor['site_index'])
                 bonds.append(neighbor['weight'])
-
         atoms = self.get_atom_features(structure)
-
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
         else:
@@ -112,10 +108,8 @@ class StructureGraph(MSONable):
     def get_atom_features(structure) -> List[int]:
         """
         Get atom features from structure, may be overwritten
-
         Args:
             structure: (Pymatgen.Structure) pymatgen structure
-
         Returns:
             List of atomic numbers
         """
@@ -135,7 +129,6 @@ class StructureGraph(MSONable):
     def graph_to_input(self, graph: Dict) -> List[np.ndarray]:
         """
         Turns a graph into model input
-
         Args:
             (dict): Dictionary description of the graph
         Return:
@@ -147,8 +140,8 @@ class StructureGraph(MSONable):
         return [expand_1st(self.atom_converter.convert(graph['atom'])),
                 expand_1st(self.bond_converter.convert(graph['bond'])),
                 expand_1st(np.array(graph['state'])),
-                expand_1st(np.array(graph['index1'])),
-                expand_1st(np.array(graph['index2'])),
+                expand_1st(np.array(graph['index1'], dtype=np.int32)),
+                expand_1st(np.array(graph['index2'], dtype=np.int32)),
                 expand_1st(np.array(gnode, dtype=np.int32)),
                 expand_1st(np.array(gbond, dtype=np.int32))]
 
@@ -156,12 +149,10 @@ class StructureGraph(MSONable):
         """
         Expand the graph dictionary to form a list of features and targets tensors.
         This is useful when the model is trained on assembled graphs on the fly.
-
         Args:
             graphs: (list of dictionary) list of graph dictionary for each structure
             targets: (list of float or list) Optional: corresponding target
                 values for each structure
-
         Returns:
             tuple(node_features, edges_features, global_values, index1, index2, targets)
         """
@@ -213,13 +204,13 @@ class StructureGraphFixedRadius(StructureGraph):
         distance.
         For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would
         take default [[0, 0]]
-
         Args:
             state_attributes: (list) state attributes
             structure: (pymatgen structure)
             (dictionary)
         """
-        state_attributes = state_attributes or getattr(structure, 'state', None) or [[0, 0]]
+        state_attributes = state_attributes or getattr(structure, 'state', None) or np.array(
+                [[0.0, 0.0]], dtype='float32')
         atoms = self.get_atom_features(structure)
         index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
 
@@ -252,7 +243,6 @@ class DummyConverter(Converter):
 class EmbeddingMap(Converter):
     """
     Convert an integer to a row vector in a feature matrix
-
     Args:
         feature_matrix: (np.ndarray) A matrix of shape (N, M)
     """
@@ -263,10 +253,8 @@ class EmbeddingMap(Converter):
     def convert(self, int_array: np.ndarray) -> np.ndarray:
         """
         convert atomic number to row vectors in the feature_matrix
-
         Args:
             int_array: (1d array) number array of length L
-
         Returns
             (matrix) L*M matrix with N the length of d and M the length of centers
         """
@@ -276,7 +264,6 @@ class EmbeddingMap(Converter):
 class GaussianDistance(Converter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
-
     Args:
         centers: (np.array)
         width: (float)
@@ -289,10 +276,8 @@ class GaussianDistance(Converter):
     def convert(self, d: np.ndarray) -> np.ndarray:
         """
         expand distance vector d with given parameters
-
         Args:
             d: (1d array) distance array
-
         Returns
             (matrix) N*M matrix with N the length of d and M the length of centers
         """
@@ -303,10 +288,8 @@ class GaussianDistance(Converter):
 class BaseGraphBatchGenerator(Sequence):
     """Base class for classes that generate batches of training data for MEGNet.
     Based on the Sequence class, which is the data loader equivalent for Keras.
-
     Implementations of this base class must implement the :meth:`_generate_inputs`,
     which generates the lists of graph descriptions for a batch.
-
     The :meth:`process_atom_features` function and related functions are used to modify
     the features for each atom, bond, and global features when creating a batch.
     """
@@ -342,10 +325,8 @@ class BaseGraphBatchGenerator(Sequence):
                             index1_temp: List[np.ndarray],
                             index2_temp: List[np.ndarray]) -> List:
         """Compile the matrices describing each graph into single matrices for the entire graph
-
         Beyond concatenating the graph descriptions, this operation updates the indices of each
         node to be sequential across all graphs so they are not duplicated between graphs
-
         Args:
             feature_list_temp ([ndarray]): List of features for each node
             connection_list_temp ([ndarray]): List of features for each connection
@@ -439,7 +420,6 @@ class BaseGraphBatchGenerator(Sequence):
     @abstractmethod
     def _generate_inputs(self, batch_index: int) -> tuple:
         """Get the graph descriptions for each batch
-
         Args:
              batch_index ([int]): List of indices for training batch
         Returns:
@@ -457,7 +437,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
     """
     A generator class that assembles several structures (indicated by
     batch_size) and form (x, y) pairs for model training.
-
     Args:
         atom_features: (list of np.array) list of atom feature matrix,
         bond_features: (list of np.array) list of bond features matrix
@@ -490,7 +469,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
 
     def _generate_inputs(self, batch_index: int) -> tuple:
         """Get the graph descriptions for each batch
-
         Args:
              batch_index ([int]): List of indices for training batch
         Returns:
@@ -515,7 +493,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
 class GraphBatchDistanceConvert(GraphBatchGenerator):
     """
     Generate batch of structures with bond distance being expanded using a Expansor
-
     Args:
         atom_features: (list of np.array) list of atom feature matrix,
         bond_features: (list of np.array) list of bond features matrix
@@ -528,7 +505,6 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         batch_size: (int) number of samples in a batch
         is_shuffle: (bool) whether to shuffle the structure, default to True
         distance_converter: (bool) converter for processing the distances
-
     """
 
     def __init__(self,
@@ -558,11 +534,9 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
 def itemgetter_list(l, indices: List) -> tuple:
     """
     Get indices of l and return a tuple
-
     Args:
         l:  (list)
         indices: (list) indices
-
     Returns:
         (tuple)
     """
