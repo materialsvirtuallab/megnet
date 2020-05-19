@@ -42,6 +42,10 @@ def get_graphs_within_cutoff(structure: StructureOrMolecule,
     center_indices, neighbor_indices, images, distances = \
         find_points_in_spheres(cart_coords, cart_coords, r=r, pbc=pbc,
                                lattice=lattice_matrix, tol=numerical_tol)
+    center_indices = center_indices.astype('int32')
+    neighbor_indices = neighbor_indices.astype('int32')
+    images = images.astype('int32')
+    distances = distances.astype('float32')
     exclude_self = (center_indices != neighbor_indices) | (distances > numerical_tol)
     return center_indices[exclude_self], neighbor_indices[exclude_self], \
         images[exclude_self], distances[exclude_self]
