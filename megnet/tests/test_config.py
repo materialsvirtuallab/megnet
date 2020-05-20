@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import tensorflow as tf
 
-from megnet.utils.data_types import DataType, set_global_dtypes
+from megnet.config import DataType, set_global_dtypes
 
 
 class TestDataType(unittest.TestCase):
