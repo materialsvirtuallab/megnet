@@ -8,7 +8,7 @@ from pymatgen.optimization.neighbors import find_points_in_spheres
 from pymatgen import Structure, Molecule
 
 from megnet.utils.typing import StructureOrMolecule
-from megnet.utils.data_types import DataType
+from megnet.config import DataType
 
 
 def get_graphs_within_cutoff(structure: StructureOrMolecule,
