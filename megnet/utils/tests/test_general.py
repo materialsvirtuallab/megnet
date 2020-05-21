@@ -1,7 +1,8 @@
 import unittest
 import numpy as np
 
-from megnet.utils.general import expand_1st, to_list, fast_label_binarize
+from megnet.utils.general import (
+    expand_1st, to_list, check_shape, reshape, fast_label_binarize)
 
 
 class TestGeneralUtils(unittest.TestCase):
@@ -23,6 +24,18 @@ class TestGeneralUtils(unittest.TestCase):
         self.assertListEqual(binaries, [0])
         binaries = fast_label_binarize(1, [0, 1, 2])
         self.assertListEqual(binaries, [0, 1, 0])
+
+    def test_check_shape(self):
+        x = np.random.normal(size=(10, 20))
+        self.assertTrue(check_shape(x, [10, 20, None]))
+        self.assertTrue(check_shape(x, [10, 20]))
+        self.assertFalse(check_shape(x, [10, 10]))
+        self.assertTrue(check_shape(None, [10, 20]))
+
+    def test_reshape(self):
+        x = np.random.normal(size=(10, 20))
+        self.assertEqual(reshape(x, [10, 20, None]).shape, (10, 20, 1))
+        self.assertEqual(reshape(x, [10, 20, 20, None]).shape, (10, 20, 20, 1))
 
 
 if __name__ == "__main__":
