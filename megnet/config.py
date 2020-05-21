@@ -6,7 +6,7 @@ import tensorflow as tf
 DTYPES = {'float32': {'numpy': np.float32, 'tf': tf.float32},
           'float16': {'numpy': np.float16, 'tf': tf.float16},
           'int32': {'numpy': np.int32, 'tf': tf.int32},
-          'int16': {'numpy': np.int32, 'tf': tf.int32}}
+          'int16': {'numpy': np.int16, 'tf': tf.int16}}
 
 
 class DataType:
