@@ -2,23 +2,25 @@ from tensorflow.keras.layers import Layer
 
 import tensorflow as tf
 
+MAPPING = {'mean': tf.math.segment_mean, 
+        'sum': tf.math.segment_sum,
+        'max': tf.math.segment_max,
+        'min': tf.math.segment_min,
+        'prod': tf.math.segment_prod}
 
 class LinearWithIndex(Layer):
     """
     Sum or average the node/edge attributes to get a structure-level vector
 
     Args:
-        mode: (str) 'mean' or 'sum'
+        mode: (str) 'mean', 'sum', 'max', 'mean' or 'prod'
     """
     def __init__(self, mode='mean', **kwargs):
         super(LinearWithIndex, self).__init__(**kwargs)
         self.mode = mode
-        if self.mode == 'mean':
-            self.reduce_method = tf.math.segment_mean
-        elif self.mode == 'sum':
-            self.reduce_method = tf.math.segment_sum
-        else:
-            raise ValueError('Only sum and mean are supported at the moment!')
+        self.reduce_method = MAPPING.get(mode, None)
+        if self.reduce_method is None:
+            raise ValueError('mode not supported')
 
     def build(self, input_shape):
         self.built = True
