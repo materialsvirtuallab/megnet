@@ -1,3 +1,8 @@
+# v1.1.6
+* minor fix to include more linear readout option
+* add data type control
+* refactor local_env
+
 # v1.1.5
 * Code refactor and reformat
 * Fix tensorflow and numpy type compatibility issues
