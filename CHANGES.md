@@ -1,3 +1,7 @@
+# v1.1.5
+* Code refactor and reformat
+* Fix tensorflow and numpy type compatibility issues
+
 # v1.1.4
 * Update to tensorflow.keras API instead of using keras
 
