@@ -2,11 +2,12 @@ from tensorflow.keras.layers import Layer
 
 import tensorflow as tf
 
-MAPPING = {'mean': tf.math.segment_mean, 
-        'sum': tf.math.segment_sum,
-        'max': tf.math.segment_max,
-        'min': tf.math.segment_min,
-        'prod': tf.math.segment_prod}
+MAPPING = {'mean': tf.math.segment_mean,
+           'sum': tf.math.segment_sum,
+           'max': tf.math.segment_max,
+           'min': tf.math.segment_min,
+           'prod': tf.math.segment_prod}
+
 
 class LinearWithIndex(Layer):
     """
