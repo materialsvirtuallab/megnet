@@ -210,10 +210,8 @@ nfeat_global = 2
 r_cutoff = 5
 gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
-distance_converter = GaussianDistance(gaussian_centers, gaussian_width)
-graph_converter = CrystalGraph(bond_converter=distance_converter, cutoff=r_cutoff)
-model = MEGNetModel(nfeat_bond, nfeat_global, 
-                    graph_converter=graph_converter)
+graph_converter = CrystalGraph(cutoff=r_cutoff)
+model = MEGNetModel(graph_converter=graph_converter, centers=gaussian_centers, width=gaussian_width)
 
 # Model training
 # Here, `structures` is a list of pymatgen Structure objects.
