@@ -206,7 +206,6 @@ from megnet.data.crystal import CrystalGraph
 import numpy as np
 
 nfeat_bond = 10
-nfeat_global = 2
 r_cutoff = 5
 gaussian_centers = np.linspace(0, r_cutoff + 1, nfeat_bond)
 gaussian_width = 0.5
