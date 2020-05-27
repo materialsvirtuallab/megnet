@@ -1,3 +1,6 @@
+# v1.1.7
+* Update the model training mechanism and move Gaussian expansion to tensorflow, training speed up 100%
+
 # v1.1.6
 * minor fix to include more linear readout option
 * add data type control
