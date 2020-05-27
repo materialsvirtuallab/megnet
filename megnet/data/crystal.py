@@ -24,10 +24,8 @@ class CrystalGraph(StructureGraphFixedRadius):
                  nn_strategy: Union[str, NearNeighbors] = 'MinimumDistanceNNAll',
                  atom_converter: Converter = None,
                  bond_converter: Converter = None,
-                 cutoff: float = 4.0
+                 cutoff: float = 5.0
                  ):
-        if bond_converter is None:
-            bond_converter = GaussianDistance(np.linspace(0, 5, 100), 0.5)
         self.cutoff = cutoff
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
                          bond_converter=bond_converter, cutoff=self.cutoff)

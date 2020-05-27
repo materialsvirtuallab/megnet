@@ -11,11 +11,12 @@ from tensorflow.keras.layers import Dense, Input, Concatenate, Add, Embedding, D
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras.models import Model
 
-from megnet.layers import MEGNetLayer, Set2Set
+from megnet.layers import MEGNetLayer, Set2Set, GaussianExpansion
 from megnet.activations import softplus2
 from megnet.data.graph import GaussianDistance, StructureGraph
 from megnet.data.crystal import CrystalGraph
 from megnet.utils.preprocessing import DummyScaler, Scaler
+from megnet.config import DataType
 from .base import GraphModel
 
 
@@ -52,7 +53,8 @@ class MEGNetModel(GraphModel):
                  graph_converter: StructureGraph = None,
                  target_scaler: Scaler = DummyScaler(),
                  optimizer_kwargs: Dict = None,
-                 dropout_on_predict: bool = False
+                 dropout_on_predict: bool = False,
+                 **kwargs
                  ):
         """
         Args:
@@ -83,6 +85,11 @@ class MEGNetModel(GraphModel):
             target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming
                 the target values
             optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
+            kwargs (dict): in the case where bond inputs are pure distances (not the expanded distances nor integers
+                for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),
+                kwargs can take additional inputs for expand the distance using Gaussian basis.
+                centers (np.ndarray): array for defining the Gaussian expansion centers
+                width (float): width for the Gaussian basis
         """
 
         # Build the MEG Model
@@ -105,7 +112,8 @@ class MEGNetModel(GraphModel):
                                   is_classification=is_classification,
                                   l2_coef=l2_coef,
                                   dropout=dropout,
-                                  dropout_on_predict=dropout_on_predict)
+                                  dropout_on_predict=dropout_on_predict,
+                                  **kwargs)
 
         # Compile the model with the optimizer
         loss = 'binary_crossentropy' if is_classification else loss
@@ -164,10 +172,10 @@ def make_megnet_model(nfeat_edge: int = None,
                       is_classification: bool = False,
                       l2_coef: float = None,
                       dropout: float = None,
-                      dropout_on_predict: bool = False
+                      dropout_on_predict: bool = False,
+                      **kwargs
                       ) -> Model:
     """Make a MEGNet Model
-
     Args:
         nfeat_edge: (int) number of bond features
         nfeat_global: (int) number of state features
@@ -189,6 +197,12 @@ def make_megnet_model(nfeat_edge: int = None,
         is_classification: (bool) whether it is a classification task
         dropout: (float) dropout rate
         dropout_on_predict (bool): Whether to use dropout during prediction and training
+        kwargs (dict): in the case where bond inputs are pure distances (not the expanded
+                distances nor integers for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),
+                kwargs can take additional inputs for expand the distance using Gaussian basis.
+
+                centers (np.ndarray): array for defining the Gaussian expansion centers
+                width (float): width for the Gaussian basis
     Returns:
         (Model) Keras model, ready to run
     """
@@ -196,30 +210,55 @@ def make_megnet_model(nfeat_edge: int = None,
     # Get the setting for the training kwarg of Dropout
     dropout_training = True if dropout_on_predict else None
 
-    # Create the input blocks
-    int32 = 'int32'
+    # atom inputs
+
     if nfeat_node is None:
-        x1 = Input(shape=(None,), dtype=int32, name='atom_int_input')  # only z as feature
+        # only z as feature
+        x1 = Input(shape=(None,), dtype=DataType.tf_int, name='atom_int_input')
         x1_ = Embedding(nvocal, embedding_dim, name='atom_embedding')(x1)
     else:
         x1 = Input(shape=(None, nfeat_node), name='atom_feature_input')
         x1_ = x1
+
+    # bond inputs
     if nfeat_edge is None:
-        x2 = Input(shape=(None,), dtype=int32, name='bond_int_input')
-        x2_ = Embedding(nbvocal, bond_embedding_dim, name='bond_embedding')(x2)
+        if bond_embedding_dim is not None:
+            # bond attributes are integers for embedding
+            x2 = Input(shape=(None,), dtype=DataType.tf_int, name='bond_int_input')
+            x2_ = Embedding(nbvocal, bond_embedding_dim, name='bond_embedding')(x2)
+        else:
+            # the bond attributes are float distance
+            x2 = Input(shape=(None, ), dtype=DataType.tf_float, name='bond_float_input')
+            centers = kwargs.get('centers', None)
+            width = kwargs.get('width', None)
+            if centers is None and width is None:
+                raise ValueError("If the bond attributes are single float values, "
+                                 "we expect the value to be expanded before passing "
+                                 "to the models. Therefore, `centers` and `width` for "
+                                 "Gaussian basis expansion are needed")
+            x2_ = GaussianExpansion(centers=centers, width=width)(x2)  # type: ignore
     else:
         x2 = Input(shape=(None, nfeat_edge), name='bond_feature_input')
         x2_ = x2
+
+    # state inputs
     if nfeat_global is None:
-        x3 = Input(shape=(None,), dtype=int32, name='state_int_input')
-        x3_ = Embedding(ngvocal, global_embedding_dim, name='state_embedding')(x3)
+        if global_embedding_dim is not None:
+            # global state inputs are embedding integers
+            x3 = Input(shape=(None,), dtype=DataType.tf_int, name='state_int_input')
+            x3_ = Embedding(ngvocal, global_embedding_dim, name='state_embedding')(x3)
+        else:
+            # take default vector of two zeros
+            x3 = Input(shape=(None, 2), dtype=DataType.tf_float, name='state_default_input')
+            x3_ = x3
     else:
         x3 = Input(shape=(None, nfeat_global), name='state_feature_input')
         x3_ = x3
-    x4 = Input(shape=(None,), dtype=int32, name='bond_index_1_input')
-    x5 = Input(shape=(None,), dtype=int32, name='bond_index_2_input')
-    x6 = Input(shape=(None,), dtype=int32, name='atom_graph_index_input')
-    x7 = Input(shape=(None,), dtype=int32, name='bond_graph_index_input')
+    x4 = Input(shape=(None,), dtype=DataType.tf_int, name='bond_index_1_input')
+    x5 = Input(shape=(None,), dtype=DataType.tf_int, name='bond_index_2_input')
+    x6 = Input(shape=(None,), dtype=DataType.tf_int, name='atom_graph_index_input')
+    x7 = Input(shape=(None,), dtype=DataType.tf_int, name='bond_graph_index_input')
+
     if l2_coef is not None:
         reg = l2(l2_coef)
     else:

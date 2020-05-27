@@ -67,51 +67,54 @@ class TestModel(PymatgenTest):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
         structures = [s.copy(), s.copy(), s.copy(), s.copy()]
         targets = [0.1, 0.1, 0.1, 0.1]
-        self.model.train(structures,
-                         targets,
-                         validation_structures=structures[:2],
-                         validation_targets=[0.1, 0.1],
-                         batch_size=2,
-                         epochs=1,
-                         verbose=2)
-        preds = self.model.predict_structure(structures[0])
-
-        # isolated atom error
-        for s in structures[3:]:
-            s.apply_strain(3)
-        with self.assertRaises(RuntimeError) as context:
+        with ScratchDir('.'):
             self.model.train(structures,
                              targets,
+                             validation_structures=structures[:2],
+                             validation_targets=[0.1, 0.1],
+                             batch_size=2,
                              epochs=1,
-                             verbose=2,
-                             scrub_failed_structures=False)
-            self.assertTrue('Isolated atoms found' in str(context.exception))
+                             verbose=2)
+            preds = self.model.predict_structure(structures[0])
 
-        with self.assertRaises(Exception) as context:
-            self.model.train(structures,
-                             targets,
-                             epochs=1,
-                             verbose=2,
-                             scrub_failed_structures=True)
-            self.assertTrue('structure with index' in str(context.exception))
+            # isolated atom error
+            for s in structures[3:]:
+                s.apply_strain(3)
+            with self.assertRaises(RuntimeError) as context:
+                self.model.train(structures,
+                                 targets,
+                                 epochs=1,
+                                 verbose=2,
+                                 scrub_failed_structures=False)
+                self.assertTrue('Isolated atoms found' in str(context.exception))
 
-        if os.path.isdir('callback'):
-            shutil.rmtree('callback')
-        self.assertTrue(np.size(preds) == 1)
+            with self.assertRaises(Exception) as context:
+                self.model.train(structures,
+                                 targets,
+                                 epochs=1,
+                                 verbose=2,
+                                 scrub_failed_structures=True)
+                self.assertTrue('structure with index' in str(context.exception))
+
+            if os.path.isdir('callback'):
+                shutil.rmtree('callback')
+            self.assertTrue(np.size(preds) == 1)
 
     def test_single_atom_structure(self):
         s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
-        # initialize the model
-        self.model.train([s, s], [0.1, 0.1], epochs=1)
-        pred = self.model.predict_structure(s)
-        self.assertEqual(len(pred.ravel()), 1)
+        with ScratchDir('.'):
+            # initialize the model
+            self.model.train([s, s], [0.1, 0.1], epochs=1)
+            pred = self.model.predict_structure(s)
+            self.assertEqual(len(pred.ravel()), 1)
 
     def test_two_targets(self):
         s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
-        # initialize the model
-        self.model2.train([s, s], [[0.1, 0.2], [0.1, 0.2]], epochs=1)
-        pred = self.model2.predict_structure(s)
-        self.assertEqual(len(pred.ravel()), 2)
+        with ScratchDir('.'):
+            # initialize the model
+            self.model2.train([s, s], [[0.1, 0.2], [0.1, 0.2]], epochs=1)
+            pred = self.model2.predict_structure(s)
+            self.assertEqual(len(pred.ravel()), 2)
 
     def test_save_and_load(self):
         weights1 = self.model.get_weights()
@@ -129,7 +132,7 @@ class TestModel(PymatgenTest):
         graph = gc.convert(s)
         model = MEGNetModel(10, 2, nblocks=1, lr=1e-2,
                             n1=4, n2=4, n3=4, npass=1, ntarget=1,
-                            graph_converter=CrystalGraph(bond_converter=gc),
+                            graph_converter=gc,
                             )
         with self.assertRaises(Exception) as context:
             model.check_dimension(graph)
@@ -141,13 +144,27 @@ class TestModel(PymatgenTest):
                                         val_gen=self.train_gen_crystal,
                                         steps_per_val=1),
                      ManualStop()]
+        with ScratchDir('.'):
+            self.model.fit(self.train_gen_crystal, steps_per_epoch=1, epochs=2, verbose=1,
+                           callbacks=callbacks)
+            model_files = glob('val_mae*.hdf5')
+            self.assertGreater(len(model_files), 0)
+            for i in model_files:
+                os.remove(i)
 
-        self.model.fit_generator(generator=self.train_gen_crystal, steps_per_epoch=1, epochs=2, verbose=1,
-                                 callbacks=callbacks)
-        model_files = glob('val_mae*.hdf5')
-        self.assertGreater(len(model_files), 0)
-        for i in model_files:
-            os.remove(i)
+    def test_crystal_model_v2(self):
+        cg = CrystalGraph()
+        s = Structure(Lattice.cubic(3), ['Si'], [[0, 0, 0]])
+        with ScratchDir('.'):
+            model = MEGNetModel(nfeat_edge=None, nfeat_global=2, nblocks=1, lr=1e-2,
+                                n1=4, n2=4, n3=4, npass=1, ntarget=1,
+                                graph_converter=cg,
+                                centers=np.linspace(0, 4, 10),
+                                width=0.5
+                                )
+            model = model.train([s, s], [0.1, 0.1], epochs=2)
+            t = model.predict_structure(s)
+            self.assertTrue(t.shape == (1, ))
 
     def test_from_url(self):
         with ScratchDir("."):

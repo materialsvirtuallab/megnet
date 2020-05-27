@@ -67,7 +67,7 @@ class GraphModel:
               automatic_correction: bool = True,
               lr_scaling_factor: float = 0.5,
               patience: int = 500,
-              **kwargs) -> None:
+              **kwargs) -> "GraphModel":
         """
         Args:
             train_structures: (list) list of pymatgen structures
@@ -109,6 +109,7 @@ class GraphModel:
                                automatic_correction=automatic_correction,
                                **kwargs
                                )
+        return self
 
     def train_from_graphs(self,
                           train_graphs: List[Dict],
@@ -125,7 +126,7 @@ class GraphModel:
                           save_checkpoint: bool = True,
                           automatic_correction: bool = True,
                           **kwargs
-                          ) -> None:
+                          ) -> "GraphModel":
         """
         Args:
             train_graphs: (list) list of graph dictionaries
@@ -197,6 +198,7 @@ class GraphModel:
         self.fit(train_generator, steps_per_epoch=steps_per_train,
                  validation_data=val_generator, validation_steps=steps_per_val,
                  epochs=epochs, verbose=verbose, callbacks=callbacks, **kwargs)
+        return self
 
     def check_dimension(self, graph: Dict) -> bool:
         """
@@ -291,7 +293,8 @@ class GraphModel:
 
         """
         inp = self.graph_converter.graph_to_input(graph)
-        return self.target_scaler.inverse_transform(self.predict(inp).ravel(),
+        pred = self.predict(inp)  # direct prediction, shape [1, 1, m]
+        return self.target_scaler.inverse_transform(pred[0, 0],
                                                     len(graph['atom']))
 
     def _create_generator(self, *args, **kwargs) -> \
