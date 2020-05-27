@@ -226,7 +226,7 @@ then one needs to use `train_from_graphs` method by training only on the valid g
 
 Following the previous example, 
 ```python
-model = MEGNetModel(nfeat_bond, nfeat_global, graph_converter=graph_converter)
+model = MEGNetModel(graph_converter=graph_converter, centers=gaussian_centers, width=gaussian_width)
 graphs_valid = []
 targets_valid = []
 structures_invalid = []
