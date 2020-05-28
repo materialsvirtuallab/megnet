@@ -185,7 +185,8 @@ Below is an example of predicting the "HOMO" of a smiles representation
 from megnet.utils.molecule import get_pmg_mol_from_smiles
 from megnet.models import MEGNetModel
 
-# same model API for molecule and crystals
+# same model API for molecule and crystals, you can also use the load_model method 
+# as in previous example
 model = MEGNetModel.from_file('mvl_models/qm9-2018.6.1/HOMO.hdf5')
 # Need to convert SMILES into pymatgen Molecule
 mol = get_pmg_mol_from_smiles("C")
@@ -201,7 +202,6 @@ atomic number Z is used as the only node feature (with embedding).
 
 ```python
 from megnet.models import MEGNetModel
-from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
 import numpy as np
 
