@@ -47,6 +47,11 @@ class MEGNetDescriptor:
         all_names = [i.name for i in layers
                      if any([i.name.startswith(j) for j in important_prefix])]
 
+        if any([i.startswith('megnet') for i in all_names]):
+            self.version = 'v2'
+        else:
+            self.version = 'v1'
+
         valid_outputs = [i.output for i in layers
                          if any([i.name.startswith(j) for j in important_prefix])]
 
@@ -90,7 +95,9 @@ class MEGNetDescriptor:
                       prefix: str,
                       level: int,
                       index: int = None) -> np.ndarray:
-        name = prefix + "_%d" % level
+        name = prefix
+        if level is not None:
+            name = prefix + "_%d" % level
         if index is not None:
             name += '_%d' % index
 
@@ -99,6 +106,14 @@ class MEGNetDescriptor:
         ind = self.valid_names.index(name)
         out_all = self._predict_feature(structure)
         return out_all[ind][0]
+
+    def _get_updated_prefix_level(self, prefix: str, level: int):
+        mapping = {'meg_net_layer': ["megnet", level-1],
+                   "set2_set": ["set2set_atom" if level == 1 else "set2set_bond", None],
+                   "concatenate": ["concatenate", None]}
+        if self.version == "v2":
+            return mapping[prefix][0], mapping[prefix][1]
+        return prefix, level
 
     def get_atom_features(self, structure: StructureOrMolecule,
                           level: int = 3) -> np.ndarray:
@@ -113,7 +128,8 @@ class MEGNetDescriptor:
             nxm atomic feature matrix
 
         """
-        return self._get_features(structure, prefix='meg_net_layer',
+        prefix, level = self._get_updated_prefix_level('meg_net_layer', level)
+        return self._get_features(structure, prefix=prefix,
                                   level=level, index=0)
 
     def get_bond_features(self, structure: StructureOrMolecule,
@@ -128,7 +144,8 @@ class MEGNetDescriptor:
             n_bond x m bond feature matrix
 
         """
-        return self._get_features(structure, prefix='meg_net_layer',
+        prefix, level = self._get_updated_prefix_level('meg_net_layer', level)
+        return self._get_features(structure, prefix=prefix,
                                   level=level, index=1)
 
     def get_global_features(self, structure: StructureOrMolecule,
@@ -143,8 +160,9 @@ class MEGNetDescriptor:
             1 x m_g global feature vector
 
         """
+        prefix, level = self._get_updated_prefix_level('meg_net_layer', level)
         return self._get_features(structure,
-                                  prefix='meg_net_layer', level=level, index=2)
+                                  prefix=prefix, level=level, index=2)
 
     def get_set2set(self, structure: StructureOrMolecule,
                     ftype: str = 'atom') -> np.ndarray:
@@ -161,7 +179,8 @@ class MEGNetDescriptor:
 
         """
         mapping = {'atom': 1, 'bond': 2}
-        return self._get_features(structure, prefix='set2_set', level=mapping[ftype])
+        prefix, level = self._get_updated_prefix_level('set2_set', level=mapping[ftype])
+        return self._get_features(structure, prefix=prefix, level=level)
 
     def get_structure_features(self, structure: StructureOrMolecule) -> np.ndarray:
         """
@@ -174,4 +193,5 @@ class MEGNetDescriptor:
             one feature vector for the structure
 
         """
-        return self._get_features(structure, prefix='concatenate', level=1)
+        prefix, level = self._get_updated_prefix_level('concatenate', level=1)
+        return self._get_features(structure, prefix=prefix, level=level)
