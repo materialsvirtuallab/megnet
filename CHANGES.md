@@ -1,3 +1,6 @@
+# v1.1.8
+* Bug fix of megnet descriptors
+
 # v1.1.7
 * Update the model training mechanism and move Gaussian expansion to tensorflow, training speed up 100%
 
