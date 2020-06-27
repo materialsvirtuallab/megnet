@@ -1,8 +1,8 @@
-pytest==5.4.2
-pytest-cov==2.9.0
+pytest==5.4.3
+pytest-cov==2.10.0
 coverage==5.1
 coveralls==2.0.0
 pycodestyle==2.6.0
-mypy==0.770
+mypy==0.782
 pydocstyle==5.0.2
-flake8==3.8.2
+flake8==3.8.3
