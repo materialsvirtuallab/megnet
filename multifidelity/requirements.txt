@@ -1,0 +1,6 @@
+pymatgen>=2020.7.18
+pandas>=1.0.5
+tensorflow>=2.0.0
+numpy>=1.19.1
+monty>=3.0.4
+megnet>=1.1.8
