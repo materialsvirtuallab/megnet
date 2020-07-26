@@ -39,7 +39,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pip --upgrade
         conda config --set always_yes yes --set changeps1 no
-        conda install --upgrade numpy scipy matplotlib sympy cython tensorflow
+        conda install numpy scipy matplotlib sympy cython tensorflow
         pip install --quiet --ignore-installed -r requirements.txt -r requirements-ci.txt
         conda install -c openbabel openbabel
         conda install -c conda-forge rdkit
