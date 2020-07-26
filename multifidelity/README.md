@@ -22,6 +22,7 @@ The model construction has already been included in the recent `megnet v1.1.8` r
 - [Documentation](#doc)
 	- [Multi-fidelity band gap data](#data)
 	- [Model training](#train)
+	- [Codes for plots](#plot)
 - [License](#license)
 - [Issues](#issues)
 
@@ -152,6 +153,10 @@ For the ICSD structures, the users are required to have commercial ICSD access. 
 A example training script is provided as `train.py` for the four-fidelity model (PBE/GLLB-SC/HSE/SCAN). The users can run `bash runall.sh` to download the data and run `train.py` automatically. 
 
 The outcome of the fitting is an optimized model `best_model.hdf5`, with the configurations `best_model.hdf5.json`. The test errors are written in `test_errors.txt` and the fitting log will be saved in `log.txt`.
+
+<a name="plot"></a>
+#### Codes for plots
+The codes for plots are shared in the `codes_for_plots` subfolder.
 
 
 <a name="license"></a>
