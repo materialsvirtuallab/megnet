@@ -48,7 +48,7 @@ tf.compat.v1.disable_eager_execution()
 ## Import megnet related modules
 from megnet.callbacks import ReduceLRUponNan, ManualStop
 from megnet.data.crystal import CrystalGraph
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, GaussianDistance
+from megnet.data.graph import GraphBatchDistanceConvert, GaussianDistance
 from megnet.models import MEGNetModel
 
 ## Set GPU
@@ -72,6 +72,10 @@ model = MEGNetModel(nfeat_edge=100, nfeat_global=None, ngvocal=len(TRAIN_FIDELIT
 ##  load data
 
 ##  Structure data for all materials project materials
+
+if not os.path.isfile('mp.2019.04.01.json'):
+    raise RuntimeError("Please download the data first! Use runall.sh in this directory if needed.")
+
 with open('mp.2019.04.01.json', 'r') as f:
     structure_data = {i['material_id']: i['structure'] for i in json.load(f)}
 print('All structures in mp.2019.04.01.json contain %d structures' % len(structure_data))
@@ -113,6 +117,7 @@ final_targets = {i:j for i, j in zip(material_ids, targets)}
 
 from sklearn.model_selection import train_test_split
 
+##  train:val:test = 8:1:1
 fidelity_list = [i.split('_')[1] for i in material_ids]
 train_val_ids, test_ids = train_test_split(material_ids, stratify=fidelity_list, 
                                            test_size=0.1, random_state=SEED)
