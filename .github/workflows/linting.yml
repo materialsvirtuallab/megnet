@@ -42,4 +42,4 @@ jobs:
     - name: pylint
       run: |
         pip install pylint --upgrade --quiet
-        source pylint_mod.sh
+        pylint maml
