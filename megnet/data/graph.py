@@ -22,6 +22,13 @@ class Converter(MSONable):
     Base class for atom or bond converter
     """
     def convert(self, d: Any) -> Any:
+        """
+        Convert the object d
+        Args:
+            d (Any): Any object d
+
+        Returns: returned object
+        """
         raise NotImplementedError
 
 
@@ -42,6 +49,14 @@ class StructureGraph(MSONable):
                  atom_converter: Converter = None,
                  bond_converter: Converter = None,
                  **kwargs):
+        """
+
+        Args:
+            nn_strategy (str or NearNeighbors): NearNeighbor strategy
+            atom_converter (Converter): atom converter
+            bond_converter (Converter): bond converter
+            **kwargs:
+        """
 
         if isinstance(nn_strategy, str):
             strategy = local_env.get(nn_strategy)
@@ -111,6 +126,14 @@ class StructureGraph(MSONable):
                         dtype='int32').tolist()
 
     def __call__(self, structure: Structure) -> Dict:
+        """
+        Directly apply the converter to structure, alias to convert
+        Args:
+            structure (Structure): input structure
+
+        Returns (dict): graph dictionary
+
+        """
         return self.convert(structure)
 
     def get_input(self, structure: Structure) -> List[np.ndarray]:
@@ -168,6 +191,10 @@ class StructureGraph(MSONable):
         return DummyConverter()
 
     def as_dict(self) -> Dict:
+        """
+        Serialize to dict
+        Returns: (dict) dictionary of information
+        """
         all_dict = super().as_dict()
         if 'nn_strategy' in all_dict:
             nn_strategy = all_dict.pop('nn_strategy')
@@ -176,6 +203,14 @@ class StructureGraph(MSONable):
 
     @classmethod
     def from_dict(cls, d: Dict) -> 'StructureGraph':
+        """
+        Initialization from dictionary
+        Args:
+            d (dict): dictionary
+
+        Returns: StructureGraph object
+
+        """
         if 'nn_strategy' in d:
             nn_strategy = d.pop('nn_strategy')
             nn_strategy_obj = local_env.deserialize(nn_strategy)
@@ -220,6 +255,14 @@ class StructureGraphFixedRadius(StructureGraph):
 
     @classmethod
     def from_structure_graph(cls, structure_graph: StructureGraph) -> 'StructureGraphFixedRadius':
+        """
+        Initialize from pymatgen StructureGraph
+        Args:
+            structure_graph (StructureGraph): pymatgen StructureGraph object
+
+        Returns: StructureGraphFixedRadius object
+
+        """
         return cls(nn_strategy=structure_graph.nn_strategy,
                    atom_converter=structure_graph.atom_converter,
                    bond_converter=structure_graph.bond_converter)
@@ -231,17 +274,27 @@ class DummyConverter(Converter):
     """
 
     def convert(self, d: Any) -> Any:
+        """
+        Dummy convert, does nothing to input
+        Args:
+            d (Any): input object
+
+        Returns: d
+
+        """
         return d
 
 
 class EmbeddingMap(Converter):
     """
     Convert an integer to a row vector in a feature matrix
-    Args:
-        feature_matrix: (np.ndarray) A matrix of shape (N, M)
     """
 
     def __init__(self, feature_matrix: np.ndarray):
+        """
+        Args:
+            feature_matrix: (np.ndarray) A matrix of shape (N, M)
+        """
         self.feature_matrix = np.array(feature_matrix)
 
     def convert(self, int_array: np.ndarray) -> np.ndarray:
@@ -258,12 +311,15 @@ class EmbeddingMap(Converter):
 class GaussianDistance(Converter):
     """
     Expand distance with Gaussian basis sit at centers and with width 0.5.
-    Args:
-        centers: (np.array)
-        width: (float)
     """
 
     def __init__(self, centers: np.ndarray = np.linspace(0, 5, 100), width=0.5):
+        """
+
+        Args:
+            centers: (np.array) centers for the Gaussian basis
+            width: (float) width of Gaussian basis
+        """
         self.centers = centers
         self.width = width
 
@@ -378,16 +434,43 @@ class BaseGraphBatchGenerator(Sequence):
         return inputs
 
     def on_epoch_end(self):
+        """
+        code to be executed on epoch end
+        """
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 
     def process_atom_feature(self, x: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            x (np.ndarray): atom features
+
+        Returns:
+            processed atom features
+
+        """
         return x
 
     def process_bond_feature(self, x: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            x (np.ndarray): bond features
+
+        Returns:
+            processed bond features
+
+        """
         return x
 
     def process_state_feature(self, x: np.ndarray) -> np.ndarray:
+        """
+        Args:
+            x (np.ndarray): state features
+
+        Returns:
+            processed state features
+
+        """
         return x
 
     def __getitem__(self, index: int) -> tuple:
@@ -430,18 +513,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
     """
     A generator class that assembles several structures (indicated by
     batch_size) and form (x, y) pairs for model training.
-    Args:
-        atom_features: (list of np.array) list of atom feature matrix,
-        bond_features: (list of np.array) list of bond features matrix
-        state_features: (list of np.array) list of [1, G] state features,
-            where G is the global state feature dimension
-        index1_list: (list of integer) list of (M, ) one side atomic index of the bond,
-        M is different for different structures
-        index2_list: (list of integer) list of (M, ) the other side atomic
-            index of the bond, M is different for different structures,
-            but it has to be the same as the corresponding index1.
-        targets: (numpy array), N*1, where N is the number of structures
-        batch_size: (int) number of samples in a batch
     """
 
     def __init__(self,
@@ -453,6 +524,20 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
                  targets: np.ndarray = None,
                  batch_size: int = 128,
                  is_shuffle: bool = True):
+        """
+        Args:
+            atom_features: (list of np.array) list of atom feature matrix,
+            bond_features: (list of np.array) list of bond features matrix
+            state_features: (list of np.array) list of [1, G] state features,
+                where G is the global state feature dimension
+            index1_list: (list of integer) list of (M, ) one side atomic index of the bond,
+            M is different for different structures
+            index2_list: (list of integer) list of (M, ) the other side atomic
+                index of the bond, M is different for different structures,
+                but it has to be the same as the corresponding index1.
+            targets: (numpy array), N*1, where N is the number of structures
+            batch_size: (int) number of samples in a batch
+        """
         super().__init__(len(atom_features), targets, batch_size, is_shuffle)
         self.atom_features = atom_features
         self.bond_features = bond_features
@@ -486,18 +571,6 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
 class GraphBatchDistanceConvert(GraphBatchGenerator):
     """
     Generate batch of structures with bond distance being expanded using a Expansor
-    Args:
-        atom_features: (list of np.array) list of atom feature matrix,
-        bond_features: (list of np.array) list of bond features matrix
-        state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension
-        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different
-            structures
-        index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for
-            different structures, but it has to be the same as the correponding index1.
-        targets: (numpy array), N*1, where N is the number of structures
-        batch_size: (int) number of samples in a batch
-        is_shuffle: (bool) whether to shuffle the structure, default to True
-        distance_converter: (bool) converter for processing the distances
     """
 
     def __init__(self,
@@ -510,6 +583,23 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                  batch_size: int = 128,
                  is_shuffle: bool = True,
                  distance_converter: Converter = None):
+        """
+
+        Args:
+            atom_features: (list of np.array) list of atom feature matrix,
+            bond_features: (list of np.array) list of bond features matrix
+            state_features: (list of np.array) list of [1, G] state features,
+                where G is the global state feature dimension
+            index1_list: (list of integer) list of (M, ) one side atomic index
+                of the bond, M is different for different structures
+            index2_list: (list of integer) list of (M, ) the other side atomic
+                index of the bond, M is different for different structures,
+                but it has to be the same as the correponding index1.
+            targets: (numpy array), N*1, where N is the number of structures
+            batch_size: (int) number of samples in a batch
+            is_shuffle: (bool) whether to shuffle the structure, default to True
+            distance_converter: (bool) converter for processing the distances
+        """
         super().__init__(atom_features=atom_features,
                          bond_features=bond_features,
                          state_features=state_features,
@@ -523,6 +613,14 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         self.distance_converter = distance_converter
 
     def process_bond_feature(self, x) -> np.ndarray:
+        """
+        Convert bond distances into Gaussian expanded vectors
+        Args:
+            x (np.ndarray): input distance array
+
+        Returns: expanded matrix
+
+        """
         return self.distance_converter.convert(x)
 
 

@@ -28,6 +28,14 @@ class CrystalGraph(StructureGraphFixedRadius):
                  bond_converter: Converter = None,
                  cutoff: float = 5.0
                  ):
+        """
+        Convert the structure into crystal graph
+        Args:
+            nn_strategy (str): NearNeighbor strategy
+            atom_converter (Converter): atom features converter
+            bond_converter (Converter): bond features converter
+            cutoff (float): cutoff radius
+        """
         self.cutoff = cutoff
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
                          bond_converter=bond_converter, cutoff=self.cutoff)
@@ -46,10 +54,26 @@ class CrystalGraphWithBondTypes(StructureGraph):
                  nn_strategy: Union[str, NearNeighbors] = 'VoronoiNN',
                  atom_converter: Converter = None,
                  bond_converter: Converter = None):
+        """
+
+        Args:
+            nn_strategy (str): NearNeighbor strategy
+            atom_converter (Converter): atom features converter
+            bond_converter (Converter): bond features converter
+        """
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
                          bond_converter=bond_converter)
 
     def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
+        """
+        Convert structure into graph
+        Args:
+            structure (Structure): pymatgen Structure
+            state_attributes (list): state attributes
+
+        Returns: graph dictionary
+
+        """
         graph = super().convert(structure, state_attributes=state_attributes)
         return self._get_bond_type(graph)
 

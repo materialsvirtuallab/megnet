@@ -1,3 +1,6 @@
+"""
+callbacks functions used in training process
+"""
 import logging
 import os
 import re
@@ -22,20 +25,6 @@ logger.setLevel(logging.INFO)
 class ModelCheckpointMAE(Callback):
     """
     Save the best MAE model with target scaler
-
-    Args:
-        filepath (string): path to save the model file with format. For example
-            `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and
-            val_mae in the filename
-        monitor (string): quantity to monitor, default to "val_mae"
-        verbose (int): 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
-        save_best_only (bool): whether to save only the best model
-        save_weights_only (bool): whether to save the weights only excluding model structure
-        val_gen (generator): validation generator
-        steps_per_val (int): steps per epoch for validation generator
-        target_scaler (object): exposing inverse_transform method to scale the output
-        period (int): number of epoch interval for this callback
-        mode: (string) choose from "min", "max" or "auto"
     """
 
     def __init__(self,
@@ -49,6 +38,21 @@ class ModelCheckpointMAE(Callback):
                  target_scaler: Scaler = None,
                  period: int = 1,
                  mode: str = 'auto'):
+        """
+        Args:
+            filepath (string): path to save the model file with format. For example
+                `weights.{epoch:02d}-{val_mae:.6f}.hdf5` will save the corresponding epoch and
+                val_mae in the filename
+            monitor (string): quantity to monitor, default to "val_mae"
+            verbose (int): 0 for no training log, 1 for only epoch-level log and 2 for batch-level log
+            save_best_only (bool): whether to save only the best model
+            save_weights_only (bool): whether to save the weights only excluding model structure
+            val_gen (generator): validation generator
+            steps_per_val (int): steps per epoch for validation generator
+            target_scaler (object): exposing inverse_transform method to scale the output
+            period (int): number of epoch interval for this callback
+            mode: (string) choose from "min", "max" or "auto"
+        """
         super().__init__()
         if val_gen is None:
             raise ValueError('No validation data is provided!')
@@ -167,15 +171,6 @@ class ReduceLRUponNan(Callback):
     It has an extra function that patience for early stopping.
     This will move to indepedent callback in the future.
 
-    Args:
-        filepath (str): filepath for saved model checkpoint, should be consistent with
-            checkpoint callback
-        factor (float): a value < 1 for scaling the learning rate
-        verbose (bool): whether to show the loading event
-        patience (int): number of steps that the val mae does not change.
-            It is a criteria for early stopping
-        monitor (str): target metric to monitor
-        mode (str): min, max or auto
     """
 
     def __init__(self,
@@ -185,6 +180,17 @@ class ReduceLRUponNan(Callback):
                  patience: int = 500,
                  monitor: str = 'val_mae',
                  mode: str = 'auto'):
+        """
+        Args:
+            filepath (str): filepath for saved model checkpoint, should be consistent with
+                checkpoint callback
+            factor (float): a value < 1 for scaling the learning rate
+            verbose (bool): whether to show the loading event
+            patience (int): number of steps that the val mae does not change.
+                It is a criteria for early stopping
+            monitor (str): target metric to monitor
+            mode (str): min, max or auto
+        """
         self.filepath = filepath
         self.verbose = verbose
         self.factor = factor

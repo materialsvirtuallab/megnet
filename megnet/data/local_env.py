@@ -26,13 +26,14 @@ from pymatgen.analysis.local_env import (
 class MinimumDistanceNNAll(NearNeighbors):
     """
     Determine bonded sites by fixed cutoff
-
-    Args:.
-        cutoff (float): cutoff radius in Angstrom to look for trial
-            near-neighbor sites (default: 4.0).
     """
 
     def __init__(self, cutoff: float = 4.0):
+        """
+        Args:.
+            cutoff (float): cutoff radius in Angstrom to look for trial
+                near-neighbor sites (default: 4.0).
+        """
         self.cutoff = cutoff
 
     def get_nn_info(self, structure: Structure,
@@ -71,6 +72,15 @@ class AllAtomPairs(NearNeighbors):
     """
 
     def get_nn_info(self, molecule: Molecule, n: int) -> List[Dict]:
+        """
+        Get near neighbor information
+        Args:
+            molecule (Molecule): pymatgen Molecule
+            n (int): number of molecule
+
+        Returns: List of neighbor dictionary
+
+        """
         site = molecule[n]
         siw = []
         for i, s in enumerate(molecule):

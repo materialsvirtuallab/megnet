@@ -12,11 +12,14 @@ class GaussianExpansion(Layer):
     A vector of distance [d1, d2, d3, ..., dn] is expanded to a
     matrix of shape [n, m], where m is the number of Gaussian basis centers
 
-    Args:
-        centers (np.ndarray): Gaussian basis centers
-        width (float): width of the Gaussian basis
     """
     def __init__(self, centers, width, **kwargs):
+        """
+        Args:
+            centers (np.ndarray): Gaussian basis centers
+            width (float): width of the Gaussian basis
+            **kwargs:
+        """
         self.centers = np.array(centers).ravel()
         self.width = width
         super().__init__(**kwargs)

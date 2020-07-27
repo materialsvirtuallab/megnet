@@ -148,6 +148,14 @@ class MEGNetModel(GraphModel):
 
     @classmethod
     def from_mvl_models(cls, name: str) -> GraphModel:
+        """
+        load model using mvl model names
+        Args:
+            name (str): model name string. Please check
+                megnet.utils.models.AVAILABEL_MODELS for available models
+        Returns: GraphModel instance
+
+        """
         from megnet.utils.models import load_model
         return load_model(name)
 

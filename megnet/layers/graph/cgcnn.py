@@ -1,3 +1,6 @@
+"""
+CGCNN layer
+"""
 import tensorflow as tf
 import tensorflow.keras.backend as kb
 
@@ -9,16 +12,6 @@ class CrystalGraphLayer(GraphNetworkLayer):
     The CGCNN graph implementation as described in the paper
 
     Xie et al. PHYSICAL REVIEW LETTERS 120, 145301 (2018)
-
-    Args:
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include
-            'relu', 'softmax', 'tanh', 'sigmoid' and etc.
-        use_bias (bool): Default: True. Whether to use the bias term in the neural network.
-        kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
-        bias_initializer (str): Default: 'zeros'
-        activity_regularizer (str): Default: None. The regularization function for the output
-        kernel_constraint (str): Default: None. Keras constraint for kernel values
-        bias_constraint (str): Default: None .Keras constraint for bias values
 
     Methods:
         call(inputs, mask=None): the logic of the layer, returns the final graph
@@ -45,6 +38,19 @@ class CrystalGraphLayer(GraphNetworkLayer):
                  kernel_constraint=None,
                  bias_constraint=None,
                  **kwargs):
+        """
+
+        Args:
+            activation (str): Default: None. The activation function used for each sub-neural network. Examples include
+                'relu', 'softmax', 'tanh', 'sigmoid' and etc.
+            use_bias (bool): Default: True. Whether to use the bias term in the neural network.
+            kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
+            bias_initializer (str): Default: 'zeros'
+            activity_regularizer (str): Default: None. The regularization function for the output
+            kernel_constraint (str): Default: None. Keras constraint for kernel values
+            bias_constraint (str): Default: None .Keras constraint for bias values
+            kwargs (dictionary): additional keyword args
+        """
 
         super().__init__(activation=activation,
                          use_bias=use_bias,
@@ -58,6 +64,12 @@ class CrystalGraphLayer(GraphNetworkLayer):
                          **kwargs)
 
     def build(self, input_shapes):
+        """
+        Build the weights for the layer
+        Args:
+            input_shapes (sequence of tuple): the shapes of all input tensors
+
+        """
         vdim = input_shapes[0][2]
         edim = input_shapes[1][2]
 
@@ -82,9 +94,24 @@ class CrystalGraphLayer(GraphNetworkLayer):
         self.built = True
 
     def compute_output_shape(self, input_shape):
+        """
+        Compute output shapes from input shapes
+        Args:
+            input_shape (sequence of tuple): input shapes
+
+        Returns: sequence of tuples output shapes
+
+        """
         return input_shape
 
     def phi_e(self, inputs):
+        """
+        Edge update function
+        Args:
+            inputs (tuple of tensor)
+        Returns:
+            output tensor
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         return edges
 
@@ -111,16 +138,49 @@ class CrystalGraphLayer(GraphNetworkLayer):
         return tf.transpose(a=tf.math.segment_sum(tf.transpose(a=summed, perm=[1, 0, 2]), index1), perm=[1, 0, 2])
 
     def phi_v(self, b_ei_p, inputs):
+        """
+        Node update function
+        Args:
+            b_ei_p (tensor): edge aggregated tensor
+            inputs (tuple of tensors): other graph inputs
+
+        Returns: updated node tensor
+
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         return nodes + b_ei_p
 
     def rho_e_u(self, e_p, inputs):
+        """
+        aggregate edge to state
+        Args:
+            e_p (tensor): edge tensor
+            inputs (tuple of tensors): other graph input tensors
+
+        Returns: edge aggregated tensor for states
+
+        """
         return 0
 
     def rho_v_u(self, v_p, inputs):
+        """
+        Args:
+            v_p (tf.Tensor): updated atom/node attributes
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            atom/node to global/state aggregated tensor
+        """
         return 0
 
     def phi_u(self, b_e_p, b_v_p, inputs):
+        """
+        Args:
+            b_e_p (tf.Tensor): edge/bond to global aggregated tensor
+            b_v_p (tf.Tensor): node/atom to global aggregated tensor
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            updated globa/state attributes
+        """
         return inputs[2]
 
     def _mlp(self, input_, weights, bias):
@@ -128,5 +188,11 @@ class CrystalGraphLayer(GraphNetworkLayer):
         return output
 
     def get_config(self):
+        """
+         Part of keras layer interface, where the signature is converted into a dict
+        Returns:
+            configurational dictionary
+
+        """
         base_config = super().get_config()
         return dict(list(base_config.items()))

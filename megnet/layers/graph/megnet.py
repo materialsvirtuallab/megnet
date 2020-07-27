@@ -1,3 +1,6 @@
+"""
+Megnet graph layer implementation
+"""
 import tensorflow as tf
 import tensorflow.keras.backend as kb
 
@@ -17,21 +20,6 @@ class MEGNetLayer(GraphNetworkLayer):
     Chen, Chi; Ye, Weike Ye; Zuo, Yunxing; Zheng, Chen; Ong, Shyue Ping.
     Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals,
     2018, arXiv preprint. [arXiv:1812.05055](https://arxiv.org/abs/1812.05055)
-
-    Args:
-        units_v (list of integers): the hidden layer sizes for node update neural network
-        units_e (list of integers): the hidden layer sizes for edge update neural network
-        units_u (list of integers): the hidden layer sizes for state update neural network
-        pool_method (str): 'mean' or 'sum', determines how information is gathered to nodes from neighboring edges
-        activation (str): Default: None. The activation function used for each sub-neural network. Examples include
-            'relu', 'softmax', 'tanh', 'sigmoid' and etc.
-        use_bias (bool): Default: True. Whether to use the bias term in the neural network.
-        kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
-        bias_initializer (str): Default: 'zeros'
-        activity_regularizer (str): Default: None. The regularization function for the output
-        kernel_constraint (str): Default: None. Keras constraint for kernel values
-        bias_constraint (str): Default: None .Keras constraint for bias values
-
     Methods:
         call(inputs, mask=None): the logic of the layer, returns the final graph
         compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes
@@ -61,6 +49,21 @@ class MEGNetLayer(GraphNetworkLayer):
                  kernel_constraint=None,
                  bias_constraint=None,
                  **kwargs):
+        """
+        Args:
+            units_v (list of integers): the hidden layer sizes for node update neural network
+            units_e (list of integers): the hidden layer sizes for edge update neural network
+            units_u (list of integers): the hidden layer sizes for state update neural network
+            pool_method (str): 'mean' or 'sum', determines how information is gathered to nodes from neighboring edges
+            activation (str): Default: None. The activation function used for each sub-neural network. Examples include
+                'relu', 'softmax', 'tanh', 'sigmoid' and etc.
+            use_bias (bool): Default: True. Whether to use the bias term in the neural network.
+            kernel_initializer (str): Default: 'glorot_uniform'. Initialization function for the layer kernel weights,
+            bias_initializer (str): Default: 'zeros'
+            activity_regularizer (str): Default: None. The regularization function for the output
+            kernel_constraint (str): Default: None. Keras constraint for kernel values
+            bias_constraint (str): Default: None .Keras constraint for bias values
+        """
 
         super().__init__(activation=activation,
                          use_bias=use_bias,
@@ -86,6 +89,12 @@ class MEGNetLayer(GraphNetworkLayer):
             raise ValueError('Pool method: ' + pool_method + ' not understood!')
 
     def build(self, input_shapes):
+        """
+        Build the weights for the layer
+        Args:
+            input_shapes (sequence of tuple): the shapes of all input tensors
+
+        """
         vdim = input_shapes[0][2]
         edim = input_shapes[1][2]
         udim = input_shapes[2][2]
@@ -151,6 +160,14 @@ class MEGNetLayer(GraphNetworkLayer):
         self.built = True
 
     def compute_output_shape(self, input_shape):
+        """
+        Compute output shapes from input shapes
+        Args:
+            input_shape (sequence of tuple): input shapes
+
+        Returns: sequence of tuples output shapes
+
+        """
         node_feature_shape = input_shape[0]
         edge_feature_shape = input_shape[1]
         state_feature_shape = input_shape[2]
@@ -161,6 +178,13 @@ class MEGNetLayer(GraphNetworkLayer):
         return output_shape
 
     def phi_e(self, inputs):
+        """
+        Edge update function
+        Args:
+            inputs (tuple of tensor)
+        Returns:
+            output tensor
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         index1 = tf.reshape(index1, (-1,))
         index2 = tf.reshape(index2, (-1,))
@@ -172,27 +196,69 @@ class MEGNetLayer(GraphNetworkLayer):
         return self._mlp(concated, self.phi_e_weights, self.phi_e_biases)
 
     def rho_e_v(self, e_p, inputs):
+        """
+        Reduce edge attributes to node attribute, eqn 5 in the paper
+        Args:
+            e_p: updated bond
+            inputs: the whole input list
+
+        Returns: summed tensor
+
+        """
         node, edges, u, index1, index2, gnode, gbond = inputs
         index1 = tf.reshape(index1, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(e_p), index1), axis=0)
 
     def phi_v(self, b_ei_p, inputs):
+        """
+        Node update function
+        Args:
+            b_ei_p (tensor): edge aggregated tensor
+            inputs (tuple of tensors): other graph inputs
+
+        Returns: updated node tensor
+
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         u_expand = repeat_with_index(u, gnode, axis=1)
         concated = tf.concat([b_ei_p, nodes, u_expand], axis=-1)
         return self._mlp(concated, self.phi_v_weights, self.phi_v_biases)
 
     def rho_e_u(self, e_p, inputs):
+        """
+        aggregate edge to state
+        Args:
+            e_p (tensor): edge tensor
+            inputs (tuple of tensors): other graph input tensors
+
+        Returns: edge aggregated tensor for states
+
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         gbond = tf.reshape(gbond, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(e_p), gbond), axis=0)
 
     def rho_v_u(self, v_p, inputs):
+        """
+        Args:
+            v_p (tf.Tensor): updated atom/node attributes
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            atom/node to global/state aggregated tensor
+        """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         gnode = tf.reshape(gnode, (-1,))
         return tf.expand_dims(self.seg_method(tf.squeeze(v_p, axis=0), gnode), axis=0)
 
     def phi_u(self, b_e_p, b_v_p, inputs):
+        """
+        Args:
+            b_e_p (tf.Tensor): edge/bond to global aggregated tensor
+            b_v_p (tf.Tensor): node/atom to global aggregated tensor
+            inputs (Sequence): list or tuple for the graph inputs
+        Returns:
+            updated globa/state attributes
+        """
         concated = tf.concat([b_e_p, b_v_p, inputs[2]], axis=-1)
         return self._mlp(concated, self.phi_u_weights, self.phi_u_biases)
 
@@ -206,6 +272,12 @@ class MEGNetLayer(GraphNetworkLayer):
         return output
 
     def get_config(self):
+        """
+         Part of keras layer interface, where the signature is converted into a dict
+        Returns:
+            configurational dictionary
+
+        """
         config = {
             'units_e': self.units_e,
             'units_v': self.units_v,

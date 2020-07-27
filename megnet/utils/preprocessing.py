@@ -52,18 +52,20 @@ class StandardScaler(Scaler):
     For extensive quantity, the mean is the mean of target/atom, and
     std is the std for target/atom
 
-    Args:
-        mean (float): mean value of target
-        std (float): standard deviation of target
-        is_intensive (bool): whether the target is already an intensive
-            property
-
     Methods:
         transform(self, target, n=1): standard scaling the target and
     """
 
     def __init__(self, mean: float = 0.0, std: float = 1.0,
                  is_intensive: bool = True):
+        """
+
+        Args:
+            mean (float): mean value of target
+            std (float): standard deviation of target
+            is_intensive (bool): whether the target is already an intensive
+                property
+        """
         self.mean = mean
         if np.abs(std) < np.finfo(float).eps:
             std = 1.0

@@ -55,6 +55,12 @@ class SimpleMolGraph(StructureGraph):
                  atom_converter: Converter = None,
                  bond_converter: Converter = None,
                  ):
+        """
+        Args:
+            nn_strategy (str): NearNeighbor strategy
+            atom_converter (Converter): atomic features converter object
+            bond_converter (Converter): bond features converter object
+        """
         if bond_converter is None:
             bond_converter = GaussianDistance(np.linspace(0, 4, 20), 0.5)
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
@@ -453,6 +459,14 @@ def dijkstra_distance(bonds: List[List[int]]) -> np.ndarray:
 
 
 def mol_from_smiles(smiles: str):
+    """
+    load molecule object from smiles string
+    Args:
+        smiles (string): smiles string
+
+    Returns:
+        openbabel molecule
+    """
     mol = pybel.readstring(format='smi', string=smiles)
     mol.make3D()
     return mol

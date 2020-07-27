@@ -25,21 +25,6 @@ class GraphNetworkLayer(Layer):
     neural networks for each update function, and sum or mean for each
     aggregation function
 
-    Args:
-        activation (str): Default: None. The activation function used for each
-            sub-neural network. Examples include 'relu', 'softmax', 'tanh',
-            'sigmoid' and etc.
-        use_bias (bool): Default: True. Whether to use the bias term in the
-            neural network.
-        kernel_initializer (str): Default: 'glorot_uniform'. Initialization
-            function for the layer kernel weights,
-        bias_initializer (str): Default: 'zeros'
-        activity_regularizer (str): Default: None. The regularization function
-            for the output
-        kernel_constraint (str): Default: None. Keras constraint for kernel
-            values
-        bias_constraint (str): Default: None .Keras constraint for bias values
-
     Method:
         call(inputs, mask=None): the logic of the layer, returns the final graph
         compute_output_shape(input_shape): compute static output shapes, returns list of tuple shapes
@@ -65,6 +50,23 @@ class GraphNetworkLayer(Layer):
                  kernel_constraint: OptStrOrCallable = None,
                  bias_constraint: OptStrOrCallable = None,
                  **kwargs):
+        """
+        Args:
+            activation (str): Default: None. The activation function used for each
+                sub-neural network. Examples include 'relu', 'softmax', 'tanh',
+                'sigmoid' and etc.
+            use_bias (bool): Default: True. Whether to use the bias term in the
+                neural network.
+            kernel_initializer (str): Default: 'glorot_uniform'. Initialization
+                function for the layer kernel weights,
+            bias_initializer (str): Default: 'zeros'
+            activity_regularizer (str): Default: None. The regularization function
+                for the output
+            kernel_constraint (str): Default: None. Keras constraint for kernel
+                values
+            bias_constraint (str): Default: None .Keras constraint for bias values
+            **kwargs:
+        """
         if 'input_shape' not in kwargs and 'input_dim' in kwargs:
             kwargs['input_shape'] = (kwargs.pop('input_dim'),)
         self.activation = activations.get(activation)  # noqa
@@ -79,6 +81,15 @@ class GraphNetworkLayer(Layer):
         super().__init__(**kwargs)
 
     def call(self, inputs: Sequence, mask=None) -> Sequence:
+        """
+        Core logic of graph network
+        Args:
+            inputs (Sequence): input tensors
+            mask (tensor): mask tensor
+
+        Returns: output tensor
+
+        """
         e_p = self.phi_e(inputs)
         b_ei_p = self.rho_e_v(e_p, inputs)
         v_p = self.phi_v(b_ei_p, inputs)
@@ -88,7 +99,7 @@ class GraphNetworkLayer(Layer):
         return [v_p, e_p, u_p]
 
     def phi_e(self, inputs: Sequence) -> tf.Tensor:
-        """
+        r"""
         This is for updating the edge attributes
         ek' = phi_e(ek, vrk, vsk, u)
 
@@ -101,7 +112,7 @@ class GraphNetworkLayer(Layer):
         raise NotImplementedError
 
     def rho_e_v(self, e_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
-        """
+        r"""
         This is for step 2, aggregate edge attributes per node
         Ei' = {(ek', rk, sk)} with rk =i, k=1:Ne
 
@@ -114,7 +125,7 @@ class GraphNetworkLayer(Layer):
         raise NotImplementedError
 
     def phi_v(self, b_ei_p: tf.Tensor, inputs: Sequence):
-        """
+        r"""
         Step 3. Compute updated node attributes
         v_i' = phi_v(\bar e_i, vi, u)
 
@@ -127,7 +138,7 @@ class GraphNetworkLayer(Layer):
         raise NotImplementedError
 
     def rho_e_u(self, e_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
-        """
+        r"""
         let V' = {v'} i = 1:Nv
         let E' = {(e_k', rk, sk)} k = 1:Ne
         \bar e' = rho_e_u(E')
@@ -141,7 +152,7 @@ class GraphNetworkLayer(Layer):
         raise NotImplementedError
 
     def rho_v_u(self, v_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
-        """
+        r"""
         \bar v' = rho_v_u(V')
 
         Args:
@@ -153,7 +164,7 @@ class GraphNetworkLayer(Layer):
         raise NotImplementedError
 
     def phi_u(self, b_e_p: tf.Tensor, b_v_p: tf.Tensor, inputs: Sequence) -> tf.Tensor:
-        """
+        r"""
         u' = phi_u(\bar e', \bar v', u)
         Args:
             b_e_p (tf.Tensor): edge/bond to global aggregated tensor

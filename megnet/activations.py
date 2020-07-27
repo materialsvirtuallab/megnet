@@ -1,3 +1,6 @@
+"""
+Activation functions used in neural networks
+"""
 from typing import Callable, Any
 
 import tensorflow.keras.backend as kb

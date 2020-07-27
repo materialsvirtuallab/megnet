@@ -10,6 +10,10 @@ DTYPES = {'float32': {'numpy': np.float32, 'tf': tf.float32},
 
 
 class DataType:
+    """
+    Data types for tensorflow. This enables users to choose
+    from 32-bit float and int, and 16-bit float and int
+    """
     np_float = np.float32
     np_int = np.int32
     tf_float = tf.float32

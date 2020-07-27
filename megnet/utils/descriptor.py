@@ -22,16 +22,18 @@ class MEGNetDescriptor:
     MEGNet descriptors. This class takes a trained model and
     then compute the intermediate outputs as structure features
 
-    Args:
-        model_name (str or MEGNetModel): trained model. If it is
-            str, then only models in mvl_models are used.
-        use_cache (bool): whether to use cache for structure
-            graph calculations
     """
     def __init__(self,
                  model_name: Union[str, GraphModel,
                                    MEGNetModel] = DEFAULT_MODEL,
                  use_cache: bool = True):
+        """
+        Args:
+            model_name (str or MEGNetModel): trained model. If it is
+                str, then only models in mvl_models are used.
+            use_cache (bool): whether to use cache for structure
+                graph calculations
+        """
         if isinstance(model_name, str):
             model = MEGNetModel.from_file(model_name)
         elif isinstance(model_name, GraphModel):

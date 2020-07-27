@@ -17,25 +17,6 @@ class Set2Set(Layer):
     "Order matters: Sequence to sequence for sets." arXiv preprint
     arXiv:1511.06391 (2015).
 
-    Args:
-        T: (int) recurrent step
-        n_hidden: (int) number of hidden units
-        activation: (str or object) activation function
-        activation_lstm: (str or object) activation function for lstm
-        recurrent_activation: (str or object) activation function for recurrent step
-        kernel_initializer: (str or object) initializer for kernel weights
-        recurrent_initializer: (str or object) initializer for recurrent weights
-        bias_initializer: (str or object) initializer for biases
-        use_bias: (bool) whether to use biases
-        unit_forget_bias: (bool) whether to use basis in forget gate
-        kernel_regularizer: (str or object) regularizer for kernel weights
-        recurrent_regularizer: (str or object) regularizer for recurrent weights
-        bias_regularizer: (str or object) regularizer for biases
-        kernel_constraint: (str or object) constraint for kernel weights
-        recurrent_constraint: (str or object) constraint for recurrent weights
-        bias_constraint:(str or object) constraint for biases
-        kwargs: other inputs for keras Layer class
-
     """
 
     def __init__(self,
@@ -56,7 +37,26 @@ class Set2Set(Layer):
                  recurrent_constraint=None,
                  bias_constraint=None,
                  **kwargs):
-
+        """
+        Args:
+            T: (int) recurrent step
+            n_hidden: (int) number of hidden units
+            activation: (str or object) activation function
+            activation_lstm: (str or object) activation function for lstm
+            recurrent_activation: (str or object) activation function for recurrent step
+            kernel_initializer: (str or object) initializer for kernel weights
+            recurrent_initializer: (str or object) initializer for recurrent weights
+            bias_initializer: (str or object) initializer for biases
+            use_bias: (bool) whether to use biases
+            unit_forget_bias: (bool) whether to use basis in forget gate
+            kernel_regularizer: (str or object) regularizer for kernel weights
+            recurrent_regularizer: (str or object) regularizer for recurrent weights
+            bias_regularizer: (str or object) regularizer for biases
+            kernel_constraint: (str or object) constraint for kernel weights
+            recurrent_constraint: (str or object) constraint for recurrent weights
+            bias_constraint:(str or object) constraint for biases
+            kwargs: other inputs for keras Layer class
+        """
         super().__init__(**kwargs)
         self.activation = activations.get(activation)
         self.use_bias = use_bias
@@ -78,7 +78,12 @@ class Set2Set(Layer):
         self.n_hidden = n_hidden
 
     def build(self, input_shape):
+        """
+        Build tensors
+        Args:
+            input_shape (sequence of tuple): input shapes
 
+        """
         feature_shape, index_shape = input_shape
         self.m_weight = self.add_weight(
             shape=(feature_shape[-1], self.n_hidden),
@@ -123,10 +128,27 @@ class Set2Set(Layer):
         self.built = True
 
     def compute_output_shape(self, input_shape):
+        """
+        Compute output shapes from input shapes
+        Args:
+            input_shape (sequence of tuple): input shapes
+
+        Returns: sequence of tuples output shapes
+
+        """
         feature_shape, index_shape = input_shape
         return feature_shape[0], None, 2 * self.n_hidden
 
     def call(self, inputs, mask=None):
+        """
+        Main logic
+        Args:
+            inputs (tuple of tensor): input tensors
+            mask (tensor): mask tensor
+
+        Returns: output tensor
+
+        """
         features, feature_graph_index = inputs
         feature_graph_index = tf.reshape(feature_graph_index, (-1,))
         _, _, count = tf.unique_with_counts(feature_graph_index)
@@ -181,6 +203,11 @@ class Set2Set(Layer):
         return h, c
 
     def get_config(self):
+        """
+         Part of keras layer interface, where the signature is converted into a dict
+        Returns:
+            configurational dictionary
+        """
         config = {"T": self.T,
                   "n_hidden": self.n_hidden,
                   "activation": activations.serialize(self.activation),
