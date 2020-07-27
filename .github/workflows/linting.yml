@@ -42,4 +42,4 @@ jobs:
     - name: pylint
       run: |
         pip install pylint --upgrade --quiet
-        pylint maml
+        pylint megnet
