@@ -5,18 +5,17 @@ Implements megnet models.
 from typing import Dict, List, Callable
 
 import numpy as np
-
-from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
-from tensorflow.keras.regularizers import l2
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.regularizers import l2
 
-from megnet.layers import MEGNetLayer, Set2Set, GaussianExpansion
 from megnet.activations import softplus2
-from megnet.data.graph import GaussianDistance, StructureGraph
-from megnet.data.crystal import CrystalGraph
-from megnet.utils.preprocessing import DummyScaler, Scaler
 from megnet.config import DataType
+from megnet.data.crystal import CrystalGraph
+from megnet.data.graph import GaussianDistance, StructureGraph
+from megnet.layers import MEGNetLayer, Set2Set, GaussianExpansion
+from megnet.utils.preprocessing import DummyScaler, Scaler
 from .base import GraphModel
 
 

@@ -1,3 +1,6 @@
+"""
+Linear readout layer includes stats calculated on the atom dimension
+"""
 from tensorflow.keras.layers import Layer
 
 import tensorflow as tf

@@ -3,11 +3,12 @@ Molecule utility, mainly using openbabel
 """
 import logging
 
-from pymatgen import Molecule
 from monty.dev import requires
+from pymatgen import Molecule
+
 try:
-    import pybel as pb
-    import openbabel as ob
+    import pybel as pb  # type: ignore
+    import openbabel as ob  # type: ignore
 except ImportError:
     logging.warning("Openbabel is needed for molecule models, "
                     "try 'conda install -c openbabel openbabel' "

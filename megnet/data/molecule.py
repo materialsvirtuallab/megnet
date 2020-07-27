@@ -2,26 +2,25 @@
 Tools for creating graph inputs from molecule data
 """
 
+import itertools
 import os
 import sys
-import itertools
-from functools import partial
 from collections import deque
+from functools import partial
 from multiprocessing import Pool
 
 import numpy as np
 from pymatgen import Molecule, Element
-from pymatgen.io.babel import BabelMolAdaptor
 from pymatgen.analysis.local_env import NearNeighbors
+from pymatgen.io.babel import BabelMolAdaptor
 
-from megnet.utils.general import fast_label_binarize
 from megnet.data.graph import (StructureGraph, GaussianDistance,
                                BaseGraphBatchGenerator, GraphBatchGenerator, Converter)
+from megnet.utils.general import fast_label_binarize
 from .qm9 import ring_to_vector
 
-
 try:
-    import pybel
+    import pybel  # type: ignore
 except ImportError:
     pybel = None
 
@@ -156,7 +155,8 @@ class MolecularGraph(StructureGraph):
 
         # Get the features features for all atoms and bonds
         atom_features = []
-        atom_pairs = []
+        atom_pairs: List[Dict] = []
+
         for idx, atom in enumerate(mol.atoms):
             f = self.get_atom_feature(mol, atom)
             atom_features.append(f)
@@ -172,8 +172,9 @@ class MolecularGraph(StructureGraph):
         # Compute the graph distance, if desired
         if 'graph_distance' in self.bond_features:
             graph_dist = self._dijkstra_distance(atom_pairs)
-            for i in atom_pairs:
-                i.update({'graph_distance': graph_dist[i['a_idx'], i['b_idx']]})
+            for pair in atom_pairs:
+                d: Dict = {'graph_distance': graph_dist[pair['a_idx'], pair['b_idx']]}
+                pair.update(d)
 
         # Generate the state attributes (that describe the whole network)
         state_attributes = state_attributes or [
@@ -271,7 +272,7 @@ class MolecularGraph(StructureGraph):
                 atom_temp.append(atom[i])
         return atom_temp
 
-    def _dijkstra_distance(self, pairs: List[Dict]) -> List[int]:
+    def _dijkstra_distance(self, pairs: List[Dict]) -> np.ndarray:
         """
         Compute the graph distance between each pair of atoms,
         using the network defined by the bonded atoms.
@@ -334,7 +335,7 @@ class MolecularGraph(StructureGraph):
 
         return output
 
-    def create_bond_feature(self, mol, bid: int, eid: int):
+    def create_bond_feature(self, mol, bid: int, eid: int) -> Dict:
         """
         Create information for a bond for a pair of atoms that are not actually bonded
 
@@ -353,7 +354,7 @@ class MolecularGraph(StructureGraph):
                 "spatial_distance": a1.GetDistance(a2)}
 
     def get_pair_feature(self, mol, bid: int,
-                         eid: int, full_pair_matrix: bool):
+                         eid: int, full_pair_matrix: bool) -> Union[Dict, None]:
         """
         Get the features for a certain bond
 
@@ -432,8 +433,8 @@ def dijkstra_distance(bonds: List[List[int]]) -> np.ndarray:
         graph_dist[bond[0], bond[1]] = 1
         graph_dist[bond[1], bond[0]] = 1
 
-    queue = deque()  # Queue used in all loops
-    visited = set()  # Used in all loops
+    queue: deque = deque()  # Queue used in all loops
+    visited: set = set()  # Used in all loops
     for i in range(nb_atom):
         graph_dist[i, i] = 0
         visited.clear()

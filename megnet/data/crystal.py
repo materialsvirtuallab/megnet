@@ -1,15 +1,17 @@
-from megnet.data.graph import StructureGraph, StructureGraphFixedRadius
-import numpy as np
-from megnet.data.graph import GaussianDistance, Converter
-from monty.serialization import loadfn
-from pathlib import Path
+"""
+Crystal graph related
+"""
 from copy import deepcopy
-from pymatgen import Element
-from pymatgen.analysis.local_env import NearNeighbors
-from pymatgen import Structure
-
+from pathlib import Path
 from typing import Union, List, Dict
 
+from monty.serialization import loadfn
+from pymatgen import Element
+from pymatgen import Structure
+from pymatgen.analysis.local_env import NearNeighbors
+
+from megnet.data.graph import Converter
+from megnet.data.graph import StructureGraph, StructureGraphFixedRadius
 
 MODULE_DIR = Path(__file__).parent.absolute()
 

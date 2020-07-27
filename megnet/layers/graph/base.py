@@ -12,8 +12,8 @@ A full GN block has the following computation steps
 from typing import Dict, Sequence
 
 import tensorflow as tf
-from tensorflow.keras.layers import Layer
 from tensorflow.keras import regularizers, constraints, initializers
+from tensorflow.keras.layers import Layer
 
 from megnet import activations
 from megnet.utils.typing import OptStrOrCallable

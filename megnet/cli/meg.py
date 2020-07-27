@@ -12,8 +12,9 @@ import sys
 from difflib import SequenceMatcher
 from pathlib import Path
 
-from tabulate import tabulate
 from pymatgen import Structure
+from tabulate import tabulate
+
 from megnet.utils.models import MEGNetModel
 
 DEFAULT_MODEL_PATH = Path(__file__).parent / ".." / ".." / "mvl_models" / "mp-2019.4.1"

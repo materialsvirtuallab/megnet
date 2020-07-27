@@ -1,10 +1,10 @@
 """
 Model utilities, mainly for model loading and download
 """
+import logging
 import os
 from glob import glob
 from zipfile import ZipFile
-import logging
 
 from megnet.models import MEGNetModel, GraphModel
 

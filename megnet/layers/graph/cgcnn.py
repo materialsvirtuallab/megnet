@@ -1,7 +1,7 @@
-from megnet.layers.graph.base import GraphNetworkLayer
+import tensorflow as tf
 import tensorflow.keras.backend as kb
 
-import tensorflow as tf
+from megnet.layers.graph.base import GraphNetworkLayer
 
 
 class CrystalGraphLayer(GraphNetworkLayer):

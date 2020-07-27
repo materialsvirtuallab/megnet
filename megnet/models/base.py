@@ -3,12 +3,12 @@ Implements basic GraphModels.
 """
 
 import os
-from warnings import warn
 from typing import Dict, List, Union
+from warnings import warn
 
 import numpy as np
 from monty.serialization import dumpfn, loadfn
-
+from pymatgen import Structure
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
@@ -16,8 +16,6 @@ from tensorflow.keras.models import Model
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph
 from megnet.utils.preprocessing import DummyScaler, Scaler
-
-from pymatgen import Structure
 
 
 class GraphModel:
@@ -88,7 +86,7 @@ class GraphModel:
         """
         train_graphs, train_targets = self.get_all_graphs_targets(train_structures, train_targets,
                                                                   scrub_failed_structures=scrub_failed_structures)
-        if validation_structures is not None:
+        if (validation_structures is not None) and (validation_targets is not None):
             val_graphs, validation_targets = self.get_all_graphs_targets(
                 validation_structures, validation_targets, scrub_failed_structures=scrub_failed_structures)
         else:
@@ -159,7 +157,7 @@ class GraphModel:
         train_nb_atoms = [len(i['atom']) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
 
-        if validation_graphs is not None:
+        if (validation_graphs is not None) and (validation_targets is not None):
             filepath = os.path.join(dirname, '%s_{epoch:05d}_{%s:.6f}.hdf5' % (monitor, monitor))
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
@@ -185,11 +183,12 @@ class GraphModel:
                                                      steps_per_val=steps_per_val,
                                                      target_scaler=self.target_scaler)])
                 # avoid running validation twice in an epoch
-                val_generator = None
-                steps_per_val = None
+                val_generator = None  # type: ignore
+                steps_per_val = None  # type: ignore
         else:
             val_generator = None
-            steps_per_val = None
+            steps_per_val = None  # type: ignore
+
         train_inputs = self.graph_converter.get_flat_data(train_graphs, train_targets)
         # check dimension match
         self.check_dimension(train_graphs[0])
@@ -234,6 +233,7 @@ class GraphModel:
             if not matched:
                 raise ValueError("The data dimension for %s is %s and does not match model "
                                  "required shape of %s" % (i, str(j), str(k)))
+        return False
 
     def get_all_graphs_targets(self, structures: List[Structure],
                                targets: List[float],

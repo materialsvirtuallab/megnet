@@ -2,9 +2,8 @@
 Gaussian expansion of distances
 """
 import numpy as np
-
-from tensorflow.keras.layers import Layer
 import tensorflow as tf
+from tensorflow.keras.layers import Layer
 
 
 class GaussianExpansion(Layer):

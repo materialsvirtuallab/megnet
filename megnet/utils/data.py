@@ -4,11 +4,11 @@ Data utitlities
 from typing import Tuple
 
 import numpy as np
-from pymatgen.optimization.neighbors import find_points_in_spheres
 from pymatgen import Structure, Molecule
+from pymatgen.optimization.neighbors import find_points_in_spheres
 
-from megnet.utils.typing import StructureOrMolecule
 from megnet.config import DataType
+from megnet.utils.typing import StructureOrMolecule
 
 
 def get_graphs_within_cutoff(structure: StructureOrMolecule,

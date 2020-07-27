@@ -2,19 +2,19 @@
 data loaders (known as Sequence objects in Keras).
 Most users will not need to interact with this module."""
 from abc import abstractmethod
+from inspect import signature
 from operator import itemgetter
-from tensorflow.keras.utils import Sequence
+from typing import Union, Dict, List, Any
 
 import numpy as np
-from megnet.utils.general import expand_1st, to_list
-from megnet.utils.data import get_graphs_within_cutoff
 from monty.json import MSONable
-from megnet.data import local_env
-from inspect import signature
-from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen import Structure
+from pymatgen.analysis.local_env import NearNeighbors
+from tensorflow.keras.utils import Sequence
 
-from typing import Union, Dict, List, Any
+from megnet.data import local_env
+from megnet.utils.data import get_graphs_within_cutoff
+from megnet.utils.general import expand_1st, to_list
 
 
 class Converter(MSONable):
@@ -36,8 +36,6 @@ class StructureGraph(MSONable):
         3. get_flat_data(self, graphs, targets)
             This method process graphs and targets pairs and output model input list.
     """
-
-    # TODO (wardlt): Consider making "num_*_features" funcs to simplify making a MEGNet model
 
     def __init__(self,
                  nn_strategy: Union[str, NearNeighbors] = None,
@@ -61,12 +59,8 @@ class StructureGraph(MSONable):
         else:
             raise RuntimeError("Strategy not valid")
 
-        self.atom_converter = atom_converter
-        self.bond_converter = bond_converter
-        if self.atom_converter is None:
-            self.atom_converter = self._get_dummy_converter()
-        if self.bond_converter is None:
-            self.bond_converter = self._get_dummy_converter()
+        self.atom_converter = atom_converter or self._get_dummy_converter()
+        self.bond_converter = bond_converter or self._get_dummy_converter()
 
     def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
         """
@@ -323,7 +317,7 @@ class BaseGraphBatchGenerator(Sequence):
                             connection_list_temp: List[np.ndarray],
                             global_list_temp: List[np.ndarray],
                             index1_temp: List[np.ndarray],
-                            index2_temp: List[np.ndarray]) -> List:
+                            index2_temp: List[np.ndarray]) -> tuple:
         """Compile the matrices describing each graph into single matrices for the entire graph
         Beyond concatenating the graph descriptions, this operation updates the indices of each
         node to be sequential across all graphs so they are not duplicated between graphs
@@ -374,13 +368,13 @@ class BaseGraphBatchGenerator(Sequence):
             index2 += [i + offset_ind for i in ind2]
             offset_ind += (max(ind1) + 1)
         # Compile the inputs in needed order
-        inputs = [expand_1st(feature_list_temp),
+        inputs = (expand_1st(feature_list_temp),
                   expand_1st(connection_list_temp),
                   expand_1st(global_list_temp),
                   expand_1st(np.array(index1, dtype=np.int32)),
                   expand_1st(np.array(index2, dtype=np.int32)),
                   expand_1st(np.array(gnode, dtype=np.int32)),
-                  expand_1st(np.array(gbond, dtype=np.int32))]
+                  expand_1st(np.array(gbond, dtype=np.int32)))
         return inputs
 
     def on_epoch_end(self):
@@ -418,7 +412,7 @@ class BaseGraphBatchGenerator(Sequence):
             return inputs, expand_1st(target_temp)
 
     @abstractmethod
-    def _generate_inputs(self, batch_index: int) -> tuple:
+    def _generate_inputs(self, batch_index: list) -> tuple:
         """Get the graph descriptions for each batch
         Args:
              batch_index ([int]): List of indices for training batch
@@ -467,7 +461,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
         self.index1_list = index1_list
         self.index2_list = index2_list
 
-    def _generate_inputs(self, batch_index: int) -> tuple:
+    def _generate_inputs(self, batch_index: list) -> tuple:
         """Get the graph descriptions for each batch
         Args:
              batch_index ([int]): List of indices for training batch
@@ -525,6 +519,8 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                          targets=targets,
                          batch_size=batch_size,
                          is_shuffle=is_shuffle)
+        if distance_converter is None:
+            raise ValueError("Distance converter cannot be None")
         self.distance_converter = distance_converter
 
     def process_bond_feature(self, x) -> np.ndarray:

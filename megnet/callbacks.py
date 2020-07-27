@@ -1,16 +1,18 @@
-import re
 import logging
 import os
+import re
 import warnings
-from glob import glob
 from collections import deque
+from glob import glob
+from typing import Dict
+
 import numpy as np
-from tensorflow.keras.callbacks import Callback
 import tensorflow.keras.backend as kb
+from tensorflow.keras.callbacks import Callback
+from tensorflow.keras.utils import Sequence
+
 from megnet.utils.metrics import mae, accuracy
 from megnet.utils.preprocessing import DummyScaler, Scaler
-
-from typing import Iterable, Dict
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -42,7 +44,7 @@ class ModelCheckpointMAE(Callback):
                  verbose: int = 0,
                  save_best_only: bool = True,
                  save_weights_only: bool = False,
-                 val_gen: Iterable = None,
+                 val_gen: Sequence = None,
                  steps_per_val: int = None,
                  target_scaler: Scaler = None,
                  period: int = 1,
@@ -59,10 +61,8 @@ class ModelCheckpointMAE(Callback):
         self.period = period
         self.epochs_since_last_save = 0
         self.val_gen = val_gen
-        self.steps_per_val = steps_per_val
-        self.target_scaler = target_scaler
-        if self.target_scaler is None:
-            self.target_scaler = DummyScaler()
+        self.steps_per_val = steps_per_val or len(val_gen)
+        self.target_scaler = target_scaler or DummyScaler()
 
         if monitor == 'val_mae':
             self.metric = mae
@@ -102,7 +102,7 @@ class ModelCheckpointMAE(Callback):
             val_pred = []
             val_y = []
             for i in range(self.steps_per_val):
-                val_data = self.val_gen[i]
+                val_data = self.val_gen[i]  # type: ignore
                 nb_atom = _count(np.array(val_data[0][-2]))
                 stop_training = self.model.stop_training  # save stop_trainings state
                 pred_ = self.model.predict(val_data[0])
@@ -188,7 +188,7 @@ class ReduceLRUponNan(Callback):
         self.filepath = filepath
         self.verbose = verbose
         self.factor = factor
-        self.losses = deque([], maxlen=10)
+        self.losses: deque = deque([], maxlen=10)
         self.patience = patience
         self.monitor = monitor
         super().__init__()
