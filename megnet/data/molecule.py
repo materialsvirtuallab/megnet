@@ -357,7 +357,7 @@ class MolecularGraph(StructureGraph):
         return {"a_idx": bid,
                 "b_idx": eid,
                 "bond_type": 0,
-                "same_ring": same_ring,
+                "same_ring": bool(same_ring),
                 "spatial_distance": a1.GetDistance(a2)}
 
     def get_pair_feature(self, mol, bid: int,
@@ -390,7 +390,7 @@ class MolecularGraph(StructureGraph):
         return {"a_idx": bid,
                 "b_idx": eid,
                 "bond_type": 4 if bond.IsAromatic() else bond.GetBondOrder(),
-                "same_ring": same_ring,
+                "same_ring": bool(same_ring),
                 "spatial_distance": a1.GetDistance(a2)}
 
     @staticmethod
