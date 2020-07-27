@@ -25,11 +25,11 @@ except ImportError:
     pybel = None
 
 try:
-    from rdkit import Chem
+    from rdkit import Chem  # type: ignore
 except ImportError:
     Chem = None
 
-from typing import List, Dict, Union
+from typing import Sequence, Dict, Union, List
 
 __date__ = '12/01/2018'
 
@@ -216,7 +216,7 @@ class MolecularGraph(StructureGraph):
                 'index1': index1,
                 'index2': index2}
 
-    def _create_pair_feature_vector(self, bond: Dict) -> List[float]:
+    def _create_pair_feature_vector(self, bond: Dict) -> List[int]:
         """Generate the feature vector from the bond feature dictionary
 
         Handles the binarization of categorical variables, and performing the distance conversion
@@ -226,7 +226,7 @@ class MolecularGraph(StructureGraph):
         Returns:
             ([float]) Values converted to a vector
             """
-        bond_temp = []
+        bond_temp: List[int] = []
         for i in self.bond_features:
             # Some features require conversion (e.g., binarization)
             if i in bond:
@@ -550,7 +550,7 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         if self.pool is not None:
             self.pool.close()  # Kill thread pool if generator is deleted
 
-    def _generate_inputs(self, batch_index: int) -> np.ndarray:
+    def _generate_inputs(self, batch_index: list) -> np.ndarray:
         # Get the molecules for this batch
         mols = self.mols[batch_index]
 
@@ -587,7 +587,13 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         graphs = self._generate_graphs(self.mols)
 
         # Turn them into a fat array
-        inputs = self.converter.get_flat_data(graphs, self.targets)
-
-        return GraphBatchGenerator(*inputs, is_shuffle=self.is_shuffle,
+        atom_features, bond_features, state_features, index1_list, index2_list, targets = \
+            self.converter.get_flat_data(graphs, self.targets)  # type: ignore
+        return GraphBatchGenerator(atom_features=atom_features,
+                                   bond_features=bond_features,
+                                   state_features=state_features,
+                                   index1_list=index1_list,
+                                   index2_list=index2_list,
+                                   targets=targets,
+                                   is_shuffle=self.is_shuffle,
                                    batch_size=self.batch_size)

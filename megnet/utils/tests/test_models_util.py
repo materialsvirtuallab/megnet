@@ -1,3 +1,4 @@
+import tensorflow as tf
 import unittest
 
 from megnet.utils.models import load_model

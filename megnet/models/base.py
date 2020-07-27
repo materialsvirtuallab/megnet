@@ -186,7 +186,7 @@ class GraphModel:
                 val_generator = None  # type: ignore
                 steps_per_val = None  # type: ignore
         else:
-            val_generator = None
+            val_generator = None  # type: ignore
             steps_per_val = None  # type: ignore
 
         train_inputs = self.graph_converter.get_flat_data(train_graphs, train_targets)

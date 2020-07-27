@@ -1,3 +1,4 @@
+import tensorflow as tf
 import unittest
 from megnet.data.graph import GaussianDistance
 from megnet.utils.general import to_list

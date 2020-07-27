@@ -129,7 +129,7 @@ class MEGNetModel(GraphModel):
         super().__init__(model=model, target_scaler=target_scaler, graph_converter=graph_converter)
 
     @classmethod
-    def from_url(cls, url: str) -> 'MEGNetModel':
+    def from_url(cls, url: str) -> GraphModel:
         """
         Download and load a model from a URL. E.g.
         https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5
@@ -147,7 +147,7 @@ class MEGNetModel(GraphModel):
         return cls.from_file(fname)
 
     @classmethod
-    def from_mvl_models(cls, name: str) -> 'MEGNetModel':
+    def from_mvl_models(cls, name: str) -> GraphModel:
         from megnet.utils.models import load_model
         return load_model(name)
 
@@ -331,7 +331,7 @@ def make_megnet_model(nfeat_edge: int = None,
     if is_classification:
         final_act = 'sigmoid'
     else:
-        final_act = None
+        final_act = None  # type: ignore
     out = Dense(ntarget, activation=final_act, name='readout_2')(final_vec)
     model = Model(inputs=[x1, x2, x3, x4, x5, x6, x7], outputs=out)
     return model

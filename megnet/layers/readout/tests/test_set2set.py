@@ -1,3 +1,4 @@
+import tensorflow as tf
 from megnet.layers import Set2Set
 import numpy as np
 from tensorflow.keras.layers import Input

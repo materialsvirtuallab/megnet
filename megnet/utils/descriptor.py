@@ -4,7 +4,7 @@ pretrained megnet model
 """
 
 import os
-from typing import Union
+from typing import Union, Dict
 
 import numpy as np
 from tensorflow.keras.models import Model
@@ -69,7 +69,7 @@ class MEGNetDescriptor:
         model.model = full_model
         self.model = model
         self.valid_names = valid_names
-        self._cache = {}
+        self._cache: Dict[str, float] = {}
         self.use_cache = use_cache
 
     def _predict_structure(self, structure: StructureOrMolecule) -> np.ndarray:
@@ -111,7 +111,7 @@ class MEGNetDescriptor:
                    "set2_set": ["set2set_atom" if level == 1 else "set2set_bond", None],
                    "concatenate": ["concatenate", None]}
         if self.version == "v2":
-            return mapping[prefix][0], mapping[prefix][1]
+            return mapping[prefix][0], mapping[prefix][1]  # type: ignore
         return prefix, level
 
     def get_atom_features(self, structure: StructureOrMolecule,

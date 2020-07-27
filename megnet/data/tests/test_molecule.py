@@ -1,3 +1,4 @@
+import tensorflow as tf
 import unittest
 import os
 import json

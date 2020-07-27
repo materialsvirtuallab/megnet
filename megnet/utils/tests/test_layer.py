@@ -1,3 +1,4 @@
+import tensorflow as tf
 import unittest
 from megnet.utils.layer import repeat_with_index, _repeat
 import tensorflow as tf
