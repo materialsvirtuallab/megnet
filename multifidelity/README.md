@@ -169,4 +169,4 @@ This project is covered under the BSD 3-clause License.
 
 1. For fitting models that include the experimental data, the model requires experimental structures. We take them from the ICSD commercial database. The users are required to have access to ICSD to repeat the fitting. The models however use the same principle as shown in the example script `train.py`.
 
-2. On some systems, you may find errors like `SystemError: google/protobuf/pyext/...`. This seems to be bugs related to tensorflow. A workaround is by putting `import ntesorflow as tf` at the beginning of your training script. 
+2. On some systems, you may find errors like `SystemError: google/protobuf/pyext/...`. These seem to be bugs related to tensorflow. A workaround is by putting `import tensorflow as tf` at the beginning of your training script. 
