@@ -131,7 +131,8 @@ class InteractionLayer(GraphNetworkLayer):
         fr = tf.gather(atomwise1, index2, axis=1)
 
         after_cfconv = atomwise1 + \
-            tf.transpose(a=tf.math.segment_sum(tf.transpose(a=fr * cfconv_out, perm=[1, 0, 2]), index1), perm=[1, 0, 2])
+            tf.transpose(a=tf.math.segment_sum(tf.transpose(
+                a=fr * cfconv_out, perm=[1, 0, 2]), index1), perm=[1, 0, 2])
 
         atomwise2 = self.activation(self._mlp(after_cfconv, self.phi_v_weights[1], self.phi_v_biases[1]))
         atomwise3 = self._mlp(atomwise2, self.phi_v_weights[2], self.phi_v_biases[2])

@@ -405,7 +405,6 @@ class BaseGraphBatchGenerator(Sequence):
             return inputs
         else:
             # get targets
-            it = itemgetter(*batch_index)
             target_temp = itemgetter_list(self.targets, batch_index)
             target_temp = np.atleast_2d(target_temp)
 
@@ -527,17 +526,17 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
         return self.distance_converter.convert(x)
 
 
-def itemgetter_list(l, indices: List) -> tuple:
+def itemgetter_list(data_list: List, indices: List) -> tuple:
     """
-    Get indices of l and return a tuple
+    Get indices of data_list and return a tuple
     Args:
-        l:  (list)
+        data_list (list):  data list
         indices: (list) indices
     Returns:
         (tuple)
     """
     it = itemgetter(*indices)
     if np.size(indices) == 1:
-        return it(l),
+        return it(data_list),
     else:
-        return it(l)
+        return it(data_list)

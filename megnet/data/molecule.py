@@ -29,7 +29,7 @@ try:
 except ImportError:
     Chem = None
 
-from typing import Sequence, Dict, Union, List
+from typing import Dict, Union, List
 
 __date__ = '12/01/2018'
 

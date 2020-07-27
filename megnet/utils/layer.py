@@ -27,8 +27,6 @@ def _repeat(x: tf.Tensor, n: tf.Tensor, axis: int = 1) -> tf.Tensor:
     maxlen = tf.reduce_max(input_tensor=n)
     x_shape = tf.shape(input=x)
     x_dim = len(x.shape)
-    # get the length of x
-    xlen = tf.shape(input=n)[0]
     # create a range with the length of x
     shape = [1] * (x_dim + 1)
     shape[axis + 1] = maxlen
