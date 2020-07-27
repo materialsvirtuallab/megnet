@@ -440,8 +440,7 @@ class BaseGraphBatchGenerator(Sequence):
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 
-    @staticmethod
-    def process_atom_feature(x: np.ndarray) -> np.ndarray:
+    def process_atom_feature(self, x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): atom features
@@ -452,8 +451,7 @@ class BaseGraphBatchGenerator(Sequence):
         """
         return x
 
-    @staticmethod
-    def process_bond_feature(x: np.ndarray) -> np.ndarray:
+    def process_bond_feature(self, x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): bond features
@@ -464,8 +462,7 @@ class BaseGraphBatchGenerator(Sequence):
         """
         return x
 
-    @staticmethod
-    def process_state_feature(x: np.ndarray) -> np.ndarray:
+    def process_state_feature(self, x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): state features
