@@ -139,7 +139,8 @@ class DummyScaler(MSONable):
     """
     Dummy scaler does nothing
     """
-    def transform(self, target: float, n: int = 1) -> float:
+    @staticmethod
+    def transform(target: float, n: int = 1) -> float:
         """
         Args:
             target (float): target numerical value
@@ -149,7 +150,8 @@ class DummyScaler(MSONable):
         """
         return target
 
-    def inverse_transform(self, transformed_target: float,
+    @staticmethod
+    def inverse_transform(transformed_target: float,
                           n: int = 1) -> float:
         """
         return as it is

@@ -8,9 +8,9 @@ from typing import Union, Dict, List, Any
 
 import numpy as np
 from monty.json import MSONable
+from tensorflow.keras.utils import Sequence
 from pymatgen import Structure
 from pymatgen.analysis.local_env import NearNeighbors
-from tensorflow.keras.utils import Sequence
 
 from megnet.data import local_env
 from megnet.utils.data import get_graphs_within_cutoff
@@ -105,13 +105,13 @@ class StructureGraph(MSONable):
         atoms = self.get_atom_features(structure)
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
-        else:
-            return {'atom': atoms,
-                    'bond': bonds,
-                    'state': state_attributes,
-                    'index1': index1,
-                    'index2': index2
-                    }
+
+        return {'atom': atoms,
+                'bond': bonds,
+                'state': state_attributes,
+                'index1': index1,
+                'index2': index2
+                }
 
     @staticmethod
     def get_atom_features(structure) -> List[int]:
@@ -162,7 +162,8 @@ class StructureGraph(MSONable):
                 expand_1st(np.array(gnode, dtype=np.int32)),
                 expand_1st(np.array(gbond, dtype=np.int32))]
 
-    def get_flat_data(self, graphs: List[Dict], targets: List = None) -> tuple:
+    @staticmethod
+    def get_flat_data(graphs: List[Dict], targets: List = None) -> tuple:
         """
         Expand the graph dictionary to form a list of features and targets tensors.
         This is useful when the model is trained on assembled graphs on the fly.
@@ -245,13 +246,12 @@ class StructureGraphFixedRadius(StructureGraph):
 
         if np.size(np.unique(index1)) < len(atoms):
             raise RuntimeError("Isolated atoms found in the structure")
-        else:
-            return {'atom': atoms,
-                    'bond': bonds,
-                    'state': state_attributes,
-                    'index1': index1,
-                    'index2': index2
-                    }
+        return {'atom': atoms,
+                'bond': bonds,
+                'state': state_attributes,
+                'index1': index1,
+                'index2': index2
+                }
 
     @classmethod
     def from_structure_graph(cls, structure_graph: StructureGraph) -> 'StructureGraphFixedRadius':
@@ -440,7 +440,8 @@ class BaseGraphBatchGenerator(Sequence):
         if self.is_shuffle:
             self.mol_index = np.random.permutation(self.mol_index)
 
-    def process_atom_feature(self, x: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def process_atom_feature(x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): atom features
@@ -451,7 +452,8 @@ class BaseGraphBatchGenerator(Sequence):
         """
         return x
 
-    def process_bond_feature(self, x: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def process_bond_feature(x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): bond features
@@ -462,7 +464,8 @@ class BaseGraphBatchGenerator(Sequence):
         """
         return x
 
-    def process_state_feature(self, x: np.ndarray) -> np.ndarray:
+    @staticmethod
+    def process_state_feature(x: np.ndarray) -> np.ndarray:
         """
         Args:
             x (np.ndarray): state features
@@ -486,12 +489,11 @@ class BaseGraphBatchGenerator(Sequence):
         # Return the batch
         if self.targets is None:
             return inputs
-        else:
-            # get targets
-            target_temp = itemgetter_list(self.targets, batch_index)
-            target_temp = np.atleast_2d(target_temp)
+        # get targets
+        target_temp = itemgetter_list(self.targets, batch_index)
+        target_temp = np.atleast_2d(target_temp)
 
-            return inputs, expand_1st(target_temp)
+        return inputs, expand_1st(target_temp)
 
     @abstractmethod
     def _generate_inputs(self, batch_index: list) -> tuple:
@@ -635,6 +637,5 @@ def itemgetter_list(data_list: List, indices: List) -> tuple:
     """
     it = itemgetter(*indices)
     if np.size(indices) == 1:
-        return it(data_list),
-    else:
-        return it(data_list)
+        return (it(data_list), )
+    return it(data_list)

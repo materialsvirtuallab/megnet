@@ -210,7 +210,8 @@ class InteractionLayer(GraphNetworkLayer):
         """
         return inputs[2]
 
-    def _mlp(self, input_, weights, bias):
+    @staticmethod
+    def _mlp(input_, weights, bias):
         output = kb.dot(input_, weights) + bias
         return output
 

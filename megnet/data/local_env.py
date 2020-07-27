@@ -103,7 +103,7 @@ def serialize(identifier: Union[str, NearNeighbors]):
     """
     if isinstance(identifier, str):
         return identifier
-    elif isinstance(identifier, NearNeighbors):
+    if isinstance(identifier, NearNeighbors):
         args = getfullargspec(identifier.__class__.__init__).args
         d = {"@module": identifier.__class__.__module__,
              "@class": identifier.__class__.__name__}
@@ -118,10 +118,10 @@ def serialize(identifier: Union[str, NearNeighbors]):
         if hasattr(identifier, "kwargs"):
             d.update(**identifier.kwargs)
         return d
-    elif identifier is None:
+    if identifier is None:
         return None
-    else:
-        raise ValueError('Unknown identifier for local environment ', identifier)
+
+    raise ValueError('Unknown identifier for local environment ', identifier)
 
 
 def deserialize(config: Dict):

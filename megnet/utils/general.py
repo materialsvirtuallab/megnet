@@ -13,10 +13,9 @@ def to_list(x: Union[Iterable, np.ndarray]) -> List:
     """
     if isinstance(x, Iterable):
         return list(x)
-    elif isinstance(x, np.ndarray):
+    if isinstance(x, np.ndarray):
         return x.tolist()  # noqa
-    else:
-        return [x]
+    return [x]
 
 
 def expand_1st(x: np.ndarray) -> np.ndarray:
@@ -47,11 +46,10 @@ def fast_label_binarize(value: List, labels: List) -> List[int]:
 
     if len(labels) == 2:
         return [int(value == labels[0])]
-    else:
-        output = [0] * len(labels)
-        if value in labels:
-            output[labels.index(value)] = 1
-        return output
+    output = [0] * len(labels)
+    if value in labels:
+        output[labels.index(value)] = 1
+    return output
 
 
 def check_shape(array: Optional[np.ndarray], shape: Sequence) -> bool:

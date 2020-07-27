@@ -8,13 +8,14 @@ from warnings import warn
 
 import numpy as np
 from monty.serialization import dumpfn, loadfn
-from pymatgen import Structure
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
+from pymatgen import Structure
 
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph
+from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, \
+    StructureGraph
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
 
@@ -220,11 +221,10 @@ class GraphModel:
             for i, j in zip(real_shape, tensor_shape):
                 if j is None:
                     continue
-                else:
-                    if i == j:
-                        continue
-                    else:
-                        matched = False
+
+                if i == j:
+                    continue
+                matched = False
             return matched
 
         for i, j, k in zip(['atom features', 'bond features', 'state features'],
@@ -264,8 +264,7 @@ class GraphModel:
                     warn("structure with index %d failed the graph computations" % i,
                          UserWarning)
                     continue
-                else:
-                    raise RuntimeError(str(e))
+                raise RuntimeError(str(e))
         return graphs_valid, targets_valid
 
     def predict_structure(self, structure: Structure) -> np.ndarray:
@@ -302,8 +301,7 @@ class GraphModel:
         if hasattr(self.graph_converter, 'bond_converter'):
             kwargs.update({'distance_converter': self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)
-        else:
-            return GraphBatchGenerator(*args, **kwargs)
+        return GraphBatchGenerator(*args, **kwargs)
 
     def save_model(self, filename: str) -> None:
         """

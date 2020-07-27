@@ -65,9 +65,8 @@ def load_model(model_name: str) -> GraphModel:
             return MEGNetModel.from_file(local_mvl_path)
         _download_models()
         return load_model(model_name)
-    else:
-        raise ValueError('model name %s not in available model list %s' %
-                         (model_name, AVAILABLE_MODELS))
+    raise ValueError('model name %s not in available model list %s' %
+                     (model_name, AVAILABLE_MODELS))
 
 
 def _download_models(url: str = "https://ndownloader.figshare.com/files/22291785",

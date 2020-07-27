@@ -131,7 +131,7 @@ class CrystalGraphLayer(GraphNetworkLayer):
         index2 = tf.reshape(index2, (-1,))
         fs = tf.gather(nodes, index1, axis=1)
         fr = tf.gather(nodes, index2, axis=1)
-        concated = tf.concat([fs, fr, edges], axis=-1)
+        concated = tf.concat([fs, fr, edges], -1)
         z1 = self._mlp(concated, self.phi_v_weights[0], self.phi_v_biases[0])
         z2 = self._mlp(concated, self.phi_v_weights[1], self.phi_v_biases[1])
         summed = tf.nn.sigmoid(z1) * self.activation(z2)
@@ -183,7 +183,8 @@ class CrystalGraphLayer(GraphNetworkLayer):
         """
         return inputs[2]
 
-    def _mlp(self, input_, weights, bias):
+    @staticmethod
+    def _mlp(input_, weights, bias):
         output = kb.dot(input_, weights) + bias
         return output
 

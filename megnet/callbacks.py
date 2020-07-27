@@ -285,8 +285,7 @@ class ReduceLRUponNan(Callback):
                 epochs.append(int(metrics[epoch_index]))
             ind = self.monitor_op(metric_values)
             return epochs[ind], metric_values[ind], all_check_points[ind]
-        else:
-            return None, None, None
+        return None, None, None
 
 
 def _count(a: np.ndarray) -> np.ndarray:

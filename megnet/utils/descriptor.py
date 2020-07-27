@@ -86,10 +86,9 @@ class MEGNetDescriptor:
         s = str(structure)
         if s in self._cache:
             return self._cache[s]
-        else:
-            result = self._predict_structure(structure)
-            self._cache[s] = result
-            return result
+        result = self._predict_structure(structure)
+        self._cache[s] = result
+        return result
 
     def _get_features(self,
                       structure: StructureOrMolecule,

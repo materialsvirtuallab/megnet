@@ -8,6 +8,7 @@ import sys
 from collections import deque
 from functools import partial
 from multiprocessing import Pool
+from typing import Dict, Union, List
 
 import numpy as np
 from pymatgen import Molecule, Element
@@ -29,7 +30,6 @@ try:
 except ImportError:
     Chem = None
 
-from typing import Dict, Union, List
 
 __date__ = '12/01/2018'
 
@@ -278,7 +278,8 @@ class MolecularGraph(StructureGraph):
                 atom_temp.append(atom[i])
         return atom_temp
 
-    def _dijkstra_distance(self, pairs: List[Dict]) -> np.ndarray:
+    @staticmethod
+    def _dijkstra_distance(pairs: List[Dict]) -> np.ndarray:
         """
         Compute the graph distance between each pair of atoms,
         using the network defined by the bonded atoms.
@@ -338,10 +339,10 @@ class MolecularGraph(StructureGraph):
         if 'ring_sizes' in self.atom_features:
             rings = mol.OBMol.GetSSSR()  # OpenBabel caches ring computation internally, no need to cache ourselves
             output['ring_sizes'] = [r.Size() for r in rings if r.IsInRing(atom.idx)]
-
         return output
 
-    def create_bond_feature(self, mol, bid: int, eid: int) -> Dict:
+    @staticmethod
+    def create_bond_feature(mol, bid: int, eid: int) -> Dict:
         """
         Create information for a bond for a pair of atoms that are not actually bonded
 
@@ -356,7 +357,7 @@ class MolecularGraph(StructureGraph):
         return {"a_idx": bid,
                 "b_idx": eid,
                 "bond_type": 0,
-                "same_ring": True if same_ring else False,
+                "same_ring": same_ring,
                 "spatial_distance": a1.GetDistance(a2)}
 
     def get_pair_feature(self, mol, bid: int,
@@ -380,8 +381,7 @@ class MolecularGraph(StructureGraph):
         if not bond:
             if full_pair_matrix:
                 return self.create_bond_feature(mol, bid, eid)
-            else:
-                return None
+            return None
 
         # Compute bond features
         a1 = mol.OBMol.GetAtom(bid + 1)
@@ -390,17 +390,19 @@ class MolecularGraph(StructureGraph):
         return {"a_idx": bid,
                 "b_idx": eid,
                 "bond_type": 4 if bond.IsAromatic() else bond.GetBondOrder(),
-                "same_ring": True if same_ring else False,
+                "same_ring": same_ring,
                 "spatial_distance": a1.GetDistance(a2)}
 
-    def _get_rdk_mol(self, mol, format: str = 'smiles'):
+    @staticmethod
+    def _get_rdk_mol(mol, format: str = 'smiles'):
         """
         Return: RDKit Mol (w/o H)
         """
         if format == 'pdb':
             return Chem.rdmolfiles.MolFromPDBBlock(mol.write("pdb"))
-        elif format == 'smiles':
+        if format == 'smiles':
             return Chem.rdmolfiles.MolFromSmiles(mol.write("smiles"))
+        return None
 
     def _get_chiral_centers(self, mol):
         """
@@ -418,9 +420,8 @@ class MolecularGraph(StructureGraph):
         if mol_rdk is None:
             # Conversion to RDKit has failed
             return {}
-        else:
-            chiral_cc = Chem.FindMolChiralCenters(mol_rdk)
-            return dict(chiral_cc)
+        chiral_cc = Chem.FindMolChiralCenters(mol_rdk)
+        return dict(chiral_cc)
 
 
 def dijkstra_distance(bonds: List[List[int]]) -> np.ndarray:
@@ -488,8 +489,8 @@ def mol_from_file(file_path: str, file_format: str = 'xyz'):
         file_path(str)
         file_format(str): allow formats that open babel supports
     """
-    mol = [r for r in pybel.readfile(format=file_format,
-                                     filename=file_path)][0]
+    mol = list(pybel.readfile(
+        format=file_format, filename=file_path))[0]
     return mol
 
 

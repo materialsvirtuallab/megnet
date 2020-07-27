@@ -190,9 +190,9 @@ class MEGNetLayer(GraphNetworkLayer):
         index2 = tf.reshape(index2, (-1,))
         fs = tf.gather(nodes, index1, axis=1)
         fr = tf.gather(nodes, index2, axis=1)
-        concate_node = tf.concat([fs, fr], axis=-1)
+        concate_node = tf.concat([fs, fr], -1)
         u_expand = repeat_with_index(u, gbond, axis=1)
-        concated = tf.concat([concate_node, edges, u_expand], axis=-1)
+        concated = tf.concat([concate_node, edges, u_expand], -1)
         return self._mlp(concated, self.phi_e_weights, self.phi_e_biases)
 
     def rho_e_v(self, e_p, inputs):
@@ -221,7 +221,7 @@ class MEGNetLayer(GraphNetworkLayer):
         """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         u_expand = repeat_with_index(u, gnode, axis=1)
-        concated = tf.concat([b_ei_p, nodes, u_expand], axis=-1)
+        concated = tf.concat([b_ei_p, nodes, u_expand], -1)
         return self._mlp(concated, self.phi_v_weights, self.phi_v_biases)
 
     def rho_e_u(self, e_p, inputs):
@@ -259,7 +259,7 @@ class MEGNetLayer(GraphNetworkLayer):
         Returns:
             updated globa/state attributes
         """
-        concated = tf.concat([b_e_p, b_v_p, inputs[2]], axis=-1)
+        concated = tf.concat([b_e_p, b_v_p, inputs[2]], -1)
         return self._mlp(concated, self.phi_u_weights, self.phi_u_biases)
 
     def _mlp(self, input_, weights, biases):

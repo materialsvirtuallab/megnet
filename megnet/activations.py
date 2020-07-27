@@ -40,5 +40,4 @@ def get(identifier: OptStrOrCallable = None) -> Callable[..., Any]:
     except ValueError:
         if isinstance(identifier, str):
             return deserialize(identifier, custom_objects=globals())
-        else:
-            raise ValueError('Could not interpret:',  identifier)
+    raise ValueError('Could not interpret:', identifier)
