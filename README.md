@@ -2,7 +2,9 @@
 [![Build Status](https://travis-ci.org/materialsvirtuallab/megnet.svg?branch=master)](https://travis-ci.org/materialsvirtuallab/megnet)
 [![CircleCI](https://circleci.com/gh/materialsvirtuallab/megnet.svg?style=shield)](https://circleci.com/gh/materialsvirtuallab/megnet)
 [![Coverage Status](https://coveralls.io/repos/github/materialsvirtuallab/megnet/badge.svg?branch=master)](https://coveralls.io/github/materialsvirtuallab/megnet?branch=master&service=github)
-
+[![Downloads](https://pepy.tech/badge/megnet)](https://pepy.tech/project/megnet)
+[![Linting](https://github.com/materialsvirtuallab/megnet/workflows/Linting/badge.svg)](https://github.com/materialsvirtuallab/megnet/workflows/Linting/badge.svg)
+[![Testing](https://github.com/materialsvirtuallab/megnet/workflows/Testing%20-%20main/badge.svg)](https://github.com/materialsvirtuallab/megnet/workflows/Testing%20-%20main/badge.svg)
 # Table of Contents
 * [Introduction](#introduction)
 * [MEGNet Framework](#megnet-framework)
