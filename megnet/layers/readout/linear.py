@@ -22,7 +22,7 @@ class LinearWithIndex(Layer):
             mode: (str) 'mean', 'sum', 'max', 'mean' or 'prod'
             **kwargs:
         """
-        super(LinearWithIndex, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.mode = mode
         self.reduce_method = MAPPING.get(mode, None)
         if self.reduce_method is None:
@@ -73,5 +73,5 @@ class LinearWithIndex(Layer):
             configurational dictionary
         """
         config = {'mode': self.mode}
-        base_config = super(LinearWithIndex, self).get_config()
+        base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))
