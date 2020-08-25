@@ -64,6 +64,22 @@ class TestModel(PymatgenTest):
                                  graph_converter=CrystalGraph(bond_converter=GaussianDistance(np.linspace(0, 5, 10), 0.5)),
                                  )
 
+    def test_train_pred_w_sample_weights(self):
+        s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
+        structures = [s.copy(), s.copy(), s.copy(), s.copy()]
+        targets = [0.1, 0.1, 0.1, 0.1]
+        with ScratchDir('.'):
+            self.model.train(structures,
+                             targets,
+                             validation_structures=structures[:2],
+                             validation_targets=[0.1, 0.1],
+                             sample_weights=[0.1, 0.2, 0.3, 0.4],
+                             batch_size=2,
+                             epochs=1,
+                             verbose=2)
+            preds = self.model.predict_structure(structures[0])
+        self.assertTrue(preds.shape == (1, ))
+
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
         structures = [s.copy(), s.copy(), s.copy(), s.copy()]

@@ -56,6 +56,7 @@ class GraphModel:
               train_targets: List[float],
               validation_structures: List[Structure] = None,
               validation_targets: List[float] = None,
+              sample_weights: List[float] = None,
               epochs: int = 1000,
               batch_size: int = 128,
               verbose: int = 1,
@@ -73,6 +74,7 @@ class GraphModel:
             train_targets: (list) list of target values
             validation_structures: (list) list of pymatgen structures as validation
             validation_targets: (list) list of validation targets
+            sample_weights: (list) list of sample weights for training data
             epochs: (int) number of epochs
             batch_size: (int) training batch size
             verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
@@ -97,6 +99,7 @@ class GraphModel:
                                train_targets,
                                validation_graphs=val_graphs,
                                validation_targets=validation_targets,
+                               sample_weights=sample_weights,
                                epochs=epochs,
                                batch_size=batch_size,
                                verbose=verbose,
@@ -115,6 +118,7 @@ class GraphModel:
                           train_targets: List[float],
                           validation_graphs: List[Dict] = None,
                           validation_targets: List[float] = None,
+                          sample_weights: List[float] = None,
                           epochs: int = 1000,
                           batch_size: int = 128,
                           verbose: int = 1,
@@ -132,6 +136,7 @@ class GraphModel:
             train_targets: (list) list of target values
             validation_graphs: (list) list of graphs as validation
             validation_targets: (list) list of validation targets
+            sample_weights: (list) list of sample weights
             epochs: (int) number of epochs
             batch_size: (int) training batch size
             verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
@@ -157,7 +162,6 @@ class GraphModel:
             callbacks = [ManualStop()]
         train_nb_atoms = [len(i['atom']) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
-
         if (validation_graphs is not None) and (validation_targets is not None):
             filepath = os.path.join(dirname, '%s_{epoch:05d}_{%s:.6f}.hdf5' % (monitor, monitor))
             val_nb_atoms = [len(i['atom']) for i in validation_graphs]
@@ -193,7 +197,8 @@ class GraphModel:
         train_inputs = self.graph_converter.get_flat_data(train_graphs, train_targets)
         # check dimension match
         self.check_dimension(train_graphs[0])
-        train_generator = self._create_generator(*train_inputs, batch_size=batch_size)
+        train_generator = self._create_generator(*train_inputs, sample_weights=sample_weights,
+                                                 batch_size=batch_size)
         steps_per_train = int(np.ceil(len(train_graphs) / batch_size))
         self.fit(train_generator, steps_per_epoch=steps_per_train,
                  validation_data=val_generator, validation_steps=steps_per_val,

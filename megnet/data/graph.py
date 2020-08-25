@@ -344,22 +344,29 @@ class BaseGraphBatchGenerator(Sequence):
     the features for each atom, bond, and global features when creating a batch.
     """
 
-    def __init__(self, dataset_size: int, targets: np.ndarray,
-                 batch_size: int = 128, shuffle: bool = True):
+    def __init__(self, dataset_size: int, targets: np.ndarray, sample_weights: np.ndarray = None,
+                 batch_size: int = 128, is_shuffle: bool = True):
         """
         Args:
             dataset_size (int): Number of entries in dataset
             targets (ndarray): Feature to be predicted for each network
+            sample_weights (npdarray): sample weights
             batch_size (int): Maximum batch size
-            shuffle (bool): Whether to shuffle the data after each step
+            is_shuffle (bool): Whether to shuffle the data after each step
         """
         if targets is not None:
-            self.targets = np.array(targets)
+            self.targets = np.array(targets).reshape((dataset_size, -1))
         else:
             self.targets = None
+
+        if sample_weights is not None:
+            self.sample_weights = np.array(sample_weights).reshape((dataset_size, -1))
+        else:
+            self.sample_weights = None
+
         self.batch_size = batch_size
         self.total_n = dataset_size
-        self.is_shuffle = shuffle
+        self.is_shuffle = is_shuffle
         self.max_step = int(np.ceil(self.total_n / batch_size))
         self.mol_index = np.arange(self.total_n)
         if self.is_shuffle:
@@ -489,8 +496,11 @@ class BaseGraphBatchGenerator(Sequence):
         # get targets
         target_temp = itemgetter_list(self.targets, batch_index)
         target_temp = np.atleast_2d(target_temp)
-
-        return inputs, expand_1st(target_temp)
+        if self.sample_weights is None:
+            return inputs, expand_1st(target_temp)
+        sample_weights_temp = itemgetter_list(self.sample_weights, batch_index)
+        sample_weights_temp = np.atleast_2d(sample_weights_temp)
+        return inputs, expand_1st(target_temp), expand_1st(sample_weights_temp)
 
     @abstractmethod
     def _generate_inputs(self, batch_index: list) -> tuple:
@@ -521,6 +531,7 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
                  index1_list: List[int],
                  index2_list: List[int],
                  targets: np.ndarray = None,
+                 sample_weights: np.ndarray = None,
                  batch_size: int = 128,
                  is_shuffle: bool = True):
         """
@@ -535,9 +546,11 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
                 index of the bond, M is different for different structures,
                 but it has to be the same as the corresponding index1.
             targets: (numpy array), N*1, where N is the number of structures
+            sample_weights: (numpy array), N*1, where N is the number of structures
             batch_size: (int) number of samples in a batch
         """
-        super().__init__(len(atom_features), targets, batch_size, is_shuffle)
+        super().__init__(len(atom_features), targets, sample_weights=sample_weights,
+                         batch_size=batch_size, is_shuffle=is_shuffle)
         self.atom_features = atom_features
         self.bond_features = bond_features
         self.state_features = state_features
@@ -579,6 +592,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                  index1_list: List[int],
                  index2_list: List[int],
                  targets: np.ndarray = None,
+                 sample_weights: np.ndarray = None,
                  batch_size: int = 128,
                  is_shuffle: bool = True,
                  distance_converter: Converter = None):
@@ -595,6 +609,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                 index of the bond, M is different for different structures,
                 but it has to be the same as the correponding index1.
             targets: (numpy array), N*1, where N is the number of structures
+            sample_weights: (numpy array), N*1, where N is the number of structures
             batch_size: (int) number of samples in a batch
             is_shuffle: (bool) whether to shuffle the structure, default to True
             distance_converter: (bool) converter for processing the distances
@@ -605,6 +620,7 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
                          index1_list=index1_list,
                          index2_list=index2_list,
                          targets=targets,
+                         sample_weights=sample_weights,
                          batch_size=batch_size,
                          is_shuffle=is_shuffle)
         if distance_converter is None:
