@@ -51,7 +51,7 @@ class MEGNetModel(GraphModel):
                  dropout: float = None,
                  graph_converter: StructureGraph = None,
                  target_scaler: Scaler = DummyScaler(),
-                 optimizer_kwargs: Dict = None,
+                 optimizer_kwargs: Dict = {"clipnorm": 3},
                  dropout_on_predict: bool = False,
                  **kwargs
                  ):
