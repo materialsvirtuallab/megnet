@@ -1,3 +1,8 @@
+# v1.1.9
+* Add multi-fidelity model examples 
+* Add sample weights for model training
+* Add default optimizer gradient norm clip 
+
 # v1.1.8
 * Bug fix of megnet descriptors
 
