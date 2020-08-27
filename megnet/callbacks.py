@@ -251,7 +251,7 @@ class ReduceLRUponNan(Callback):
                         if self.verbose:
                             logger.info(
                                 "Loss shot up from %.3f to %.3f! Reducing lr " % (
-                                    self.losses[-1], self.losses[-2]))
+                                    self.losses[-2], self.losses[-1]))
                             logger.info("Now lr is %s." % float(
                                 kb.eval(self.model.optimizer.lr)))
 
@@ -260,14 +260,16 @@ class ReduceLRUponNan(Callback):
         self.model.reset_states()
         self.model.optimizer.lr = old_value * self.factor
 
-        opt_dict = self.model.optimizer.get_config()
-        self.model.compile(self.model.optimizer.__class__(**opt_dict), self.model.loss)
         if last_file is not None:
             self.model.load_weights(last_file)
             if self.verbose:
                 logger.info("Load weights %s" % last_file)
         else:
             logger.info("No weights were loaded")
+
+        opt_dict = self.model.optimizer.get_config()
+        self.model.compile(self.model.optimizer.__class__(**opt_dict),
+                           self.model.loss)
 
     def _get_checkpoints(self):
         file_pattern = re.sub(r'{(.+?)}', r'([0-9\.]+)', self.filepath)
