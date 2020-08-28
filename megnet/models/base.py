@@ -171,13 +171,6 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs,
                                                    batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
-            if automatic_correction:
-                callbacks.extend([ReduceLRUponNan(filepath=filepath,
-                                                  monitor=monitor,
-                                                  mode=mode,
-                                                  factor=lr_scaling_factor,
-                                                  patience=patience,
-                                                  )])
             if save_checkpoint:
                 callbacks.extend([ModelCheckpointMAE(filepath=filepath,
                                                      monitor=monitor,
@@ -190,6 +183,14 @@ class GraphModel:
                 # avoid running validation twice in an epoch
                 val_generator = None  # type: ignore
                 steps_per_val = None  # type: ignore
+
+            if automatic_correction:
+                callbacks.extend([ReduceLRUponNan(filepath=filepath,
+                                                  monitor=monitor,
+                                                  mode=mode,
+                                                  factor=lr_scaling_factor,
+                                                  patience=patience,
+                                                  )])
         else:
             val_generator = None  # type: ignore
             steps_per_val = None  # type: ignore
