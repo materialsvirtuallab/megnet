@@ -151,10 +151,11 @@ class GraphModel:
         # load from saved model
         if prev_model:
             self.load_weights(prev_model)
-        is_classification = 'entropy' in self.model.loss
+        is_classification = 'entropy' in str(self.model.loss)
         monitor = 'val_acc' if is_classification else 'val_mae'
         mode = 'max' if is_classification else 'min'
         dirname = kwargs.pop('dirname', 'callback')
+        has_sample_weights = sample_weights is not None
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
@@ -190,6 +191,7 @@ class GraphModel:
                                                   mode=mode,
                                                   factor=lr_scaling_factor,
                                                   patience=patience,
+                                                  has_sample_weights=has_sample_weights
                                                   )])
         else:
             val_generator = None  # type: ignore

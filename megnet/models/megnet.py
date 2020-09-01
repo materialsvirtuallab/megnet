@@ -53,6 +53,7 @@ class MEGNetModel(GraphModel):
                  target_scaler: Scaler = DummyScaler(),
                  optimizer_kwargs: Dict = {"clipnorm": 3},
                  dropout_on_predict: bool = False,
+                 sample_weight_mode: str = None,
                  **kwargs
                  ):
         """
@@ -84,6 +85,7 @@ class MEGNetModel(GraphModel):
             target_scaler: (object) object that exposes a "transform" and "inverse_transform" methods for transforming
                 the target values
             optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue
+            sample_weight_mode (str): sample weight mode for compilation
             kwargs (dict): in the case where bond inputs are pure distances (not the expanded distances nor integers
                 for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),
                 kwargs can take additional inputs for expand the distance using Gaussian basis.
@@ -120,7 +122,7 @@ class MEGNetModel(GraphModel):
         opt_params = {'lr': lr}
         if optimizer_kwargs is not None:
             opt_params.update(optimizer_kwargs)
-        model.compile(Adam(**opt_params), loss, metrics=metrics)
+        model.compile(Adam(**opt_params), loss, metrics=metrics, sample_weight_mode=sample_weight_mode)
 
         if graph_converter is None:
             graph_converter = CrystalGraph(cutoff=4,

@@ -360,7 +360,7 @@ class BaseGraphBatchGenerator(Sequence):
             self.targets = None
 
         if sample_weights is not None:
-            self.sample_weights = np.array(sample_weights).reshape((dataset_size, -1))
+            self.sample_weights = np.array(sample_weights)
         else:
             self.sample_weights = None
 
@@ -499,7 +499,7 @@ class BaseGraphBatchGenerator(Sequence):
         if self.sample_weights is None:
             return inputs, expand_1st(target_temp)
         sample_weights_temp = itemgetter_list(self.sample_weights, batch_index)
-        sample_weights_temp = np.atleast_2d(sample_weights_temp)
+        # sample_weights_temp = np.atleast_2d(sample_weights_temp)
         return inputs, expand_1st(target_temp), expand_1st(sample_weights_temp)
 
     @abstractmethod

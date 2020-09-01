@@ -179,7 +179,8 @@ class ReduceLRUponNan(Callback):
                  verbose: bool = True,
                  patience: int = 500,
                  monitor: str = 'val_mae',
-                 mode: str = 'auto'):
+                 mode: str = 'auto',
+                 has_sample_weights: bool = False):
         """
         Args:
             filepath (str): filepath for saved model checkpoint, should be consistent with
@@ -190,6 +191,7 @@ class ReduceLRUponNan(Callback):
                 It is a criteria for early stopping
             monitor (str): target metric to monitor
             mode (str): min, max or auto
+            has_sample_weights (bool): whether the data has sample weights
         """
         self.filepath = filepath
         self.verbose = verbose
@@ -213,6 +215,7 @@ class ReduceLRUponNan(Callback):
         variable_name_pattern = r'{(.+?)}'
         self.variable_names = re.findall(variable_name_pattern, filepath)
         self.variable_names = [i.split(':')[0] for i in self.variable_names]
+        self.has_sample_weights = has_sample_weights
         if self.monitor not in self.variable_names:
             raise ValueError("The monitored metric should be in the name pattern")
 
@@ -268,8 +271,9 @@ class ReduceLRUponNan(Callback):
             logger.info("No weights were loaded")
 
         opt_dict = self.model.optimizer.get_config()
+        sample_weight_model = "temporal" if self.has_sample_weights else None
         self.model.compile(self.model.optimizer.__class__(**opt_dict),
-                           self.model.loss)
+                           self.model.loss, sample_weight_mode=sample_weight_model)
 
     def _get_checkpoints(self):
         file_pattern = re.sub(r'{(.+?)}', r'([0-9\.]+)', self.filepath)
