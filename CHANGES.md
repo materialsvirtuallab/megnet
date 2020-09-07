@@ -1,3 +1,6 @@
+# v1.2.0
+* Bug fix
+
 # v1.1.9
 * Add multi-fidelity model examples 
 * Add sample weights for model training
