@@ -107,7 +107,7 @@ class MolecularGraph(StructureGraph):
                  atom_features: List[str] = None,
                  bond_features: List[str] = None,
                  distance_converter: Converter = None,
-                 known_elements: List[str] = None
+                 known_elements: List[str] = None,
                  max_ring_size: int = 9):
         """
         Args:
