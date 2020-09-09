@@ -107,7 +107,8 @@ class MolecularGraph(StructureGraph):
                  atom_features: List[str] = None,
                  bond_features: List[str] = None,
                  distance_converter: Converter = None,
-                 known_elements: List[str] = None):
+                 known_elements: List[str] = None
+                 max_ring_size: int = 9):
         """
         Args:
             atom_features ([str]): List of atom features to compute
@@ -116,6 +117,7 @@ class MolecularGraph(StructureGraph):
                 from a single scalar vector to an array of values
             known_elements ([str]): List of elements expected to be in dataset. Used only if the
                 feature `element` is used to describe each atom
+            max_ring_size (int): Maximum number of atom in the ring
         """
 
         # Check if openbabel and RDKit are installed
@@ -143,6 +145,7 @@ class MolecularGraph(StructureGraph):
         self.bond_features = bond_features
         self.known_elements = known_elements
         self.distance_converter = distance_converter
+        self.max_ring_size = max_ring_size
 
     def convert(self,
                 mol,  # type: ignore
@@ -273,7 +276,7 @@ class MolecularGraph(StructureGraph):
             elif i == 'hybridization':
                 atom_temp.extend(fast_label_binarize(atom[i], [1, 2, 3, 4, 5, 6]))
             elif i == 'ring_sizes':
-                atom_temp.extend(ring_to_vector(atom[i]))
+                atom_temp.extend(ring_to_vector(atom[i], self.max_ring_size))
             else:  # It is a scalar
                 atom_temp.append(atom[i])
         return atom_temp

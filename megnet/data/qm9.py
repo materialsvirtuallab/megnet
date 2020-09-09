@@ -33,7 +33,7 @@ class AtomNumberToTypeConverter(MSONable):
         return [self.mapping[str(i)] for i in z_list]
 
 
-def ring_to_vector(z_list: list) -> list:
+def ring_to_vector(z_list: list, max_size: int = 9) -> list:
     """
     Convert the ring sizes vector to a fixed length vector
     For example, l can be [3, 5, 5], meaning that the atom is involved
@@ -41,11 +41,12 @@ def ring_to_vector(z_list: list) -> list:
     [ 0, 0, 1, 0, 2, 0, 0, 0, 0, 0].
     Args:
         z_list: (list of integer) ring_sizes attributes
+        max_size: (int) maximum number of atoms in the ring
     Returns:
         (list of integer) fixed size list with the i-1 th element indicates number of
             i-sized ring this atom is involved in.
     """
-    return_l = [0] * 9
+    return_l = [0] * max_size
     if z_list:
         for i in z_list:
             return_l[i - 1] += 1
