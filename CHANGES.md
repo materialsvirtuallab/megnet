@@ -1,3 +1,9 @@
+# v1.2.2
+* Revising plotting of multifidelity work
+
+# v1.2.1
+* Release for minting DOI
+
 # v1.2.0
 * Bug fix
 
