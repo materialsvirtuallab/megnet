@@ -1,3 +1,6 @@
+# v1.2.3
+* Add more multi-fidelity plots
+
 # v1.2.2
 * Revising plotting of multifidelity work
 
