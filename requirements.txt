@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 pymatgen==2020.9.14
 pandas==1.1.2
+=======
+pymatgen==2020.10.9.1
+pandas==1.1.3
+>>>>>>> b9c3c3ebd599d16c4551f0aff024e9598c9fdcd7
 tensorflow==2.3.1
 numpy==1.19.2
 monty==4.0.1
