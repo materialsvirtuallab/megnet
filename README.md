@@ -4,6 +4,10 @@
 [![Downloads](https://pepy.tech/badge/megnet)](https://pepy.tech/project/megnet)
 [![Linting](https://github.com/materialsvirtuallab/megnet/workflows/Linting/badge.svg)](https://github.com/materialsvirtuallab/megnet/workflows/Linting/badge.svg)
 [![Testing](https://github.com/materialsvirtuallab/megnet/workflows/Testing%20-%20main/badge.svg)](https://github.com/materialsvirtuallab/megnet/workflows/Testing%20-%20main/badge.svg)
+
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/materialsvirtuallab/megnet/master)
+
 # Table of Contents
 * [Introduction](#introduction)
 * [MEGNet Framework](#megnet-framework)
