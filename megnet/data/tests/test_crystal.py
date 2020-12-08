@@ -2,7 +2,8 @@ import tensorflow as tf
 import unittest
 from megnet.data.graph import GaussianDistance
 from megnet.utils.general import to_list
-from megnet.data.crystal import CrystalGraph, get_elemental_embeddings, CrystalGraphWithBondTypes
+from megnet.data.crystal import CrystalGraph, get_elemental_embeddings, \
+    CrystalGraphWithBondTypes, CrystalGraphDisordered
 from pymatgen import Structure
 import os
 import numpy as np
@@ -29,6 +30,11 @@ class TestGraph(unittest.TestCase):
         self.assertListEqual(to_list(graph2['state'][0]), [0, 0])
         graph3 = cg(self.structures[0])
         np.testing.assert_almost_equal(graph['atom'], graph3['atom'])
+
+    def test_crystalgraph_disordered(self):
+        cg = CrystalGraphDisordered(cutoff=4.0)
+        graph = cg.convert(self.structures[0])
+        self.assertEqual(cg.atom_converter.convert(graph['atom']).shape[1], 16)
 
     def test_crystal_graph_with_bond_types(self):
         graph = {'atom': [11, 8, 8],

@@ -12,7 +12,7 @@ status=0
 files=$(git diff --diff-filter=d --cached --name-only | grep -E 'megnet.*\.(py)$' | sed '/test_/d')
 files=`echo $files | tr '\n' ' '`
 if [ "$files" != " " ]; then
-    for cmd in pycodestyle
+    for cmd in pycodestyle pydocstyle mypy flake8 pylint
     do
         echo "Running $cmd $files..."
         $cmd $files

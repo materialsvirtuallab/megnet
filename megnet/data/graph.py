@@ -114,7 +114,7 @@ class StructureGraph(MSONable):
                 }
 
     @staticmethod
-    def get_atom_features(structure) -> List[int]:
+    def get_atom_features(structure) -> List[Any]:
         """
         Get atom features from structure, may be overwritten
         Args:
