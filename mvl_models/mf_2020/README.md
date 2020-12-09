@@ -2,7 +2,7 @@
 
 These models were trained using PBE, GLLB-SC, HSE and Experimental datasets.
 The details of the models and benchmarks are provided in our publication
-["Multi-fidelity Graph Networks for Deep Learning the Experimental Properties of Ordered and Disordered Materials"](https://arxiv.org/abs/2005.04338)[1].
+["Multi-fidelity Graph Networks for Deep Learning the Experimental Properties of Ordered and Disordered Materials"](https://arxiv.org/abs/2005.04338)[1]. Each model architecture was trained using 6 different random data splits. That is why you see 6 different models for the same fidelity combination. You can use the predicted average from these 6 models as your final prediction value. The standard deviation between the 6 predictions indicates the error of the prediction.
 
 The other multi-fidelity models (including SCAN) from 1-fi to 5-fi are available here [https://figshare.com/articles/software/Trained_models_for_Learning_Properties_of_Ordered_and_Disordered_Materials_from_Multi-fidelity_Data/13350686](https://figshare.com/articles/software/Trained_models_for_Learning_Properties_of_Ordered_and_Disordered_Materials_from_Multi-fidelity_Data/13350686)
 
@@ -21,6 +21,37 @@ Disordered model `pbe_gllb_hse_exp_disorder`
 |----------|------------|------------|-----------|--------------|------------------|
 | Errors   | 0.27±0.01  | 0.47±0.03  | 0.30±0.03 | 0.37±0.02    | 0.51±0.11        |
 
+## Usage
+
+
+The models can be loaded using standard MEGNet interface. The fidelity level will be provided via `structure.state`, where 0, 1, 2, 3 correspond to PBE, GLLB-SC, HSE and Experiment, respectively.
+ 
+
+```
+from pymatgen import MPRester
+
+from megnet.models import MEGNetModel
+
+# load all models under pbe_gllb_hse_exp folder
+all_models = [MEGNetModel.from_file('pbe_gllb_hse_exp/%d/best_model.hdf5' % i) for i in range(6)]
+
+# fetch a structure (Al2O3) from Materials Project
+mpr = MPRester()  # if you have not set up MAPI_KEY env variable, set it here.
+Al2O3 = mpr.get_structure_by_material_id("mp-1143")
+Al2O3.state = [3]  # predict Experiment fidelity
+
+predictions = [model.predict_structure(Al2O3) for model in all_models]
+
+# predictions will be a list of the following values
+# [array([7.7208586], dtype=float32),
+# array([6.888315], dtype=float32),
+# array([6.302729], dtype=float32),
+# array([7.1203156], dtype=float32),
+# array([5.1465106], dtype=float32),
+# array([5.3330636], dtype=float32)]
+```
+
+Using the disordered models has the same steps.
 
 ## Data source
 
