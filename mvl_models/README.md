@@ -6,6 +6,7 @@ Currently, we provide models for
 
 * QM9 molecules    
 * Materials Project (MP) crystals
+* Multi-fidelity band gap data
 
 The original models in ["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294).
 are in the folders dated 2018.6.1. We are continuing to develop new models 
