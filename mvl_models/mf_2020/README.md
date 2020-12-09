@@ -27,7 +27,7 @@ Disordered model `pbe_gllb_hse_exp_disorder`
 The models can be loaded using standard MEGNet interface. The fidelity level will be provided via `structure.state`, where 0, 1, 2, 3 correspond to PBE, GLLB-SC, HSE and Experiment, respectively.
  
 
-```
+```python
 from pymatgen import MPRester
 
 from megnet.models import MEGNetModel
