@@ -1,3 +1,7 @@
+# v1.2.4
+* Add pre-trained multi-fidelity models
+* Add utils for disordered site representation
+
 # v1.2.3
 * Add more multi-fidelity plots
 
