@@ -44,6 +44,7 @@ setup(
     package_data={
         "megnet": ["*.json", "*.md"],
     },
+    include_package_data=True,
     keywords=["materials", "science", "machine", "learning", "deep", "graph", "networks", "neural"],
     classifiers=[
         "Programming Language :: Python :: 3",

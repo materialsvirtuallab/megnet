@@ -1,3 +1,6 @@
+# v1.2.5
+* Include data files in wheel
+
 # v1.2.4
 * Add pre-trained multi-fidelity models
 * Add utils for disordered site representation
