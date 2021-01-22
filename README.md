@@ -429,9 +429,9 @@ please feel free to email us and we will consider releasing a new model with inc
    Universal Machine Learning Framework for Molecules and Crystals. Chemistry 
    of Materials 2019, 31(9), 3564-3572. 
    [doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)
-3. Chen, C.; Zuo, Y.; Ye, W.; Li, X.G.; Ong, S. P. Multi-fidelity Graph Networks 
-   for Machine Learning the Experimental Properties of Ordered and Disordered Materials.
-   2020, [arXiv:2005.04338](https://arxiv.org/abs/2005.04338).
+3. Chen, C.; Zuo, Y.; Ye, W.; Li, X.G.; Ong, S. P. Learning properties of ordered and 
+   disordered materials from multi-fidelity data. Nature Computational Science 2021, 
+   1, 46–53 [doi:10.1038/s43588-020-00002-x](https://www.nature.com/articles/s43588-020-00002-x).
 4. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for 
    sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
 5. https://figshare.com/articles/Graphs_of_materials_project/7451351
