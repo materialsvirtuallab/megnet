@@ -288,6 +288,19 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
+    def predict_structures(self, structures: List[Structure]) -> np.ndarray:
+        """
+        Predict properties of structure list
+
+        Args:
+            structures: list of pymatgen Structure/Molecule
+
+        Returns:
+            predicted target values
+        """
+        graphs = [self.graph_converter.convert(structure) for structure in structures]
+        return self.predict_graphs(graphs)
+
     def predict_graph(self, graph: Dict) -> np.ndarray:
         """
         Predict property from graph
@@ -303,6 +316,27 @@ class GraphModel:
         pred = self.predict(inp)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0],
                                                     len(graph['atom']))
+
+    def predict_graphs(self, graphs: List[Dict]) -> np.ndarray:
+        """
+        Predict properties from graphs
+
+        Args:
+            graphs: a list graph dictionary, see megnet.data.graph
+
+        Returns:
+            predicted target values
+
+        """
+        inputs = self.graph_converter.get_flat_data(graphs)
+        n_atoms = [len(graph['atom']) for graph in graphs]
+        pred_gen = self._create_generator(*inputs, is_shuffle=False)
+        predicted = []
+        for i in pred_gen:
+            predicted.append(self.predict(i))
+        pred_targets = np.concatenate(predicted, axis=1)[0]
+        return np.array([self.target_scaler.inverse_transform(i, j) for i, j
+                         in zip(pred_targets, n_atoms)])
 
     def _create_generator(self, *args, **kwargs) -> \
             Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
