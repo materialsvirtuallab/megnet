@@ -4,8 +4,9 @@
 This repository along with the MatErials Graph Network (`megnet`) package repository contain the data and code implementations of our recent work:
 
 
-**Multi-fidelity Graph Networks for Deep Learning the Experimental Properties of Ordered and Disordered Materials**, Chen, C., Zuo, Y., Ye, W., Li, X.G. & Ong, S.P., arXiv preprint arXiv:2005.04338 (2020)
-[https://arxiv.org/abs/2005.04338](https://arxiv.org/abs/2005.04338 "https://arxiv.org/abs/2005.04338"). 
+
+Chen, C.; Zuo, Y.; Ye, W.; Li, X.G.; Ong, S. P. **Learning properties of ordered and disordered materials from multi-fidelity data**. Nature Computational Science 2021, 1, 46–53 [doi:10.1038/s43588-020-00002-x](https://www.nature.com/articles/s43588-020-00002-x)
+
 
 
 The model construction has already been included in the recent `megnet v1.1.8` release. The current repository demonstrates the use of multi-fidelity `megnet` in the multi-fidelity materials data modeling.
