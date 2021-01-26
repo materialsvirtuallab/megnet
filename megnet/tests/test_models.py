@@ -80,6 +80,14 @@ class TestModel(PymatgenTest):
             preds = self.model.predict_structure(structures[0])
         self.assertTrue(preds.shape == (1, ))
 
+    def test_predicts(self):
+        s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
+        s2 = Structure(Lattice.cubic(3.1), ['Mo', 'Mo'], [[0., 0., 0.], [0.5, 0.5, 0.5]])
+        predicted = self.model.predict_structures([s, s2, s, s2, s, s2])
+        # make sure order is correct
+        self.assertArrayAlmostEqual(predicted[0], predicted[2])
+        self.assertArrayAlmostEqual(predicted[0], predicted[4])
+
     def test_train_pred(self):
         s = Structure.from_file(os.path.join(cwd, '../data/tests/cifs/BaTiO3_mp-2998_computed.cif'))
         structures = [s.copy(), s.copy(), s.copy(), s.copy()]

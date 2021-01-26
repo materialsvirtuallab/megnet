@@ -17,7 +17,7 @@ class Scaler(MSONable):
     of atom as the second parameter in addition to
     the target property
     """
-    def transform(self, target: float, n: int = 1) -> float:
+    def transform(self, target: np.ndarray, n: int = 1) -> np.ndarray:
         """
         Transform the target values into new target values
         Args:
@@ -29,13 +29,13 @@ class Scaler(MSONable):
         """
         raise NotImplementedError
 
-    def inverse_transform(self, transformed_target: float,
-                          n: int = 1) -> float:
+    def inverse_transform(self, transformed_target: np.ndarray,
+                          n: int = 1) -> np.ndarray:
         """
         Inverse transform of the target
 
         Args:
-            transformed_target (float): transformed target
+            transformed_target (np.ndarray): transformed target
             n (int): number of atoms
 
         Returns:
@@ -72,12 +72,12 @@ class StandardScaler(Scaler):
         self.std = std
         self.is_intensive = is_intensive
 
-    def transform(self, target: float, n: int = 1) -> float:
+    def transform(self, target: np.ndarray, n: int = 1) -> np.ndarray:
         """
         Transform numeric values according the mean and std, plus a factor n
 
         Args:
-            target (float): target numerical value
+            target (np.ndarray): target numerical value
             n (int): number of atoms
         Returns:
             scaled target
@@ -86,13 +86,13 @@ class StandardScaler(Scaler):
             n = 1
         return (target / n - self.mean) / self.std
 
-    def inverse_transform(self, transformed_target: float,
-                          n: int = 1) -> float:
+    def inverse_transform(self, transformed_target: np.ndarray,
+                          n: int = 1) -> np.ndarray:
         """
         Inverse transform of the target
 
         Args:
-            transformed_target (float): transformed target
+            transformed_target (np.ndarray): transformed target
             n (int): number of atoms
 
         Returns:
@@ -140,10 +140,10 @@ class DummyScaler(MSONable):
     Dummy scaler does nothing
     """
     @staticmethod
-    def transform(target: float, n: int = 1) -> float:
+    def transform(target: np.ndarray, n: int = 1) -> np.ndarray:
         """
         Args:
-            target (float): target numerical value
+            target (np.ndarray): target numerical value
             n (int): number of atoms
         Returns:
             target
@@ -151,13 +151,13 @@ class DummyScaler(MSONable):
         return target
 
     @staticmethod
-    def inverse_transform(transformed_target: float,
-                          n: int = 1) -> float:
+    def inverse_transform(transformed_target: np.ndarray,
+                          n: int = 1) -> np.ndarray:
         """
         return as it is
 
         Args:
-            transformed_target (float): transformed target
+            transformed_target (np.ndarray): transformed target
             n (int): number of atoms
 
         Returns:

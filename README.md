@@ -40,7 +40,7 @@ The MatErials Graph Network (MEGNet) is an implementation of DeepMind's graph
 networks[1] for universal machine learning in materials science. We have 
 demonstrated its success in achieving very low prediction errors in a broad 
 array of properties in both molecules and crystals (see 
-["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]). New releases have included our recent work on multi-fidelity materials property modeling (See ["Multi-fidelity Graph Networks for Deep Learning the Experimental Properties of Ordered and Disordered Materials"](https://arxiv.org/abs/2005.04338)[3]).
+["Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals"](https://doi.org/10.1021/acs.chemmater.9b01294)[2]). New releases have included our recent work on multi-fidelity materials property modeling (See ["Learning properties of ordered and disordered materials from multi-fidelity data"](https://www.nature.com/articles/s43588-020-00002-x)[3]).
 
 Briefly, Figure 1 shows the sequential update steps of the graph network, 
 whereby bonds, atoms, and global state attributes are updated using information
@@ -429,9 +429,9 @@ please feel free to email us and we will consider releasing a new model with inc
    Universal Machine Learning Framework for Molecules and Crystals. Chemistry 
    of Materials 2019, 31(9), 3564-3572. 
    [doi:10.1021/acs.chemmater.9b01294](https://doi.org/10.1021/acs.chemmater.9b01294)
-3. Chen, C.; Zuo, Y.; Ye, W.; Li, X.G.; Ong, S. P. Multi-fidelity Graph Networks 
-   for Machine Learning the Experimental Properties of Ordered and Disordered Materials.
-   2020, [arXiv:2005.04338](https://arxiv.org/abs/2005.04338).
+3. Chen, C.; Zuo, Y.; Ye, W.; Li, X.G.; Ong, S. P. Learning properties of ordered and 
+   disordered materials from multi-fidelity data. Nature Computational Science 2021, 
+   1, 46–53 [doi:10.1038/s43588-020-00002-x](https://www.nature.com/articles/s43588-020-00002-x).
 4. Vinyals, O.; Bengio, S.; Kudlur, M. Order Matters: Sequence to sequence for 
    sets. 2015, arXiv preprint. [arXiv:1511.06391](https://arxiv.org/abs/1511.06391)
 5. https://figshare.com/articles/Graphs_of_materials_project/7451351
