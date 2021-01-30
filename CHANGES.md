@@ -1,3 +1,6 @@
+# v1.2.6
+* Stability improvements
+
 # v1.2.5
 * Include data files in wheel
 
