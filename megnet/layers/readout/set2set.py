@@ -167,7 +167,7 @@ class Set2Set(Layer):
             e_i_t = tf.reduce_sum(
                 input_tensor=m * repeat_with_index(self.h, feature_graph_index), axis=-1)
             maxes = tf.math.segment_max(e_i_t[0], feature_graph_index)
-            e_i_t -= maxes[None, ...]
+            e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index, axis=0), axis=0)
             exp = tf.exp(e_i_t)
             seg_sum = tf.transpose(
                 a=tf.math.segment_sum(
