@@ -20,6 +20,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: mypy
       run: |
+        pip install --upgrade pip
         pip install mypy --upgrade --quiet
         mypy megnet
     - name: flake8
