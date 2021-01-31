@@ -27,17 +27,19 @@ class CrystalGraphLayer(GraphNetworkLayer):
 
     """
 
-    def __init__(self,
-                 activation='relu',
-                 use_bias=True,
-                 kernel_initializer='glorot_uniform',
-                 bias_initializer='zeros',
-                 kernel_regularizer=None,
-                 bias_regularizer=None,
-                 activity_regularizer=None,
-                 kernel_constraint=None,
-                 bias_constraint=None,
-                 **kwargs):
+    def __init__(
+        self,
+        activation="relu",
+        use_bias=True,
+        kernel_initializer="glorot_uniform",
+        bias_initializer="zeros",
+        kernel_regularizer=None,
+        bias_regularizer=None,
+        activity_regularizer=None,
+        kernel_constraint=None,
+        bias_constraint=None,
+        **kwargs,
+    ):
         """
 
         Args:
@@ -52,16 +54,18 @@ class CrystalGraphLayer(GraphNetworkLayer):
             kwargs (dictionary): additional keyword args
         """
 
-        super().__init__(activation=activation,
-                         use_bias=use_bias,
-                         kernel_initializer=kernel_initializer,
-                         bias_initializer=bias_initializer,
-                         kernel_regularizer=kernel_regularizer,
-                         bias_regularizer=bias_regularizer,
-                         activity_regularizer=activity_regularizer,
-                         kernel_constraint=kernel_constraint,
-                         bias_constraint=bias_constraint,
-                         **kwargs)
+        super().__init__(
+            activation=activation,
+            use_bias=use_bias,
+            kernel_initializer=kernel_initializer,
+            bias_initializer=bias_initializer,
+            kernel_regularizer=kernel_regularizer,
+            bias_regularizer=bias_regularizer,
+            activity_regularizer=activity_regularizer,
+            kernel_constraint=kernel_constraint,
+            bias_constraint=bias_constraint,
+            **kwargs,
+        )
 
     def build(self, input_shapes):
         """
@@ -74,21 +78,29 @@ class CrystalGraphLayer(GraphNetworkLayer):
         edim = input_shapes[1][2]
 
         with kb.name_scope(self.name):
-            with kb.name_scope('phi_v'):
+            with kb.name_scope("phi_v"):
                 v_shapes = [[2 * vdim + edim, vdim]] * 2
-                self.phi_v_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_v_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(v_shapes)]
+                self.phi_v_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_v_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(v_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_v_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_v_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(v_shapes)]
+                    self.phi_v_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_v_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(v_shapes)
+                    ]
                 else:
                     self.phi_v_biases = None
         self.built = True

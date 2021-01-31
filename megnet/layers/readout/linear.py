@@ -5,18 +5,21 @@ from tensorflow.keras.layers import Layer
 
 import tensorflow as tf
 
-MAPPING = {'mean': tf.math.segment_mean,
-           'sum': tf.math.segment_sum,
-           'max': tf.math.segment_max,
-           'min': tf.math.segment_min,
-           'prod': tf.math.segment_prod}
+MAPPING = {
+    "mean": tf.math.segment_mean,
+    "sum": tf.math.segment_sum,
+    "max": tf.math.segment_max,
+    "min": tf.math.segment_min,
+    "prod": tf.math.segment_prod,
+}
 
 
 class LinearWithIndex(Layer):
     """
     Sum or average the node/edge attributes to get a structure-level vector
     """
-    def __init__(self, mode='mean', **kwargs):
+
+    def __init__(self, mode="mean", **kwargs):
         """
         Args:
             mode: (str) 'mean', 'sum', 'max', 'mean' or 'prod'
@@ -26,7 +29,7 @@ class LinearWithIndex(Layer):
         self.mode = mode
         self.reduce_method = MAPPING.get(mode, None)
         if self.reduce_method is None:
-            raise ValueError('mode not supported')
+            raise ValueError("mode not supported")
 
     def build(self, input_shape):
         """
@@ -72,6 +75,6 @@ class LinearWithIndex(Layer):
         Returns:
             configurational dictionary
         """
-        config = {'mode': self.mode}
+        config = {"mode": self.mode}
         base_config = super().get_config()
         return dict(list(base_config.items()) + list(config.items()))

@@ -29,17 +29,19 @@ class InteractionLayer(GraphNetworkLayer):
 
     """
 
-    def __init__(self,
-                 activation=softplus2,
-                 use_bias=True,
-                 kernel_initializer='glorot_uniform',
-                 bias_initializer='zeros',
-                 kernel_regularizer=None,
-                 bias_regularizer=None,
-                 activity_regularizer=None,
-                 kernel_constraint=None,
-                 bias_constraint=None,
-                 **kwargs):
+    def __init__(
+        self,
+        activation=softplus2,
+        use_bias=True,
+        kernel_initializer="glorot_uniform",
+        bias_initializer="zeros",
+        kernel_regularizer=None,
+        bias_regularizer=None,
+        activity_regularizer=None,
+        kernel_constraint=None,
+        bias_constraint=None,
+        **kwargs,
+    ):
         """
         Args:
             activation (str): Default: None. The activation function used for each sub-neural network. Examples include
@@ -51,16 +53,18 @@ class InteractionLayer(GraphNetworkLayer):
             kernel_constraint (str): Default: None. Keras constraint for kernel values
             bias_constraint (str): Default: None .Keras constraint for bias values
         """
-        super().__init__(activation=activation,
-                         use_bias=use_bias,
-                         kernel_initializer=kernel_initializer,
-                         bias_initializer=bias_initializer,
-                         kernel_regularizer=kernel_regularizer,
-                         bias_regularizer=bias_regularizer,
-                         activity_regularizer=activity_regularizer,
-                         kernel_constraint=kernel_constraint,
-                         bias_constraint=bias_constraint,
-                         **kwargs)
+        super().__init__(
+            activation=activation,
+            use_bias=use_bias,
+            kernel_initializer=kernel_initializer,
+            bias_initializer=bias_initializer,
+            kernel_regularizer=kernel_regularizer,
+            bias_regularizer=bias_regularizer,
+            activity_regularizer=activity_regularizer,
+            kernel_constraint=kernel_constraint,
+            bias_constraint=bias_constraint,
+            **kwargs,
+        )
 
     def build(self, input_shapes):
         """
@@ -73,41 +77,57 @@ class InteractionLayer(GraphNetworkLayer):
         edim = input_shapes[1][2]
 
         with kb.name_scope(self.name):
-            with kb.name_scope('phi_e'):
+            with kb.name_scope("phi_e"):
                 e_shapes = [[edim, vdim]] + [[vdim, vdim]] * 2
-                self.phi_e_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_v_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(e_shapes)]
+                self.phi_e_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_v_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(e_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_e_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_v_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(e_shapes)]
+                    self.phi_e_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_v_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(e_shapes)
+                    ]
                 else:
                     self.phi_e_biases = None
 
         with kb.name_scope(self.name):
-            with kb.name_scope('phi_v'):
+            with kb.name_scope("phi_v"):
 
                 v_shapes = [[vdim, vdim]] + [[vdim, vdim]] * 2
-                self.phi_v_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_v_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(v_shapes)]
+                self.phi_v_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_v_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(v_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_v_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_v_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(v_shapes)]
+                    self.phi_v_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_v_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(v_shapes)
+                    ]
                 else:
                     self.phi_v_biases = None
         self.built = True
@@ -156,9 +176,9 @@ class InteractionLayer(GraphNetworkLayer):
         index2 = tf.reshape(index2, (-1,))
         fr = tf.gather(atomwise1, index2, axis=1)
 
-        after_cfconv = atomwise1 + \
-            tf.transpose(a=tf.math.segment_sum(tf.transpose(
-                a=fr * cfconv_out, perm=[1, 0, 2]), index1), perm=[1, 0, 2])
+        after_cfconv = atomwise1 + tf.transpose(
+            a=tf.math.segment_sum(tf.transpose(a=fr * cfconv_out, perm=[1, 0, 2]), index1), perm=[1, 0, 2]
+        )
 
         atomwise2 = self.activation(self._mlp(after_cfconv, self.phi_v_weights[1], self.phi_v_biases[1]))
         atomwise3 = self._mlp(atomwise2, self.phi_v_weights[2], self.phi_v_biases[2])

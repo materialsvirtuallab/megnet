@@ -5,7 +5,6 @@ from megnet.utils.metrics import mae, accuracy
 
 
 class TestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.y_true = np.array([0, 1, 2, 3, 4])

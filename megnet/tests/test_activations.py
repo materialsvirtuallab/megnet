@@ -5,7 +5,7 @@ import numpy as np
 
 
 def softplus_np(x):
-    return np.log(np.exp(x) + 1) - np.log(2.)
+    return np.log(np.exp(x) + 1) - np.log(2.0)
 
 
 class TestSP(unittest.TestCase):
@@ -14,5 +14,5 @@ class TestSP(unittest.TestCase):
         self.assertAlmostEqual(softplus2(x).numpy(), softplus_np(x), places=5)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

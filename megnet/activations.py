@@ -21,7 +21,7 @@ def softplus2(x):
     Returns:
          (Tensor) output tensor
     """
-    return kb.relu(x) + kb.log(0.5*kb.exp(-kb.abs(x)) + 0.5)
+    return kb.relu(x) + kb.log(0.5 * kb.exp(-kb.abs(x)) + 0.5)
 
 
 def get(identifier: OptStrOrCallable = None) -> Callable[..., Any]:
@@ -40,4 +40,4 @@ def get(identifier: OptStrOrCallable = None) -> Callable[..., Any]:
     except ValueError:
         if isinstance(identifier, str):
             return deserialize(identifier, custom_objects=globals())
-    raise ValueError('Could not interpret:', identifier)
+    raise ValueError("Could not interpret:", identifier)

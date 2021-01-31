@@ -27,17 +27,19 @@ class ModelCheckpointMAE(Callback):
     Save the best MAE model with target scaler
     """
 
-    def __init__(self,
-                 filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
-                 monitor: str = 'val_mae',
-                 verbose: int = 0,
-                 save_best_only: bool = True,
-                 save_weights_only: bool = False,
-                 val_gen: Sequence = None,
-                 steps_per_val: int = None,
-                 target_scaler: Scaler = None,
-                 period: int = 1,
-                 mode: str = 'auto'):
+    def __init__(
+        self,
+        filepath: str = "./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5",
+        monitor: str = "val_mae",
+        verbose: int = 0,
+        save_best_only: bool = True,
+        save_weights_only: bool = False,
+        val_gen: Sequence = None,
+        steps_per_val: int = None,
+        target_scaler: Scaler = None,
+        period: int = 1,
+        mode: str = "auto",
+    ):
         """
         Args:
             filepath (string): path to save the model file with format. For example
@@ -55,7 +57,7 @@ class ModelCheckpointMAE(Callback):
         """
         super().__init__()
         if val_gen is None:
-            raise ValueError('No validation data is provided!')
+            raise ValueError("No validation data is provided!")
         self.verbose = verbose
         if self.verbose > 0:
             logging.basicConfig(level=logging.INFO)
@@ -68,22 +70,22 @@ class ModelCheckpointMAE(Callback):
         self.steps_per_val = steps_per_val or len(val_gen)
         self.target_scaler = target_scaler or DummyScaler()
 
-        if monitor == 'val_mae':
+        if monitor == "val_mae":
             self.metric = mae
-            self.monitor = 'val_mae'
-        elif monitor == 'val_acc':
+            self.monitor = "val_mae"
+        elif monitor == "val_acc":
             self.metric = accuracy
-            self.filepath = self.filepath.replace('val_mae', 'val_acc')
-            self.monitor = 'val_acc'
+            self.filepath = self.filepath.replace("val_mae", "val_acc")
+            self.monitor = "val_acc"
 
-        if mode == 'min':
+        if mode == "min":
             self.monitor_op = np.less
             self.best = np.Inf
-        elif mode == 'max':
+        elif mode == "max":
             self.monitor_op = np.greater
             self.best = -np.Inf
         else:
-            if 'acc' in self.monitor or self.monitor.startswith('fmeasure'):
+            if "acc" in self.monitor or self.monitor.startswith("fmeasure"):
                 self.monitor_op = np.greater
                 self.best = -np.Inf
             else:
@@ -111,21 +113,22 @@ class ModelCheckpointMAE(Callback):
                 stop_training = self.model.stop_training  # save stop_trainings state
                 pred_ = self.model.predict(val_data[0])
                 self.model.stop_training = stop_training
-                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :],
-                                                                     nb_atom[:, None]))
-                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :],
-                                                                  nb_atom[:, None]))
+                val_pred.append(self.target_scaler.inverse_transform(pred_[0, :, :], nb_atom[:, None]))
+                val_y.append(self.target_scaler.inverse_transform(val_data[1][0, :, :], nb_atom[:, None]))
             current = self.metric(np.concatenate(val_y, axis=0), np.concatenate(val_pred, axis=0))
             filepath = self.filepath.format(**{"epoch": epoch + 1, self.monitor: current})
 
             if self.save_best_only:
                 if current is None:
-                    warnings.warn('Can save best model only with %s available, '
-                                  'skipping.' % self.monitor, RuntimeWarning)
+                    warnings.warn(
+                        "Can save best model only with %s available, " "skipping." % self.monitor, RuntimeWarning
+                    )
                 else:
                     if self.monitor_op(current, self.best):
-                        logger.info('\nEpoch %05d: %s improved from %0.5f to %0.5f,'
-                                    ' saving model to %s' % (epoch + 1, self.monitor, self.best, current, filepath))
+                        logger.info(
+                            "\nEpoch %05d: %s improved from %0.5f to %0.5f,"
+                            " saving model to %s" % (epoch + 1, self.monitor, self.best, current, filepath)
+                        )
                         self.best = current
                         if self.save_weights_only:
                             self.model.save_weights(filepath, overwrite=True)
@@ -133,10 +136,11 @@ class ModelCheckpointMAE(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            logger.info('\nEpoch %05d: %s did not improve from %0.5f' %
-                                        (epoch + 1, self.monitor, self.best))
+                            logger.info(
+                                "\nEpoch %05d: %s did not improve from %0.5f" % (epoch + 1, self.monitor, self.best)
+                            )
             else:
-                logger.info('\nEpoch %05d: saving model to %s' % (epoch + 1, filepath))
+                logger.info("\nEpoch %05d: saving model to %s" % (epoch + 1, filepath))
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
@@ -158,7 +162,7 @@ class ManualStop(Callback):
         Returns: None
 
         """
-        if os.path.isfile('STOP'):
+        if os.path.isfile("STOP"):
             self.model.stop_training = True
 
 
@@ -173,14 +177,16 @@ class ReduceLRUponNan(Callback):
 
     """
 
-    def __init__(self,
-                 filepath: str = './callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5',
-                 factor: float = 0.5,
-                 verbose: bool = True,
-                 patience: int = 500,
-                 monitor: str = 'val_mae',
-                 mode: str = 'auto',
-                 has_sample_weights: bool = False):
+    def __init__(
+        self,
+        filepath: str = "./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5",
+        factor: float = 0.5,
+        verbose: bool = True,
+        patience: int = 500,
+        monitor: str = "val_mae",
+        mode: str = "auto",
+        has_sample_weights: bool = False,
+    ):
         """
         Args:
             filepath (str): filepath for saved model checkpoint, should be consistent with
@@ -201,20 +207,20 @@ class ReduceLRUponNan(Callback):
         self.monitor = monitor
         super().__init__()
 
-        if mode == 'min':
+        if mode == "min":
             self.monitor_op = np.argmin
-        elif mode == 'max':
+        elif mode == "max":
             self.monitor_op = np.argmax
         else:
-            if 'acc' in self.monitor:
+            if "acc" in self.monitor:
                 self.monitor_op = np.argmax
             else:
                 self.monitor_op = np.argmin
 
         # get variable name
-        variable_name_pattern = r'{(.+?)}'
+        variable_name_pattern = r"{(.+?)}"
         self.variable_names = re.findall(variable_name_pattern, filepath)
-        self.variable_names = [i.split(':')[0] for i in self.variable_names]
+        self.variable_names = [i.split(":")[0] for i in self.variable_names]
         self.has_sample_weights = has_sample_weights
         if self.monitor not in self.variable_names:
             raise ValueError("The monitored metric should be in the name pattern")
@@ -230,13 +236,12 @@ class ReduceLRUponNan(Callback):
 
         """
         logs = logs or {}
-        loss = logs.get('loss')
+        loss = logs.get("loss")
         last_saved_epoch, last_metric, last_file = self._get_checkpoints()
         if last_saved_epoch is not None:
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                logger.info('%s does not improve after %d, stopping '
-                            'the fitting...' % (self.monitor, self.patience))
+                logger.info("%s does not improve after %d, stopping " "the fitting..." % (self.monitor, self.patience))
 
         if loss is not None:
             self.losses.append(loss)
@@ -245,18 +250,16 @@ class ReduceLRUponNan(Callback):
                     logger.info("Nan loss found!")
                 self._reduce_lr_and_load(last_file)
                 if self.verbose:
-                    logger.info("Now lr is %s." % float(
-                        kb.eval(self.model.optimizer.lr)))
+                    logger.info("Now lr is %s." % float(kb.eval(self.model.optimizer.lr)))
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
                         self._reduce_lr_and_load(last_file)
                         if self.verbose:
                             logger.info(
-                                "Loss shot up from %.3f to %.3f! Reducing lr " % (
-                                    self.losses[-2], self.losses[-1]))
-                            logger.info("Now lr is %s." % float(
-                                kb.eval(self.model.optimizer.lr)))
+                                "Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-2], self.losses[-1])
+                            )
+                            logger.info("Now lr is %s." % float(kb.eval(self.model.optimizer.lr)))
 
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.eval(self.model.optimizer.lr))
@@ -272,17 +275,18 @@ class ReduceLRUponNan(Callback):
 
         opt_dict = self.model.optimizer.get_config()
         sample_weight_model = "temporal" if self.has_sample_weights else None
-        self.model.compile(self.model.optimizer.__class__(**opt_dict),
-                           self.model.loss, sample_weight_mode=sample_weight_model)
+        self.model.compile(
+            self.model.optimizer.__class__(**opt_dict), self.model.loss, sample_weight_mode=sample_weight_model
+        )
 
     def _get_checkpoints(self):
-        file_pattern = re.sub(r'{(.+?)}', r'([0-9\.]+)', self.filepath)
-        glob_pattern = re.sub(r'{(.+?)}', r'*', self.filepath)
+        file_pattern = re.sub(r"{(.+?)}", r"([0-9\.]+)", self.filepath)
+        glob_pattern = re.sub(r"{(.+?)}", r"*", self.filepath)
         all_check_points = glob(glob_pattern)
 
         if len(all_check_points) > 0:
             metric_index = self.variable_names.index(self.monitor)
-            epoch_index = self.variable_names.index('epoch')
+            epoch_index = self.variable_names.index("epoch")
             metric_values = []
             epochs = []
             for i in all_check_points:

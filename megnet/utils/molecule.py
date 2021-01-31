@@ -10,9 +10,9 @@ try:
     import pybel as pb  # type: ignore
     import openbabel as ob  # type: ignore
 except ImportError:
-    logging.warning("Openbabel is needed for molecule models, "
-                    "try 'conda install -c openbabel openbabel' "
-                    "to install it")
+    logging.warning(
+        "Openbabel is needed for molecule models, " "try 'conda install -c openbabel openbabel' " "to install it"
+    )
     pb = None
     ob = None
 
@@ -27,7 +27,7 @@ def get_pmg_mol_from_smiles(smiles: str) -> Molecule:
     Returns:
         pymatgen Molecule
     """
-    b_mol = pb.readstring('smi', smiles)  # noqa
+    b_mol = pb.readstring("smi", smiles)  # noqa
     b_mol.make3D()
     b_mol = b_mol.OBMol
     sp = []

@@ -34,21 +34,23 @@ class MEGNetLayer(GraphNetworkLayer):
 
     """
 
-    def __init__(self,
-                 units_v,
-                 units_e,
-                 units_u,
-                 pool_method='mean',
-                 activation=None,
-                 use_bias=True,
-                 kernel_initializer='glorot_uniform',
-                 bias_initializer='zeros',
-                 kernel_regularizer=None,
-                 bias_regularizer=None,
-                 activity_regularizer=None,
-                 kernel_constraint=None,
-                 bias_constraint=None,
-                 **kwargs):
+    def __init__(
+        self,
+        units_v,
+        units_e,
+        units_u,
+        pool_method="mean",
+        activation=None,
+        use_bias=True,
+        kernel_initializer="glorot_uniform",
+        bias_initializer="zeros",
+        kernel_regularizer=None,
+        bias_regularizer=None,
+        activity_regularizer=None,
+        kernel_constraint=None,
+        bias_constraint=None,
+        **kwargs,
+    ):
         """
         Args:
             units_v (list of integers): the hidden layer sizes for node update neural network
@@ -65,28 +67,30 @@ class MEGNetLayer(GraphNetworkLayer):
             bias_constraint (str): Default: None .Keras constraint for bias values
         """
 
-        super().__init__(activation=activation,
-                         use_bias=use_bias,
-                         kernel_initializer=kernel_initializer,
-                         bias_initializer=bias_initializer,
-                         kernel_regularizer=kernel_regularizer,
-                         bias_regularizer=bias_regularizer,
-                         activity_regularizer=activity_regularizer,
-                         kernel_constraint=kernel_constraint,
-                         bias_constraint=bias_constraint,
-                         **kwargs)
+        super().__init__(
+            activation=activation,
+            use_bias=use_bias,
+            kernel_initializer=kernel_initializer,
+            bias_initializer=bias_initializer,
+            kernel_regularizer=kernel_regularizer,
+            bias_regularizer=bias_regularizer,
+            activity_regularizer=activity_regularizer,
+            kernel_constraint=kernel_constraint,
+            bias_constraint=bias_constraint,
+            **kwargs,
+        )
         self.units_v = units_v
         self.units_e = units_e
         self.units_u = units_u
         self.pool_method = pool_method
-        if pool_method == 'mean':
+        if pool_method == "mean":
             self.reduce_method = tf.reduce_mean
             self.seg_method = tf.math.segment_mean
-        elif pool_method == 'sum':
+        elif pool_method == "sum":
             self.reduce_method = tf.reduce_sum
             self.seg_method = tf.math.segment_sum
         else:
-            raise ValueError('Pool method: ' + pool_method + ' not understood!')
+            raise ValueError("Pool method: " + pool_method + " not understood!")
 
     def build(self, input_shapes):
         """
@@ -100,61 +104,84 @@ class MEGNetLayer(GraphNetworkLayer):
         udim = input_shapes[2][2]
 
         with kb.name_scope(self.name):
-            with kb.name_scope('phi_v'):
+            with kb.name_scope("phi_v"):
                 v_shapes = [self.units_e[-1] + vdim + udim] + self.units_v
                 v_shapes = list(zip(v_shapes[:-1], v_shapes[1:]))
-                self.phi_v_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_v_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(v_shapes)]
+                self.phi_v_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_v_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(v_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_v_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_v_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(v_shapes)]
+                    self.phi_v_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_v_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(v_shapes)
+                    ]
                 else:
                     self.phi_v_biases = None
 
-            with kb.name_scope('phi_e'):
+            with kb.name_scope("phi_e"):
                 e_shapes = [2 * vdim + edim + udim] + self.units_e
                 e_shapes = list(zip(e_shapes[:-1], e_shapes[1:]))
-                self.phi_e_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_e_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(e_shapes)]
+                self.phi_e_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_e_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(e_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_e_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_e_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(e_shapes)]
+                    self.phi_e_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_e_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(e_shapes)
+                    ]
                 else:
                     self.phi_e_biases = None
 
-            with kb.name_scope('phi_u'):
-                u_shapes = [self.units_e[-1] + self.units_v[
-                    -1] + udim] + self.units_u
+            with kb.name_scope("phi_u"):
+                u_shapes = [self.units_e[-1] + self.units_v[-1] + udim] + self.units_u
                 u_shapes = list(zip(u_shapes[:-1], u_shapes[1:]))
-                self.phi_u_weights = [self.add_weight(shape=i,
-                                                      initializer=self.kernel_initializer,
-                                                      name='weight_u_%d' % j,
-                                                      regularizer=self.kernel_regularizer,
-                                                      constraint=self.kernel_constraint)
-                                      for j, i in enumerate(u_shapes)]
+                self.phi_u_weights = [
+                    self.add_weight(
+                        shape=i,
+                        initializer=self.kernel_initializer,
+                        name="weight_u_%d" % j,
+                        regularizer=self.kernel_regularizer,
+                        constraint=self.kernel_constraint,
+                    )
+                    for j, i in enumerate(u_shapes)
+                ]
                 if self.use_bias:
-                    self.phi_u_biases = [self.add_weight(shape=(i[-1],),
-                                                         initializer=self.bias_initializer,
-                                                         name='bias_u_%d' % j,
-                                                         regularizer=self.bias_regularizer,
-                                                         constraint=self.bias_constraint)
-                                         for j, i in enumerate(u_shapes)]
+                    self.phi_u_biases = [
+                        self.add_weight(
+                            shape=(i[-1],),
+                            initializer=self.bias_initializer,
+                            name="bias_u_%d" % j,
+                            regularizer=self.bias_regularizer,
+                            constraint=self.bias_constraint,
+                        )
+                        for j, i in enumerate(u_shapes)
+                    ]
                 else:
                     self.phi_u_biases = None
         self.built = True
@@ -174,7 +201,8 @@ class MEGNetLayer(GraphNetworkLayer):
         output_shape = [
             (node_feature_shape[0], node_feature_shape[1], self.units_v[-1]),
             (edge_feature_shape[0], edge_feature_shape[1], self.units_e[-1]),
-            (state_feature_shape[0], state_feature_shape[1], self.units_u[-1])]
+            (state_feature_shape[0], state_feature_shape[1], self.units_u[-1]),
+        ]
         return output_shape
 
     def phi_e(self, inputs):
@@ -279,10 +307,10 @@ class MEGNetLayer(GraphNetworkLayer):
 
         """
         config = {
-            'units_e': self.units_e,
-            'units_v': self.units_v,
-            'units_u': self.units_u,
-            'pool_method': self.pool_method
+            "units_e": self.units_e,
+            "units_v": self.units_v,
+            "units_u": self.units_u,
+            "pool_method": self.pool_method,
         }
 
         base_config = super().get_config()

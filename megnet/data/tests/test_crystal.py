@@ -2,8 +2,12 @@ import tensorflow as tf
 import unittest
 from megnet.data.graph import GaussianDistance
 from megnet.utils.general import to_list
-from megnet.data.crystal import CrystalGraph, get_elemental_embeddings, \
-    CrystalGraphWithBondTypes, CrystalGraphDisordered
+from megnet.data.crystal import (
+    CrystalGraph,
+    get_elemental_embeddings,
+    CrystalGraphWithBondTypes,
+    CrystalGraphDisordered,
+)
 from pymatgen import Structure
 import os
 import numpy as np
@@ -16,7 +20,8 @@ class TestGraph(unittest.TestCase):
     def setUpClass(cls):
         cls.structures = [
             Structure.from_file(os.path.join(module_dir, "cifs", "LiFePO4_mp-19017_computed.cif")),
-            Structure.from_file(os.path.join(module_dir, "cifs", "BaTiO3_mp-2998_computed.cif"))]
+            Structure.from_file(os.path.join(module_dir, "cifs", "BaTiO3_mp-2998_computed.cif")),
+        ]
 
     def test_crystalgraph(self):
         cg = CrystalGraph(cutoff=4)
@@ -27,30 +32,31 @@ class TestGraph(unittest.TestCase):
         cg2 = CrystalGraph(cutoff=6)
         self.assertEqual(cg2.cutoff, 6)
         graph2 = cg2.convert(self.structures[0])
-        self.assertListEqual(to_list(graph2['state'][0]), [0, 0])
+        self.assertListEqual(to_list(graph2["state"][0]), [0, 0])
         graph3 = cg(self.structures[0])
-        np.testing.assert_almost_equal(graph['atom'], graph3['atom'])
+        np.testing.assert_almost_equal(graph["atom"], graph3["atom"])
 
     def test_crystalgraph_disordered(self):
         cg = CrystalGraphDisordered(cutoff=4.0)
         graph = cg.convert(self.structures[0])
-        self.assertEqual(cg.atom_converter.convert(graph['atom']).shape[1], 16)
+        self.assertEqual(cg.atom_converter.convert(graph["atom"]).shape[1], 16)
 
     def test_crystal_graph_with_bond_types(self):
-        graph = {'atom': [11, 8, 8],
-                 'index1': [0, 0, 1, 1, 2, 2],
-                 'index2': [0, 1, 2, 2, 1, 1],
-                 'bond': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
-                 'state': [[0, 0]]}
-        cgbt = CrystalGraphWithBondTypes(nn_strategy='VoronoiNN')
+        graph = {
+            "atom": [11, 8, 8],
+            "index1": [0, 0, 1, 1, 2, 2],
+            "index2": [0, 1, 2, 2, 1, 1],
+            "bond": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6],
+            "state": [[0, 0]],
+        }
+        cgbt = CrystalGraphWithBondTypes(nn_strategy="VoronoiNN")
         new_graph = cgbt._get_bond_type(graph)
-        self.assertListEqual(to_list(new_graph['bond']), [2, 1, 0, 0, 0, 0])
-
+        self.assertListEqual(to_list(new_graph["bond"]), [2, 1, 0, 0, 0, 0])
 
     def test_convert(self):
         cg = CrystalGraph(cutoff=4)
         graph = cg.convert(self.structures[0])
-        self.assertListEqual(to_list(graph['atom']), [i.specie.Z for i in self.structures[0]])
+        self.assertListEqual(to_list(graph["atom"]), [i.specie.Z for i in self.structures[0]])
 
     def test_get_input(self):
         cg = CrystalGraph(cutoff=4, bond_converter=GaussianDistance(np.linspace(0, 5, 100), 0.5))

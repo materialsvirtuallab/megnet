@@ -17,9 +17,13 @@ _CUSTOM_OBJECTS = globals()
 
 
 __all__ = [
-    "MEGNetLayer", "CrystalGraphLayer", "InteractionLayer",
-    "Set2Set", "LinearWithIndex",
+    "MEGNetLayer",
+    "CrystalGraphLayer",
+    "InteractionLayer",
+    "Set2Set",
+    "LinearWithIndex",
     "GaussianExpansion",
-    "keras_layer_deserialize", "mean_squared_error_with_scale",
-    "softplus2"
+    "keras_layer_deserialize",
+    "mean_squared_error_with_scale",
+    "softplus2",
 ]

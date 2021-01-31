@@ -22,16 +22,15 @@ def _equal(x, y):
 def _sort_neighbors(neighbors):
     out = []
     for n in neighbors:
-        out.append([sorted(n, key=lambda x: (x['weight'], x['site_index']))])
+        out.append([sorted(n, key=lambda x: (x["weight"], x["site_index"]))])
     return out
 
 
 class TestLocalEnv(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
-        cls.structure = Structure.from_file(os.path.join(MODULE_DIR, 'cifs', 'BaTiO3_mp-2998_computed.cif'))
-        cls.molecule = Molecule(['C', 'O', 'O'], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
+        cls.structure = Structure.from_file(os.path.join(MODULE_DIR, "cifs", "BaTiO3_mp-2998_computed.cif"))
+        cls.molecule = Molecule(["C", "O", "O"], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
         cls.mall = MinimumDistanceNNAll(4)
         cls.aapair = AllAtomPairs()
 
@@ -47,9 +46,9 @@ class TestLocalEnv(unittest.TestCase):
     def test_serialization(self):
         mall = MinimumDistanceNNAll(4)
         config = serialize(mall)
-        self.assertDictEqual(config, {'@module': 'megnet.data.local_env',
-                                      '@class': 'MinimumDistanceNNAll',
-                                      'cutoff': 4})
+        self.assertDictEqual(
+            config, {"@module": "megnet.data.local_env", "@class": "MinimumDistanceNNAll", "cutoff": 4}
+        )
         self.assertTrue(serialize(None) is None)
 
         mall2 = deserialize(config)
@@ -57,8 +56,8 @@ class TestLocalEnv(unittest.TestCase):
         self.assertTrue(mall2.cutoff == 4)
 
     def test_get(self):
-        voronoi = get('VoronoiNN')
-        self.assertTrue(voronoi.__name__ == 'VoronoiNN')
+        voronoi = get("VoronoiNN")
+        self.assertTrue(voronoi.__name__ == "VoronoiNN")
 
 
 if __name__ == "__main__":

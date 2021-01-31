@@ -18,10 +18,10 @@ class TestLayer(unittest.TestCase):
             Input(shape=(None, cls.n_features)),
             Input(shape=(None, cls.n_bond_features)),
             Input(shape=(None, cls.n_global_features)),
-            Input(shape=(None, ), dtype='int32'),
-            Input(shape=(None, ), dtype='int32'),
-            Input(shape=(None, ), dtype='int32'),
-            Input(shape=(None, ), dtype='int32'),
+            Input(shape=(None,), dtype="int32"),
+            Input(shape=(None,), dtype="int32"),
+            Input(shape=(None,), dtype="int32"),
+            Input(shape=(None,), dtype="int32"),
         ]
 
     def test_megnet(self):
@@ -35,7 +35,7 @@ class TestLayer(unittest.TestCase):
         out2 = new_layer(self.x)
         self.assertListEqual([i.shape[-1] for i in out2], [units_v[-1], units_e[-1], units_u[-1]])
 
-        int32 = 'int32'
+        int32 = "int32"
         x1 = np.random.rand(1, 5, 10)
         x2 = np.random.rand(1, 6, 5)
         x3 = np.random.rand(1, 2, 20)
@@ -50,10 +50,9 @@ class TestLayer(unittest.TestCase):
         x5_ = Input(shape=(None,), dtype=int32)
         x6_ = Input(shape=(None,), dtype=int32)
         x7_ = Input(shape=(None,), dtype=int32)
-        out = MEGNetLayer([10, 5], [20, 4], [30, 3])(
-            [x1_, x2_, x3_, x4_, x5_, x6_, x7_])
+        out = MEGNetLayer([10, 5], [20, 4], [30, 3])([x1_, x2_, x3_, x4_, x5_, x6_, x7_])
         model = Model(inputs=[x1_, x2_, x3_, x4_, x5_, x6_, x7_], outputs=out)
-        model.compile('adam', 'mse')
+        model.compile("adam", "mse")
         ans = model.predict([x1, x2, x3, x4, x5, x6, x7])
         self.assertEqual(ans[0].shape, (1, 5, 5))
 

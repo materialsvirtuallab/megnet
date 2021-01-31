@@ -39,7 +39,7 @@ def predict(args):
         else:
             sm = SequenceMatcher(None, prefix, mn)
             match = sm.find_longest_match(0, len(prefix), 0, len(mn))
-            prefix = prefix[0: match.size]
+            prefix = prefix[0 : match.size]
         headers.append("%s (%s)" % (mn, str(model.metadata.get("unit", "")).strip("log10")))
     headers = [h.lstrip(prefix) for h in headers]
 
@@ -68,15 +68,14 @@ def main():
 
     subparsers = parser.add_subparsers()
 
-    parser_predict = subparsers.add_parser(
-        "predict", help="Predict property using MEGNET.")
+    parser_predict = subparsers.add_parser("predict", help="Predict property using MEGNET.")
 
-    parser_predict.add_argument("-s", "--structures", dest="structures",
-                                type=str, nargs="+",
-                                help="Structures to process")
     parser_predict.add_argument(
-        "-m", "--models", dest="models", type=str, nargs="+", default=DEFAULT_MODELS,
-        help="Models to run.")
+        "-s", "--structures", dest="structures", type=str, nargs="+", help="Structures to process"
+    )
+    parser_predict.add_argument(
+        "-m", "--models", dest="models", type=str, nargs="+", default=DEFAULT_MODELS, help="Models to run."
+    )
     parser_predict.set_defaults(func=predict)
 
     args = parser.parse_args()

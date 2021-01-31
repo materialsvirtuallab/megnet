@@ -13,6 +13,7 @@ class AtomNumberToTypeConverter(MSONable):
     This is specifically used for this problem, do not use it elsewhere.
     The code is here for historical reasons.
     """
+
     def __init__(self, mapping=ATOMNUM2TYPE):
         """
         Atomic number to atomic type converter

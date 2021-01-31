@@ -7,9 +7,4 @@ from .cgcnn import CrystalGraphLayer
 from .megnet import MEGNetLayer
 from .schnet import InteractionLayer
 
-__all__ = [
-    "GraphNetworkLayer",
-    "CrystalGraphLayer",
-    "MEGNetLayer",
-    "InteractionLayer"
-]
+__all__ = ["GraphNetworkLayer", "CrystalGraphLayer", "MEGNetLayer", "InteractionLayer"]

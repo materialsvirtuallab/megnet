@@ -13,9 +13,8 @@ CWD = os.path.dirname(os.path.abspath(__file__))
 class TestMolecule(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.molecule = Molecule(['C', 'O', 'O'], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
-        cls.model = MEGNetModel.from_file(os.path.join(
-            CWD, '../../../mvl_models/mp-2019.4.1/formation_energy.hdf5'))
+        cls.molecule = Molecule(["C", "O", "O"], [[0, 0, 0], [-1, 0, 0], [1, 0, 0]])
+        cls.model = MEGNetModel.from_file(os.path.join(CWD, "../../../mvl_models/mp-2019.4.1/formation_energy.hdf5"))
 
     def test_mol(self):
         pred = self.model.predict_structure(self.molecule)
@@ -23,7 +22,7 @@ class TestMolecule(unittest.TestCase):
 
     @unittest.skipIf(pb is None, "Openbabel is not installed")
     def test_get_pmg_mol_from_smiles(self):
-        mol = get_pmg_mol_from_smiles('C')
+        mol = get_pmg_mol_from_smiles("C")
         self.assertTrue(isinstance(mol, Molecule))
 
 

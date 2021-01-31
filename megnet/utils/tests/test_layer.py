@@ -5,7 +5,6 @@ import tensorflow as tf
 
 
 class TestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         cls.x = tf.random.normal(shape=(1, 3, 4))

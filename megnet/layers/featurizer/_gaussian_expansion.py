@@ -13,6 +13,7 @@ class GaussianExpansion(Layer):
     matrix of shape [n, m], where m is the number of Gaussian basis centers
 
     """
+
     def __init__(self, centers, width, **kwargs):
         """
         Args:
@@ -40,7 +41,7 @@ class GaussianExpansion(Layer):
             inputs (tf.Tensor): input distance tensor, with shape [None, n]
             masks (tf.Tensor): bool tensor, not used here
         """
-        return tf.math.exp(-(inputs[:, :, None] - self.centers[None, None, :])**2 / self.width**2)
+        return tf.math.exp(-((inputs[:, :, None] - self.centers[None, None, :]) ** 2) / self.width ** 2)
 
     def compute_output_shape(self, input_shape):
         """
@@ -53,5 +54,5 @@ class GaussianExpansion(Layer):
         Get layer configurations
         """
         base_config = super().get_config()
-        config = {'centers': self.centers.tolist(), 'width': self.width}
+        config = {"centers": self.centers.tolist(), "width": self.width}
         return dict(list(base_config.items()) + list(config.items()))

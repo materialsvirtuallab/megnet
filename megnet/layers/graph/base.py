@@ -39,17 +39,19 @@ class GraphNetworkLayer(Layer):
 
     """
 
-    def __init__(self,
-                 activation: OptStrOrCallable = None,
-                 use_bias: bool = True,
-                 kernel_initializer: OptStrOrCallable = 'glorot_uniform',
-                 bias_initializer: OptStrOrCallable = 'zeros',
-                 kernel_regularizer: OptStrOrCallable = None,
-                 bias_regularizer: OptStrOrCallable = None,
-                 activity_regularizer: OptStrOrCallable = None,
-                 kernel_constraint: OptStrOrCallable = None,
-                 bias_constraint: OptStrOrCallable = None,
-                 **kwargs):
+    def __init__(
+        self,
+        activation: OptStrOrCallable = None,
+        use_bias: bool = True,
+        kernel_initializer: OptStrOrCallable = "glorot_uniform",
+        bias_initializer: OptStrOrCallable = "zeros",
+        kernel_regularizer: OptStrOrCallable = None,
+        bias_regularizer: OptStrOrCallable = None,
+        activity_regularizer: OptStrOrCallable = None,
+        kernel_constraint: OptStrOrCallable = None,
+        bias_constraint: OptStrOrCallable = None,
+        **kwargs,
+    ):
         """
         Args:
             activation (str): Default: None. The activation function used for each
@@ -67,8 +69,8 @@ class GraphNetworkLayer(Layer):
             bias_constraint (str): Default: None .Keras constraint for bias values
             **kwargs:
         """
-        if 'input_shape' not in kwargs and 'input_dim' in kwargs:
-            kwargs['input_shape'] = (kwargs.pop('input_dim'),)
+        if "input_shape" not in kwargs and "input_dim" in kwargs:
+            kwargs["input_shape"] = (kwargs.pop("input_dim"),)
         self.activation = activations.get(activation)  # noqa
         self.use_bias = use_bias
         self.kernel_initializer = initializers.get(kernel_initializer)
@@ -182,21 +184,15 @@ class GraphNetworkLayer(Layer):
             configurational dictionary
         """
         config = {
-            'activation': activations.serialize(self.activation),
-            'use_bias': self.use_bias,
-            'kernel_initializer': initializers.serialize(
-                self.kernel_initializer),
-            'bias_initializer': initializers.serialize(
-                self.bias_initializer),
-            'kernel_regularizer': regularizers.serialize(
-                self.kernel_regularizer),
-            'bias_regularizer': regularizers.serialize(
-                self.bias_regularizer),
-            'activity_regularizer': regularizers.serialize(
-                self.activity_regularizer),
-            'kernel_constraint': constraints.serialize(
-                self.kernel_constraint),
-            'bias_constraint': constraints.serialize(self.bias_constraint)
+            "activation": activations.serialize(self.activation),
+            "use_bias": self.use_bias,
+            "kernel_initializer": initializers.serialize(self.kernel_initializer),
+            "bias_initializer": initializers.serialize(self.bias_initializer),
+            "kernel_regularizer": regularizers.serialize(self.kernel_regularizer),
+            "bias_regularizer": regularizers.serialize(self.bias_regularizer),
+            "activity_regularizer": regularizers.serialize(self.activity_regularizer),
+            "kernel_constraint": constraints.serialize(self.kernel_constraint),
+            "bias_constraint": constraints.serialize(self.bias_constraint),
         }
 
         base_config = super().get_config()

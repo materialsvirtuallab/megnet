@@ -29,8 +29,7 @@ def get_elemental_embeddings() -> Dict:
 
     :return: Dict of elemental embeddings as {symbol: length 16 string}
     """
-    return loadfn(MODULE_DIR / "resources" /
-                  "elemental_embedding_1MEGNet_layer.json")
+    return loadfn(MODULE_DIR / "resources" / "elemental_embedding_1MEGNet_layer.json")
 
 
 class CrystalGraph(StructureGraphFixedRadius):
@@ -39,12 +38,13 @@ class CrystalGraph(StructureGraphFixedRadius):
     one can optionally include state features
     """
 
-    def __init__(self,
-                 nn_strategy: Union[str, NearNeighbors] = 'MinimumDistanceNNAll',
-                 atom_converter: Converter = None,
-                 bond_converter: Converter = None,
-                 cutoff: float = 5.0
-                 ):
+    def __init__(
+        self,
+        nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+        atom_converter: Converter = None,
+        bond_converter: Converter = None,
+        cutoff: float = 5.0,
+    ):
         """
         Convert the structure into crystal graph
         Args:
@@ -54,8 +54,9 @@ class CrystalGraph(StructureGraphFixedRadius):
             cutoff (float): cutoff radius
         """
         self.cutoff = cutoff
-        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
-                         bond_converter=bond_converter, cutoff=self.cutoff)
+        super().__init__(
+            nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter, cutoff=self.cutoff
+        )
 
 
 class CrystalGraphWithBondTypes(StructureGraph):
@@ -67,10 +68,12 @@ class CrystalGraphWithBondTypes(StructureGraph):
 
     """
 
-    def __init__(self,
-                 nn_strategy: Union[str, NearNeighbors] = 'VoronoiNN',
-                 atom_converter: Converter = None,
-                 bond_converter: Converter = None):
+    def __init__(
+        self,
+        nn_strategy: Union[str, NearNeighbors] = "VoronoiNN",
+        atom_converter: Converter = None,
+        bond_converter: Converter = None,
+    ):
         """
 
         Args:
@@ -78,8 +81,7 @@ class CrystalGraphWithBondTypes(StructureGraph):
             atom_converter (Converter): atom features converter
             bond_converter (Converter): bond features converter
         """
-        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
-                         bond_converter=bond_converter)
+        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter)
 
     def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
         """
@@ -97,9 +99,9 @@ class CrystalGraphWithBondTypes(StructureGraph):
     @staticmethod
     def _get_bond_type(graph) -> Dict:
         new_graph = deepcopy(graph)
-        elements = [Element.from_Z(i) for i in graph['atom']]
-        for k, (i, j) in enumerate(zip(graph['index1'], graph['index2'])):
-            new_graph['bond'][k] = elements[i].is_metal + elements[j].is_metal
+        elements = [Element.from_Z(i) for i in graph["atom"]]
+        for k, (i, j) in enumerate(zip(graph["index1"], graph["index2"])):
+            new_graph["bond"][k] = elements[i].is_metal + elements[j].is_metal
         return new_graph
 
 
@@ -107,6 +109,7 @@ class _AtomEmbeddingMap(Converter):
     """
     Fixed Atom embedding map, used with CrystalGraphDisordered
     """
+
     def __init__(self, embedding_dict: dict = None):
         """
         Args:
@@ -133,12 +136,14 @@ class CrystalGraphDisordered(StructureGraphFixedRadius):
     """
     Enable disordered site predictions
     """
-    def __init__(self,
-                 nn_strategy: Union[str, NearNeighbors] = 'MinimumDistanceNNAll',
-                 atom_converter: Converter = _AtomEmbeddingMap(),
-                 bond_converter: Converter = None,
-                 cutoff: float = 5.0
-                 ):
+
+    def __init__(
+        self,
+        nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+        atom_converter: Converter = _AtomEmbeddingMap(),
+        bond_converter: Converter = None,
+        cutoff: float = 5.0,
+    ):
         """
         Convert the structure into crystal graph
         Args:
@@ -148,8 +153,9 @@ class CrystalGraphDisordered(StructureGraphFixedRadius):
             cutoff (float): cutoff radius
         """
         self.cutoff = cutoff
-        super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter,
-                         bond_converter=bond_converter, cutoff=self.cutoff)
+        super().__init__(
+            nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter, cutoff=self.cutoff
+        )
 
     @staticmethod
     def get_atom_features(structure) -> List[dict]:
