@@ -172,17 +172,15 @@ class Set2Set(Layer):
         for i in range(self.T):
             self.h, c = self._lstm(q_star, self.c)
             e_i_t = tf.reduce_sum(input_tensor=m * repeat_with_index(self.h, feature_graph_index), axis=-1)
+            maxes = tf.math.segment_max(e_i_t[0], feature_graph_index)
+            e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index, axis=0), axis=0)
             exp = tf.exp(e_i_t)
-            # print('exp shape ', exp.shape)
             seg_sum = tf.transpose(
                 a=tf.math.segment_sum(tf.transpose(a=exp, perm=[1, 0]), feature_graph_index), perm=[1, 0]
             )
             seg_sum = tf.expand_dims(seg_sum, axis=-1)
-            # print('seg_sum shape', seg_sum.shape)
             interm = repeat_with_index(seg_sum, feature_graph_index)
-            # print('interm shape', interm.shape)
             a_i_t = exp / interm[..., 0]
-            # print(a_i_t.shape)
             r_t = tf.transpose(
                 a=tf.math.segment_sum(
                     tf.transpose(a=tf.multiply(m, a_i_t[:, :, None]), perm=[1, 0, 2]), feature_graph_index
