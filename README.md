@@ -31,7 +31,7 @@ our code and data, all of which are publicly available. Any comments or
 suggestions are also welcome (please post on the Github Issues page.)
 
 A web app using our pre-trained MEGNet models for property prediction in 
-crystals is available at http://megnet.crystals.ai.
+crystals is available at [http://megnet.crystals.ai](http://megnet.crystals.ai). For tutorials, please visit `notebooks` in this repo. We have also established an online simulation tool and a tutorial lecture at nanoHUB ([https://nanohub.org/resources/megnet](https://nanohub.org/resources/megnet)). 
 
 <a name="megnet-framework"></a>
 # MEGNet framework
