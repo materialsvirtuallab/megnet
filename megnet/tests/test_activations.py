@@ -20,7 +20,7 @@ class TestSP(unittest.TestCase):
     def test_swish(self):
 
         self.assertAlmostEqual(swish(10.0).numpy(), swish_np(10.0), places=5)
-        
+
 
 if __name__ == "__main__":
     unittest.main()
