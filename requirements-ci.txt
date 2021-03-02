@@ -1,6 +1,6 @@
 pytest==6.2.2
 pytest-cov==2.11.1
-coverage==5.4
+coverage==5.5
 coveralls==3.0.1
 pycodestyle==2.6.0
 mypy==0.800
