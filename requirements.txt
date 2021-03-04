@@ -2,4 +2,4 @@ pymatgen==2021.2.8.1
 pandas==1.2.3
 tensorflow==2.4.1
 numpy==1.19.5
-monty==4.0.2
+monty==2021.3.3
