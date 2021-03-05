@@ -68,13 +68,13 @@ def check_shape(array: Optional[np.ndarray], shape: Sequence) -> bool:
     """
     if array is None:
         return True
-    if all([i is None for i in shape]):
+    if all(i is None for i in shape):
         return True
 
     array_shape = array.shape
     valid_dims = [i for i in shape if i is not None]
     n_for_check = len(valid_dims)
-    return all([i == j for i, j in zip(array_shape[:n_for_check], valid_dims)])
+    return all(i == j for i, j in zip(array_shape[:n_for_check], valid_dims))
 
 
 def reshape(array: np.ndarray, shape: Sequence) -> np.ndarray:

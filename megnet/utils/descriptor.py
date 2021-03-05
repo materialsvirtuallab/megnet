@@ -40,14 +40,14 @@ class MEGNetDescriptor:
         layers = model.layers
         important_prefix = ["meg", "set", "concatenate"]
 
-        all_names = [i.name for i in layers if any([i.name.startswith(j) for j in important_prefix])]
+        all_names = [i.name for i in layers if any(i.name.startswith(j) for j in important_prefix)]
 
-        if any([i.startswith("megnet") for i in all_names]):
+        if any(i.startswith("megnet") for i in all_names):
             self.version = "v2"
         else:
             self.version = "v1"
 
-        valid_outputs = [i.output for i in layers if any([i.name.startswith(j) for j in important_prefix])]
+        valid_outputs = [i.output for i in layers if any(i.name.startswith(j) for j in important_prefix)]
 
         outputs = []
         valid_names = []

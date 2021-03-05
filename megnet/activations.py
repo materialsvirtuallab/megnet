@@ -24,6 +24,19 @@ def softplus2(x):
     return kb.relu(x) + kb.log(0.5 * kb.exp(-kb.abs(x)) + 0.5)
 
 
+def swish(x):
+    """
+    out = x * sigmoid(x)
+
+    Args:
+        x: (Tensor) input tensor
+
+    Returns:
+        (Tensor) output tensor
+    """
+    return x * kb.sigmoid(x)
+
+
 def get(identifier: OptStrOrCallable = None) -> Callable[..., Any]:
     """
     Get activations by identifier
