@@ -4,7 +4,7 @@ Molecule utility, mainly using openbabel
 import logging
 
 from monty.dev import requires
-from pymatgen import Molecule
+from pymatgen.core import Molecule
 
 try:
     import pybel as pb  # type: ignore

@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from typing import Dict, Union, List
 
 import numpy as np
-from pymatgen import Molecule, Element
+from pymatgen.core import Molecule, Element
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.io.babel import BabelMolAdaptor
 

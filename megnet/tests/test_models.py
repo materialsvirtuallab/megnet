@@ -8,7 +8,7 @@ from megnet.data.graph import GaussianDistance
 from megnet.data.crystal import CrystalGraph
 from glob import glob
 import os
-from pymatgen import Structure, Lattice
+from pymatgen.core import Structure, Lattice
 import shutil
 from monty.tempfile import ScratchDir
 from tensorflow.keras.utils import Sequence

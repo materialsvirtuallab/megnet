@@ -7,8 +7,8 @@ from typing import Union, List, Dict
 
 import numpy as np
 from monty.serialization import loadfn
-from pymatgen import Element
-from pymatgen import Structure
+from pymatgen.core import Element
+from pymatgen.core import Structure
 from pymatgen.analysis.local_env import NearNeighbors
 
 from megnet.data.graph import Converter

@@ -6,7 +6,7 @@ import json
 from megnet.data.molecule import SimpleMolGraph
 from megnet.data.graph import DummyConverter
 from megnet.utils.general import to_list
-from pymatgen import Molecule
+from pymatgen.core import Molecule
 import numpy as np
 
 from megnet.data.molecule import MolecularGraph, MolecularGraphBatchGenerator, pybel, mol_from_smiles, ring_to_vector

@@ -13,7 +13,7 @@ construction
 from inspect import getfullargspec
 from typing import Dict, List, Union
 
-from pymatgen import Structure, Molecule
+from pymatgen.core import Structure, Molecule
 from pymatgen.analysis import local_env
 from pymatgen.analysis.local_env import (
     NearNeighbors,

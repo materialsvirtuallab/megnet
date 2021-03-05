@@ -11,7 +11,7 @@ from monty.serialization import dumpfn, loadfn
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
 from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph

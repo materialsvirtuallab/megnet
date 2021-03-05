@@ -13,7 +13,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from tabulate import tabulate
 
-from pymatgen import Structure
+from pymatgen.core import Structure
 
 from megnet.utils.models import MEGNetModel
 

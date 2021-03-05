@@ -1,6 +1,6 @@
 import tensorflow as tf
 import unittest
-from pymatgen import Structure, Lattice
+from pymatgen.core import Structure, Lattice
 
 from megnet.utils.descriptor import MEGNetDescriptor, DEFAULT_MODEL
 from tensorflow.keras.models import Model

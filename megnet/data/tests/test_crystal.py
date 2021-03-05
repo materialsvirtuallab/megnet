@@ -8,7 +8,7 @@ from megnet.data.crystal import (
     CrystalGraphWithBondTypes,
     CrystalGraphDisordered,
 )
-from pymatgen import Structure
+from pymatgen.core import Structure
 import os
 import numpy as np
 

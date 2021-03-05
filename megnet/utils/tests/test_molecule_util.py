@@ -1,7 +1,7 @@
 import tensorflow as tf
 import os
 import unittest
-from pymatgen import Molecule
+from pymatgen.core import Molecule
 
 from megnet.utils.molecule import get_pmg_mol_from_smiles, pb
 from megnet.models import MEGNetModel

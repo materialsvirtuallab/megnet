@@ -1,6 +1,6 @@
 import unittest
 from megnet.data.local_env import MinimumDistanceNNAll, AllAtomPairs, serialize, deserialize, get
-from pymatgen import Structure, Molecule
+from pymatgen.core import Structure, Molecule
 import os
 
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
