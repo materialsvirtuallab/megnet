@@ -3,6 +3,7 @@ Tensorflow layer utilities
 """
 import numpy as np  # noqa
 import tensorflow as tf
+from tmegnet.config import DataType
 
 
 def _repeat(x: tf.Tensor, n: tf.Tensor, axis: int = 1) -> tf.Tensor:
@@ -67,3 +68,17 @@ def repeat_with_index(x: tf.Tensor, index: tf.Tensor, axis: int = 1):
     index = tf.reshape(index, (-1,))
     _, _, n = tf.unique_with_counts(index)
     return _repeat(x, n, axis)
+
+
+def gather(tensor: tf.Tensor, indices: tf.Tensor) -> tf.Tensor:
+    """
+    Alternative implementations to tf.gather, without the index warnings
+
+    Args:
+        tensor: (Tensor) tensor to be gathered
+        indices: (Tensor) indices tensor
+    """
+    ta = tf.TensorArray(dtype=DataType.tf_float, size=0, dynamic_size=True)
+    ta = ta.unstack(tensor)
+    results = ta.gather(indices)
+    return results
