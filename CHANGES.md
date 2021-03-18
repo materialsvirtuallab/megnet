@@ -1,3 +1,8 @@
+# v1.2.7
+* Add swish activation function
+* Remove training warning
+* Update tutorial
+
 # v1.2.6
 * Stability improvements
 
