@@ -3,7 +3,7 @@ Tensorflow layer utilities
 """
 import numpy as np  # noqa
 import tensorflow as tf
-from tmegnet.config import DataType
+from megnet.config import DataType
 
 
 def _repeat(x: tf.Tensor, n: tf.Tensor, axis: int = 1) -> tf.Tensor:
