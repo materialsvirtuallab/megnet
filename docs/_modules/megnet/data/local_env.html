@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.local_env &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.data.local_env &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.data.local_env</a></li> 
       </ul>
     </div>  
 
@@ -42,26 +43,56 @@
           <div class="body" role="main">
             
   <h1>Source code for megnet.data.local_env</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">getfullargspec</span>
-<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">Molecule</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Various NearNeighbors strategies to define local environments</span>
+<span class="sd">of sites in structure/molecule. Most of them are directly</span>
+<span class="sd">from pymatgen.analysis.local_env. The suitable NearNeighbors</span>
+<span class="sd">should have get_nn_info method implemented and this method</span>
+<span class="sd">needs to return a list of dict with each entry having following keys</span>
+<span class="sd">[&#39;site&#39;, &#39;image&#39;, &#39;weight&#39;, &#39;site_index&#39;]</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="sd">the weight will be used as the bond attributes in subsequent graph</span>
+<span class="sd">construction</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getfullargspec</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">pymatgen.core</span> <span class="kn">import</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">Molecule</span>
+<span class="kn">from</span> <span class="nn">pymatgen.analysis</span> <span class="kn">import</span> <span class="n">local_env</span>
+<span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">NearNeighbors</span><span class="p">,</span>
+    <span class="n">VoronoiNN</span><span class="p">,</span>
+    <span class="n">JmolNN</span><span class="p">,</span>
+    <span class="n">MinimumDistanceNN</span><span class="p">,</span>
+    <span class="n">OpenBabelNN</span><span class="p">,</span>
+    <span class="n">CovalentBondNN</span><span class="p">,</span>
+    <span class="n">MinimumVIRENN</span><span class="p">,</span>
+    <span class="n">MinimumOKeeffeNN</span><span class="p">,</span>
+    <span class="n">BrunnerNN_reciprocal</span><span class="p">,</span>
+    <span class="n">BrunnerNN_real</span><span class="p">,</span>
+    <span class="n">BrunnerNN_relative</span><span class="p">,</span>
+    <span class="n">EconNN</span><span class="p">,</span>
+    <span class="n">CrystalNN</span><span class="p">,</span>
+    <span class="n">CutOffDictNN</span><span class="p">,</span>
+    <span class="n">Critic2NN</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<div class="viewcode-block" id="MinimumDistanceNNAll"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.MinimumDistanceNNAll">[docs]</a><span class="k">class</span> <span class="nc">MinimumDistanceNNAll</span><span class="p">(</span><span class="n">MinimumDistanceNN</span><span class="p">):</span>
+<div class="viewcode-block" id="MinimumDistanceNNAll"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.MinimumDistanceNNAll">[docs]</a><span class="k">class</span> <span class="nc">MinimumDistanceNNAll</span><span class="p">(</span><span class="n">NearNeighbors</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine bonded sites by fixed cutoff</span>
-
-<span class="sd">    Args:.</span>
-<span class="sd">        cutoff (float): cutoff radius in Angstrom to look for trial</span>
-<span class="sd">            near-neighbor sites (default: 4.0).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cutoff</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:.</span>
+<span class="sd">            cutoff (float): cutoff radius in Angstrom to look for trial</span>
+<span class="sd">                near-neighbor sites (default: 4.0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span> <span class="o">=</span> <span class="n">cutoff</span>
 
-<div class="viewcode-block" id="MinimumDistanceNNAll.get_nn_info"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.MinimumDistanceNNAll.get_nn_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_nn_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="MinimumDistanceNNAll.get_nn_info"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.MinimumDistanceNNAll.get_nn_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_nn_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get all near-neighbor sites as well as the associated image locations</span>
 <span class="sd">        and weights of the site with index n using the closest neighbor</span>
@@ -83,24 +114,15 @@
 
         <span class="n">siw</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">nn</span> <span class="ow">in</span> <span class="n">neighs_dists</span><span class="p">:</span>
-            <span class="n">siw</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;site&#39;</span><span class="p">:</span> <span class="n">nn</span><span class="p">,</span>
-                        <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_image</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">nn</span><span class="p">),</span>
-                        <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">nn_distance</span><span class="p">,</span>
-                        <span class="s1">&#39;site_index&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_original_site</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">nn</span><span class="p">)})</span>
-        <span class="k">return</span> <span class="n">siw</span></div>
-
-<div class="viewcode-block" id="MinimumDistanceNNAll.get_all_nn_info_old"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.MinimumDistanceNNAll.get_all_nn_info_old">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_nn_info_old</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-        <span class="n">nn_info</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">all_neighbors</span> <span class="o">=</span> <span class="n">structure</span><span class="o">.</span><span class="n">get_all_neighbors</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cutoff</span><span class="p">,</span> <span class="n">include_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                                    <span class="n">include_image</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">neighd_dists</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">all_neighbors</span><span class="p">):</span>
-            <span class="n">siw</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">neighd_dists</span><span class="p">:</span>
-                <span class="n">siw</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="n">image</span><span class="p">,</span>
-                            <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">dist</span><span class="p">,</span>
-                            <span class="s1">&#39;site_index&#39;</span><span class="p">:</span> <span class="n">ind</span><span class="p">})</span>
-            <span class="n">nn_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">siw</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">nn_info</span></div></div>
+            <span class="n">siw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;site&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="p">,</span>
+                    <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_image</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">nn</span><span class="p">),</span>
+                    <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">nn_distance</span><span class="p">,</span>
+                    <span class="s2">&quot;site_index&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_original_site</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="n">nn</span><span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">siw</span></div></div>
 
 
 <div class="viewcode-block" id="AllAtomPairs"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.AllAtomPairs">[docs]</a><span class="k">class</span> <span class="nc">AllAtomPairs</span><span class="p">(</span><span class="n">NearNeighbors</span><span class="p">):</span>
@@ -108,15 +130,21 @@
 <span class="sd">    Get all combinations of atoms as bonds in a molecule</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="AllAtomPairs.get_nn_info"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.AllAtomPairs.get_nn_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_nn_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="AllAtomPairs.get_nn_info"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.AllAtomPairs.get_nn_info">[docs]</a>    <span class="k">def</span> <span class="nf">get_nn_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">molecule</span><span class="p">:</span> <span class="n">Molecule</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get near neighbor information</span>
+<span class="sd">        Args:</span>
+<span class="sd">            molecule (Molecule): pymatgen Molecule</span>
+<span class="sd">            n (int): number of molecule</span>
+
+<span class="sd">        Returns: List of neighbor dictionary</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">site</span> <span class="o">=</span> <span class="n">molecule</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
         <span class="n">siw</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">molecule</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
-                <span class="n">siw</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;site&#39;</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span>
-                            <span class="s1">&#39;image&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-                            <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="n">site</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">s</span><span class="p">),</span>
-                            <span class="s1">&#39;site_index&#39;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span>
+                <span class="n">siw</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;site&quot;</span><span class="p">:</span> <span class="n">s</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">:</span> <span class="n">site</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="s2">&quot;site_index&quot;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span>
         <span class="k">return</span> <span class="n">siw</span></div></div>
 
 
@@ -131,12 +159,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">identifier</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">):</span>
         <span class="n">args</span> <span class="o">=</span> <span class="n">getfullargspec</span><span class="p">(</span><span class="n">identifier</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span><span class="o">.</span><span class="n">args</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@module&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span>
-             <span class="s2">&quot;@class&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;@module&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span> <span class="s2">&quot;@class&quot;</span><span class="p">:</span> <span class="n">identifier</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">}</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s1">&#39;self&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">a</span> <span class="o">=</span> <span class="n">identifier</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
@@ -146,10 +173,10 @@
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="s2">&quot;kwargs&quot;</span><span class="p">):</span>
             <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">identifier</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">d</span>
-    <span class="k">elif</span> <span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">identifier</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown identifier for local environment &#39;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span></div>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown identifier for local environment &quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="deserialize"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.deserialize">[docs]</a><span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
@@ -163,23 +190,68 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">modname</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;@module&#39;</span><span class="p">]</span>
-    <span class="n">classname</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;@class&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;@module&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;@class&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">config</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The config dict cannot be loaded&quot;</span><span class="p">)</span>
+    <span class="n">modname</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;@module&quot;</span><span class="p">]</span>
+    <span class="n">classname</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;@class&quot;</span><span class="p">]</span>
     <span class="n">mod</span> <span class="o">=</span> <span class="nb">__import__</span><span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="nb">globals</span><span class="p">(),</span> <span class="nb">locals</span><span class="p">(),</span> <span class="p">[</span><span class="n">classname</span><span class="p">])</span>
     <span class="n">cls_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">classname</span><span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">)}</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)}</span>
     <span class="k">return</span> <span class="n">cls_</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]):</span>
+<span class="n">NNDict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">i</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">i</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="n">NearNeighbors</span><span class="p">,</span>
+        <span class="n">VoronoiNN</span><span class="p">,</span>
+        <span class="n">JmolNN</span><span class="p">,</span>
+        <span class="n">MinimumDistanceNN</span><span class="p">,</span>
+        <span class="n">OpenBabelNN</span><span class="p">,</span>
+        <span class="n">CovalentBondNN</span><span class="p">,</span>
+        <span class="n">MinimumVIRENN</span><span class="p">,</span>
+        <span class="n">MinimumOKeeffeNN</span><span class="p">,</span>
+        <span class="n">BrunnerNN_reciprocal</span><span class="p">,</span>
+        <span class="n">BrunnerNN_real</span><span class="p">,</span>
+        <span class="n">BrunnerNN_relative</span><span class="p">,</span>
+        <span class="n">EconNN</span><span class="p">,</span>
+        <span class="n">CrystalNN</span><span class="p">,</span>
+        <span class="n">CutOffDictNN</span><span class="p">,</span>
+        <span class="n">Critic2NN</span><span class="p">,</span>
+        <span class="n">MinimumDistanceNNAll</span><span class="p">,</span>
+        <span class="n">AllAtomPairs</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../megnet.data.local_env.html#megnet.data.local_env.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NearNeighbors</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deserialize the NearNeighbors</span>
+<span class="sd">    Args:</span>
+<span class="sd">        identifier (str, dict or NearNeighbors): target for deserialize</span>
+
+<span class="sd">    Returns: NearNeighbors instance</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># deserialize NearNeighbor from str</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="n">identifier</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">identifier</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">NNDict</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">NNDict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">identifier</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+        <span class="c1"># try pymatgen&#39;s local_env module</span>
+        <span class="n">nn</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">local_env</span><span class="p">,</span> <span class="n">identifier</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">nn</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">identifier</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unknown local environment &#39;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span></div>
+
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not identified&quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">identifier</span><span class="p">))</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

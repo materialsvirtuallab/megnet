@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.activations &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.activations &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
     <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.activations</a></li> 
       </ul>
     </div>  
 
@@ -42,13 +43,16 @@
           <div class="body" role="main">
             
   <h1>Source code for megnet.activations</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Activation functions used in neural networks</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">tensorflow.keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.activations</span> <span class="k">import</span> <span class="n">get</span> <span class="k">as</span> <span class="n">keras_get</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.activations</span> <span class="k">import</span> <span class="n">deserialize</span><span class="p">,</span> <span class="n">serialize</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.activations</span> <span class="kn">import</span> <span class="n">deserialize</span><span class="p">,</span> <span class="n">serialize</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.activations</span> <span class="kn">import</span> <span class="n">get</span> <span class="k">as</span> <span class="n">keras_get</span>
 
-<span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="k">import</span> <span class="n">OptStrOrCallable</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="kn">import</span> <span class="n">OptStrOrCallable</span>
 
 
 <div class="viewcode-block" id="softplus2"><a class="viewcode-back" href="../../megnet.layers.html#megnet.activations.softplus2">[docs]</a><span class="k">def</span> <span class="nf">softplus2</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
@@ -62,7 +66,20 @@
 <span class="sd">    Returns:</span>
 <span class="sd">         (Tensor) output tensor</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">kb</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">kb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="n">kb</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">kb</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">kb</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">kb</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">kb</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">kb</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="swish"><a class="viewcode-back" href="../../megnet.layers.html#megnet.activations.swish">[docs]</a><span class="k">def</span> <span class="nf">swish</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    out = x * sigmoid(x)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x: (Tensor) input tensor</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (Tensor) output tensor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">kb</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get"><a class="viewcode-back" href="../../megnet.activations.html#megnet.activations.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">identifier</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -81,10 +98,10 @@
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">deserialize</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">custom_objects</span><span class="o">=</span><span class="nb">globals</span><span class="p">())</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not interpret:&#39;</span><span class="p">,</span>  <span class="n">identifier</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not interpret:&quot;</span><span class="p">,</span> <span class="n">identifier</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

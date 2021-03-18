@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.graph.base &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.layers.graph.base &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.layers.graph.base</a></li> 
       </ul>
     </div>  
 
@@ -53,14 +54,14 @@
 
 <span class="sd">[1] https://arxiv.org/pdf/1806.01261.pdf</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span>
 
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="k">import</span> <span class="n">Layer</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="k">import</span> <span class="n">regularizers</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">initializers</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">regularizers</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">initializers</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Layer</span>
 
-<span class="kn">from</span> <span class="nn">megnet</span> <span class="k">import</span> <span class="n">activations</span>
-<span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="k">import</span> <span class="n">OptStrOrCallable</span>
+<span class="kn">from</span> <span class="nn">megnet</span> <span class="kn">import</span> <span class="n">activations</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="kn">import</span> <span class="n">OptStrOrCallable</span>
 
 
 <div class="viewcode-block" id="GraphNetworkLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer">[docs]</a><span class="k">class</span> <span class="nc">GraphNetworkLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
@@ -68,21 +69,6 @@
 <span class="sd">    Implementation of a graph network layer. Current implementation is based on</span>
 <span class="sd">    neural networks for each update function, and sum or mean for each</span>
 <span class="sd">    aggregation function</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        activation (str): Default: None. The activation function used for each</span>
-<span class="sd">            sub-neural network. Examples include &#39;relu&#39;, &#39;softmax&#39;, &#39;tanh&#39;,</span>
-<span class="sd">            &#39;sigmoid&#39; and etc.</span>
-<span class="sd">        use_bias (bool): Default: True. Whether to use the bias term in the</span>
-<span class="sd">            neural network.</span>
-<span class="sd">        kernel_initializer (str): Default: &#39;glorot_uniform&#39;. Initialization</span>
-<span class="sd">            function for the layer kernel weights,</span>
-<span class="sd">        bias_initializer (str): Default: &#39;zeros&#39;</span>
-<span class="sd">        activity_regularizer (str): Default: None. The regularization function</span>
-<span class="sd">            for the output</span>
-<span class="sd">        kernel_constraint (str): Default: None. Keras constraint for kernel</span>
-<span class="sd">            values</span>
-<span class="sd">        bias_constraint (str): Default: None .Keras constraint for bias values</span>
 
 <span class="sd">    Method:</span>
 <span class="sd">        call(inputs, mask=None): the logic of the layer, returns the final graph</span>
@@ -98,19 +84,38 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">activation</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">use_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">kernel_initializer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="s1">&#39;glorot_uniform&#39;</span><span class="p">,</span>
-                 <span class="n">bias_initializer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="s1">&#39;zeros&#39;</span><span class="p">,</span>
-                 <span class="n">kernel_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bias_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">activity_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">kernel_constraint</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bias_constraint</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s1">&#39;input_shape&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s1">&#39;input_dim&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;input_shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;input_dim&#39;</span><span class="p">),)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">activation</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">kernel_initializer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="s2">&quot;glorot_uniform&quot;</span><span class="p">,</span>
+        <span class="n">bias_initializer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+        <span class="n">kernel_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bias_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">activity_regularizer</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">kernel_constraint</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bias_constraint</span><span class="p">:</span> <span class="n">OptStrOrCallable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            activation (str): Default: None. The activation function used for each</span>
+<span class="sd">                sub-neural network. Examples include &#39;relu&#39;, &#39;softmax&#39;, &#39;tanh&#39;,</span>
+<span class="sd">                &#39;sigmoid&#39; and etc.</span>
+<span class="sd">            use_bias (bool): Default: True. Whether to use the bias term in the</span>
+<span class="sd">                neural network.</span>
+<span class="sd">            kernel_initializer (str): Default: &#39;glorot_uniform&#39;. Initialization</span>
+<span class="sd">                function for the layer kernel weights,</span>
+<span class="sd">            bias_initializer (str): Default: &#39;zeros&#39;</span>
+<span class="sd">            activity_regularizer (str): Default: None. The regularization function</span>
+<span class="sd">                for the output</span>
+<span class="sd">            kernel_constraint (str): Default: None. Keras constraint for kernel</span>
+<span class="sd">                values</span>
+<span class="sd">            bias_constraint (str): Default: None .Keras constraint for bias values</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;input_shape&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s2">&quot;input_dim&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;input_shape&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;input_dim&quot;</span><span class="p">),)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">activation</span><span class="p">)</span>  <span class="c1"># noqa</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="o">=</span> <span class="n">use_bias</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span> <span class="o">=</span> <span class="n">initializers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kernel_initializer</span><span class="p">)</span>
@@ -123,6 +128,15 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GraphNetworkLayer.call"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Core logic of graph network</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (Sequence): input tensors</span>
+<span class="sd">            mask (tensor): mask tensor</span>
+
+<span class="sd">        Returns: output tensor</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">e_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_e</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
         <span class="n">b_ei_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho_e_v</span><span class="p">(</span><span class="n">e_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
         <span class="n">v_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_v</span><span class="p">(</span><span class="n">b_ei_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
@@ -132,7 +146,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">v_p</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">u_p</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is for updating the edge attributes</span>
 <span class="sd">        ek&#39; = phi_e(ek, vrk, vsk, u)</span>
 
@@ -145,7 +159,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is for step 2, aggregate edge attributes per node</span>
 <span class="sd">        Ei&#39; = {(ek&#39;, rk, sk)} with rk =i, k=1:Ne</span>
 
@@ -158,7 +172,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step 3. Compute updated node attributes</span>
 <span class="sd">        v_i&#39; = phi_v(\bar e_i, vi, u)</span>
 
@@ -171,7 +185,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        let V&#39; = {v&#39;} i = 1:Nv</span>
 <span class="sd">        let E&#39; = {(e_k&#39;, rk, sk)} k = 1:Ne</span>
 <span class="sd">        \bar e&#39; = rho_e_u(E&#39;)</span>
@@ -185,7 +199,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        \bar v&#39; = rho_v_u(V&#39;)</span>
 
 <span class="sd">        Args:</span>
@@ -197,7 +211,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="GraphNetworkLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        u&#39; = phi_u(\bar e&#39;, \bar v&#39;, u)</span>
 <span class="sd">        Args:</span>
 <span class="sd">            b_e_p (tf.Tensor): edge/bond to global aggregated tensor</span>
@@ -215,27 +229,22 @@
 <span class="sd">            configurational dictionary</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;activation&#39;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">),</span>
-            <span class="s1">&#39;use_bias&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">,</span>
-            <span class="s1">&#39;kernel_initializer&#39;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">),</span>
-            <span class="s1">&#39;bias_initializer&#39;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">),</span>
-            <span class="s1">&#39;kernel_regularizer&#39;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">),</span>
-            <span class="s1">&#39;bias_regularizer&#39;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">),</span>
-            <span class="s1">&#39;activity_regularizer&#39;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">activity_regularizer</span><span class="p">),</span>
-            <span class="s1">&#39;kernel_constraint&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">),</span>
-            <span class="s1">&#39;bias_constraint&#39;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+            <span class="s2">&quot;activation&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">),</span>
+            <span class="s2">&quot;use_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">,</span>
+            <span class="s2">&quot;kernel_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">),</span>
+            <span class="s2">&quot;bias_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">),</span>
+            <span class="s2">&quot;kernel_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;bias_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;activity_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activity_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;kernel_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">),</span>
+            <span class="s2">&quot;bias_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="n">base_config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_config</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>  <span class="c1"># noqa</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

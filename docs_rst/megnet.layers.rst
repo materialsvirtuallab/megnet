@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 6
 
+   megnet.layers.featurizer
    megnet.layers.graph
    megnet.layers.readout
 

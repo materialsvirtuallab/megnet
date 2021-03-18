@@ -4,17 +4,17 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.callbacks module &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.callbacks module &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="megnet.losses module" href="megnet.losses.html" />
+    <link rel="next" title="megnet.config module" href="megnet.config.html" />
     <link rel="prev" title="megnet.activations module" href="megnet.activations.html" />
 
    
@@ -34,13 +34,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="megnet.losses.html" title="megnet.losses module"
+          <a href="megnet.config.html" title="megnet.config module"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="megnet.activations.html" title="megnet.activations module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.callbacks module</a></li> 
       </ul>
     </div>  
 
@@ -51,6 +52,7 @@
             
   <div class="section" id="module-megnet.callbacks">
 <span id="megnet-callbacks-module"></span><h1>megnet.callbacks module<a class="headerlink" href="#module-megnet.callbacks" title="Permalink to this headline">¶</a></h1>
+<p>callbacks functions used in training process</p>
 <dl class="py class">
 <dt id="megnet.callbacks.ManualStop">
 <em class="property">class </em><code class="sig-name descname">ManualStop</code><a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop" title="Permalink to this definition">¶</a></dt>
@@ -58,7 +60,7 @@
 <p>Stop the training manually by putting a “STOP” file in the directory</p>
 <dl class="py method">
 <dt id="megnet.callbacks.ManualStop.on_batch_end">
-<code class="sig-name descname">on_batch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop.on_batch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop.on_batch_end" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_batch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ManualStop.on_batch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ManualStop.on_batch_end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Codes called at the end of a batch
 :param epoch: epoch id
 :type epoch: int
@@ -71,7 +73,7 @@
 
 <dl class="py class">
 <dt id="megnet.callbacks.ModelCheckpointMAE">
-<em class="property">class </em><code class="sig-name descname">ModelCheckpointMAE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">save_best_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_weights_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">val_gen</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">steps_per_val</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler" title="megnet.utils.preprocessing.Scaler">megnet.utils.preprocessing.Scaler</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ModelCheckpointMAE</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">save_best_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">save_weights_only</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">val_gen</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>tensorflow.python.keras.utils.data_utils.Sequence<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">steps_per_val</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">target_scaler</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="megnet.utils.preprocessing.html#megnet.utils.preprocessing.Scaler" title="megnet.utils.preprocessing.Scaler">megnet.utils.preprocessing.Scaler</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">period</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.callbacks.Callback</span></code></p>
 <p>Save the best MAE model with target scaler</p>
 <dl class="field-list simple">
@@ -94,7 +96,7 @@ val_mae in the filename</p></li>
 </dl>
 <dl class="py method">
 <dt id="megnet.callbacks.ModelCheckpointMAE.on_epoch_end">
-<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/callbacks.html#ModelCheckpointMAE.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ModelCheckpointMAE.on_epoch_end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Codes called by the callback at the end of epoch
 :param epoch: epoch id
 :type epoch: int
@@ -111,7 +113,7 @@ val_mae in the filename</p></li>
 
 <dl class="py class">
 <dt id="megnet.callbacks.ReduceLRUponNan">
-<em class="property">class </em><code class="sig-name descname">ReduceLRUponNan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">ReduceLRUponNan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5'</span></em>, <em class="sig-param"><span class="n">factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">monitor</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'val_mae'</span></em>, <em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">has_sample_weights</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.callbacks.Callback</span></code></p>
 <p>This callback function solves a problem that when doing regression,
 an nan loss may occur, or the loss suddenly shoot up.
@@ -130,12 +132,13 @@ checkpoint callback</p></li>
 It is a criteria for early stopping</p></li>
 <li><p><strong>monitor</strong> (<em>str</em>) – target metric to monitor</p></li>
 <li><p><strong>mode</strong> (<em>str</em>) – min, max or auto</p></li>
+<li><p><strong>has_sample_weights</strong> (<em>bool</em>) – whether the data has sample weights</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="megnet.callbacks.ReduceLRUponNan.on_epoch_end">
-<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan.on_epoch_end" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_epoch_end</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">epoch</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">logs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/callbacks.html#ReduceLRUponNan.on_epoch_end"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.callbacks.ReduceLRUponNan.on_epoch_end" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check the loss value at the end of an epoch
 :param epoch: epoch id
 :type epoch: int
@@ -149,6 +152,7 @@ It is a criteria for early stopping</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
@@ -158,7 +162,7 @@ It is a criteria for early stopping</p></li>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="megnet.html">megnet package</a><ul>
       <li>Previous: <a href="megnet.activations.html" title="previous chapter">megnet.activations module</a></li>
-      <li>Next: <a href="megnet.losses.html" title="next chapter">megnet.losses module</a></li>
+      <li>Next: <a href="megnet.config.html" title="next chapter">megnet.config module</a></li>
   </ul></li>
   </ul></li>
 </ul>

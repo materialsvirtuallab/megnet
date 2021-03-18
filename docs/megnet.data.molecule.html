@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.molecule module &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.data.molecule module &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.data.qm9 module" href="megnet.data.qm9.html" />
@@ -39,9 +39,10 @@
         <li class="right" >
           <a href="megnet.data.local_env.html" title="megnet.data.local_env module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="megnet.data.html" accesskey="U">megnet.data package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="megnet.data.html" accesskey="U">megnet.data package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.data.molecule module</a></li> 
       </ul>
     </div>  
 
@@ -55,7 +56,7 @@
 <p>Tools for creating graph inputs from molecule data</p>
 <dl class="py class">
 <dt id="megnet.data.molecule.MolecularGraph">
-<em class="property">class </em><code class="sig-name descname">MolecularGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom_features</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_features</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distance_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">known_elements</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MolecularGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atom_features</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_features</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distance_converter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">known_elements</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_ring_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">9</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.StructureGraph" title="megnet.data.graph.StructureGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.data.graph.StructureGraph</span></code></a></p>
 <p>Class for generating the graph inputs from a molecule</p>
 <p>Computes many different features for the atoms and bonds in a molecule, and prepares them
@@ -99,12 +100,13 @@ planer, trig, octahedral, or hydrogen
 from a single scalar vector to an array of values</p></li>
 <li><p><strong>known_elements</strong> (<em>[</em><em>str</em><em>]</em>) – List of elements expected to be in dataset. Used only if the
 feature <cite>element</cite> is used to describe each atom</p></li>
+<li><p><strong>max_ring_size</strong> (<em>int</em>) – Maximum number of atom in the ring</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="megnet.data.molecule.MolecularGraph.convert">
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">state_attributes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">full_pair_matrix</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.convert" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">state_attributes</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">full_pair_matrix</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.convert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the representation for a molecule</p>
 <dl class="simple">
 <dt>Args：</dt><dd><p>mol (pybel.Molecule): Molecule to generate features for
@@ -124,7 +126,7 @@ full_pair_matrix (bool): Whether to generate info for all atom pairs, not just b
 
 <dl class="py method">
 <dt id="megnet.data.molecule.MolecularGraph.create_bond_feature">
-<code class="sig-name descname">create_bond_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">bid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">eid</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.create_bond_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.create_bond_feature" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">create_bond_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">bid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">eid</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.create_bond_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.create_bond_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create information for a bond for a pair of atoms that are not actually bonded</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -159,7 +161,7 @@ full_pair_matrix (bool): Whether to generate info for all atom pairs, not just b
 
 <dl class="py method">
 <dt id="megnet.data.molecule.MolecularGraph.get_pair_feature">
-<code class="sig-name descname">get_pair_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">bid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">eid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">full_pair_matrix</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.get_pair_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.get_pair_feature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_pair_feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mol</span></em>, <em class="sig-param"><span class="n">bid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">eid</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">full_pair_matrix</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>Dict<span class="p">]</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraph.get_pair_feature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraph.get_pair_feature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the features for a certain bond</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -178,7 +180,7 @@ are not actually bonded</p></li>
 
 <dl class="py class">
 <dt id="megnet.data.molecule.MolecularGraphBatchGenerator">
-<em class="property">class </em><code class="sig-name descname">MolecularGraphBatchGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mols</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#megnet.data.molecule.MolecularGraph" title="megnet.data.molecule.MolecularGraph">megnet.data.molecule.MolecularGraph</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">molecule_format</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'xyz'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraphBatchGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraphBatchGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MolecularGraphBatchGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mols</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">targets</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">converter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#megnet.data.molecule.MolecularGraph" title="megnet.data.molecule.MolecularGraph">megnet.data.molecule.MolecularGraph</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">molecule_format</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'xyz'</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">shuffle</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#MolecularGraphBatchGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.MolecularGraphBatchGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator" title="megnet.data.graph.BaseGraphBatchGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.data.graph.BaseGraphBatchGenerator</span></code></a></p>
 <p>Generator that creates batches of molecular data by computing graph properties on demand</p>
 <p>If your dataset is small enough that the descriptions of the whole dataset fit in memory,
@@ -212,11 +214,20 @@ the computational cost of dynamically computing graphs.</p>
 
 <dl class="py class">
 <dt id="megnet.data.molecule.SimpleMolGraph">
-<em class="property">class </em><code class="sig-name descname">SimpleMolGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>pymatgen.analysis.local_env.NearNeighbors<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'AllAtomPairs'</span></em>, <em class="sig-param"><span class="n">atom_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_converter</span><span class="p">:</span> <span class="n"><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#SimpleMolGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.SimpleMolGraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">SimpleMolGraph</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>pymatgen.analysis.local_env.NearNeighbors<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'AllAtomPairs'</span></em>, <em class="sig-param"><span class="n">atom_converter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bond_converter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter">megnet.data.graph.Converter</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#SimpleMolGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.SimpleMolGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.StructureGraph" title="megnet.data.graph.StructureGraph"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.data.graph.StructureGraph</span></code></a></p>
 <p>Default using all atom pairs as bonds. The distance between atoms are used
 as bond features. By default the distance is expanded using a Gaussian
 expansion with centers at np.linspace(0, 4, 20) and width of 0.5</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nn_strategy</strong> (<em>str</em>) – NearNeighbor strategy</p></li>
+<li><p><strong>atom_converter</strong> (<a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter"><em>Converter</em></a>) – atomic features converter object</p></li>
+<li><p><strong>bond_converter</strong> (<a class="reference internal" href="megnet.data.graph.html#megnet.data.graph.Converter" title="megnet.data.graph.Converter"><em>Converter</em></a>) – bond features converter object</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -259,11 +270,20 @@ expansion with centers at np.linspace(0, 4, 20) and width of 0.5</p>
 <dl class="py function">
 <dt id="megnet.data.molecule.mol_from_smiles">
 <code class="sig-name descname">mol_from_smiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">smiles</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/data/molecule.html#mol_from_smiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.data.molecule.mol_from_smiles" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>load molecule object from smiles string
+:param smiles: smiles string
+:type smiles: string</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>openbabel molecule</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

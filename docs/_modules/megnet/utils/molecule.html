@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.molecule &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.utils.molecule &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.utils.molecule</a></li> 
       </ul>
     </div>  
 
@@ -47,15 +48,16 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Molecule</span>
-<span class="kn">from</span> <span class="nn">monty.dev</span> <span class="k">import</span> <span class="n">requires</span>
+<span class="kn">from</span> <span class="nn">monty.dev</span> <span class="kn">import</span> <span class="n">requires</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core</span> <span class="kn">import</span> <span class="n">Molecule</span>
+
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">pybel</span> <span class="k">as</span> <span class="nn">pb</span>
-    <span class="kn">import</span> <span class="nn">openbabel</span> <span class="k">as</span> <span class="nn">ob</span>
+    <span class="kn">import</span> <span class="nn">pybel</span> <span class="k">as</span> <span class="nn">pb</span>  <span class="c1"># type: ignore</span>
+    <span class="kn">import</span> <span class="nn">openbabel</span> <span class="k">as</span> <span class="nn">ob</span>  <span class="c1"># type: ignore</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Openbabel is needed for molecule models, &quot;</span>
-                    <span class="s2">&quot;try &#39;conda install -c openbabel openbabel&#39; &quot;</span>
-                    <span class="s2">&quot;to install it&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+        <span class="s2">&quot;Openbabel is needed for molecule models, &quot;</span> <span class="s2">&quot;try &#39;conda install -c openbabel openbabel&#39; &quot;</span> <span class="s2">&quot;to install it&quot;</span>
+    <span class="p">)</span>
     <span class="n">pb</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">ob</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -70,7 +72,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        pymatgen Molecule</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">b_mol</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">readstring</span><span class="p">(</span><span class="s1">&#39;smi&#39;</span><span class="p">,</span> <span class="n">smiles</span><span class="p">)</span>  <span class="c1"># noqa</span>
+    <span class="n">b_mol</span> <span class="o">=</span> <span class="n">pb</span><span class="o">.</span><span class="n">readstring</span><span class="p">(</span><span class="s2">&quot;smi&quot;</span><span class="p">,</span> <span class="n">smiles</span><span class="p">)</span>  <span class="c1"># noqa</span>
     <span class="n">b_mol</span><span class="o">.</span><span class="n">make3D</span><span class="p">()</span>
     <span class="n">b_mol</span> <span class="o">=</span> <span class="n">b_mol</span><span class="o">.</span><span class="n">OBMol</span>
     <span class="n">sp</span> <span class="o">=</span> <span class="p">[]</span>
@@ -81,6 +83,7 @@
     <span class="k">return</span> <span class="n">Molecule</span><span class="p">(</span><span class="n">sp</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

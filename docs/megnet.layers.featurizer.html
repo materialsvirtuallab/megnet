@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.layers.featurizer package &#8212; megnet 1.2.6 documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="megnet.layers.graph package" href="megnet.layers.graph.html" />
+    <link rel="prev" title="megnet.layers package" href="megnet.layers.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="megnet.layers.graph.html" title="megnet.layers.graph package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="megnet.layers.html" title="megnet.layers package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="megnet.layers.html" accesskey="U">megnet.layers package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.layers.featurizer package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="megnet-layers-featurizer-package">
+<h1>megnet.layers.featurizer package<a class="headerlink" href="#megnet-layers-featurizer-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-megnet.layers.featurizer">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-megnet.layers.featurizer" title="Permalink to this headline">¶</a></h2>
+<p>Featurizers used after the graph generation and before the graph convolution</p>
+<dl class="py class">
+<dt id="megnet.layers.featurizer.GaussianExpansion">
+<em class="property">class </em><code class="sig-name descname">GaussianExpansion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
+<p>Simple Gaussian expansion.
+A vector of distance [d1, d2, d3, …, dn] is expanded to a
+matrix of shape [n, m], where m is the number of Gaussian basis centers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>centers</strong> (<em>np.ndarray</em>) – Gaussian basis centers</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – width of the Gaussian basis</p></li>
+<li><p><strong>**kwargs</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="megnet.layers.featurizer.GaussianExpansion.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>build the layer
+:param input_shape: tuple of int for the input shape
+:type input_shape: tuple</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.featurizer.GaussianExpansion.call">
+<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">masks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.call" title="Permalink to this definition">¶</a></dt>
+<dd><p>The core logic function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inputs</strong> (<em>tf.Tensor</em>) – input distance tensor, with shape [None, n]</p></li>
+<li><p><strong>masks</strong> (<em>tf.Tensor</em>) – bool tensor, not used here</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.featurizer.GaussianExpansion.compute_output_shape">
+<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the output shape, used in older keras API</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.layers.featurizer.GaussianExpansion.get_config">
+<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.get_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get layer configurations</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">megnet.layers.featurizer package</a><ul>
+<li><a class="reference internal" href="#module-megnet.layers.featurizer">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="megnet.html">megnet package</a><ul>
+  <li><a href="megnet.layers.html">megnet.layers package</a><ul>
+      <li>Previous: <a href="megnet.layers.html" title="previous chapter">megnet.layers package</a></li>
+      <li>Next: <a href="megnet.layers.graph.html" title="next chapter">megnet.layers.graph package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/megnet.layers.featurizer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

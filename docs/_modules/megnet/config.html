@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.config &#8212; megnet 1.2.6 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/flasky.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.config</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for megnet.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Data types&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+
+<span class="n">DTYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;float32&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;numpy&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">},</span>
+    <span class="s2">&quot;float16&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;numpy&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">float16</span><span class="p">},</span>
+    <span class="s2">&quot;int32&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;numpy&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span><span class="p">},</span>
+    <span class="s2">&quot;int16&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;numpy&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="s2">&quot;tf&quot;</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">int16</span><span class="p">},</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="DataType"><a class="viewcode-back" href="../../megnet.config.html#megnet.config.DataType">[docs]</a><span class="k">class</span> <span class="nc">DataType</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data types for tensorflow. This enables users to choose</span>
+<span class="sd">    from 32-bit float and int, and 16-bit float and int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">np_float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+    <span class="n">np_int</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span>
+    <span class="n">tf_float</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
+    <span class="n">tf_int</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span>
+
+<div class="viewcode-block" id="DataType.set_dtype"><a class="viewcode-back" href="../../megnet.config.html#megnet.config.DataType.set_dtype">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_dtype</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class method to set the data types</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data_type (str): &#39;16&#39; or &#39;32&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_type</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;32&quot;</span><span class="p">):</span>
+            <span class="n">float_key</span> <span class="o">=</span> <span class="s2">&quot;float32&quot;</span>
+            <span class="n">int_key</span> <span class="o">=</span> <span class="s2">&quot;int32&quot;</span>
+        <span class="k">elif</span> <span class="n">data_type</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;16&quot;</span><span class="p">):</span>
+            <span class="n">float_key</span> <span class="o">=</span> <span class="s2">&quot;float16&quot;</span>
+            <span class="n">int_key</span> <span class="o">=</span> <span class="s2">&quot;int16&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data type not known, choose &#39;16&#39; or &#39;32&#39;&quot;</span><span class="p">)</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">np_float</span> <span class="o">=</span> <span class="n">DTYPES</span><span class="p">[</span><span class="n">float_key</span><span class="p">][</span><span class="s2">&quot;numpy&quot;</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">tf_float</span> <span class="o">=</span> <span class="n">DTYPES</span><span class="p">[</span><span class="n">float_key</span><span class="p">][</span><span class="s2">&quot;tf&quot;</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">np_int</span> <span class="o">=</span> <span class="n">DTYPES</span><span class="p">[</span><span class="n">int_key</span><span class="p">][</span><span class="s2">&quot;numpy&quot;</span><span class="p">]</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">tf_int</span> <span class="o">=</span> <span class="n">DTYPES</span><span class="p">[</span><span class="n">int_key</span><span class="p">][</span><span class="s2">&quot;tf&quot;</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="set_global_dtypes"><a class="viewcode-back" href="../../megnet.config.html#megnet.config.set_global_dtypes">[docs]</a><span class="k">def</span> <span class="nf">set_global_dtypes</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to set the data types</span>
+<span class="sd">    Args:</span>
+<span class="sd">        data_type (str): &#39;16&#39; or &#39;32&#39;</span>
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DataType</span><span class="o">.</span><span class="n">set_dtype</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

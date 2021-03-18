@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.utils.preprocessing module &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.utils.preprocessing module &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.utils.typing module" href="megnet.utils.typing.html" />
@@ -39,9 +39,10 @@
         <li class="right" >
           <a href="megnet.utils.molecule.html" title="megnet.utils.molecule module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li> 
+          <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.utils.preprocessing module</a></li> 
       </ul>
     </div>  
 
@@ -75,12 +76,12 @@
 
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.DummyScaler.inverse_transform">
-<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>return as it is</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transformed_target</strong> (<em>float</em>) – transformed target</p></li>
+<li><p><strong>transformed_target</strong> (<em>np.ndarray</em>) – transformed target</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of atoms</p></li>
 </ul>
 </dd>
@@ -92,11 +93,11 @@
 
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.DummyScaler.transform">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.transform" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#DummyScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.DummyScaler.transform" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>float</em>) – target numerical value</p></li>
+<li><p><strong>target</strong> (<em>np.ndarray</em>) – target numerical value</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of atoms</p></li>
 </ul>
 </dd>
@@ -118,12 +119,12 @@ of atom as the second parameter in addition to
 the target property</p>
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.Scaler.inverse_transform">
-<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse transform of the target</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transformed_target</strong> (<em>float</em>) – transformed target</p></li>
+<li><p><strong>transformed_target</strong> (<em>np.ndarray</em>) – transformed target</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of atoms</p></li>
 </ul>
 </dd>
@@ -135,7 +136,7 @@ the target property</p>
 
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.Scaler.transform">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler.transform" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#Scaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.Scaler.transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform the target values into new target values
 :param target: target numerical value
 :type target: float
@@ -159,6 +160,12 @@ For intensive quantity, the mean is just the mean of training data,
 and std is the std of training data
 For extensive quantity, the mean is the mean of target/atom, and
 std is the std for target/atom</p>
+<dl class="py method">
+<dt id="megnet.utils.preprocessing.StandardScaler.transform">
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>standard scaling the target and</p>
+</dd></dl>
+
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -169,12 +176,6 @@ property</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="py method">
-<dt id="megnet.utils.preprocessing.StandardScaler.transform">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>standard scaling the target and</p>
-</dd></dl>
-
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.StandardScaler.from_training_data">
 <em class="property">classmethod </em><code class="sig-name descname">from_training_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structures</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">targets</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">is_intensive</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#megnet.utils.preprocessing.StandardScaler" title="megnet.utils.preprocessing.StandardScaler">megnet.utils.preprocessing.StandardScaler</a><a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.from_training_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.from_training_data" title="Permalink to this definition">¶</a></dt>
@@ -195,12 +196,12 @@ property</p>
 
 <dl class="py method">
 <dt id="megnet.utils.preprocessing.StandardScaler.inverse_transform">
-<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">inverse_transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">transformed_target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.inverse_transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.preprocessing.StandardScaler.inverse_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inverse transform of the target</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transformed_target</strong> (<em>float</em>) – transformed target</p></li>
+<li><p><strong>transformed_target</strong> (<em>np.ndarray</em>) – transformed target</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of atoms</p></li>
 </ul>
 </dd>
@@ -212,12 +213,12 @@ property</p>
 
 <dl class="py method">
 <dt id="id0">
-<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">transform</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/preprocessing.html#StandardScaler.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform numeric values according the mean and std, plus a factor n</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<em>float</em>) – target numerical value</p></li>
+<li><p><strong>target</strong> (<em>np.ndarray</em>) – target numerical value</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – number of atoms</p></li>
 </ul>
 </dd>
@@ -232,6 +233,7 @@ property</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
