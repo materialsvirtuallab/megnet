@@ -4,5 +4,5 @@ coverage==5.5
 coveralls==3.0.1
 pycodestyle==2.7.0
 mypy==0.812
-pydocstyle==5.1.1
+pydocstyle==6.0.0
 flake8-black==0.2.1
