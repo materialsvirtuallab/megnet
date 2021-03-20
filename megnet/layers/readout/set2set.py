@@ -6,7 +6,7 @@ import tensorflow.keras.backend as kb
 from tensorflow.keras import activations, initializers, regularizers, constraints
 from tensorflow.keras.layers import Layer
 
-from megnet.utils.layer import repeat_with_index, gather
+from megnet.utils.layer import repeat_with_index
 
 
 class Set2Set(Layer):
@@ -173,7 +173,7 @@ class Set2Set(Layer):
             self.h, c = self._lstm(q_star, self.c)
             e_i_t = tf.reduce_sum(input_tensor=m * repeat_with_index(self.h, feature_graph_index), axis=-1)
             maxes = tf.math.segment_max(e_i_t[0], feature_graph_index)
-            e_i_t -= tf.expand_dims(gather(maxes, feature_graph_index), axis=0)
+            e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index, axis=0), axis=0)
             exp = tf.exp(e_i_t)
             seg_sum = tf.transpose(
                 a=tf.math.segment_sum(tf.transpose(a=exp, perm=[1, 0]), feature_graph_index), perm=[1, 0]
