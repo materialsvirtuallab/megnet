@@ -1,3 +1,6 @@
+# v1.2.8
+* Revert to use tf.gather with warnings for speed concerns
+
 # v1.2.7
 * Add swish activation function
 * Remove training warning
