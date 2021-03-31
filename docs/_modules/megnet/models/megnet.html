@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.models.megnet &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.models.megnet &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.models.megnet</a></li> 
       </ul>
     </div>  
 
@@ -46,21 +47,21 @@
 <span class="sd">Implements megnet models.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Concatenate</span><span class="p">,</span> <span class="n">Add</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Dropout</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.regularizers</span> <span class="kn">import</span> <span class="n">l2</span>
 
-<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="k">import</span> <span class="n">Adam</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="k">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">Concatenate</span><span class="p">,</span> <span class="n">Add</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Dropout</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.regularizers</span> <span class="k">import</span> <span class="n">l2</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="k">import</span> <span class="n">Model</span>
-
-<span class="kn">from</span> <span class="nn">megnet.layers</span> <span class="k">import</span> <span class="n">MEGNetLayer</span><span class="p">,</span> <span class="n">Set2Set</span>
-<span class="kn">from</span> <span class="nn">megnet.activations</span> <span class="k">import</span> <span class="n">softplus2</span>
-<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="k">import</span> <span class="n">GaussianDistance</span><span class="p">,</span> <span class="n">StructureGraph</span>
-<span class="kn">from</span> <span class="nn">megnet.data.crystal</span> <span class="k">import</span> <span class="n">CrystalGraph</span>
-<span class="kn">from</span> <span class="nn">megnet.utils.preprocessing</span> <span class="k">import</span> <span class="n">DummyScaler</span><span class="p">,</span> <span class="n">Scaler</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">GraphModel</span>
+<span class="kn">from</span> <span class="nn">megnet.activations</span> <span class="kn">import</span> <span class="n">softplus2</span>
+<span class="kn">from</span> <span class="nn">megnet.config</span> <span class="kn">import</span> <span class="n">DataType</span>
+<span class="kn">from</span> <span class="nn">megnet.data.crystal</span> <span class="kn">import</span> <span class="n">CrystalGraph</span>
+<span class="kn">from</span> <span class="nn">megnet.data.graph</span> <span class="kn">import</span> <span class="n">GaussianDistance</span><span class="p">,</span> <span class="n">StructureGraph</span>
+<span class="kn">from</span> <span class="nn">megnet.layers</span> <span class="kn">import</span> <span class="n">MEGNetLayer</span><span class="p">,</span> <span class="n">Set2Set</span><span class="p">,</span> <span class="n">GaussianExpansion</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.preprocessing</span> <span class="kn">import</span> <span class="n">DummyScaler</span><span class="p">,</span> <span class="n">Scaler</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">GraphModel</span>
 
 
 <div class="viewcode-block" id="MEGNetModel"><a class="viewcode-back" href="../../../megnet.models.megnet.html#megnet.models.MEGNetModel">[docs]</a><span class="k">class</span> <span class="nc">MEGNetModel</span><span class="p">(</span><span class="n">GraphModel</span><span class="p">):</span>
@@ -70,34 +71,37 @@
 <span class="sd">    otherwise a crystal graph model with z number as atom feature is assumed.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">nfeat_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">nfeat_global</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">nfeat_node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">nblocks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                 <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
-                 <span class="n">n1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-                 <span class="n">n2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
-                 <span class="n">n3</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-                 <span class="n">nvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">95</span><span class="p">,</span>
-                 <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-                 <span class="n">nbvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bond_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">ngvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">global_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">npass</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                 <span class="n">ntarget</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                 <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">softplus2</span><span class="p">,</span>
-                 <span class="n">is_classification</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                 <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span>
-                 <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">l2_coef</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">graph_converter</span><span class="p">:</span> <span class="n">StructureGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">target_scaler</span><span class="p">:</span> <span class="n">Scaler</span> <span class="o">=</span> <span class="n">DummyScaler</span><span class="p">(),</span>
-                 <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">dropout_on_predict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-                 <span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nfeat_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nfeat_global</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nfeat_node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nblocks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+        <span class="n">n1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+        <span class="n">n2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="n">n3</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="n">nvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">95</span><span class="p">,</span>
+        <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="n">nbvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bond_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">ngvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">global_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">npass</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+        <span class="n">ntarget</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">softplus2</span><span class="p">,</span>
+        <span class="n">is_classification</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span>
+        <span class="n">metrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">l2_coef</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">graph_converter</span><span class="p">:</span> <span class="n">StructureGraph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_scaler</span><span class="p">:</span> <span class="n">Scaler</span> <span class="o">=</span> <span class="n">DummyScaler</span><span class="p">(),</span>
+        <span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;clipnorm&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+        <span class="n">dropout_on_predict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">sample_weight_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            nfeat_edge: (int) number of bond features</span>
@@ -127,46 +131,54 @@
 <span class="sd">            target_scaler: (object) object that exposes a &quot;transform&quot; and &quot;inverse_transform&quot; methods for transforming</span>
 <span class="sd">                the target values</span>
 <span class="sd">            optimizer_kwargs (dict): extra keywords for optimizer, for example clipnorm and clipvalue</span>
+<span class="sd">            sample_weight_mode (str): sample weight mode for compilation</span>
+<span class="sd">            kwargs (dict): in the case where bond inputs are pure distances (not the expanded distances nor integers</span>
+<span class="sd">                for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),</span>
+<span class="sd">                kwargs can take additional inputs for expand the distance using Gaussian basis.</span>
+<span class="sd">                centers (np.ndarray): array for defining the Gaussian expansion centers</span>
+<span class="sd">                width (float): width for the Gaussian basis</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Build the MEG Model</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">make_megnet_model</span><span class="p">(</span><span class="n">nfeat_edge</span><span class="o">=</span><span class="n">nfeat_edge</span><span class="p">,</span>
-                                  <span class="n">nfeat_global</span><span class="o">=</span><span class="n">nfeat_global</span><span class="p">,</span>
-                                  <span class="n">nfeat_node</span><span class="o">=</span><span class="n">nfeat_node</span><span class="p">,</span>
-                                  <span class="n">nblocks</span><span class="o">=</span><span class="n">nblocks</span><span class="p">,</span>
-                                  <span class="n">n1</span><span class="o">=</span><span class="n">n1</span><span class="p">,</span>
-                                  <span class="n">n2</span><span class="o">=</span><span class="n">n2</span><span class="p">,</span>
-                                  <span class="n">n3</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span>
-                                  <span class="n">nvocal</span><span class="o">=</span><span class="n">nvocal</span><span class="p">,</span>
-                                  <span class="n">embedding_dim</span><span class="o">=</span><span class="n">embedding_dim</span><span class="p">,</span>
-                                  <span class="n">nbvocal</span><span class="o">=</span><span class="n">nbvocal</span><span class="p">,</span>
-                                  <span class="n">bond_embedding_dim</span><span class="o">=</span><span class="n">bond_embedding_dim</span><span class="p">,</span>
-                                  <span class="n">ngvocal</span><span class="o">=</span><span class="n">ngvocal</span><span class="p">,</span>
-                                  <span class="n">global_embedding_dim</span><span class="o">=</span><span class="n">global_embedding_dim</span><span class="p">,</span>
-                                  <span class="n">npass</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span>
-                                  <span class="n">ntarget</span><span class="o">=</span><span class="n">ntarget</span><span class="p">,</span>
-                                  <span class="n">act</span><span class="o">=</span><span class="n">act</span><span class="p">,</span>
-                                  <span class="n">is_classification</span><span class="o">=</span><span class="n">is_classification</span><span class="p">,</span>
-                                  <span class="n">l2_coef</span><span class="o">=</span><span class="n">l2_coef</span><span class="p">,</span>
-                                  <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span>
-                                  <span class="n">dropout_on_predict</span><span class="o">=</span><span class="n">dropout_on_predict</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">make_megnet_model</span><span class="p">(</span>
+            <span class="n">nfeat_edge</span><span class="o">=</span><span class="n">nfeat_edge</span><span class="p">,</span>
+            <span class="n">nfeat_global</span><span class="o">=</span><span class="n">nfeat_global</span><span class="p">,</span>
+            <span class="n">nfeat_node</span><span class="o">=</span><span class="n">nfeat_node</span><span class="p">,</span>
+            <span class="n">nblocks</span><span class="o">=</span><span class="n">nblocks</span><span class="p">,</span>
+            <span class="n">n1</span><span class="o">=</span><span class="n">n1</span><span class="p">,</span>
+            <span class="n">n2</span><span class="o">=</span><span class="n">n2</span><span class="p">,</span>
+            <span class="n">n3</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span>
+            <span class="n">nvocal</span><span class="o">=</span><span class="n">nvocal</span><span class="p">,</span>
+            <span class="n">embedding_dim</span><span class="o">=</span><span class="n">embedding_dim</span><span class="p">,</span>
+            <span class="n">nbvocal</span><span class="o">=</span><span class="n">nbvocal</span><span class="p">,</span>
+            <span class="n">bond_embedding_dim</span><span class="o">=</span><span class="n">bond_embedding_dim</span><span class="p">,</span>
+            <span class="n">ngvocal</span><span class="o">=</span><span class="n">ngvocal</span><span class="p">,</span>
+            <span class="n">global_embedding_dim</span><span class="o">=</span><span class="n">global_embedding_dim</span><span class="p">,</span>
+            <span class="n">npass</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span>
+            <span class="n">ntarget</span><span class="o">=</span><span class="n">ntarget</span><span class="p">,</span>
+            <span class="n">act</span><span class="o">=</span><span class="n">act</span><span class="p">,</span>
+            <span class="n">is_classification</span><span class="o">=</span><span class="n">is_classification</span><span class="p">,</span>
+            <span class="n">l2_coef</span><span class="o">=</span><span class="n">l2_coef</span><span class="p">,</span>
+            <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span>
+            <span class="n">dropout_on_predict</span><span class="o">=</span><span class="n">dropout_on_predict</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="c1"># Compile the model with the optimizer</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="s1">&#39;binary_crossentropy&#39;</span> <span class="k">if</span> <span class="n">is_classification</span> <span class="k">else</span> <span class="n">loss</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="s2">&quot;binary_crossentropy&quot;</span> <span class="k">if</span> <span class="n">is_classification</span> <span class="k">else</span> <span class="n">loss</span>
 
-        <span class="n">opt_params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lr&#39;</span><span class="p">:</span> <span class="n">lr</span><span class="p">}</span>
+        <span class="n">opt_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="n">lr</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">optimizer_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">opt_params</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">optimizer_kwargs</span><span class="p">)</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(</span><span class="o">**</span><span class="n">opt_params</span><span class="p">),</span> <span class="n">loss</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">Adam</span><span class="p">(</span><span class="o">**</span><span class="n">opt_params</span><span class="p">),</span> <span class="n">loss</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">metrics</span><span class="p">,</span> <span class="n">sample_weight_mode</span><span class="o">=</span><span class="n">sample_weight_mode</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">graph_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">graph_converter</span> <span class="o">=</span> <span class="n">CrystalGraph</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-                                           <span class="n">bond_converter</span><span class="o">=</span><span class="n">GaussianDistance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">))</span>
+            <span class="n">graph_converter</span> <span class="o">=</span> <span class="n">CrystalGraph</span><span class="p">(</span><span class="n">cutoff</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">bond_converter</span><span class="o">=</span><span class="n">GaussianDistance</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">))</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">target_scaler</span><span class="o">=</span><span class="n">target_scaler</span><span class="p">,</span> <span class="n">graph_converter</span><span class="o">=</span><span class="n">graph_converter</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MEGNetModel.from_url"><a class="viewcode-back" href="../../../megnet.models.megnet.html#megnet.models.MEGNetModel.from_url">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MEGNetModel&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_url</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphModel</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download and load a model from a URL. E.g.</span>
 <span class="sd">        https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5</span>
@@ -178,40 +190,51 @@
 <span class="sd">            GraphModel</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">urllib.request</span>
+
         <span class="n">fname</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
         <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlretrieve</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="n">fname</span> <span class="o">+</span> <span class="s2">&quot;.json&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MEGNetModel.from_mvl_models"><a class="viewcode-back" href="../../../megnet.models.megnet.html#megnet.models.MEGNetModel.from_mvl_models">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_mvl_models</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;MEGNetModel&#39;</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">megnet.utils.models</span> <span class="k">import</span> <span class="n">load_model</span>
+    <span class="k">def</span> <span class="nf">from_mvl_models</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GraphModel</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load model using mvl model names</span>
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): model name string. Please check</span>
+<span class="sd">                megnet.utils.models.AVAILABEL_MODELS for available models</span>
+<span class="sd">        Returns: GraphModel instance</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">megnet.utils.models</span> <span class="kn">import</span> <span class="n">load_model</span>
+
         <span class="k">return</span> <span class="n">load_model</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="make_megnet_model"><a class="viewcode-back" href="../../../megnet.models.megnet.html#megnet.models.make_megnet_model">[docs]</a><span class="k">def</span> <span class="nf">make_megnet_model</span><span class="p">(</span><span class="n">nfeat_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">nfeat_global</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">nfeat_node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">nblocks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                      <span class="n">n1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-                      <span class="n">n2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
-                      <span class="n">n3</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-                      <span class="n">nvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">95</span><span class="p">,</span>
-                      <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
-                      <span class="n">nbvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">bond_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">ngvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">global_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">npass</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
-                      <span class="n">ntarget</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                      <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">softplus2</span><span class="p">,</span>
-                      <span class="n">is_classification</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                      <span class="n">l2_coef</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                      <span class="n">dropout_on_predict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-                      <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+<div class="viewcode-block" id="make_megnet_model"><a class="viewcode-back" href="../../../megnet.models.megnet.html#megnet.models.make_megnet_model">[docs]</a><span class="k">def</span> <span class="nf">make_megnet_model</span><span class="p">(</span>
+    <span class="n">nfeat_edge</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nfeat_global</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nfeat_node</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">nblocks</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">n1</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">n2</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="n">n3</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="n">nvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">95</span><span class="p">,</span>
+    <span class="n">embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
+    <span class="n">nbvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">bond_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">ngvocal</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">global_embedding_dim</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">npass</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="n">ntarget</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">act</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">softplus2</span><span class="p">,</span>
+    <span class="n">is_classification</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">l2_coef</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dropout_on_predict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Make a MEGNet Model</span>
-
 <span class="sd">    Args:</span>
 <span class="sd">        nfeat_edge: (int) number of bond features</span>
 <span class="sd">        nfeat_global: (int) number of state features</span>
@@ -233,6 +256,12 @@
 <span class="sd">        is_classification: (bool) whether it is a classification task</span>
 <span class="sd">        dropout: (float) dropout rate</span>
 <span class="sd">        dropout_on_predict (bool): Whether to use dropout during prediction and training</span>
+<span class="sd">        kwargs (dict): in the case where bond inputs are pure distances (not the expanded</span>
+<span class="sd">                distances nor integers for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),</span>
+<span class="sd">                kwargs can take additional inputs for expand the distance using Gaussian basis.</span>
+
+<span class="sd">                centers (np.ndarray): array for defining the Gaussian expansion centers</span>
+<span class="sd">                width (float): width for the Gaussian basis</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (Model) Keras model, ready to run</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -240,30 +269,57 @@
     <span class="c1"># Get the setting for the training kwarg of Dropout</span>
     <span class="n">dropout_training</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="n">dropout_on_predict</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="c1"># Create the input blocks</span>
-    <span class="n">int32</span> <span class="o">=</span> <span class="s1">&#39;int32&#39;</span>
+    <span class="c1"># atom inputs</span>
+
     <span class="k">if</span> <span class="n">nfeat_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;atom_int_input&#39;</span><span class="p">)</span>  <span class="c1"># only z as feature</span>
-        <span class="n">x1_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">nvocal</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;atom_embedding&#39;</span><span class="p">)(</span><span class="n">x1</span><span class="p">)</span>
+        <span class="c1"># only z as feature</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atom_int_input&quot;</span><span class="p">)</span>
+        <span class="n">x1_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">nvocal</span><span class="p">,</span> <span class="n">embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atom_embedding&quot;</span><span class="p">)(</span><span class="n">x1</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_node</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;atom_feature_input&#39;</span><span class="p">)</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_node</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atom_feature_input&quot;</span><span class="p">)</span>
         <span class="n">x1_</span> <span class="o">=</span> <span class="n">x1</span>
+
+    <span class="c1"># bond inputs</span>
     <span class="k">if</span> <span class="n">nfeat_edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_int_input&#39;</span><span class="p">)</span>
-        <span class="n">x2_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">nbvocal</span><span class="p">,</span> <span class="n">bond_embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_embedding&#39;</span><span class="p">)(</span><span class="n">x2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bond_embedding_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># bond attributes are integers for embedding</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_int_input&quot;</span><span class="p">)</span>
+            <span class="n">x2_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">nbvocal</span><span class="p">,</span> <span class="n">bond_embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_embedding&quot;</span><span class="p">)(</span><span class="n">x2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># the bond attributes are float distance</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_float</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_float_input&quot;</span><span class="p">)</span>
+            <span class="n">centers</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;centers&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">width</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">centers</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">width</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;If the bond attributes are single float values, &quot;</span>
+                    <span class="s2">&quot;we expect the value to be expanded before passing &quot;</span>
+                    <span class="s2">&quot;to the models. Therefore, `centers` and `width` for &quot;</span>
+                    <span class="s2">&quot;Gaussian basis expansion are needed&quot;</span>
+                <span class="p">)</span>
+            <span class="n">x2_</span> <span class="o">=</span> <span class="n">GaussianExpansion</span><span class="p">(</span><span class="n">centers</span><span class="o">=</span><span class="n">centers</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">)(</span><span class="n">x2</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_edge</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_feature_input&#39;</span><span class="p">)</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_edge</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_feature_input&quot;</span><span class="p">)</span>
         <span class="n">x2_</span> <span class="o">=</span> <span class="n">x2</span>
+
+    <span class="c1"># state inputs</span>
     <span class="k">if</span> <span class="n">nfeat_global</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;state_int_input&#39;</span><span class="p">)</span>
-        <span class="n">x3_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">ngvocal</span><span class="p">,</span> <span class="n">global_embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;state_embedding&#39;</span><span class="p">)(</span><span class="n">x3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">global_embedding_dim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># global state inputs are embedding integers</span>
+            <span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;state_int_input&quot;</span><span class="p">)</span>
+            <span class="n">x3_</span> <span class="o">=</span> <span class="n">Embedding</span><span class="p">(</span><span class="n">ngvocal</span><span class="p">,</span> <span class="n">global_embedding_dim</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;state_embedding&quot;</span><span class="p">)(</span><span class="n">x3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># take default vector of two zeros</span>
+            <span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_float</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;state_default_input&quot;</span><span class="p">)</span>
+            <span class="n">x3_</span> <span class="o">=</span> <span class="n">x3</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_global</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;state_feature_input&#39;</span><span class="p">)</span>
+        <span class="n">x3</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">nfeat_global</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;state_feature_input&quot;</span><span class="p">)</span>
         <span class="n">x3_</span> <span class="o">=</span> <span class="n">x3</span>
-    <span class="n">x4</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_index_1_input&#39;</span><span class="p">)</span>
-    <span class="n">x5</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_index_2_input&#39;</span><span class="p">)</span>
-    <span class="n">x6</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;atom_graph_index_input&#39;</span><span class="p">)</span>
-    <span class="n">x7</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">int32</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;bond_graph_index_input&#39;</span><span class="p">)</span>
+    <span class="n">x4</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_index_1_input&quot;</span><span class="p">)</span>
+    <span class="n">x5</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_index_2_input&quot;</span><span class="p">)</span>
+    <span class="n">x6</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;atom_graph_index_input&quot;</span><span class="p">)</span>
+    <span class="n">x7</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DataType</span><span class="o">.</span><span class="n">tf_int</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bond_graph_index_input&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">l2_coef</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">reg</span> <span class="o">=</span> <span class="n">l2</span><span class="p">(</span><span class="n">l2_coef</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -272,10 +328,10 @@
     <span class="c1"># two feedforward layers</span>
     <span class="k">def</span> <span class="nf">ff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_hiddens</span><span class="o">=</span><span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span> <span class="n">name_prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name_prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">name_prefix</span> <span class="o">=</span> <span class="s1">&#39;FF&#39;</span>
+            <span class="n">name_prefix</span> <span class="o">=</span> <span class="s2">&quot;FF&quot;</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">x</span>
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">n_hiddens</span><span class="p">):</span>
-            <span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">k</span><span class="p">))(</span><span class="n">out</span><span class="p">)</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name_prefix</span><span class="p">,</span> <span class="n">k</span><span class="p">))(</span><span class="n">out</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span>
 
     <span class="c1"># a block corresponds to two feedforward layers + one MEGNetLayer layer</span>
@@ -283,30 +339,35 @@
     <span class="c1"># it will be explicitly added before the block</span>
     <span class="k">def</span> <span class="nf">one_block</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">has_ff</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">block_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">has_ff</span><span class="p">:</span>
-            <span class="n">x1_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_atom_ff&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
-            <span class="n">x2_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_bond_ff&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
-            <span class="n">x3_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_state_ff&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
+            <span class="n">x1_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_atom_ff&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
+            <span class="n">x2_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_bond_ff&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
+            <span class="n">x3_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_state_ff&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x1_</span> <span class="o">=</span> <span class="n">a</span>
             <span class="n">x2_</span> <span class="o">=</span> <span class="n">b</span>
             <span class="n">x3_</span> <span class="o">=</span> <span class="n">c</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">MEGNetLayer</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span> <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span> <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span>
-            <span class="n">pool_method</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;megnet_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span>
-            <span class="p">[</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x2_</span><span class="p">,</span> <span class="n">x3_</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">,</span> <span class="n">x7</span><span class="p">])</span>
+            <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">n1</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">],</span>
+            <span class="n">pool_method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+            <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span>
+            <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;megnet_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">,</span>
+        <span class="p">)([</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x2_</span><span class="p">,</span> <span class="n">x3_</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">,</span> <span class="n">x7</span><span class="p">])</span>
 
         <span class="n">x1_temp</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">x2_temp</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">x3_temp</span> <span class="o">=</span> <span class="n">out</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">dropout</span><span class="p">:</span>
-            <span class="n">x1_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropout_atom_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x1_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
-            <span class="n">x2_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropout_bond_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x2_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
-            <span class="n">x3_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropout_state_</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x3_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
+            <span class="n">x1_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropout_atom_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x1_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
+            <span class="n">x2_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropout_bond_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x2_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
+            <span class="n">x3_temp</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropout_state_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">block_index</span><span class="p">)(</span><span class="n">x3_temp</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x1_temp</span><span class="p">,</span> <span class="n">x2_temp</span><span class="p">,</span> <span class="n">x3_temp</span>
 
-    <span class="n">x1_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x1_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;preblock_atom&#39;</span><span class="p">)</span>
-    <span class="n">x2_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x2_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;preblock_bond&#39;</span><span class="p">)</span>
-    <span class="n">x3_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x3_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s1">&#39;preblock_state&#39;</span><span class="p">)</span>
+    <span class="n">x1_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x1_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;preblock_atom&quot;</span><span class="p">)</span>
+    <span class="n">x2_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x2_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;preblock_bond&quot;</span><span class="p">)</span>
+    <span class="n">x3_</span> <span class="o">=</span> <span class="n">ff</span><span class="p">(</span><span class="n">x3_</span><span class="p">,</span> <span class="n">name_prefix</span><span class="o">=</span><span class="s2">&quot;preblock_state&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nblocks</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">has_ff</span> <span class="o">=</span> <span class="kc">False</span>
@@ -317,32 +378,33 @@
         <span class="n">x3_1</span> <span class="o">=</span> <span class="n">x3_</span>
         <span class="n">x1_1</span><span class="p">,</span> <span class="n">x2_1</span><span class="p">,</span> <span class="n">x3_1</span> <span class="o">=</span> <span class="n">one_block</span><span class="p">(</span><span class="n">x1_1</span><span class="p">,</span> <span class="n">x2_1</span><span class="p">,</span> <span class="n">x3_1</span><span class="p">,</span> <span class="n">has_ff</span><span class="p">,</span> <span class="n">block_index</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
         <span class="c1"># skip connection</span>
-        <span class="n">x1_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_add_atom&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x1_1</span><span class="p">])</span>
-        <span class="n">x2_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_add_bond&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x2_</span><span class="p">,</span> <span class="n">x2_1</span><span class="p">])</span>
-        <span class="n">x3_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;block_</span><span class="si">%d</span><span class="s1">_add_state&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x3_</span><span class="p">,</span> <span class="n">x3_1</span><span class="p">])</span>
+        <span class="n">x1_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_add_atom&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x1_1</span><span class="p">])</span>
+        <span class="n">x2_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_add_bond&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x2_</span><span class="p">,</span> <span class="n">x2_1</span><span class="p">])</span>
+        <span class="n">x3_</span> <span class="o">=</span> <span class="n">Add</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;block_</span><span class="si">%d</span><span class="s2">_add_state&quot;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)([</span><span class="n">x3_</span><span class="p">,</span> <span class="n">x3_1</span><span class="p">])</span>
 
     <span class="c1"># print(Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name=&#39;set2set_atom&#39;</span>
     <span class="c1">#             ).compute_output_shape([i.shape for i in [x1_, x6]]))</span>
     <span class="c1"># set2set for both the atom and bond</span>
-    <span class="n">node_vec</span> <span class="o">=</span> <span class="n">Set2Set</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;set2set_atom&#39;</span><span class="p">)([</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x6</span><span class="p">])</span>
+    <span class="n">node_vec</span> <span class="o">=</span> <span class="n">Set2Set</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;set2set_atom&quot;</span><span class="p">)([</span><span class="n">x1_</span><span class="p">,</span> <span class="n">x6</span><span class="p">])</span>
     <span class="c1"># print(&#39;Node vec&#39;, node_vec)</span>
-    <span class="n">edge_vec</span> <span class="o">=</span> <span class="n">Set2Set</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;set2set_bond&#39;</span><span class="p">)([</span><span class="n">x2_</span><span class="p">,</span> <span class="n">x7</span><span class="p">])</span>
+    <span class="n">edge_vec</span> <span class="o">=</span> <span class="n">Set2Set</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="n">npass</span><span class="p">,</span> <span class="n">n_hidden</span><span class="o">=</span><span class="n">n3</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;set2set_bond&quot;</span><span class="p">)([</span><span class="n">x2_</span><span class="p">,</span> <span class="n">x7</span><span class="p">])</span>
     <span class="c1"># concatenate atom, bond, and global</span>
     <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Concatenate</span><span class="p">(</span><span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)([</span><span class="n">node_vec</span><span class="p">,</span> <span class="n">edge_vec</span><span class="p">,</span> <span class="n">x3_</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">dropout</span><span class="p">:</span>
-        <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;dropout_final&#39;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
+        <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;dropout_final&quot;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="n">dropout_training</span><span class="p">)</span>
     <span class="c1"># final dense layers</span>
-    <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;readout_0&#39;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
-    <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">n3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;readout_1&#39;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
+    <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;readout_0&quot;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
+    <span class="n">final_vec</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">n3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">act</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">reg</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;readout_1&quot;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">is_classification</span><span class="p">:</span>
-        <span class="n">final_act</span> <span class="o">=</span> <span class="s1">&#39;sigmoid&#39;</span>
+        <span class="n">final_act</span> <span class="o">=</span> <span class="s2">&quot;sigmoid&quot;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">final_act</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">ntarget</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">final_act</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;readout_2&#39;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
+        <span class="n">final_act</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="n">ntarget</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">final_act</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;readout_2&quot;</span><span class="p">)(</span><span class="n">final_vec</span><span class="p">)</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x3</span><span class="p">,</span> <span class="n">x4</span><span class="p">,</span> <span class="n">x5</span><span class="p">,</span> <span class="n">x6</span><span class="p">,</span> <span class="n">x7</span><span class="p">],</span> <span class="n">outputs</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tensorflow.python.framework.dtypes &#8212; megnet 1.2.6 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+
+   
+  
+  <link media="only screen and (max-device-width: 480px)" href="../../../../_static/small_flask.css" type= "text/css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">tensorflow.python.framework.dtypes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for tensorflow.python.framework.dtypes</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright 2015 The TensorFlow Authors. All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="c1"># Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);</span>
+<span class="c1"># you may not use this file except in compliance with the License.</span>
+<span class="c1"># You may obtain a copy of the License at</span>
+<span class="c1">#</span>
+<span class="c1">#     http://www.apache.org/licenses/LICENSE-2.0</span>
+<span class="c1">#</span>
+<span class="c1"># Unless required by applicable law or agreed to in writing, software</span>
+<span class="c1"># distributed under the License is distributed on an &quot;AS IS&quot; BASIS,</span>
+<span class="c1"># WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span>
+<span class="c1"># See the License for the specific language governing permissions and</span>
+<span class="c1"># limitations under the License.</span>
+<span class="c1"># ==============================================================================</span>
+<span class="sd">&quot;&quot;&quot;Library of dtypes (Tensor element types).&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">absolute_import</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">division</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="kn">import</span> <span class="n">builtins</span>
+
+<span class="kn">from</span> <span class="nn">tensorflow.core.framework</span> <span class="kn">import</span> <span class="n">types_pb2</span>
+<span class="c1"># We need to import pywrap_tensorflow prior to the bfloat wrapper to avoid</span>
+<span class="c1"># protobuf errors where a file is defined twice on MacOS.</span>
+<span class="c1"># pylint: disable=invalid-import-order,g-bad-import-order</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">pywrap_tensorflow</span>  <span class="c1"># pylint: disable=unused-import</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">_pywrap_bfloat16</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python</span> <span class="kn">import</span> <span class="n">_dtypes</span>
+<span class="kn">from</span> <span class="nn">tensorflow.python.util.tf_export</span> <span class="kn">import</span> <span class="n">tf_export</span>
+
+<span class="n">_np_bfloat16</span> <span class="o">=</span> <span class="n">_pywrap_bfloat16</span><span class="o">.</span><span class="n">TF_bfloat16_type</span><span class="p">()</span>
+
+
+<span class="c1"># pylint: disable=slots-on-old-class</span>
+<span class="nd">@tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.DType&quot;</span><span class="p">,</span> <span class="s2">&quot;DType&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">DType</span><span class="p">(</span><span class="n">_dtypes</span><span class="o">.</span><span class="n">DType</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Represents the type of the elements in a `Tensor`.</span>
+
+<span class="sd">  The following `DType` objects are defined:</span>
+
+<span class="sd">  * `tf.float16`: 16-bit half-precision floating-point.</span>
+<span class="sd">  * `tf.float32`: 32-bit single-precision floating-point.</span>
+<span class="sd">  * `tf.float64`: 64-bit double-precision floating-point.</span>
+<span class="sd">  * `tf.bfloat16`: 16-bit truncated floating-point.</span>
+<span class="sd">  * `tf.complex64`: 64-bit single-precision complex.</span>
+<span class="sd">  * `tf.complex128`: 128-bit double-precision complex.</span>
+<span class="sd">  * `tf.int8`: 8-bit signed integer.</span>
+<span class="sd">  * `tf.uint8`: 8-bit unsigned integer.</span>
+<span class="sd">  * `tf.uint16`: 16-bit unsigned integer.</span>
+<span class="sd">  * `tf.uint32`: 32-bit unsigned integer.</span>
+<span class="sd">  * `tf.uint64`: 64-bit unsigned integer.</span>
+<span class="sd">  * `tf.int16`: 16-bit signed integer.</span>
+<span class="sd">  * `tf.int32`: 32-bit signed integer.</span>
+<span class="sd">  * `tf.int64`: 64-bit signed integer.</span>
+<span class="sd">  * `tf.bool`: Boolean.</span>
+<span class="sd">  * `tf.string`: String.</span>
+<span class="sd">  * `tf.qint8`: Quantized 8-bit signed integer.</span>
+<span class="sd">  * `tf.quint8`: Quantized 8-bit unsigned integer.</span>
+<span class="sd">  * `tf.qint16`: Quantized 16-bit signed integer.</span>
+<span class="sd">  * `tf.quint16`: Quantized 16-bit unsigned integer.</span>
+<span class="sd">  * `tf.qint32`: Quantized 32-bit signed integer.</span>
+<span class="sd">  * `tf.resource`: Handle to a mutable resource.</span>
+<span class="sd">  * `tf.variant`: Values of arbitrary types.</span>
+
+<span class="sd">  The `tf.as_dtype()` function converts numpy types and string type</span>
+<span class="sd">  names to a `DType` object.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">_is_ref_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns `True` if this `DType` represents a reference type.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span> <span class="o">&gt;</span> <span class="mi">100</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">_as_ref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a reference `DType` based on this `DType`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ref_dtype</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">_INTERN_TABLE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span> <span class="o">+</span> <span class="mi">100</span><span class="p">]</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">base_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a non-reference `DType` based on this `DType`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_ref_dtype</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">_INTERN_TABLE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span> <span class="o">-</span> <span class="mi">100</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">real_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the `DType` corresponding to this `DType`&#39;s real part.&quot;&quot;&quot;</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dtype</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="n">complex64</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">float32</span>
+    <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="n">complex128</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">float64</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="k">return</span> <span class="bp">self</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">as_numpy_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns a Python `type` object based on this `DType`.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_TF_TO_NP</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span><span class="p">]</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the minimum representable value in this data type.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">      TypeError: if this is a non-numeric, unordered, or quantized type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_quantized</span> <span class="ow">or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">complex64</span><span class="p">,</span> <span class="n">complex128</span><span class="p">)):</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot find minimum value of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># there is no simple way to get the min value of a dtype, we have to check</span>
+    <span class="c1"># float and int types separately</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_numpy_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+    <span class="k">except</span><span class="p">:</span>  <span class="c1"># bare except as possible raises by finfo not documented</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_numpy_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">min</span>
+      <span class="k">except</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dtype</span> <span class="o">==</span> <span class="n">bfloat16</span><span class="p">:</span>
+          <span class="k">return</span> <span class="n">_np_bfloat16</span><span class="p">(</span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">&quot;-0x1.FEp127&quot;</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot find minimum value of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the maximum representable value in this data type.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">      TypeError: if this is a non-numeric, unordered, or quantized type.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_quantized</span> <span class="ow">or</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">string</span><span class="p">,</span> <span class="n">complex64</span><span class="p">,</span> <span class="n">complex128</span><span class="p">)):</span>
+      <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot find maximum value of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+    <span class="c1"># there is no simple way to get the max value of a dtype, we have to check</span>
+    <span class="c1"># float and int types separately</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_numpy_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+    <span class="k">except</span><span class="p">:</span>  <span class="c1"># bare except as possible raises by finfo not documented</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_numpy_dtype</span><span class="p">)</span><span class="o">.</span><span class="n">max</span>
+      <span class="k">except</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_dtype</span> <span class="o">==</span> <span class="n">bfloat16</span><span class="p">:</span>
+          <span class="k">return</span> <span class="n">_np_bfloat16</span><span class="p">(</span><span class="nb">float</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">&quot;0x1.FEp127&quot;</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot find maximum value of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+  <span class="nd">@property</span>
+  <span class="k">def</span> <span class="nf">limits</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clip_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return intensity limits, i.e.</span>
+
+<span class="sd">    (min, max) tuple, of the dtype.</span>
+<span class="sd">    Args:</span>
+<span class="sd">      clip_negative : bool, optional If True, clip the negative range (i.e.</span>
+<span class="sd">        return 0 for min intensity) even if the image dtype allows negative</span>
+<span class="sd">        values. Returns</span>
+<span class="sd">      min, max : tuple Lower and upper intensity limits.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">=</span> <span class="n">dtype_range</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">as_numpy_dtype</span><span class="p">]</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">if</span> <span class="n">clip_negative</span><span class="p">:</span>
+      <span class="nb">min</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">,</span> <span class="nb">max</span>
+
+  <span class="k">def</span> <span class="nf">is_compatible_with</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True if the `other` DType will be converted to this DType.</span>
+
+<span class="sd">    The conversion rules are as follows:</span>
+
+<span class="sd">    ```python</span>
+<span class="sd">    DType(T)       .is_compatible_with(DType(T))        == True</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">      other: A `DType` (or object that may be converted to a `DType`).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">      True if a Tensor of the `other` `DType` will be implicitly converted to</span>
+<span class="sd">      this `DType`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">other</span> <span class="o">=</span> <span class="n">as_dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span> <span class="ow">in</span> <span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">as_datatype_enum</span><span class="p">,</span>
+                               <span class="n">other</span><span class="o">.</span><span class="n">base_dtype</span><span class="o">.</span><span class="n">as_datatype_enum</span><span class="p">)</span>
+
+  <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True iff this DType refers to the same type as `other`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="o">!=</span> <span class="n">DType</span><span class="p">:</span>  <span class="c1"># pylint: disable=unidiomatic-typecheck</span>
+      <span class="k">try</span><span class="p">:</span>
+        <span class="n">other</span> <span class="o">=</span> <span class="n">as_dtype</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+      <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type_enum</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_type_enum</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+  <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns True iff self != other.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+  <span class="c1"># &quot;If a class that overrides __eq__() needs to retain the implementation</span>
+  <span class="c1">#  of __hash__() from a parent class, the interpreter must be told this</span>
+  <span class="c1">#  explicitly by setting __hash__ = &lt;ParentClass&gt;.__hash__.&quot;</span>
+  <span class="c1"># TODO(slebedev): Remove once __eq__ and __ne__ are implemented in C++.</span>
+  <span class="fm">__hash__</span> <span class="o">=</span> <span class="n">_dtypes</span><span class="o">.</span><span class="n">DType</span><span class="o">.</span><span class="fm">__hash__</span>
+
+  <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">as_dtype</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,)</span>
+<span class="c1"># pylint: enable=slots-on-old-class</span>
+
+
+<span class="c1"># Define data type range of numpy dtype</span>
+<span class="n">dtype_range</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">bool8</span><span class="p">:</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">65535</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">128</span><span class="p">,</span> <span class="mi">127</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">32768</span><span class="p">,</span> <span class="mi">32767</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">**</span><span class="mi">63</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">63</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">64</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="o">**</span><span class="mi">31</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">31</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">**</span><span class="mi">32</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1"># Define standard wrappers for the types_pb2.DataType enum.</span>
+<span class="n">resource</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.resource&quot;</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;resource&quot;</span><span class="p">)</span>
+<span class="n">variant</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.variant&quot;</span><span class="p">,</span> <span class="s2">&quot;variant&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;variant&quot;</span><span class="p">)</span>
+<span class="n">float16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.float16&quot;</span><span class="p">,</span> <span class="s2">&quot;float16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;float16&quot;</span><span class="p">)</span>
+<span class="n">half</span> <span class="o">=</span> <span class="n">float16</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.half&quot;</span><span class="p">,</span> <span class="s2">&quot;half&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;half&quot;</span><span class="p">)</span>
+<span class="n">float32</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.float32&quot;</span><span class="p">,</span> <span class="s2">&quot;float32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="n">float64</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.float64&quot;</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+<span class="n">double</span> <span class="o">=</span> <span class="n">float64</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.double&quot;</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;double&quot;</span><span class="p">)</span>
+<span class="n">int32</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.int32&quot;</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">)</span>
+<span class="n">uint8</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.uint8&quot;</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;uint8&quot;</span><span class="p">)</span>
+<span class="n">uint16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.uint16&quot;</span><span class="p">,</span> <span class="s2">&quot;uint16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;uint16&quot;</span><span class="p">)</span>
+<span class="n">uint32</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.uint32&quot;</span><span class="p">,</span> <span class="s2">&quot;uint32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;uint32&quot;</span><span class="p">)</span>
+<span class="n">uint64</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.uint64&quot;</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;uint64&quot;</span><span class="p">)</span>
+<span class="n">int16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.int16&quot;</span><span class="p">,</span> <span class="s2">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;int16&quot;</span><span class="p">)</span>
+<span class="n">int8</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.int8&quot;</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">)</span>
+<span class="n">string</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.string&quot;</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;string&quot;</span><span class="p">)</span>
+<span class="n">complex64</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.complex64&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;complex64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;complex64&quot;</span><span class="p">)</span>
+<span class="n">complex128</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.complex128&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;complex128&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;complex128&quot;</span><span class="p">)</span>
+<span class="n">int64</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.int64&quot;</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;int64&quot;</span><span class="p">)</span>
+<span class="nb">bool</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL</span><span class="p">)</span>  <span class="c1"># pylint: disable=redefined-builtin</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.bool&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+<span class="n">qint8</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.qint8&quot;</span><span class="p">,</span> <span class="s2">&quot;qint8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;qint8&quot;</span><span class="p">)</span>
+<span class="n">quint8</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.quint8&quot;</span><span class="p">,</span> <span class="s2">&quot;quint8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;quint8&quot;</span><span class="p">)</span>
+<span class="n">qint16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.qint16&quot;</span><span class="p">,</span> <span class="s2">&quot;qint16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;qint16&quot;</span><span class="p">)</span>
+<span class="n">quint16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.quint16&quot;</span><span class="p">,</span> <span class="s2">&quot;quint16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;quint16&quot;</span><span class="p">)</span>
+<span class="n">qint32</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.qint32&quot;</span><span class="p">,</span> <span class="s2">&quot;qint32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;qint32&quot;</span><span class="p">)</span>
+<span class="n">resource_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE_REF</span><span class="p">)</span>
+<span class="n">variant_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT_REF</span><span class="p">)</span>
+<span class="n">bfloat16</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.bfloat16&quot;</span><span class="p">,</span> <span class="s2">&quot;bfloat16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;bfloat16&quot;</span><span class="p">)</span>
+<span class="n">float16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF_REF</span><span class="p">)</span>
+<span class="n">half_ref</span> <span class="o">=</span> <span class="n">float16_ref</span>
+<span class="n">float32_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT_REF</span><span class="p">)</span>
+<span class="n">float64_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE_REF</span><span class="p">)</span>
+<span class="n">double_ref</span> <span class="o">=</span> <span class="n">float64_ref</span>
+<span class="n">int32_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32_REF</span><span class="p">)</span>
+<span class="n">uint32_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32_REF</span><span class="p">)</span>
+<span class="n">uint8_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8_REF</span><span class="p">)</span>
+<span class="n">uint16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16_REF</span><span class="p">)</span>
+<span class="n">int16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16_REF</span><span class="p">)</span>
+<span class="n">int8_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8_REF</span><span class="p">)</span>
+<span class="n">string_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING_REF</span><span class="p">)</span>
+<span class="n">complex64_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64_REF</span><span class="p">)</span>
+<span class="n">complex128_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128_REF</span><span class="p">)</span>
+<span class="n">int64_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64_REF</span><span class="p">)</span>
+<span class="n">uint64_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64_REF</span><span class="p">)</span>
+<span class="n">bool_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL_REF</span><span class="p">)</span>
+<span class="n">qint8_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8_REF</span><span class="p">)</span>
+<span class="n">quint8_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8_REF</span><span class="p">)</span>
+<span class="n">qint16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16_REF</span><span class="p">)</span>
+<span class="n">quint16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16_REF</span><span class="p">)</span>
+<span class="n">qint32_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32_REF</span><span class="p">)</span>
+<span class="n">bfloat16_ref</span> <span class="o">=</span> <span class="n">DType</span><span class="p">(</span><span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16_REF</span><span class="p">)</span>
+
+<span class="c1"># Maintain an intern table so that we don&#39;t have to create a large</span>
+<span class="c1"># number of small objects.</span>
+<span class="n">_INTERN_TABLE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF</span><span class="p">:</span> <span class="n">float16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT</span><span class="p">:</span> <span class="n">float32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE</span><span class="p">:</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32</span><span class="p">:</span> <span class="n">int32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8</span><span class="p">:</span> <span class="n">uint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16</span><span class="p">:</span> <span class="n">uint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32</span><span class="p">:</span> <span class="n">uint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64</span><span class="p">:</span> <span class="n">uint64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16</span><span class="p">:</span> <span class="n">int16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8</span><span class="p">:</span> <span class="n">int8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64</span><span class="p">:</span> <span class="n">complex64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128</span><span class="p">:</span> <span class="n">complex128</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64</span><span class="p">:</span> <span class="n">int64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8</span><span class="p">:</span> <span class="n">qint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8</span><span class="p">:</span> <span class="n">quint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16</span><span class="p">:</span> <span class="n">qint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16</span><span class="p">:</span> <span class="n">quint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32</span><span class="p">:</span> <span class="n">qint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16</span><span class="p">:</span> <span class="n">bfloat16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE</span><span class="p">:</span> <span class="n">resource</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT</span><span class="p">:</span> <span class="n">variant</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF_REF</span><span class="p">:</span> <span class="n">float16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT_REF</span><span class="p">:</span> <span class="n">float32_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE_REF</span><span class="p">:</span> <span class="n">float64_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32_REF</span><span class="p">:</span> <span class="n">int32_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32_REF</span><span class="p">:</span> <span class="n">uint32_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8_REF</span><span class="p">:</span> <span class="n">uint8_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16_REF</span><span class="p">:</span> <span class="n">uint16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16_REF</span><span class="p">:</span> <span class="n">int16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8_REF</span><span class="p">:</span> <span class="n">int8_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING_REF</span><span class="p">:</span> <span class="n">string_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64_REF</span><span class="p">:</span> <span class="n">complex64_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128_REF</span><span class="p">:</span> <span class="n">complex128_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64_REF</span><span class="p">:</span> <span class="n">int64_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64_REF</span><span class="p">:</span> <span class="n">uint64_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL_REF</span><span class="p">:</span> <span class="n">bool_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8_REF</span><span class="p">:</span> <span class="n">qint8_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8_REF</span><span class="p">:</span> <span class="n">quint8_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16_REF</span><span class="p">:</span> <span class="n">qint16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16_REF</span><span class="p">:</span> <span class="n">quint16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32_REF</span><span class="p">:</span> <span class="n">qint32_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16_REF</span><span class="p">:</span> <span class="n">bfloat16_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE_REF</span><span class="p">:</span> <span class="n">resource_ref</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT_REF</span><span class="p">:</span> <span class="n">variant_ref</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Standard mappings between types_pb2.DataType values and string names.</span>
+<span class="n">_TYPE_TO_STRING</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF</span><span class="p">:</span> <span class="s2">&quot;float16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT</span><span class="p">:</span> <span class="s2">&quot;float32&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE</span><span class="p">:</span> <span class="s2">&quot;float64&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32</span><span class="p">:</span> <span class="s2">&quot;int32&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8</span><span class="p">:</span> <span class="s2">&quot;uint8&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16</span><span class="p">:</span> <span class="s2">&quot;uint16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32</span><span class="p">:</span> <span class="s2">&quot;uint32&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64</span><span class="p">:</span> <span class="s2">&quot;uint64&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16</span><span class="p">:</span> <span class="s2">&quot;int16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8</span><span class="p">:</span> <span class="s2">&quot;int8&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64</span><span class="p">:</span> <span class="s2">&quot;complex64&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128</span><span class="p">:</span> <span class="s2">&quot;complex128&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64</span><span class="p">:</span> <span class="s2">&quot;int64&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8</span><span class="p">:</span> <span class="s2">&quot;qint8&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8</span><span class="p">:</span> <span class="s2">&quot;quint8&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16</span><span class="p">:</span> <span class="s2">&quot;qint16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16</span><span class="p">:</span> <span class="s2">&quot;quint16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32</span><span class="p">:</span> <span class="s2">&quot;qint32&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16</span><span class="p">:</span> <span class="s2">&quot;bfloat16&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE</span><span class="p">:</span> <span class="s2">&quot;resource&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT</span><span class="p">:</span> <span class="s2">&quot;variant&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF_REF</span><span class="p">:</span> <span class="s2">&quot;float16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT_REF</span><span class="p">:</span> <span class="s2">&quot;float32_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE_REF</span><span class="p">:</span> <span class="s2">&quot;float64_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32_REF</span><span class="p">:</span> <span class="s2">&quot;int32_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32_REF</span><span class="p">:</span> <span class="s2">&quot;uint32_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8_REF</span><span class="p">:</span> <span class="s2">&quot;uint8_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16_REF</span><span class="p">:</span> <span class="s2">&quot;uint16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16_REF</span><span class="p">:</span> <span class="s2">&quot;int16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8_REF</span><span class="p">:</span> <span class="s2">&quot;int8_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING_REF</span><span class="p">:</span> <span class="s2">&quot;string_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64_REF</span><span class="p">:</span> <span class="s2">&quot;complex64_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128_REF</span><span class="p">:</span> <span class="s2">&quot;complex128_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64_REF</span><span class="p">:</span> <span class="s2">&quot;int64_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64_REF</span><span class="p">:</span> <span class="s2">&quot;uint64_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL_REF</span><span class="p">:</span> <span class="s2">&quot;bool_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8_REF</span><span class="p">:</span> <span class="s2">&quot;qint8_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8_REF</span><span class="p">:</span> <span class="s2">&quot;quint8_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16_REF</span><span class="p">:</span> <span class="s2">&quot;qint16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16_REF</span><span class="p">:</span> <span class="s2">&quot;quint16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32_REF</span><span class="p">:</span> <span class="s2">&quot;qint32_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16_REF</span><span class="p">:</span> <span class="s2">&quot;bfloat16_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_RESOURCE_REF</span><span class="p">:</span> <span class="s2">&quot;resource_ref&quot;</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_VARIANT_REF</span><span class="p">:</span> <span class="s2">&quot;variant_ref&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">_STRING_TO_TF</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">_INTERN_TABLE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_TYPE_TO_STRING</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+<span class="c1"># Add non-canonical aliases.</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;half&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float16</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;half_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float16_ref</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float32</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;float_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float32_ref</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;double&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64</span>
+<span class="n">_STRING_TO_TF</span><span class="p">[</span><span class="s2">&quot;double_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">float64_ref</span>
+
+<span class="c1"># Numpy representation for quantized dtypes.</span>
+<span class="c1">#</span>
+<span class="c1"># These are magic strings that are used in the swig wrapper to identify</span>
+<span class="c1"># quantized types.</span>
+<span class="c1"># TODO(mrry,keveman): Investigate Numpy type registration to replace this</span>
+<span class="c1"># hard-coding of names.</span>
+<span class="n">_np_qint8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;qint8&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)])</span>
+<span class="n">_np_quint8</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;quint8&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)])</span>
+<span class="n">_np_qint16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;qint16&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)])</span>
+<span class="n">_np_quint16</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;quint16&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)])</span>
+<span class="n">_np_qint32</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;qint32&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)])</span>
+
+<span class="c1"># _np_bfloat16 is defined by a module import.</span>
+
+<span class="c1"># Custom struct dtype for directly-fed ResourceHandles of supported type(s).</span>
+<span class="n">np_resource</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s2">&quot;resource&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ubyte</span><span class="p">)])</span>
+
+<span class="c1"># Standard mappings between types_pb2.DataType values and numpy.dtypes.</span>
+<span class="n">_NP_TO_TF</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">:</span> <span class="n">float16</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span> <span class="n">float32</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span> <span class="n">float64</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">:</span> <span class="n">int32</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span> <span class="n">int64</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">:</span> <span class="n">uint8</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">:</span> <span class="n">uint16</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">:</span> <span class="n">uint32</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span> <span class="n">uint64</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">:</span> <span class="n">int16</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">:</span> <span class="n">int8</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">:</span> <span class="n">complex64</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">:</span> <span class="n">complex128</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">object_</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">string_</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">unicode_</span><span class="p">:</span> <span class="n">string</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">_np_qint8</span><span class="p">:</span> <span class="n">qint8</span><span class="p">,</span>
+    <span class="n">_np_quint8</span><span class="p">:</span> <span class="n">quint8</span><span class="p">,</span>
+    <span class="n">_np_qint16</span><span class="p">:</span> <span class="n">qint16</span><span class="p">,</span>
+    <span class="n">_np_quint16</span><span class="p">:</span> <span class="n">quint16</span><span class="p">,</span>
+    <span class="n">_np_qint32</span><span class="p">:</span> <span class="n">qint32</span><span class="p">,</span>
+    <span class="n">_np_bfloat16</span><span class="p">:</span> <span class="n">bfloat16</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># Map (some) NumPy platform dtypes to TF ones using their fixed-width</span>
+<span class="c1"># synonyms. Note that platform dtypes are not always simples aliases,</span>
+<span class="c1"># i.e. reference equality is not guaranteed. See e.g. numpy/numpy#9799.</span>
+<span class="k">for</span> <span class="n">pdt</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">intc</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uintc</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">int_</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">uint</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">longlong</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">ulonglong</span><span class="p">,</span>
+<span class="p">]:</span>
+  <span class="k">if</span> <span class="n">pdt</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_NP_TO_TF</span><span class="p">:</span>
+    <span class="n">_NP_TO_TF</span><span class="p">[</span><span class="n">pdt</span><span class="p">]</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="n">_NP_TO_TF</span><span class="p">[</span><span class="n">dt</span><span class="p">]</span> <span class="k">for</span> <span class="n">dt</span> <span class="ow">in</span> <span class="n">_NP_TO_TF</span> <span class="k">if</span> <span class="n">dt</span> <span class="o">==</span> <span class="n">pdt</span><span class="p">()</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+
+<span class="n">TF_VALUE_DTYPES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">_NP_TO_TF</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+
+<span class="n">_TF_TO_NP</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
+    <span class="c1"># NOTE(touts): For strings we use np.object as it supports variable length</span>
+    <span class="c1"># strings.</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8</span><span class="p">:</span>
+        <span class="n">_np_qint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8</span><span class="p">:</span>
+        <span class="n">_np_quint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16</span><span class="p">:</span>
+        <span class="n">_np_qint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16</span><span class="p">:</span>
+        <span class="n">_np_quint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32</span><span class="p">:</span>
+        <span class="n">_np_qint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16</span><span class="p">:</span>
+        <span class="n">_np_bfloat16</span><span class="p">,</span>
+
+    <span class="c1"># Ref types</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_HALF_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_FLOAT_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_DOUBLE_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT32_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT32_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT8_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT16_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT16_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT8_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_STRING_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">object</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX64_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_COMPLEX128_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_INT64_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_UINT64_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BOOL_REF</span><span class="p">:</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT8_REF</span><span class="p">:</span>
+        <span class="n">_np_qint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT8_REF</span><span class="p">:</span>
+        <span class="n">_np_quint8</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT16_REF</span><span class="p">:</span>
+        <span class="n">_np_qint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QUINT16_REF</span><span class="p">:</span>
+        <span class="n">_np_quint16</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_QINT32_REF</span><span class="p">:</span>
+        <span class="n">_np_qint32</span><span class="p">,</span>
+    <span class="n">types_pb2</span><span class="o">.</span><span class="n">DT_BFLOAT16_REF</span><span class="p">:</span>
+        <span class="n">_np_bfloat16</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_QUANTIZED_DTYPES_NO_REF</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">([</span><span class="n">qint8</span><span class="p">,</span> <span class="n">quint8</span><span class="p">,</span> <span class="n">qint16</span><span class="p">,</span> <span class="n">quint16</span><span class="p">,</span> <span class="n">qint32</span><span class="p">])</span>
+<span class="n">_QUANTIZED_DTYPES_REF</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">qint8_ref</span><span class="p">,</span> <span class="n">quint8_ref</span><span class="p">,</span> <span class="n">qint16_ref</span><span class="p">,</span> <span class="n">quint16_ref</span><span class="p">,</span> <span class="n">qint32_ref</span><span class="p">])</span>
+<span class="n">QUANTIZED_DTYPES</span> <span class="o">=</span> <span class="n">_QUANTIZED_DTYPES_REF</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">_QUANTIZED_DTYPES_NO_REF</span><span class="p">)</span>
+<span class="n">tf_export</span><span class="p">(</span>
+    <span class="s2">&quot;dtypes.QUANTIZED_DTYPES&quot;</span><span class="p">,</span>
+    <span class="n">v1</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;dtypes.QUANTIZED_DTYPES&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;QUANTIZED_DTYPES&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">export_constant</span><span class="p">(</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;QUANTIZED_DTYPES&quot;</span><span class="p">)</span>
+
+<span class="n">_PYTHON_TO_TF</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">builtins</span><span class="o">.</span><span class="n">float</span><span class="p">:</span> <span class="n">float32</span><span class="p">,</span>
+    <span class="n">builtins</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">builtins</span><span class="o">.</span><span class="n">object</span><span class="p">:</span> <span class="n">string</span>
+<span class="p">}</span>
+
+<span class="n">_ANY_TO_TF</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">_ANY_TO_TF</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_INTERN_TABLE</span><span class="p">)</span>
+<span class="n">_ANY_TO_TF</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_STRING_TO_TF</span><span class="p">)</span>
+<span class="n">_ANY_TO_TF</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_PYTHON_TO_TF</span><span class="p">)</span>
+<span class="n">_ANY_TO_TF</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_NP_TO_TF</span><span class="p">)</span>
+
+<span class="c1"># Ensure no collisions.</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_ANY_TO_TF</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sum</span><span class="p">(</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_INTERN_TABLE</span><span class="p">,</span> <span class="n">_STRING_TO_TF</span><span class="p">,</span> <span class="n">_PYTHON_TO_TF</span><span class="p">,</span> <span class="n">_NP_TO_TF</span><span class="p">])</span>
+
+
+<span class="nd">@tf_export</span><span class="p">(</span><span class="s2">&quot;dtypes.as_dtype&quot;</span><span class="p">,</span> <span class="s2">&quot;as_dtype&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">as_dtype</span><span class="p">(</span><span class="n">type_value</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Converts the given `type_value` to a `DType`.</span>
+
+<span class="sd">  Note: `DType` values are interned. When passed a new `DType` object,</span>
+<span class="sd">  `as_dtype` always returns the interned value.</span>
+
+<span class="sd">  Args:</span>
+<span class="sd">    type_value: A value that can be converted to a `tf.DType` object. This may</span>
+<span class="sd">      currently be a `tf.DType` object, a [`DataType`</span>
+<span class="sd">      enum](https://www.tensorflow.org/code/tensorflow/core/framework/types.proto),</span>
+<span class="sd">        a string type name, or a `numpy.dtype`.</span>
+
+<span class="sd">  Returns:</span>
+<span class="sd">    A `DType` corresponding to `type_value`.</span>
+
+<span class="sd">  Raises:</span>
+<span class="sd">    TypeError: If `type_value` cannot be converted to a `DType`.</span>
+<span class="sd">  &quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_value</span><span class="p">,</span> <span class="n">DType</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_INTERN_TABLE</span><span class="p">[</span><span class="n">type_value</span><span class="o">.</span><span class="n">as_datatype_enum</span><span class="p">]</span>
+
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">_NP_TO_TF</span><span class="p">[</span><span class="n">type_value</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+      <span class="k">pass</span>
+
+  <span class="k">try</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_ANY_TO_TF</span><span class="p">[</span><span class="n">type_value</span><span class="p">]</span>
+  <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+    <span class="c1"># TypeError indicates that type_value is not hashable.</span>
+    <span class="k">pass</span>
+
+  <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">type_value</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+      <span class="k">return</span> <span class="n">_NP_TO_TF</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">type_value</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+      <span class="k">pass</span>
+
+  <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_value</span><span class="p">,</span> <span class="n">_dtypes</span><span class="o">.</span><span class="n">DType</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_INTERN_TABLE</span><span class="p">[</span><span class="n">type_value</span><span class="o">.</span><span class="n">as_datatype_enum</span><span class="p">]</span>
+
+  <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Cannot convert value </span><span class="si">%r</span><span class="s2"> to a TensorFlow DType.&quot;</span> <span class="o">%</span>
+                  <span class="p">(</span><span class="n">type_value</span><span class="p">,))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+
+    <div class="footer">
+      &copy; Copyright 2019, Materials Virtual Lab.
+    </div>
+
+
+  </body>
+</html>

@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.readout.set2set &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.layers.readout.set2set &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
-    <script src="../../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.layers.readout.set2set</a></li> 
       </ul>
     </div>  
 
@@ -42,13 +43,15 @@
           <div class="body" role="main">
             
   <h1>Source code for megnet.layers.readout.set2set</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="k">import</span> <span class="n">Layer</span>
-<span class="kn">import</span> <span class="nn">tensorflow.keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="k">import</span> <span class="n">activations</span><span class="p">,</span> <span class="n">initializers</span><span class="p">,</span> <span class="n">regularizers</span><span class="p">,</span> <span class="n">constraints</span>
-
-<span class="kn">from</span> <span class="nn">megnet.utils.layer</span> <span class="k">import</span> <span class="n">repeat_with_index</span>
-
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Set2Set implementation</span>
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">tensorflow.keras.backend</span> <span class="k">as</span> <span class="nn">kb</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">activations</span><span class="p">,</span> <span class="n">initializers</span><span class="p">,</span> <span class="n">regularizers</span><span class="p">,</span> <span class="n">constraints</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Layer</span>
+
+<span class="kn">from</span> <span class="nn">megnet.utils.layer</span> <span class="kn">import</span> <span class="n">repeat_with_index</span><span class="p">,</span> <span class="n">gather</span>
 
 
 <div class="viewcode-block" id="Set2Set"><a class="viewcode-back" href="../../../../megnet.layers.readout.set2set.html#megnet.layers.Set2Set">[docs]</a><span class="k">class</span> <span class="nc">Set2Set</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
@@ -59,46 +62,48 @@
 <span class="sd">    &quot;Order matters: Sequence to sequence for sets.&quot; arXiv preprint</span>
 <span class="sd">    arXiv:1511.06391 (2015).</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        T: (int) recurrent step</span>
-<span class="sd">        n_hidden: (int) number of hidden units</span>
-<span class="sd">        activation: (str or object) activation function</span>
-<span class="sd">        activation_lstm: (str or object) activation function for lstm</span>
-<span class="sd">        recurrent_activation: (str or object) activation function for recurrent step</span>
-<span class="sd">        kernel_initializer: (str or object) initializer for kernel weights</span>
-<span class="sd">        recurrent_initializer: (str or object) initializer for recurrent weights</span>
-<span class="sd">        bias_initializer: (str or object) initializer for biases</span>
-<span class="sd">        use_bias: (bool) whether to use biases</span>
-<span class="sd">        unit_forget_bias: (bool) whether to use basis in forget gate</span>
-<span class="sd">        kernel_regularizer: (str or object) regularizer for kernel weights</span>
-<span class="sd">        recurrent_regularizer: (str or object) regularizer for recurrent weights</span>
-<span class="sd">        bias_regularizer: (str or object) regularizer for biases</span>
-<span class="sd">        kernel_constraint: (str or object) constraint for kernel weights</span>
-<span class="sd">        recurrent_constraint: (str or object) constraint for recurrent weights</span>
-<span class="sd">        bias_constraint:(str or object) constraint for biases</span>
-<span class="sd">        kwargs: other inputs for keras Layer class</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">T</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-                 <span class="n">n_hidden</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
-                 <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">activation_lstm</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span>
-                 <span class="n">recurrent_activation</span><span class="o">=</span><span class="s1">&#39;hard_sigmoid&#39;</span><span class="p">,</span>
-                 <span class="n">kernel_initializer</span><span class="o">=</span><span class="s1">&#39;glorot_uniform&#39;</span><span class="p">,</span>
-                 <span class="n">recurrent_initializer</span><span class="o">=</span><span class="s1">&#39;orthogonal&#39;</span><span class="p">,</span>
-                 <span class="n">bias_initializer</span><span class="o">=</span><span class="s1">&#39;zeros&#39;</span><span class="p">,</span>
-                 <span class="n">use_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">unit_forget_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                 <span class="n">kernel_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">recurrent_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bias_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">kernel_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">recurrent_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bias_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">T</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">n_hidden</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">activation_lstm</span><span class="o">=</span><span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
+        <span class="n">recurrent_activation</span><span class="o">=</span><span class="s2">&quot;hard_sigmoid&quot;</span><span class="p">,</span>
+        <span class="n">kernel_initializer</span><span class="o">=</span><span class="s2">&quot;glorot_uniform&quot;</span><span class="p">,</span>
+        <span class="n">recurrent_initializer</span><span class="o">=</span><span class="s2">&quot;orthogonal&quot;</span><span class="p">,</span>
+        <span class="n">bias_initializer</span><span class="o">=</span><span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
+        <span class="n">use_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">unit_forget_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">kernel_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">recurrent_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bias_regularizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kernel_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">recurrent_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bias_constraint</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            T: (int) recurrent step</span>
+<span class="sd">            n_hidden: (int) number of hidden units</span>
+<span class="sd">            activation: (str or object) activation function</span>
+<span class="sd">            activation_lstm: (str or object) activation function for lstm</span>
+<span class="sd">            recurrent_activation: (str or object) activation function for recurrent step</span>
+<span class="sd">            kernel_initializer: (str or object) initializer for kernel weights</span>
+<span class="sd">            recurrent_initializer: (str or object) initializer for recurrent weights</span>
+<span class="sd">            bias_initializer: (str or object) initializer for biases</span>
+<span class="sd">            use_bias: (bool) whether to use biases</span>
+<span class="sd">            unit_forget_bias: (bool) whether to use basis in forget gate</span>
+<span class="sd">            kernel_regularizer: (str or object) regularizer for kernel weights</span>
+<span class="sd">            recurrent_regularizer: (str or object) regularizer for recurrent weights</span>
+<span class="sd">            bias_regularizer: (str or object) regularizer for biases</span>
+<span class="sd">            kernel_constraint: (str or object) constraint for kernel weights</span>
+<span class="sd">            recurrent_constraint: (str or object) constraint for recurrent weights</span>
+<span class="sd">            bias_constraint:(str or object) constraint for biases</span>
+<span class="sd">            kwargs: other inputs for keras Layer class</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">activation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="o">=</span> <span class="n">use_bias</span>
@@ -120,55 +125,85 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">=</span> <span class="n">n_hidden</span>
 
 <div class="viewcode-block" id="Set2Set.build"><a class="viewcode-back" href="../../../../megnet.layers.readout.set2set.html#megnet.layers.Set2Set.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build tensors</span>
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (sequence of tuple): input shapes</span>
 
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">feature_shape</span><span class="p">,</span> <span class="n">index_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m_weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">feature_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">),</span>
             <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x_to_m_weight&quot;</span><span class="p">,</span>
             <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
-            <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">)</span>
+            <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">m_bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span>
-                                          <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
-                                          <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x_to_m_bias&#39;</span><span class="p">,</span>
-                                          <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
-                                          <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m_bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span>
+                <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x_to_m_bias&quot;</span><span class="p">,</span>
+                <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">m_bias</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">),</span>
-            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recurrent_kernel&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">,</span>
             <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_initializer</span><span class="p">,</span>
             <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_regularizer</span><span class="p">,</span>
-            <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_constraint</span><span class="p">)</span>
+            <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_constraint</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_forget_bias</span><span class="p">:</span>
+
                 <span class="k">def</span> <span class="nf">bias_initializer</span><span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">kb</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">(</span>
-                        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
-                                          <span class="n">initializers</span><span class="o">.</span><span class="n">Ones</span><span class="p">()((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span>
-                                                              <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
-                                          <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">(</span>
-                                              <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
-                                              <span class="o">**</span><span class="n">kwargs</span><span class="p">)])</span>
+                    <span class="k">return</span> <span class="n">kb</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                        <span class="p">[</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                            <span class="n">initializers</span><span class="o">.</span><span class="n">Ones</span><span class="p">()((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,),</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
+                        <span class="p">]</span>
+                    <span class="p">)</span>
+
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">bias_initializer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,),</span>
-                                                  <span class="n">name</span><span class="o">=</span><span class="s1">&#39;recurrent_bias&#39;</span><span class="p">,</span>
-                                                  <span class="n">initializer</span><span class="o">=</span><span class="n">bias_initializer</span><span class="p">,</span>
-                                                  <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
-                                                  <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,),</span>
+                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
+                <span class="n">initializer</span><span class="o">=</span><span class="n">bias_initializer</span><span class="p">,</span>
+                <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
+                <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">built</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Set2Set.compute_output_shape"><a class="viewcode-back" href="../../../../megnet.layers.readout.set2set.html#megnet.layers.Set2Set.compute_output_shape">[docs]</a>    <span class="k">def</span> <span class="nf">compute_output_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute output shapes from input shapes</span>
+<span class="sd">        Args:</span>
+<span class="sd">            input_shape (sequence of tuple): input shapes</span>
+
+<span class="sd">        Returns: sequence of tuples output shapes</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">feature_shape</span><span class="p">,</span> <span class="n">index_shape</span> <span class="o">=</span> <span class="n">input_shape</span>
         <span class="k">return</span> <span class="n">feature_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span></div>
 
 <div class="viewcode-block" id="Set2Set.call"><a class="viewcode-back" href="../../../../megnet.layers.readout.set2set.html#megnet.layers.Set2Set.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main logic</span>
+<span class="sd">        Args:</span>
+<span class="sd">            inputs (tuple of tensor): input tensors</span>
+<span class="sd">            mask (tensor): mask tensor</span>
+
+<span class="sd">        Returns: output tensor</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">features</span><span class="p">,</span> <span class="n">feature_graph_index</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">feature_graph_index</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">feature_graph_index</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">unique_with_counts</span><span class="p">(</span><span class="n">feature_graph_index</span><span class="p">)</span>
@@ -176,32 +211,27 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
             <span class="n">m</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">m_bias</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
-        <span class="n">q_star</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
+        <span class="n">q_star</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">features</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">count</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lstm</span><span class="p">(</span><span class="n">q_star</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
-            <span class="n">e_i_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span>
-                <span class="n">input_tensor</span><span class="o">=</span><span class="n">m</span> <span class="o">*</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">feature_graph_index</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">e_i_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span><span class="p">(</span><span class="n">input_tensor</span><span class="o">=</span><span class="n">m</span> <span class="o">*</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">feature_graph_index</span><span class="p">),</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">maxes</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_max</span><span class="p">(</span><span class="n">e_i_t</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">feature_graph_index</span><span class="p">)</span>
+            <span class="n">e_i_t</span> <span class="o">-=</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">gather</span><span class="p">(</span><span class="n">maxes</span><span class="p">,</span> <span class="n">feature_graph_index</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">exp</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">e_i_t</span><span class="p">)</span>
-            <span class="c1"># print(&#39;exp shape &#39;, exp.shape)</span>
             <span class="n">seg_sum</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
-                <span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span><span class="p">(</span>
-                    <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">exp</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
-                    <span class="n">feature_graph_index</span><span class="p">),</span>
-                <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">exp</span><span class="p">,</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">feature_graph_index</span><span class="p">),</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="p">)</span>
             <span class="n">seg_sum</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">seg_sum</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
-            <span class="c1"># print(&#39;seg_sum shape&#39;, seg_sum.shape)</span>
             <span class="n">interm</span> <span class="o">=</span> <span class="n">repeat_with_index</span><span class="p">(</span><span class="n">seg_sum</span><span class="p">,</span> <span class="n">feature_graph_index</span><span class="p">)</span>
-            <span class="c1"># print(&#39;interm shape&#39;, interm.shape)</span>
             <span class="n">a_i_t</span> <span class="o">=</span> <span class="n">exp</span> <span class="o">/</span> <span class="n">interm</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-            <span class="c1"># print(a_i_t.shape)</span>
-            <span class="n">r_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span><span class="p">(</span>
-                <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">a_i_t</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]),</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span>
-                <span class="n">feature_graph_index</span><span class="p">),</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="n">r_t</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span>
+                <span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span><span class="p">(</span>
+                    <span class="n">tf</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">a_i_t</span><span class="p">[:,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]),</span> <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">feature_graph_index</span>
+                <span class="p">),</span>
+                <span class="n">perm</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+            <span class="p">)</span>
             <span class="n">q_star</span> <span class="o">=</span> <span class="n">kb</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">r_t</span><span class="p">],</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">q_star</span></div>
 
@@ -210,10 +240,10 @@
         <span class="n">z</span> <span class="o">=</span> <span class="n">kb</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
             <span class="n">z</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias</span>
-        <span class="n">z0</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
-        <span class="n">z1</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">:</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
-        <span class="n">z2</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">:</span><span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
-        <span class="n">z3</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">:]</span>
+        <span class="n">z0</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
+        <span class="n">z1</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
+        <span class="n">z2</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">]</span>
+        <span class="n">z3</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">3</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span> <span class="p">:]</span>
         <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_activation</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
         <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_activation</span><span class="p">(</span><span class="n">z1</span><span class="p">)</span>
         <span class="c1"># print(z.shape, f.shape, c.shape, z2.shape)</span>
@@ -223,38 +253,34 @@
         <span class="k">return</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span>
 
 <div class="viewcode-block" id="Set2Set.get_config"><a class="viewcode-back" href="../../../../megnet.layers.readout.set2set.html#megnet.layers.Set2Set.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                  <span class="s2">&quot;n_hidden&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,</span>
-                  <span class="s2">&quot;activation&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">),</span>
-                  <span class="s2">&quot;activation_lstm&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">activation_lstm</span><span class="p">),</span>
-                  <span class="s2">&quot;recurrent_activation&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_activation</span><span class="p">),</span>
-                  <span class="s2">&quot;kernel_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">),</span>
-                  <span class="s2">&quot;recurrent_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_initializer</span><span class="p">),</span>
-                  <span class="s2">&quot;bias_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">),</span>
-                  <span class="s2">&quot;use_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">,</span>
-                  <span class="s2">&quot;unit_forget_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_forget_bias</span><span class="p">,</span>
-                  <span class="s2">&quot;kernel_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">),</span>
-                  <span class="s2">&quot;recurrent_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_regularizer</span><span class="p">),</span>
-                  <span class="s2">&quot;bias_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">),</span>
-                  <span class="s2">&quot;kernel_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">),</span>
-                  <span class="s2">&quot;recurrent_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span>
-                      <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_constraint</span><span class="p">),</span>
-                  <span class="s2">&quot;bias_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">)</span>
-
-                  <span class="p">}</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Part of keras layer interface, where the signature is converted into a dict</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            configurational dictionary</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
+            <span class="s2">&quot;n_hidden&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_hidden</span><span class="p">,</span>
+            <span class="s2">&quot;activation&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">),</span>
+            <span class="s2">&quot;activation_lstm&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_lstm</span><span class="p">),</span>
+            <span class="s2">&quot;recurrent_activation&quot;</span><span class="p">:</span> <span class="n">activations</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_activation</span><span class="p">),</span>
+            <span class="s2">&quot;kernel_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">),</span>
+            <span class="s2">&quot;recurrent_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_initializer</span><span class="p">),</span>
+            <span class="s2">&quot;bias_initializer&quot;</span><span class="p">:</span> <span class="n">initializers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">),</span>
+            <span class="s2">&quot;use_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">,</span>
+            <span class="s2">&quot;unit_forget_bias&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_forget_bias</span><span class="p">,</span>
+            <span class="s2">&quot;kernel_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;recurrent_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;bias_regularizer&quot;</span><span class="p">:</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">),</span>
+            <span class="s2">&quot;kernel_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">),</span>
+            <span class="s2">&quot;recurrent_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recurrent_constraint</span><span class="p">),</span>
+            <span class="s2">&quot;bias_constraint&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">),</span>
+        <span class="p">}</span>
         <span class="n">base_config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">base_config</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span></div></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.data.graph &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.data.graph &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
 
@@ -31,8 +31,9 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.data.graph</a></li> 
       </ul>
     </div>  
 
@@ -44,29 +45,36 @@
   <h1>Source code for megnet.data.graph</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Abstract classes and utility operations for building graph representations and</span>
 <span class="sd">data loaders (known as Sequence objects in Keras).</span>
-
 <span class="sd">Most users will not need to interact with this module.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">itemgetter</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="k">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">megnet.utils.general</span> <span class="k">import</span> <span class="n">expand_1st</span><span class="p">,</span> <span class="n">to_list</span>
-<span class="kn">from</span> <span class="nn">megnet.utils.data</span> <span class="k">import</span> <span class="n">get_graphs_within_cutoff</span>
-<span class="kn">from</span> <span class="nn">monty.json</span> <span class="k">import</span> <span class="n">MSONable</span>
-<span class="kn">from</span> <span class="nn">megnet.data</span> <span class="k">import</span> <span class="n">local_env</span>
-<span class="kn">from</span> <span class="nn">inspect</span> <span class="k">import</span> <span class="n">signature</span>
-<span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="k">import</span> <span class="n">NearNeighbors</span>
-<span class="kn">from</span> <span class="nn">pymatgen</span> <span class="k">import</span> <span class="n">Structure</span>
+<span class="kn">from</span> <span class="nn">monty.json</span> <span class="kn">import</span> <span class="n">MSONable</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">Sequence</span>
+<span class="kn">from</span> <span class="nn">pymatgen.core</span> <span class="kn">import</span> <span class="n">Structure</span>
+<span class="kn">from</span> <span class="nn">pymatgen.analysis.local_env</span> <span class="kn">import</span> <span class="n">NearNeighbors</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">megnet.data</span> <span class="kn">import</span> <span class="n">local_env</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.data</span> <span class="kn">import</span> <span class="n">get_graphs_within_cutoff</span>
+<span class="kn">from</span> <span class="nn">megnet.utils.general</span> <span class="kn">import</span> <span class="n">expand_1st</span><span class="p">,</span> <span class="n">to_list</span>
 
 
 <div class="viewcode-block" id="Converter"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.Converter">[docs]</a><span class="k">class</span> <span class="nc">Converter</span><span class="p">(</span><span class="n">MSONable</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for atom or bond converter</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="Converter.convert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.Converter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the object d</span>
+<span class="sd">        Args:</span>
+<span class="sd">            d (Any): Any object d</span>
+
+<span class="sd">        Returns: returned object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
@@ -80,16 +88,23 @@
 <span class="sd">            This method convert a structure directly to a model input</span>
 <span class="sd">        3. get_flat_data(self, graphs, targets)</span>
 <span class="sd">            This method process graphs and targets pairs and output model input list.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># TODO (wardlt): Consider making &quot;num_*_features&quot; funcs to simplify making a MEGNet model</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">atom_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bond_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">nn_strategy</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NearNeighbors</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">atom_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">bond_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">        Args:</span>
+<span class="sd">            nn_strategy (str or NearNeighbors): NearNeighbor strategy</span>
+<span class="sd">            atom_converter (Converter): atom converter</span>
+<span class="sd">            bond_converter (Converter): bond converter</span>
+<span class="sd">            **kwargs:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nn_strategy</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">strategy</span> <span class="o">=</span> <span class="n">local_env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">nn_strategy</span><span class="p">)</span>
@@ -107,12 +122,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Strategy not valid&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span> <span class="o">=</span> <span class="n">atom_converter</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span> <span class="o">=</span> <span class="n">bond_converter</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_converter</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_converter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span> <span class="o">=</span> <span class="n">atom_converter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_converter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span> <span class="o">=</span> <span class="n">bond_converter</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dummy_converter</span><span class="p">()</span>
 
 <div class="viewcode-block" id="StructureGraph.convert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">,</span> <span class="n">state_attributes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -122,13 +133,14 @@
 <span class="sd">        distance.</span>
 <span class="sd">        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would</span>
 <span class="sd">        take default [[0, 0]]</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            state_attributes: (list) state attributes</span>
 <span class="sd">            structure: (pymatgen structure)</span>
 <span class="sd">            (dictionary)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">state_attributes</span> <span class="o">=</span> <span class="n">state_attributes</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">state_attributes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">state_attributes</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">index1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">index2</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
@@ -137,36 +149,34 @@
         <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">neighbors</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nn_strategy</span><span class="o">.</span><span class="n">get_all_nn_info</span><span class="p">(</span><span class="n">structure</span><span class="p">)):</span>
             <span class="n">index1</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">neighbors</span><span class="p">))</span>
             <span class="k">for</span> <span class="n">neighbor</span> <span class="ow">in</span> <span class="n">neighbors</span><span class="p">:</span>
-                <span class="n">index2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">[</span><span class="s1">&#39;site_index&#39;</span><span class="p">])</span>
-                <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">])</span>
-
+                <span class="n">index2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;site_index&quot;</span><span class="p">])</span>
+                <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">index1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;atom&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span>
-                    <span class="s1">&#39;bond&#39;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span>
-                    <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span>
-                    <span class="s1">&#39;index1&#39;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span>
-                    <span class="s1">&#39;index2&#39;</span><span class="p">:</span> <span class="n">index2</span>
-                    <span class="p">}</span></div>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;atom&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span> <span class="s2">&quot;index1&quot;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span> <span class="s2">&quot;index2&quot;</span><span class="p">:</span> <span class="n">index2</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="StructureGraph.get_atom_features"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.get_atom_features">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get atom features from structure, may be overwritten</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            structure: (Pymatgen.Structure) pymatgen structure</span>
-
 <span class="sd">        Returns:</span>
 <span class="sd">            List of atomic numbers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">specie</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">],</span>
-                        <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int32&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="o">.</span><span class="n">specie</span><span class="o">.</span><span class="n">Z</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">structure</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;int32&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Directly apply the converter to structure, alias to convert</span>
+<span class="sd">        Args:</span>
+<span class="sd">            structure (Structure): input structure</span>
+
+<span class="sd">        Returns (dict): graph dictionary</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
 
 <div class="viewcode-block" id="StructureGraph.get_input"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.get_input">[docs]</a>    <span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="p">:</span> <span class="n">Structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
@@ -179,33 +189,33 @@
 <div class="viewcode-block" id="StructureGraph.graph_to_input"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.graph_to_input">[docs]</a>    <span class="k">def</span> <span class="nf">graph_to_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Turns a graph into model input</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            (dict): Dictionary description of the graph</span>
 <span class="sd">        Return:</span>
 <span class="sd">            ([np.ndarray]): Inputs in the form needed by MEGNet</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">gnode</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;atom&#39;</span><span class="p">])</span>
-        <span class="n">gbond</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;index1&#39;</span><span class="p">])</span>
+        <span class="n">gnode</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;atom&quot;</span><span class="p">])</span>
+        <span class="n">gbond</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;index1&quot;</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="n">expand_1st</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;atom&#39;</span><span class="p">])),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;bond&#39;</span><span class="p">])),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">])),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;index1&#39;</span><span class="p">])),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s1">&#39;index2&#39;</span><span class="p">])),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
-                <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atom_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;atom&quot;</span><span class="p">])),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bond_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;bond&quot;</span><span class="p">])),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;index1&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">graph</span><span class="p">[</span><span class="s2">&quot;index2&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+        <span class="p">]</span></div>
 
-<div class="viewcode-block" id="StructureGraph.get_flat_data"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.get_flat_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_flat_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graphs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">targets</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="StructureGraph.get_flat_data"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.get_flat_data">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_flat_data</span><span class="p">(</span><span class="n">graphs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">],</span> <span class="n">targets</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Expand the graph dictionary to form a list of features and targets tensors.</span>
 <span class="sd">        This is useful when the model is trained on assembled graphs on the fly.</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            graphs: (list of dictionary) list of graph dictionary for each structure</span>
 <span class="sd">            targets: (list of float or list) Optional: corresponding target</span>
 <span class="sd">                values for each structure</span>
-
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple(node_features, edges_features, global_values, index1, index2, targets)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -213,7 +223,7 @@
         <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Will be a list of arrays</span>
 
         <span class="c1"># Convert the graphs to matrices</span>
-        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;atom&#39;</span><span class="p">,</span> <span class="s1">&#39;bond&#39;</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="s1">&#39;index1&#39;</span><span class="p">,</span> <span class="s1">&#39;index2&#39;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;atom&quot;</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="s2">&quot;index1&quot;</span><span class="p">,</span> <span class="s2">&quot;index2&quot;</span><span class="p">]:</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">feature</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">graphs</span><span class="p">])</span>
 
         <span class="c1"># If needed, add the targets</span>
@@ -223,22 +233,34 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_dummy_converter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s1">&#39;DummyConverter&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_dummy_converter</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="s2">&quot;DummyConverter&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">DummyConverter</span><span class="p">()</span>
 
 <div class="viewcode-block" id="StructureGraph.as_dict"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Serialize to dict</span>
+<span class="sd">        Returns: (dict) dictionary of information</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">&#39;nn_strategy&#39;</span> <span class="ow">in</span> <span class="n">all_dict</span><span class="p">:</span>
-            <span class="n">nn_strategy</span> <span class="o">=</span> <span class="n">all_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;nn_strategy&#39;</span><span class="p">)</span>
-            <span class="n">all_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;nn_strategy&#39;</span><span class="p">:</span> <span class="n">local_env</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">nn_strategy</span><span class="p">)})</span>
+        <span class="k">if</span> <span class="s2">&quot;nn_strategy&quot;</span> <span class="ow">in</span> <span class="n">all_dict</span><span class="p">:</span>
+            <span class="n">nn_strategy</span> <span class="o">=</span> <span class="n">all_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nn_strategy&quot;</span><span class="p">)</span>
+            <span class="n">all_dict</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;nn_strategy&quot;</span><span class="p">:</span> <span class="n">local_env</span><span class="o">.</span><span class="n">serialize</span><span class="p">(</span><span class="n">nn_strategy</span><span class="p">)})</span>
         <span class="k">return</span> <span class="n">all_dict</span></div>
 
 <div class="viewcode-block" id="StructureGraph.from_dict"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraph.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StructureGraph&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;nn_strategy&#39;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
-            <span class="n">nn_strategy</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;nn_strategy&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StructureGraph&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialization from dictionary</span>
+<span class="sd">        Args:</span>
+<span class="sd">            d (dict): dictionary</span>
+
+<span class="sd">        Returns: StructureGraph object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;nn_strategy&quot;</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+            <span class="n">nn_strategy</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;nn_strategy&quot;</span><span class="p">)</span>
             <span class="n">nn_strategy_obj</span> <span class="o">=</span> <span class="n">local_env</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">nn_strategy</span><span class="p">)</span>
-            <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;nn_strategy&#39;</span><span class="p">:</span> <span class="n">nn_strategy_obj</span><span class="p">})</span>
+            <span class="n">d</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;nn_strategy&quot;</span><span class="p">:</span> <span class="n">nn_strategy_obj</span><span class="p">})</span>
             <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">)</span></div></div>
 
@@ -257,31 +279,36 @@
 <span class="sd">        distance.</span>
 <span class="sd">        For state attributes, you can set structure.state = [[xx, xx]] beforehand or the algorithm would</span>
 <span class="sd">        take default [[0, 0]]</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            state_attributes: (list) state attributes</span>
 <span class="sd">            structure: (pymatgen structure)</span>
 <span class="sd">            (dictionary)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">state_attributes</span> <span class="o">=</span> <span class="n">state_attributes</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+        <span class="n">state_attributes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">state_attributes</span> <span class="ow">or</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">bonds</span> <span class="o">=</span> <span class="n">get_graphs_within_cutoff</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nn_strategy</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">index1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;atom&#39;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span>
-                    <span class="s1">&#39;bond&#39;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span>
-                    <span class="s1">&#39;state&#39;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span>
-                    <span class="s1">&#39;index1&#39;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span>
-                    <span class="s1">&#39;index2&#39;</span><span class="p">:</span> <span class="n">index2</span>
-                    <span class="p">}</span></div>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;atom&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span> <span class="s2">&quot;index1&quot;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span> <span class="s2">&quot;index2&quot;</span><span class="p">:</span> <span class="n">index2</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="StructureGraphFixedRadius.from_structure_graph"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraphFixedRadius.from_structure_graph">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_structure_graph</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structure_graph</span><span class="p">:</span> <span class="n">StructureGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;StructureGraphFixedRadius&#39;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">nn_strategy</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">nn_strategy</span><span class="p">,</span>
-                   <span class="n">atom_converter</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">atom_converter</span><span class="p">,</span>
-                   <span class="n">bond_converter</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">bond_converter</span><span class="p">)</span></div></div>
+    <span class="k">def</span> <span class="nf">from_structure_graph</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">structure_graph</span><span class="p">:</span> <span class="n">StructureGraph</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;StructureGraphFixedRadius&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize from pymatgen StructureGraph</span>
+<span class="sd">        Args:</span>
+<span class="sd">            structure_graph (StructureGraph): pymatgen StructureGraph object</span>
+
+<span class="sd">        Returns: StructureGraphFixedRadius object</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">nn_strategy</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">nn_strategy</span><span class="p">,</span>
+            <span class="n">atom_converter</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">atom_converter</span><span class="p">,</span>
+            <span class="n">bond_converter</span><span class="o">=</span><span class="n">structure_graph</span><span class="o">.</span><span class="n">bond_converter</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="DummyConverter"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.DummyConverter">[docs]</a><span class="k">class</span> <span class="nc">DummyConverter</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
@@ -290,27 +317,34 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DummyConverter.convert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.DummyConverter.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Dummy convert, does nothing to input</span>
+<span class="sd">        Args:</span>
+<span class="sd">            d (Any): input object</span>
+
+<span class="sd">        Returns: d</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">d</span></div></div>
 
 
 <div class="viewcode-block" id="EmbeddingMap"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.EmbeddingMap">[docs]</a><span class="k">class</span> <span class="nc">EmbeddingMap</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an integer to a row vector in a feature matrix</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        feature_matrix: (np.ndarray) A matrix of shape (N, M)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            feature_matrix: (np.ndarray) A matrix of shape (N, M)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">feature_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">feature_matrix</span><span class="p">)</span>
 
 <div class="viewcode-block" id="EmbeddingMap.convert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.EmbeddingMap.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">int_array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        convert atomic number to row vectors in the feature_matrix</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            int_array: (1d array) number array of length L</span>
-
 <span class="sd">        Returns</span>
 <span class="sd">            (matrix) L*M matrix with N the length of d and M the length of centers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -320,76 +354,87 @@
 <div class="viewcode-block" id="GaussianDistance"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.GaussianDistance">[docs]</a><span class="k">class</span> <span class="nc">GaussianDistance</span><span class="p">(</span><span class="n">Converter</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand distance with Gaussian basis sit at centers and with width 0.5.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        centers: (np.array)</span>
-<span class="sd">        width: (float)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">centers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            centers: (np.array) centers for the Gaussian basis</span>
+<span class="sd">            width: (float) width of Gaussian basis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">centers</span> <span class="o">=</span> <span class="n">centers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">width</span>
 
 <div class="viewcode-block" id="GaussianDistance.convert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.GaussianDistance.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        expand distance vector d with given parameters</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            d: (1d array) distance array</span>
-
 <span class="sd">        Returns</span>
 <span class="sd">            (matrix) N*M matrix with N the length of d and M the length of centers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">d</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">d</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">centers</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="BaseGraphBatchGenerator"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator">[docs]</a><span class="k">class</span> <span class="nc">BaseGraphBatchGenerator</span><span class="p">(</span><span class="n">Sequence</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for classes that generate batches of training data for MEGNet.</span>
 <span class="sd">    Based on the Sequence class, which is the data loader equivalent for Keras.</span>
-
 <span class="sd">    Implementations of this base class must implement the :meth:`_generate_inputs`,</span>
 <span class="sd">    which generates the lists of graph descriptions for a batch.</span>
-
 <span class="sd">    The :meth:`process_atom_features` function and related functions are used to modify</span>
 <span class="sd">    the features for each atom, bond, and global features when creating a batch.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dataset_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">sample_weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="n">is_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            dataset_size (int): Number of entries in dataset</span>
 <span class="sd">            targets (ndarray): Feature to be predicted for each network</span>
+<span class="sd">            sample_weights (npdarray): sample weights</span>
 <span class="sd">            batch_size (int): Maximum batch size</span>
-<span class="sd">            shuffle (bool): Whether to shuffle the data after each step</span>
+<span class="sd">            is_shuffle (bool): Whether to shuffle the data after each step</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">targets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">targets</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">dataset_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">sample_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sample_weights</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sample_weights</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_n</span> <span class="o">=</span> <span class="n">dataset_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span> <span class="o">=</span> <span class="n">shuffle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span> <span class="o">=</span> <span class="n">is_shuffle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_n</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">total_n</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span>
 
-    <span class="k">def</span> <span class="nf">_combine_graph_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                            <span class="n">feature_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                            <span class="n">connection_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                            <span class="n">global_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                            <span class="n">index1_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                            <span class="n">index2_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_combine_graph_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">feature_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">connection_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">global_list_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">index1_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">index2_temp</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Compile the matrices describing each graph into single matrices for the entire graph</span>
-
 <span class="sd">        Beyond concatenating the graph descriptions, this operation updates the indices of each</span>
 <span class="sd">        node to be sequential across all graphs so they are not duplicated between graphs</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">            feature_list_temp ([ndarray]): List of features for each node</span>
 <span class="sd">            connection_list_temp ([ndarray]): List of features for each connection</span>
@@ -435,33 +480,62 @@
         <span class="k">for</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">index1_temp</span><span class="p">,</span> <span class="n">index2_temp</span><span class="p">):</span>
             <span class="n">index1</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset_ind</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind1</span><span class="p">]</span>
             <span class="n">index2</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset_ind</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind2</span><span class="p">]</span>
-            <span class="n">offset_ind</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">offset_ind</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="c1"># Compile the inputs in needed order</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">expand_1st</span><span class="p">(</span><span class="n">feature_list_temp</span><span class="p">),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">connection_list_temp</span><span class="p">),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">global_list_temp</span><span class="p">),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
-                  <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))]</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">feature_list_temp</span><span class="p">),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">connection_list_temp</span><span class="p">),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">global_list_temp</span><span class="p">),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">index2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gnode</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+            <span class="n">expand_1st</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">gbond</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">inputs</span>
 
 <div class="viewcode-block" id="BaseGraphBatchGenerator.on_epoch_end"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator.on_epoch_end">[docs]</a>    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        code to be executed on epoch end</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shuffle</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="BaseGraphBatchGenerator.process_atom_feature"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator.process_atom_feature">[docs]</a>    <span class="k">def</span> <span class="nf">process_atom_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): atom features</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed atom features</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="BaseGraphBatchGenerator.process_bond_feature"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator.process_bond_feature">[docs]</a>    <span class="k">def</span> <span class="nf">process_bond_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): bond features</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed bond features</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">x</span></div>
 
 <div class="viewcode-block" id="BaseGraphBatchGenerator.process_state_feature"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.BaseGraphBatchGenerator.process_state_feature">[docs]</a>    <span class="k">def</span> <span class="nf">process_state_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): state features</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            processed state features</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">x</span></div>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="c1"># Get the indices for this batch</span>
-        <span class="n">batch_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">:(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
+        <span class="n">batch_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mol_index</span><span class="p">[</span><span class="n">index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="p">:</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
 
         <span class="c1"># Get the inputs for each batch</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_inputs</span><span class="p">(</span><span class="n">batch_index</span><span class="p">)</span>
@@ -472,18 +546,18 @@
         <span class="c1"># Return the batch</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">targets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">inputs</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># get targets</span>
-            <span class="n">it</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">batch_index</span><span class="p">)</span>
-            <span class="n">target_temp</span> <span class="o">=</span> <span class="n">itemgetter_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">)</span>
-            <span class="n">target_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">target_temp</span><span class="p">)</span>
-
+        <span class="c1"># get targets</span>
+        <span class="n">target_temp</span> <span class="o">=</span> <span class="n">itemgetter_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">targets</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">)</span>
+        <span class="n">target_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">target_temp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">expand_1st</span><span class="p">(</span><span class="n">target_temp</span><span class="p">)</span>
+        <span class="n">sample_weights_temp</span> <span class="o">=</span> <span class="n">itemgetter_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_weights</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">)</span>
+        <span class="c1"># sample_weights_temp = np.atleast_2d(sample_weights_temp)</span>
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">expand_1st</span><span class="p">(</span><span class="n">target_temp</span><span class="p">),</span> <span class="n">expand_1st</span><span class="p">(</span><span class="n">sample_weights_temp</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_generate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_generate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get the graph descriptions for each batch</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">             batch_index ([int]): List of indices for training batch</span>
 <span class="sd">        Returns:</span>
@@ -501,40 +575,46 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A generator class that assembles several structures (indicated by</span>
 <span class="sd">    batch_size) and form (x, y) pairs for model training.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        atom_features: (list of np.array) list of atom feature matrix,</span>
-<span class="sd">        bond_features: (list of np.array) list of bond features matrix</span>
-<span class="sd">        state_features: (list of np.array) list of [1, G] state features,</span>
-<span class="sd">            where G is the global state feature dimension</span>
-<span class="sd">        index1_list: (list of integer) list of (M, ) one side atomic index of the bond,</span>
-<span class="sd">        M is different for different structures</span>
-<span class="sd">        index2_list: (list of integer) list of (M, ) the other side atomic</span>
-<span class="sd">            index of the bond, M is different for different structures,</span>
-<span class="sd">            but it has to be the same as the corresponding index1.</span>
-<span class="sd">        targets: (numpy array), N*1, where N is the number of structures</span>
-<span class="sd">        batch_size: (int) number of samples in a batch</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">atom_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">bond_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">state_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">index1_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                 <span class="n">index2_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                 <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
-                 <span class="n">is_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atom_features</span><span class="p">),</span> <span class="n">targets</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">is_shuffle</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">bond_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">state_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">index1_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">index2_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="n">is_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Args:</span>
+<span class="sd">            atom_features: (list of np.array) list of atom feature matrix,</span>
+<span class="sd">            bond_features: (list of np.array) list of bond features matrix</span>
+<span class="sd">            state_features: (list of np.array) list of [1, G] state features,</span>
+<span class="sd">                where G is the global state feature dimension</span>
+<span class="sd">            index1_list: (list of integer) list of (M, ) one side atomic index of the bond,</span>
+<span class="sd">            M is different for different structures</span>
+<span class="sd">            index2_list: (list of integer) list of (M, ) the other side atomic</span>
+<span class="sd">                index of the bond, M is different for different structures,</span>
+<span class="sd">                but it has to be the same as the corresponding index1.</span>
+<span class="sd">            targets: (numpy array), N*1, where N is the number of structures</span>
+<span class="sd">            sample_weights: (numpy array), N*1, where N is the number of structures</span>
+<span class="sd">            batch_size: (int) number of samples in a batch</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">atom_features</span><span class="p">),</span> <span class="n">targets</span><span class="p">,</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">is_shuffle</span><span class="o">=</span><span class="n">is_shuffle</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">atom_features</span> <span class="o">=</span> <span class="n">atom_features</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bond_features</span> <span class="o">=</span> <span class="n">bond_features</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state_features</span> <span class="o">=</span> <span class="n">state_features</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index1_list</span> <span class="o">=</span> <span class="n">index1_list</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index2_list</span> <span class="o">=</span> <span class="n">index2_list</span>
 
-    <span class="k">def</span> <span class="nf">_generate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_generate_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_index</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get the graph descriptions for each batch</span>
-
 <span class="sd">        Args:</span>
 <span class="sd">             batch_index ([int]): List of indices for training batch</span>
 <span class="sd">        Returns:</span>
@@ -559,64 +639,82 @@
 <div class="viewcode-block" id="GraphBatchDistanceConvert"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.GraphBatchDistanceConvert">[docs]</a><span class="k">class</span> <span class="nc">GraphBatchDistanceConvert</span><span class="p">(</span><span class="n">GraphBatchGenerator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Generate batch of structures with bond distance being expanded using a Expansor</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        atom_features: (list of np.array) list of atom feature matrix,</span>
-<span class="sd">        bond_features: (list of np.array) list of bond features matrix</span>
-<span class="sd">        state_features: (list of np.array) list of [1, G] state features, where G is the global state feature dimension</span>
-<span class="sd">        index1_list: (list of integer) list of (M, ) one side atomic index of the bond, M is different for different</span>
-<span class="sd">            structures</span>
-<span class="sd">        index2_list: (list of integer) list of (M, ) the other side atomic index of the bond, M is different for</span>
-<span class="sd">            different structures, but it has to be the same as the correponding index1.</span>
-<span class="sd">        targets: (numpy array), N*1, where N is the number of structures</span>
-<span class="sd">        batch_size: (int) number of samples in a batch</span>
-<span class="sd">        is_shuffle: (bool) whether to shuffle the structure, default to True</span>
-<span class="sd">        distance_converter: (bool) converter for processing the distances</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">atom_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">bond_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">state_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-                 <span class="n">index1_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                 <span class="n">index2_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
-                 <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
-                 <span class="n">is_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-                 <span class="n">distance_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">atom_features</span><span class="o">=</span><span class="n">atom_features</span><span class="p">,</span>
-                         <span class="n">bond_features</span><span class="o">=</span><span class="n">bond_features</span><span class="p">,</span>
-                         <span class="n">state_features</span><span class="o">=</span><span class="n">state_features</span><span class="p">,</span>
-                         <span class="n">index1_list</span><span class="o">=</span><span class="n">index1_list</span><span class="p">,</span>
-                         <span class="n">index2_list</span><span class="o">=</span><span class="n">index2_list</span><span class="p">,</span>
-                         <span class="n">targets</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
-                         <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
-                         <span class="n">is_shuffle</span><span class="o">=</span><span class="n">is_shuffle</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atom_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">bond_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">state_features</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">index1_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">index2_list</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+        <span class="n">targets</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sample_weights</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+        <span class="n">is_shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">distance_converter</span><span class="p">:</span> <span class="n">Converter</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            atom_features: (list of np.array) list of atom feature matrix,</span>
+<span class="sd">            bond_features: (list of np.array) list of bond features matrix</span>
+<span class="sd">            state_features: (list of np.array) list of [1, G] state features,</span>
+<span class="sd">                where G is the global state feature dimension</span>
+<span class="sd">            index1_list: (list of integer) list of (M, ) one side atomic index</span>
+<span class="sd">                of the bond, M is different for different structures</span>
+<span class="sd">            index2_list: (list of integer) list of (M, ) the other side atomic</span>
+<span class="sd">                index of the bond, M is different for different structures,</span>
+<span class="sd">                but it has to be the same as the correponding index1.</span>
+<span class="sd">            targets: (numpy array), N*1, where N is the number of structures</span>
+<span class="sd">            sample_weights: (numpy array), N*1, where N is the number of structures</span>
+<span class="sd">            batch_size: (int) number of samples in a batch</span>
+<span class="sd">            is_shuffle: (bool) whether to shuffle the structure, default to True</span>
+<span class="sd">            distance_converter: (bool) converter for processing the distances</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">atom_features</span><span class="o">=</span><span class="n">atom_features</span><span class="p">,</span>
+            <span class="n">bond_features</span><span class="o">=</span><span class="n">bond_features</span><span class="p">,</span>
+            <span class="n">state_features</span><span class="o">=</span><span class="n">state_features</span><span class="p">,</span>
+            <span class="n">index1_list</span><span class="o">=</span><span class="n">index1_list</span><span class="p">,</span>
+            <span class="n">index2_list</span><span class="o">=</span><span class="n">index2_list</span><span class="p">,</span>
+            <span class="n">targets</span><span class="o">=</span><span class="n">targets</span><span class="p">,</span>
+            <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">,</span>
+            <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+            <span class="n">is_shuffle</span><span class="o">=</span><span class="n">is_shuffle</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">distance_converter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Distance converter cannot be None&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span> <span class="o">=</span> <span class="n">distance_converter</span>
 
 <div class="viewcode-block" id="GraphBatchDistanceConvert.process_bond_feature"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.GraphBatchDistanceConvert.process_bond_feature">[docs]</a>    <span class="k">def</span> <span class="nf">process_bond_feature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert bond distances into Gaussian expanded vectors</span>
+<span class="sd">        Args:</span>
+<span class="sd">            x (np.ndarray): input distance array</span>
+
+<span class="sd">        Returns: expanded matrix</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">distance_converter</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="itemgetter_list"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.itemgetter_list">[docs]</a><span class="k">def</span> <span class="nf">itemgetter_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="itemgetter_list"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.itemgetter_list">[docs]</a><span class="k">def</span> <span class="nf">itemgetter_list</span><span class="p">(</span><span class="n">data_list</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get indices of l and return a tuple</span>
-
+<span class="sd">    Get indices of data_list and return a tuple</span>
 <span class="sd">    Args:</span>
-<span class="sd">        l:  (list)</span>
+<span class="sd">        data_list (list):  data list</span>
 <span class="sd">        indices: (list) indices</span>
-
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">it</span> <span class="o">=</span> <span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">indices</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">it</span><span class="p">(</span><span class="n">l</span><span class="p">),</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">it</span><span class="p">(</span><span class="n">l</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="p">(</span><span class="n">it</span><span class="p">(</span><span class="n">data_list</span><span class="p">),)</span>
+    <span class="k">return</span> <span class="n">it</span><span class="p">(</span><span class="n">data_list</span><span class="p">)</span></div>
 </pre></div>
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

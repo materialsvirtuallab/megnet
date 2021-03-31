@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.models package &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.models package &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.models.base module" href="megnet.models.base.html" />
@@ -39,8 +39,9 @@
         <li class="right" >
           <a href="megnet.layers.readout.set2set.html" title="megnet.layers.readout.set2set module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.models package</a></li> 
       </ul>
     </div>  
 
@@ -65,7 +66,7 @@
 <p>Models package, this package contains various graph-based models</p>
 <dl class="py class">
 <dt id="megnet.models.GraphModel">
-<em class="property">class </em><code class="sig-name descname">GraphModel</code><span class="sig-paren">(</span><em class="sig-param">model: tensorflow.python.keras.engine.training.Model</em>, <em class="sig-param">graph_converter: megnet.data.graph.StructureGraph</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = &lt;megnet.utils.preprocessing.DummyScaler object&gt;</em>, <em class="sig-param">metadata: Dict = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/models/base.html#GraphModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">GraphModel</code><span class="sig-paren">(</span><em class="sig-param">model: tensorflow.python.keras.engine.training.Model</em>, <em class="sig-param">graph_converter: megnet.data.graph.StructureGraph</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = &lt;megnet.utils.preprocessing.DummyScaler object&gt;</em>, <em class="sig-param">metadata: Optional[Dict] = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/models/base.html#GraphModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Composition of keras model and converter class for transfering structure
 object to input tensors. We add methods to train the model from
@@ -145,6 +146,20 @@ automatically remove structures with failed graph computations</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="megnet.models.GraphModel.predict_graphs">
+<code class="sig-name descname">predict_graphs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">graphs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Dict<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.predict_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.predict_graphs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict properties from graphs</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>graphs</strong> – a list graph dictionary, see megnet.data.graph</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>predicted target values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="megnet.models.GraphModel.predict_structure">
 <code class="sig-name descname">predict_structure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">pymatgen.core.structure.Structure</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.predict_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.predict_structure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Predict property from structure</p>
@@ -154,6 +169,20 @@ automatically remove structures with failed graph computations</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>predicted target value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="megnet.models.GraphModel.predict_structures">
+<code class="sig-name descname">predict_structures</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structures</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.predict_structures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.predict_structures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predict properties of structure list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>structures</strong> – list of pymatgen Structure/Molecule</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>predicted target values</p>
 </dd>
 </dl>
 </dd></dl>
@@ -175,7 +204,7 @@ converters</p>
 
 <dl class="py method">
 <dt id="megnet.models.GraphModel.train">
-<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_structures</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">train_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_structures</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">validation_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">epochs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="p">:</span> <span class="n">List<span class="p">[</span>tensorflow.python.keras.callbacks.Callback<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scrub_failed_structures</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">prev_model</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_checkpoint</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">automatic_correction</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">lr_scaling_factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.train" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">train</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_structures</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">train_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_structures</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">validation_targets</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sample_weights</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">epochs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>tensorflow.python.keras.callbacks.Callback<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scrub_failed_structures</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">prev_model</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">save_checkpoint</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">automatic_correction</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">lr_scaling_factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel">megnet.models.base.GraphModel</a><a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.train" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -183,6 +212,7 @@ converters</p>
 <li><p><strong>train_targets</strong> – (list) list of target values</p></li>
 <li><p><strong>validation_structures</strong> – (list) list of pymatgen structures as validation</p></li>
 <li><p><strong>validation_targets</strong> – (list) list of validation targets</p></li>
+<li><p><strong>sample_weights</strong> – (list) list of sample weights for training data</p></li>
 <li><p><strong>epochs</strong> – (int) number of epochs</p></li>
 <li><p><strong>batch_size</strong> – (int) training batch size</p></li>
 <li><p><strong>verbose</strong> – (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch</p></li>
@@ -201,7 +231,7 @@ converters</p>
 
 <dl class="py method">
 <dt id="megnet.models.GraphModel.train_from_graphs">
-<code class="sig-name descname">train_from_graphs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_graphs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Dict<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">train_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_graphs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Dict<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">validation_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">epochs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="p">:</span> <span class="n">List<span class="p">[</span>tensorflow.python.keras.callbacks.Callback<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prev_model</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lr_scaling_factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">save_checkpoint</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">automatic_correction</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.train_from_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.train_from_graphs" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">train_from_graphs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">train_graphs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Dict<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">train_targets</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_graphs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>Dict<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">validation_targets</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sample_weights</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">epochs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">batch_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">128</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">callbacks</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>tensorflow.python.keras.callbacks.Callback<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prev_model</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lr_scaling_factor</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">patience</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">save_checkpoint</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">automatic_correction</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel">megnet.models.base.GraphModel</a><a class="reference internal" href="_modules/megnet/models/base.html#GraphModel.train_from_graphs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.GraphModel.train_from_graphs" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -209,6 +239,7 @@ converters</p>
 <li><p><strong>train_targets</strong> – (list) list of target values</p></li>
 <li><p><strong>validation_graphs</strong> – (list) list of graphs as validation</p></li>
 <li><p><strong>validation_targets</strong> – (list) list of validation targets</p></li>
+<li><p><strong>sample_weights</strong> – (list) list of sample weights</p></li>
 <li><p><strong>epochs</strong> – (int) number of epochs</p></li>
 <li><p><strong>batch_size</strong> – (int) training batch size</p></li>
 <li><p><strong>verbose</strong> – (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch</p></li>
@@ -228,7 +259,7 @@ converters</p>
 
 <dl class="py class">
 <dt id="megnet.models.MEGNetModel">
-<em class="property">class </em><code class="sig-name descname">MEGNetModel</code><span class="sig-paren">(</span><em class="sig-param">nfeat_edge: int = None</em>, <em class="sig-param">nfeat_global: int = None</em>, <em class="sig-param">nfeat_node: int = None</em>, <em class="sig-param">nblocks: int = 3</em>, <em class="sig-param">lr: float = 0.001</em>, <em class="sig-param">n1: int = 64</em>, <em class="sig-param">n2: int = 32</em>, <em class="sig-param">n3: int = 16</em>, <em class="sig-param">nvocal: int = 95</em>, <em class="sig-param">embedding_dim: int = 16</em>, <em class="sig-param">nbvocal: int = None</em>, <em class="sig-param">bond_embedding_dim: int = None</em>, <em class="sig-param">ngvocal: int = None</em>, <em class="sig-param">global_embedding_dim: int = None</em>, <em class="sig-param">npass: int = 3</em>, <em class="sig-param">ntarget: int = 1</em>, <em class="sig-param">act: Callable = &lt;function softplus2&gt;</em>, <em class="sig-param">is_classification: bool = False</em>, <em class="sig-param">loss: str = 'mse'</em>, <em class="sig-param">metrics: List[str] = None</em>, <em class="sig-param">l2_coef: float = None</em>, <em class="sig-param">dropout: float = None</em>, <em class="sig-param">graph_converter: megnet.data.graph.StructureGraph = None</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = &lt;megnet.utils.preprocessing.DummyScaler object&gt;</em>, <em class="sig-param">optimizer_kwargs: Dict = None</em>, <em class="sig-param">dropout_on_predict: bool = False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">MEGNetModel</code><span class="sig-paren">(</span><em class="sig-param">nfeat_edge: Optional[int] = None</em>, <em class="sig-param">nfeat_global: Optional[int] = None</em>, <em class="sig-param">nfeat_node: Optional[int] = None</em>, <em class="sig-param">nblocks: int = 3</em>, <em class="sig-param">lr: float = 0.001</em>, <em class="sig-param">n1: int = 64</em>, <em class="sig-param">n2: int = 32</em>, <em class="sig-param">n3: int = 16</em>, <em class="sig-param">nvocal: int = 95</em>, <em class="sig-param">embedding_dim: int = 16</em>, <em class="sig-param">nbvocal: Optional[int] = None</em>, <em class="sig-param">bond_embedding_dim: Optional[int] = None</em>, <em class="sig-param">ngvocal: Optional[int] = None</em>, <em class="sig-param">global_embedding_dim: Optional[int] = None</em>, <em class="sig-param">npass: int = 3</em>, <em class="sig-param">ntarget: int = 1</em>, <em class="sig-param">act: Callable = &lt;function softplus2&gt;</em>, <em class="sig-param">is_classification: bool = False</em>, <em class="sig-param">loss: str = 'mse'</em>, <em class="sig-param">metrics: Optional[List[str]] = None</em>, <em class="sig-param">l2_coef: Optional[float] = None</em>, <em class="sig-param">dropout: Optional[float] = None</em>, <em class="sig-param">graph_converter: Optional[megnet.data.graph.StructureGraph] = None</em>, <em class="sig-param">target_scaler: megnet.utils.preprocessing.Scaler = &lt;megnet.utils.preprocessing.DummyScaler object&gt;</em>, <em class="sig-param">optimizer_kwargs: Dict = {'clipnorm': 3}</em>, <em class="sig-param">dropout_on_predict: bool = False</em>, <em class="sig-param">sample_weight_mode: Optional[str] = None</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.models.base.GraphModel</span></code></a></p>
 <p>Construct a graph network model with or without explicit atom features
 if n_feature is specified then a general graph model is assumed,
@@ -263,17 +294,31 @@ and testing</p></li>
 <li><p><strong>target_scaler</strong> – (object) object that exposes a “transform” and “inverse_transform” methods for transforming
 the target values</p></li>
 <li><p><strong>optimizer_kwargs</strong> (<em>dict</em>) – extra keywords for optimizer, for example clipnorm and clipvalue</p></li>
+<li><p><strong>sample_weight_mode</strong> (<em>str</em>) – sample weight mode for compilation</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – in the case where bond inputs are pure distances (not the expanded distances nor integers
+for embedding, i.e., nfeat_edge=None and bond_embedding_dim=None),
+kwargs can take additional inputs for expand the distance using Gaussian basis.
+centers (np.ndarray): array for defining the Gaussian expansion centers
+width (float): width for the Gaussian basis</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt id="megnet.models.MEGNetModel.from_mvl_models">
-<em class="property">classmethod </em><code class="sig-name descname">from_mvl_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.megnet.html#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel">megnet.models.megnet.MEGNetModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_mvl_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel.from_mvl_models" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<em class="property">classmethod </em><code class="sig-name descname">from_mvl_models</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel">megnet.models.base.GraphModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_mvl_models"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel.from_mvl_models" title="Permalink to this definition">¶</a></dt>
+<dd><p>load model using mvl model names
+:param name: model name string. Please check</p>
+<blockquote>
+<div><p>megnet.utils.models.AVAILABEL_MODELS for available models</p>
+</div></blockquote>
+<dl class="field-list simple">
+</dl>
+<p>Returns: GraphModel instance</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="megnet.models.MEGNetModel.from_url">
-<em class="property">classmethod </em><code class="sig-name descname">from_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.megnet.html#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel">megnet.models.megnet.MEGNetModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel.from_url" title="Permalink to this definition">¶</a></dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_url</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">url</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel">megnet.models.base.GraphModel</a><a class="reference internal" href="_modules/megnet/models/megnet.html#MEGNetModel.from_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.models.MEGNetModel.from_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download and load a model from a URL. E.g.
 <a class="reference external" href="https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5">https://github.com/materialsvirtuallab/megnet/blob/master/mvl_models/mp-2019.4.1/formation_energy.hdf5</a></p>
 <dl class="field-list simple">
@@ -292,6 +337,7 @@ the target values</p></li>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

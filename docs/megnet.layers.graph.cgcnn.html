@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.graph.cgcnn module &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.layers.graph.cgcnn module &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.layers.graph.megnet module" href="megnet.layers.graph.megnet.html" />
@@ -39,10 +39,11 @@
         <li class="right" >
           <a href="megnet.layers.graph.base.html" title="megnet.layers.graph.base module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="megnet.layers.graph.html" accesskey="U">megnet.layers.graph package</a> &#187;</li> 
+          <li class="nav-item nav-item-3"><a href="megnet.layers.graph.html" accesskey="U">megnet.layers.graph package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.layers.graph.cgcnn module</a></li> 
       </ul>
     </div>  
 
@@ -53,26 +54,13 @@
             
   <div class="section" id="module-megnet.layers.graph.cgcnn">
 <span id="megnet-layers-graph-cgcnn-module"></span><h1>megnet.layers.graph.cgcnn module<a class="headerlink" href="#module-megnet.layers.graph.cgcnn" title="Permalink to this headline">¶</a></h1>
+<p>CGCNN layer</p>
 <dl class="py class">
 <dt id="megnet.layers.graph.cgcnn.CrystalGraphLayer">
-<em class="property">class </em><code class="sig-name descname">CrystalGraphLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">'relu'</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="o">=</span><span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="o">=</span><span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activity_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.cgcnn.CrystalGraphLayer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">CrystalGraphLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.cgcnn.CrystalGraphLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.layers.graph.base.html#megnet.layers.graph.base.GraphNetworkLayer" title="megnet.layers.graph.base.GraphNetworkLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.layers.graph.base.GraphNetworkLayer</span></code></a></p>
 <p>The CGCNN graph implementation as described in the paper</p>
 <p>Xie et al. PHYSICAL REVIEW LETTERS 120, 145301 (2018)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>activation</strong> (<em>str</em>) – Default: None. The activation function used for each sub-neural network. Examples include
-‘relu’, ‘softmax’, ‘tanh’, ‘sigmoid’ and etc.</p></li>
-<li><p><strong>use_bias</strong> (<em>bool</em>) – Default: True. Whether to use the bias term in the neural network.</p></li>
-<li><p><strong>kernel_initializer</strong> (<em>str</em>) – Default: ‘glorot_uniform’. Initialization function for the layer kernel weights,</p></li>
-<li><p><strong>bias_initializer</strong> (<em>str</em>) – Default: ‘zeros’</p></li>
-<li><p><strong>activity_regularizer</strong> (<em>str</em>) – Default: None. The regularization function for the output</p></li>
-<li><p><strong>kernel_constraint</strong> (<em>str</em>) – Default: None. Keras constraint for kernel values</p></li>
-<li><p><strong>bias_constraint</strong> (<em>str</em>) – Default: None .Keras constraint for bias values</p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py method">
 <dt id="megnet.layers.graph.cgcnn.CrystalGraphLayer.call">
 <code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.graph.cgcnn.CrystalGraphLayer.call" title="Permalink to this definition">¶</a></dt>
@@ -128,61 +116,60 @@ returns v_p.</p>
 <dd><p>part of keras interface for serialization</p>
 </dd></dl>
 
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>activation</strong> (<em>str</em>) – Default: None. The activation function used for each sub-neural network. Examples include
+‘relu’, ‘softmax’, ‘tanh’, ‘sigmoid’ and etc.</p></li>
+<li><p><strong>use_bias</strong> (<em>bool</em>) – Default: True. Whether to use the bias term in the neural network.</p></li>
+<li><p><strong>kernel_initializer</strong> (<em>str</em>) – Default: ‘glorot_uniform’. Initialization function for the layer kernel weights,</p></li>
+<li><p><strong>bias_initializer</strong> (<em>str</em>) – Default: ‘zeros’</p></li>
+<li><p><strong>activity_regularizer</strong> (<em>str</em>) – Default: None. The regularization function for the output</p></li>
+<li><p><strong>kernel_constraint</strong> (<em>str</em>) – Default: None. Keras constraint for kernel values</p></li>
+<li><p><strong>bias_constraint</strong> (<em>str</em>) – Default: None .Keras constraint for bias values</p></li>
+<li><p><strong>kwargs</strong> (<em>dictionary</em>) – additional keyword args</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt id="id0">
 <code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shapes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
-<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
-can override if they need a state-creation step in-between
-layer instantiation and layer call.</p>
-<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
-<cite>TensorShape</cite> if the layer expects a list of inputs
-(one instance per input).</p>
-</dd>
-</dl>
+<dd><p>Build the weights for the layer
+:param input_shapes: the shapes of all input tensors
+:type input_shapes: sequence of tuple</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id1">
 <code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the output shape of the layer.</p>
-<p>If the layer has not been built, this method will call <cite>build</cite> on the
-layer. This assumes that the layer will later be used with inputs that
-match the input shape provided here.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
-or list of shape tuples (one per output tensor of the layer).
-Shape tuples can include None for free dimensions,
-instead of an integer.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An input shape tuple.</p>
-</dd>
-</dl>
+<dd><p>Compute output shapes from input shapes
+:param input_shape: input shapes
+:type input_shape: sequence of tuple</p>
+<p>Returns: sequence of tuples output shapes</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id2">
 <code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Part of keras layer interface, where the signature is converted into a dict
-:returns: configurational dictionary</p>
+<dd><blockquote>
+<div><p>Part of keras layer interface, where the signature is converted into a dict</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>configurational dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id3">
 <code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is for updating the edge attributes
-ek’ = phi_e(ek, vrk, vsk, u)</p>
+<dd><p>Edge update function
+:param inputs:
+:type inputs: tuple of tensor</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>updated edge/bond attributes</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>output tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -190,16 +177,16 @@ ek’ = phi_e(ek, vrk, vsk, u)</p>
 <dl class="py method">
 <dt id="megnet.layers.graph.cgcnn.CrystalGraphLayer.phi_u">
 <code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">b_v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.cgcnn.CrystalGraphLayer.phi_u" title="Permalink to this definition">¶</a></dt>
-<dd><p>u’ = phi_u(ar e’, ar v’, u)
-:param b_e_p: edge/bond to global aggregated tensor
-:type b_e_p: tf.Tensor
-:param b_v_p: node/atom to global aggregated tensor
-:type b_v_p: tf.Tensor
-:param inputs: list or tuple for the graph inputs
-:type inputs: Sequence</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>updated globa/state attributes</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>b_e_p</strong> (<em>tf.Tensor</em>) – edge/bond to global aggregated tensor</p></li>
+<li><p><strong>b_v_p</strong> (<em>tf.Tensor</em>) – node/atom to global aggregated tensor</p></li>
+<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated globa/state attributes</p>
 </dd>
 </dl>
 </dd></dl>
@@ -207,38 +194,23 @@ ek’ = phi_e(ek, vrk, vsk, u)</p>
 <dl class="py method">
 <dt id="id4">
 <code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
-<dd><p>Step 3. Compute updated node attributes
-v_i’ = phi_v(ar e_i, vi, u)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>b_ei_p</strong> (<em>tf.Tensor</em>) – edge-to-node aggregated tensor</p></li>
-<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>updated node/atom attributes</p>
-</dd>
-</dl>
+<dd><p>Node update function
+:param b_ei_p: edge aggregated tensor
+:type b_ei_p: tensor
+:param inputs: other graph inputs
+:type inputs: tuple of tensors</p>
+<p>Returns: updated node tensor</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id5">
 <code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
-<dd><p>let V’ = {v’} i = 1:Nv
-let E’ = {(e_k’, rk, sk)} k = 1:Ne
-ar e’ = rho_e_u(E’)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>e_p</strong> (<em>tf.Tensor</em>) – updated edge/bond attributes</p></li>
-<li><p><strong>inputs</strong> (<em>Sequence</em>) – list or tuple for the graph inputs</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>edge/bond to global/state aggregated tensor</p>
-</dd>
-</dl>
+<dd><p>aggregate edge to state
+:param e_p: edge tensor
+:type e_p: tensor
+:param inputs: other graph input tensors
+:type inputs: tuple of tensors</p>
+<p>Returns: edge aggregated tensor for states</p>
 </dd></dl>
 
 <dl class="py method">
@@ -253,8 +225,7 @@ let E’ = {(e_k’, rk, sk)} k = 1:Ne
 <dl class="py method">
 <dt id="id7">
 <code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/cgcnn.html#CrystalGraphLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd><p>ar v’ = rho_v_u(V’)</p>
-<dl class="field-list simple">
+<dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>v_p</strong> (<em>tf.Tensor</em>) – updated atom/node attributes</p></li>
@@ -272,6 +243,7 @@ let E’ = {(e_k’, rk, sk)} k = 1:Ne
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>

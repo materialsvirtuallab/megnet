@@ -21,6 +21,7 @@ Submodules
 
    megnet.activations
    megnet.callbacks
+   megnet.config
    megnet.losses
 
 Module contents

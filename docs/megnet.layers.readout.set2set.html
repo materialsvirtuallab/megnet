@@ -4,14 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>megnet.layers.readout.set2set module &#8212; megnet 1.1.4 documentation</title>
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>megnet.layers.readout.set2set module &#8212; megnet 1.2.6 documentation</title>
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="megnet.models package" href="megnet.models.html" />
@@ -39,10 +39,11 @@
         <li class="right" >
           <a href="megnet.layers.readout.linear.html" title="megnet.layers.readout.linear module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.1.4 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
-          <li class="nav-item nav-item-3"><a href="megnet.layers.readout.html" accesskey="U">megnet.layers.readout package</a> &#187;</li> 
+          <li class="nav-item nav-item-3"><a href="megnet.layers.readout.html" accesskey="U">megnet.layers.readout package</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">megnet.layers.readout.set2set module</a></li> 
       </ul>
     </div>  
 
@@ -53,9 +54,10 @@
             
   <div class="section" id="module-megnet.layers.readout.set2set">
 <span id="megnet-layers-readout-set2set-module"></span><h1>megnet.layers.readout.set2set module<a class="headerlink" href="#module-megnet.layers.readout.set2set" title="Permalink to this headline">¶</a></h1>
+<p>Set2Set implementation</p>
 <dl class="py class">
 <dt id="megnet.layers.readout.set2set.Set2Set">
-<em class="property">class </em><code class="sig-name descname">Set2Set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">T</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">n_hidden</span><span class="o">=</span><span class="default_value">512</span></em>, <em class="sig-param"><span class="n">activation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">activation_lstm</span><span class="o">=</span><span class="default_value">'tanh'</span></em>, <em class="sig-param"><span class="n">recurrent_activation</span><span class="o">=</span><span class="default_value">'hard_sigmoid'</span></em>, <em class="sig-param"><span class="n">kernel_initializer</span><span class="o">=</span><span class="default_value">'glorot_uniform'</span></em>, <em class="sig-param"><span class="n">recurrent_initializer</span><span class="o">=</span><span class="default_value">'orthogonal'</span></em>, <em class="sig-param"><span class="n">bias_initializer</span><span class="o">=</span><span class="default_value">'zeros'</span></em>, <em class="sig-param"><span class="n">use_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">unit_forget_bias</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">kernel_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recurrent_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_regularizer</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recurrent_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bias_constraint</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-name descname">Set2Set</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
 <p>For a set of vectors, the set2set neural network maps it to a single vector.
 The order invariance is acheived by a attention mechanism.
@@ -88,71 +90,40 @@ arXiv:1511.06391 (2015).</p>
 <dl class="py method">
 <dt id="megnet.layers.readout.set2set.Set2Set.build">
 <code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set.build" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates the variables of the layer (optional, for subclass implementers).</p>
-<p>This is a method that implementers of subclasses of <cite>Layer</cite> or <cite>Model</cite>
-can override if they need a state-creation step in-between
-layer instantiation and layer call.</p>
-<p>This is typically used to create the weights of <cite>Layer</cite> subclasses.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_shape</strong> – Instance of <cite>TensorShape</cite>, or list of instances of
-<cite>TensorShape</cite> if the layer expects a list of inputs
-(one instance per input).</p>
-</dd>
-</dl>
+<dd><p>Build tensors
+:param input_shape: input shapes
+:type input_shape: sequence of tuple</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="megnet.layers.readout.set2set.Set2Set.call">
 <code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set.call" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is where the layer’s logic lives.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>inputs</strong> – Input tensor, or list/tuple of input tensors.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A tensor or list/tuple of tensors.</p>
-</dd>
-</dl>
+<dd><p>Main logic
+:param inputs: input tensors
+:type inputs: tuple of tensor
+:param mask: mask tensor
+:type mask: tensor</p>
+<p>Returns: output tensor</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="megnet.layers.readout.set2set.Set2Set.compute_output_shape">
 <code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set.compute_output_shape" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the output shape of the layer.</p>
-<p>If the layer has not been built, this method will call <cite>build</cite> on the
-layer. This assumes that the layer will later be used with inputs that
-match the input shape provided here.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>input_shape</strong> – Shape tuple (tuple of integers)
-or list of shape tuples (one per output tensor of the layer).
-Shape tuples can include None for free dimensions,
-instead of an integer.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An input shape tuple.</p>
-</dd>
-</dl>
+<dd><p>Compute output shapes from input shapes
+:param input_shape: input shapes
+:type input_shape: sequence of tuple</p>
+<p>Returns: sequence of tuples output shapes</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="megnet.layers.readout.set2set.Set2Set.get_config">
 <code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/set2set.html#Set2Set.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.set2set.Set2Set.get_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the config of the layer.</p>
-<p>A layer config is a Python dictionary (serializable)
-containing the configuration of a layer.
-The same layer can be reinstantiated later
-(without its trained weights) from this configuration.</p>
-<p>The config of a layer does not include connectivity
-information, nor the layer class name. These are handled
-by <cite>Network</cite> (one layer of abstraction above).</p>
+<dd><blockquote>
+<div><p>Part of keras layer interface, where the signature is converted into a dict</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Python dictionary.</p>
+<dd class="field-odd"><p>configurational dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -162,6 +133,7 @@ by <cite>Network</cite> (one layer of abstraction above).</p>
 </div>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
