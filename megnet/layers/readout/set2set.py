@@ -6,8 +6,6 @@ import tensorflow.keras.backend as kb
 from tensorflow.keras import activations, initializers, regularizers, constraints
 from tensorflow.keras.layers import Layer
 
-from megnet.utils.layer import repeat_with_index
-
 
 class Set2Set(Layer):
     """
@@ -160,26 +158,31 @@ class Set2Set(Layer):
 
         """
         features, feature_graph_index = inputs
-        feature_graph_index = tf.reshape(feature_graph_index, (-1,))
-        _, _, count = tf.unique_with_counts(feature_graph_index)
+        feature_graph_index = feature_graph_index[0]
+        counts = tf.math.bincount(feature_graph_index)
+        n_count = tf.shape(counts)[0]
+        n_feature = tf.shape(features)[0]
+        # _, _, count = tf.unique_with_counts(feature_graph_index)
         m = kb.dot(features, self.m_weight)
         if self.use_bias:
             m += self.m_bias
-
-        self.h = tf.zeros(tf.stack([tf.shape(input=features)[0], tf.shape(input=count)[0], self.n_hidden]))
-        self.c = tf.zeros(tf.stack([tf.shape(input=features)[0], tf.shape(input=count)[0], self.n_hidden]))
-        q_star = tf.zeros(tf.stack([tf.shape(input=features)[0], tf.shape(input=count)[0], 2 * self.n_hidden]))
+        self.h = tf.zeros(tf.stack([n_feature, n_count, self.n_hidden]))
+        self.c = tf.zeros(tf.stack([n_feature, n_count, self.n_hidden]))
+        q_star = tf.zeros(tf.stack([n_feature, n_count, 2 * self.n_hidden]))
         for i in range(self.T):
             self.h, c = self._lstm(q_star, self.c)
-            e_i_t = tf.reduce_sum(input_tensor=m * repeat_with_index(self.h, feature_graph_index), axis=-1)
+            e_i_t = tf.reduce_sum(input_tensor=m * tf.repeat(self.h, repeats=counts, axis=1), axis=-1)
             maxes = tf.math.segment_max(e_i_t[0], feature_graph_index)
-            e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index, axis=0), axis=0)
+            maxes = tf.repeat(maxes, repeats=counts)
+            e_i_t -= tf.expand_dims(maxes, axis=0)
+            # e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index,
+            # axis=0), axis=0)
             exp = tf.exp(e_i_t)
             seg_sum = tf.transpose(
                 a=tf.math.segment_sum(tf.transpose(a=exp, perm=[1, 0]), feature_graph_index), perm=[1, 0]
             )
             seg_sum = tf.expand_dims(seg_sum, axis=-1)
-            interm = repeat_with_index(seg_sum, feature_graph_index)
+            interm = tf.repeat(seg_sum, repeats=counts, axis=1)
             a_i_t = exp / interm[..., 0]
             r_t = tf.transpose(
                 a=tf.math.segment_sum(

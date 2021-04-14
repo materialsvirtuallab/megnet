@@ -22,7 +22,10 @@ from .qm9 import ring_to_vector
 try:
     import pybel  # type: ignore
 except ImportError:
-    pybel = None
+    try:
+        from openbabel import pybel
+    except ImportError:
+        pybel = None
 
 try:
     from rdkit import Chem  # type: ignore
