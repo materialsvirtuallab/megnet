@@ -571,8 +571,9 @@ class MolecularGraphBatchGenerator(BaseGraphBatchGenerator):
         self.n_jobs = n_jobs
 
         def mute():
-            sys.stdout = open(os.devnull, "w")
-            sys.stderr = open(os.devnull, "w")
+            with open(os.devnull, "w") as f:
+                sys.stdout = f
+                sys.stderr = f
 
         self.pool = Pool(self.n_jobs, initializer=mute) if self.n_jobs != 1 else None
 
