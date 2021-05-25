@@ -66,7 +66,7 @@ class GraphModel:
         scrub_failed_structures: bool = False,
         prev_model: str = None,
         save_checkpoint: bool = True,
-        automatic_correction: bool = True,
+        automatic_correction: bool = False,
         lr_scaling_factor: float = 0.5,
         patience: int = 500,
         **kwargs,
@@ -134,7 +134,7 @@ class GraphModel:
         lr_scaling_factor: float = 0.5,
         patience: int = 500,
         save_checkpoint: bool = True,
-        automatic_correction: bool = True,
+        automatic_correction: bool = False,
         **kwargs,
     ) -> "GraphModel":
         """
