@@ -69,6 +69,7 @@ class GraphModel:
         automatic_correction: bool = False,
         lr_scaling_factor: float = 0.5,
         patience: int = 500,
+        dirname: str = "callback",
         **kwargs,
     ) -> "GraphModel":
         """
@@ -88,6 +89,7 @@ class GraphModel:
             automatic_correction: (bool) correct nan errors
             lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
+            dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
         """
         train_graphs, train_targets = self.get_all_graphs_targets(
@@ -115,6 +117,7 @@ class GraphModel:
             patience=patience,
             save_checkpoint=save_checkpoint,
             automatic_correction=automatic_correction,
+            dirname=dirname,
             **kwargs,
         )
         return self
@@ -135,6 +138,7 @@ class GraphModel:
         patience: int = 500,
         save_checkpoint: bool = True,
         automatic_correction: bool = False,
+        dirname: str = "callback",
         **kwargs,
     ) -> "GraphModel":
         """
@@ -153,6 +157,7 @@ class GraphModel:
             patience: (int) patience for early stopping
             save_checkpoint: (bool) whether to save checkpoint
             automatic_correction: (bool) correct nan errors
+            dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
         """
         # load from saved model
@@ -161,7 +166,6 @@ class GraphModel:
         is_classification = "entropy" in str(self.model.loss)
         monitor = "val_acc" if is_classification else "val_mae"
         mode = "max" if is_classification else "min"
-        dirname = kwargs.pop("dirname", "callback")
         has_sample_weights = sample_weights is not None
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
