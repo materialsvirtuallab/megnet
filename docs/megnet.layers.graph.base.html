@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.graph.base module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.layers.graph.base module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.layers.graph.html" title="megnet.layers.graph package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="megnet.layers.graph.html" accesskey="U">megnet.layers.graph package</a> &#187;</li>
@@ -52,7 +53,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.layers.graph.base">
+  <section id="module-megnet.layers.graph.base">
 <span id="megnet-layers-graph-base-module"></span><h1>megnet.layers.graph.base module<a class="headerlink" href="#module-megnet.layers.graph.base" title="Permalink to this headline">¶</a></h1>
 <dl class="simple">
 <dt>A full GN block has the following computation steps</dt><dd><ol class="arabic simple">
@@ -67,8 +68,8 @@
 </dl>
 <p>[1] <a class="reference external" href="https://arxiv.org/pdf/1806.01261.pdf">https://arxiv.org/pdf/1806.01261.pdf</a></p>
 <dl class="py class">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer">
-<em class="property">class </em><code class="sig-name descname">GraphNetworkLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GraphNetworkLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
 <p>Implementation of a graph network layer. Current implementation is based on
 neural networks for each update function, and sum or mean for each
@@ -109,8 +110,8 @@ values</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Sequence<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.call" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core logic of graph network
 :param inputs: input tensors
 :type inputs: Sequence
@@ -120,15 +121,15 @@ values</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.get_config">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Part of keras layer interface, where the signature is converted into a dict
 :returns: configurational dictionary</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_e">
-<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.phi_e">
+<span class="sig-name descname"><span class="pre">phi_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_e" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is for updating the edge attributes
 ek’ = phi_e(ek, vrk, vsk, u)</p>
 <dl class="field-list simple">
@@ -142,8 +143,8 @@ ek’ = phi_e(ek, vrk, vsk, u)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_u">
-<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">b_v_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.phi_u">
+<span class="sig-name descname"><span class="pre">phi_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_e_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_v_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>u’ = phi_u(bar e’, bar v’, u)
 :param b_e_p: edge/bond to global aggregated tensor
 :type b_e_p: tf.Tensor
@@ -159,8 +160,8 @@ ek’ = phi_e(ek, vrk, vsk, u)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.phi_v">
-<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.phi_v">
+<span class="sig-name descname"><span class="pre">phi_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_ei_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.phi_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.phi_v" title="Permalink to this definition">¶</a></dt>
 <dd><p>Step 3. Compute updated node attributes
 v_i’ = phi_v(bar e_i, vi, u)</p>
 <dl class="field-list simple">
@@ -177,8 +178,8 @@ v_i’ = phi_v(bar e_i, vi, u)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_u">
-<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_u">
+<span class="sig-name descname"><span class="pre">rho_e_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>let V’ = {v’} i = 1:Nv
 let E’ = {(e_k’, rk, sk)} k = 1:Ne
 bar e’ = rho_e_u(E’)</p>
@@ -196,8 +197,8 @@ bar e’ = rho_e_u(E’)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_v">
-<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.rho_e_v">
+<span class="sig-name descname"><span class="pre">rho_e_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_e_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is for step 2, aggregate edge attributes per node
 Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
 <dl class="field-list simple">
@@ -214,8 +215,8 @@ Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.base.GraphNetworkLayer.rho_v_u">
-<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span><span class="p">:</span> <span class="n">tensorflow.python.framework.ops.Tensor</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; tensorflow.python.framework.ops.Tensor<a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.base.GraphNetworkLayer.rho_v_u">
+<span class="sig-name descname"><span class="pre">rho_v_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_p</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></span><a class="reference internal" href="_modules/megnet/layers/graph/base.html#GraphNetworkLayer.rho_v_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.base.GraphNetworkLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>bar v’ = rho_v_u(V’)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -232,7 +233,7 @@ Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -264,7 +265,7 @@ Ei’ = {(ek’, rk, sk)} with rk =i, k=1:Ne</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.config module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.config module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.callbacks.html" title="megnet.callbacks module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" accesskey="U">megnet package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.config module</a></li> 
       </ul>
@@ -50,57 +51,57 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.config">
+  <section id="module-megnet.config">
 <span id="megnet-config-module"></span><h1>megnet.config module<a class="headerlink" href="#module-megnet.config" title="Permalink to this headline">¶</a></h1>
 <p>Data types</p>
 <dl class="py class">
-<dt id="megnet.config.DataType">
-<em class="property">class </em><code class="sig-name descname">DataType</code><a class="reference internal" href="_modules/megnet/config.html#DataType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.config.DataType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">DataType</span></span><a class="reference internal" href="_modules/megnet/config.html#DataType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.config.DataType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Data types for tensorflow. This enables users to choose
 from 32-bit float and int, and 16-bit float and int</p>
 <dl class="py attribute">
-<dt id="megnet.config.DataType.np_float">
-<code class="sig-name descname">np_float</code><a class="headerlink" href="#megnet.config.DataType.np_float" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType.np_float">
+<span class="sig-name descname"><span class="pre">np_float</span></span><a class="headerlink" href="#megnet.config.DataType.np_float" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.float32</span></code></p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="megnet.config.DataType.np_int">
-<code class="sig-name descname">np_int</code><a class="headerlink" href="#megnet.config.DataType.np_int" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType.np_int">
+<span class="sig-name descname"><span class="pre">np_int</span></span><a class="headerlink" href="#megnet.config.DataType.np_int" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.int32</span></code></p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.config.DataType.set_dtype">
-<em class="property">classmethod </em><code class="sig-name descname">set_dtype</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_type</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/config.html#DataType.set_dtype"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.config.DataType.set_dtype" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType.set_dtype">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">set_dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/megnet/config.html#DataType.set_dtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.config.DataType.set_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class method to set the data types
 :param data_type: ‘16’ or ‘32’
 :type data_type: str</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="megnet.config.DataType.tf_float">
-<code class="sig-name descname">tf_float</code><em class="property"> = tf.float32</em><a class="headerlink" href="#megnet.config.DataType.tf_float" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType.tf_float">
+<span class="sig-name descname"><span class="pre">tf_float</span></span><em class="property"> <span class="pre">=</span> <span class="pre">tf.float32</span></em><a class="headerlink" href="#megnet.config.DataType.tf_float" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="megnet.config.DataType.tf_int">
-<code class="sig-name descname">tf_int</code><em class="property"> = tf.int32</em><a class="headerlink" href="#megnet.config.DataType.tf_int" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.DataType.tf_int">
+<span class="sig-name descname"><span class="pre">tf_int</span></span><em class="property"> <span class="pre">=</span> <span class="pre">tf.int32</span></em><a class="headerlink" href="#megnet.config.DataType.tf_int" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="megnet.config.set_global_dtypes">
-<code class="sig-name descname">set_global_dtypes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_type</span></em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/megnet/config.html#set_global_dtypes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.config.set_global_dtypes" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.config.set_global_dtypes">
+<span class="sig-name descname"><span class="pre">set_global_dtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_type</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="_modules/megnet/config.html#set_global_dtypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.config.set_global_dtypes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to set the data types
 :param data_type: ‘16’ or ‘32’
 :type data_type: str</p>
 <p>Returns:</p>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -128,7 +129,7 @@ from 32-bit float and int, and 16-bit float and int</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.utils.descriptor module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.utils.descriptor module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.utils.data.html" title="megnet.utils.data module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.utils.descriptor module</a></li> 
@@ -51,13 +52,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.utils.descriptor">
+  <section id="module-megnet.utils.descriptor">
 <span id="megnet-utils-descriptor-module"></span><h1>megnet.utils.descriptor module<a class="headerlink" href="#module-megnet.utils.descriptor" title="Permalink to this headline">¶</a></h1>
 <p>This module implements atom/bond/structure-wise descriptor calculated from
 pretrained megnet model</p>
 <dl class="py class">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor">
-<em class="property">class </em><code class="sig-name descname">MEGNetDescriptor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_name</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel">megnet.models.base.GraphModel</a><span class="p">, </span><a class="reference internal" href="megnet.models.megnet.html#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel">megnet.models.megnet.MEGNetModel</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">'../megnet/utils/../../mvl_models/mp-2019.4.1/formation_energy.hdf5'</span></em>, <em class="sig-param"><span class="n">use_cache</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">MEGNetDescriptor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="megnet.models.base.html#megnet.models.base.GraphModel" title="megnet.models.base.GraphModel"><span class="pre">megnet.models.base.GraphModel</span></a><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="megnet.models.megnet.html#megnet.models.megnet.MEGNetModel" title="megnet.models.megnet.MEGNetModel"><span class="pre">megnet.models.megnet.MEGNetModel</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'/Users/chichen/repos/megnet/docs_rst/../megnet/utils/../../mvl_models/mp-2019.4.1/formation_energy.hdf5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>MEGNet descriptors. This class takes a trained model and
 then compute the intermediate outputs as structure features</p>
@@ -72,8 +73,8 @@ graph calculations</p></li>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor.get_atom_features">
-<code class="sig-name descname">get_atom_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">3</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_atom_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_atom_features" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor.get_atom_features">
+<span class="sig-name descname"><span class="pre">get_atom_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pymatgen.core.structure.Structure</span><span class="p"><span class="pre">,</span> </span><span class="pre">pymatgen.core.structure.Molecule</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_atom_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_atom_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get megnet atom features from structure
 :param structure: pymatgen structure or molecule
 :param level: int, indicating the block number of megnet, starting</p>
@@ -88,8 +89,8 @@ graph calculations</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor.get_bond_features">
-<code class="sig-name descname">get_bond_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">3</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_bond_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_bond_features" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor.get_bond_features">
+<span class="sig-name descname"><span class="pre">get_bond_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pymatgen.core.structure.Structure</span><span class="p"><span class="pre">,</span> </span><span class="pre">pymatgen.core.structure.Molecule</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_bond_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_bond_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get bond features at megnet block level
 :param structure: pymatgen structure
 :param level: int</p>
@@ -101,8 +102,8 @@ graph calculations</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor.get_global_features">
-<code class="sig-name descname">get_global_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">level</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">2</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_global_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_global_features" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor.get_global_features">
+<span class="sig-name descname"><span class="pre">get_global_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pymatgen.core.structure.Structure</span><span class="p"><span class="pre">,</span> </span><span class="pre">pymatgen.core.structure.Molecule</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_global_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_global_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get state features at megnet block level
 :param structure: pymatgen structure or molecule
 :param level: int</p>
@@ -114,8 +115,8 @@ graph calculations</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor.get_set2set">
-<code class="sig-name descname">get_set2set</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">ftype</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'atom'</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_set2set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_set2set" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor.get_set2set">
+<span class="sig-name descname"><span class="pre">get_set2set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pymatgen.core.structure.Structure</span><span class="p"><span class="pre">,</span> </span><span class="pre">pymatgen.core.structure.Molecule</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ftype</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'atom'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_set2set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_set2set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get set2set output as features
 :param structure: pymatgen structure</p>
 <blockquote>
@@ -133,8 +134,8 @@ or bond</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.utils.descriptor.MEGNetDescriptor.get_structure_features">
-<code class="sig-name descname">get_structure_features</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">structure</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pymatgen.core.structure.Structure<span class="p">, </span>pymatgen.core.structure.Molecule<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_structure_features"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_structure_features" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.descriptor.MEGNetDescriptor.get_structure_features">
+<span class="sig-name descname"><span class="pre">get_structure_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structure</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pymatgen.core.structure.Structure</span><span class="p"><span class="pre">,</span> </span><span class="pre">pymatgen.core.structure.Molecule</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/descriptor.html#MEGNetDescriptor.get_structure_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.descriptor.MEGNetDescriptor.get_structure_features" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get structure level feature vector
 :param structure: pymatgen structure</p>
 <blockquote>
@@ -149,7 +150,7 @@ or bond</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -179,7 +180,7 @@ or bond</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

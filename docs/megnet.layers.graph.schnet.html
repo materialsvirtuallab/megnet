@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.graph.schnet module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.layers.graph.schnet module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.layers.graph.megnet.html" title="megnet.layers.graph.megnet module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="megnet.layers.graph.html" accesskey="U">megnet.layers.graph package</a> &#187;</li>
@@ -52,67 +53,67 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.layers.graph.schnet">
+  <section id="module-megnet.layers.graph.schnet">
 <span id="megnet-layers-graph-schnet-module"></span><h1>megnet.layers.graph.schnet module<a class="headerlink" href="#module-megnet.layers.graph.schnet" title="Permalink to this headline">¶</a></h1>
 <p>Schnet implementation</p>
 <dl class="py class">
-<dt id="megnet.layers.graph.schnet.InteractionLayer">
-<em class="property">class </em><code class="sig-name descname">InteractionLayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">InteractionLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="megnet.layers.graph.base.html#megnet.layers.graph.base.GraphNetworkLayer" title="megnet.layers.graph.base.GraphNetworkLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">megnet.layers.graph.base.GraphNetworkLayer</span></code></a></p>
 <p>The Continuous filter InteractionLayer in Schnet</p>
 <p>Schütt et al. SchNet: A continuous-filter convolutional neural network for modeling quantum interactions</p>
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.call" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>the logic of the layer, returns the final graph</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.compute_output_shape">
-<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.compute_output_shape">
+<span class="sig-name descname"><span class="pre">compute_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.compute_output_shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>compute static output shapes, returns list of tuple shapes</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>initialize the weights and biases for each function</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.phi_e">
-<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_e" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.phi_e">
+<span class="sig-name descname"><span class="pre">phi_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_e" title="Permalink to this definition">¶</a></dt>
 <dd><p>update function for bonds and returns updated bond attribute e_p</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.rho_e_v">
-<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.rho_e_v">
+<span class="sig-name descname"><span class="pre">rho_e_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_e_v" title="Permalink to this definition">¶</a></dt>
 <dd><p>aggregate updated bonds e_p to per atom attributes, b_e_p</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.phi_v">
-<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_v" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.phi_v">
+<span class="sig-name descname"><span class="pre">phi_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_v" title="Permalink to this definition">¶</a></dt>
 <dd><p>update the atom attributes by the results from previous step b_e_p and all the inputs
 returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.rho_e_u">
-<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.rho_e_u">
+<span class="sig-name descname"><span class="pre">rho_e_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_e_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>aggregate bonds to global attribute</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.rho_v_u">
-<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.rho_v_u">
+<span class="sig-name descname"><span class="pre">rho_v_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.rho_v_u" title="Permalink to this definition">¶</a></dt>
 <dd><p>aggregate atom to global attributes</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.get_config">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.get_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>part of keras interface for serialization</p>
 </dd></dl>
 
@@ -131,16 +132,16 @@ returns v_p.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="id0">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shapes</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shapes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build the weights for the layer
 :param input_shapes: the shapes of all input tensors
 :type input_shapes: sequence of tuple</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id1">
-<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">compute_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.compute_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute output shapes from input shapes
 :param input_shape: input shapes
 :type input_shape: sequence of tuple</p>
@@ -148,8 +149,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id2">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Part of keras layer interface, where the signature is converted into a dict</p>
 </div></blockquote>
@@ -161,8 +162,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id3">
-<code class="sig-name descname">phi_e</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">phi_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Edge update function
 :param inputs:
 :type inputs: tuple of tensor</p>
@@ -174,8 +175,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.graph.schnet.InteractionLayer.phi_u">
-<code class="sig-name descname">phi_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_e_p</span></em>, <em class="sig-param"><span class="n">b_v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_u" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.graph.schnet.InteractionLayer.phi_u">
+<span class="sig-name descname"><span class="pre">phi_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b_v_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.graph.schnet.InteractionLayer.phi_u" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -191,8 +192,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id4">
-<code class="sig-name descname">phi_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b_ei_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">phi_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b_ei_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.phi_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Permalink to this definition">¶</a></dt>
 <dd><p>Node update function
 :param b_ei_p: edge aggregated tensor
 :type b_ei_p: tensor
@@ -202,8 +203,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id5">
-<code class="sig-name descname">rho_e_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">rho_e_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
 <dd><p>aggregate edge to state
 :param e_p: edge tensor
 :type e_p: tensor
@@ -213,8 +214,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id6">
-<code class="sig-name descname">rho_e_v</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">e_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">rho_e_v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_e_v"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reduce edge attributes to node attribute, eqn 5 in the paper
 :param e_p: updated bond
 :param inputs: the whole input list</p>
@@ -222,8 +223,8 @@ returns v_p.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id7">
-<code class="sig-name descname">rho_v_u</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">v_p</span></em>, <em class="sig-param"><span class="n">inputs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">rho_v_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/graph/schnet.html#InteractionLayer.rho_v_u"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -239,7 +240,7 @@ returns v_p.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -271,7 +272,7 @@ returns v_p.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

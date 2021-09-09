@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.featurizer package &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.layers.featurizer package &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.layers.html" title="megnet.layers package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" accesskey="U">megnet.layers package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.layers.featurizer package</a></li> 
@@ -51,14 +52,14 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="megnet-layers-featurizer-package">
+  <section id="megnet-layers-featurizer-package">
 <h1>megnet.layers.featurizer package<a class="headerlink" href="#megnet-layers-featurizer-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-megnet.layers.featurizer">
+<section id="module-megnet.layers.featurizer">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-megnet.layers.featurizer" title="Permalink to this headline">¶</a></h2>
 <p>Featurizers used after the graph generation and before the graph convolution</p>
 <dl class="py class">
-<dt id="megnet.layers.featurizer.GaussianExpansion">
-<em class="property">class </em><code class="sig-name descname">GaussianExpansion</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.featurizer.GaussianExpansion">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">GaussianExpansion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
 <p>Simple Gaussian expansion.
 A vector of distance [d1, d2, d3, …, dn] is expanded to a
@@ -73,16 +74,16 @@ matrix of shape [n, m], where m is the number of Gaussian basis centers</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="megnet.layers.featurizer.GaussianExpansion.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.featurizer.GaussianExpansion.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>build the layer
 :param input_shape: tuple of int for the input shape
 :type input_shape: tuple</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.featurizer.GaussianExpansion.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">masks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.call" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.featurizer.GaussianExpansion.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>The core logic function</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -95,21 +96,21 @@ matrix of shape [n, m], where m is the number of Gaussian basis centers</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.featurizer.GaussianExpansion.compute_output_shape">
-<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.featurizer.GaussianExpansion.compute_output_shape">
+<span class="sig-name descname"><span class="pre">compute_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.compute_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.compute_output_shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the output shape, used in older keras API</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.featurizer.GaussianExpansion.get_config">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.get_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.featurizer.GaussianExpansion.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/featurizer/_gaussian_expansion.html#GaussianExpansion.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.featurizer.GaussianExpansion.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get layer configurations</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
-</div>
+</section>
+</section>
 
 
             <div class="clearer"></div>
@@ -147,7 +148,7 @@ matrix of shape [n, m], where m is the number of Gaussian basis centers</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.utils.general module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.utils.general module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.utils.descriptor.html" title="megnet.utils.descriptor module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.utils.general module</a></li> 
@@ -51,12 +52,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.utils.general">
+  <section id="module-megnet.utils.general">
 <span id="megnet-utils-general-module"></span><h1>megnet.utils.general module<a class="headerlink" href="#module-megnet.utils.general" title="Permalink to this headline">¶</a></h1>
 <p>Operation utilities on lists and arrays</p>
 <dl class="py function">
-<dt id="megnet.utils.general.check_shape">
-<code class="sig-name descname">check_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">shape</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/megnet/utils/general.html#check_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.check_shape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.general.check_shape">
+<span class="sig-name descname"><span class="pre">check_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/megnet/utils/general.html#check_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.general.check_shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if array complies with shape. Shape is a sequence of
 integer that may end with None. If None is at the end of shape,
 then any shapes in array after that dimension will match with shape.</p>
@@ -76,8 +77,8 @@ then any shapes in array after that dimension will match with shape.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="megnet.utils.general.expand_1st">
-<code class="sig-name descname">expand_1st</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/general.html#expand_1st"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.expand_1st" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.general.expand_1st">
+<span class="sig-name descname"><span class="pre">expand_1st</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/general.html#expand_1st"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.general.expand_1st" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adding an extra first dimension</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -90,8 +91,8 @@ then any shapes in array after that dimension will match with shape.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="megnet.utils.general.fast_label_binarize">
-<code class="sig-name descname">fast_label_binarize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span><span class="p">:</span> <span class="n">List</span></em>, <em class="sig-param"><span class="n">labels</span><span class="p">:</span> <span class="n">List</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>int<span class="p">]</span><a class="reference internal" href="_modules/megnet/utils/general.html#fast_label_binarize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.fast_label_binarize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.general.fast_label_binarize">
+<span class="sig-name descname"><span class="pre">fast_label_binarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/megnet/utils/general.html#fast_label_binarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.general.fast_label_binarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Faster version of label binarize</p>
 <p><cite>label_binarize</cite> from scikit-learn is slow when run 1 label at a time.
 <cite>label_binarize</cite> also is efficient for large numbers of classes, which is not
@@ -113,8 +114,8 @@ common in <cite>megnet</cite></p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="megnet.utils.general.reshape">
-<code class="sig-name descname">reshape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">shape</span><span class="p">:</span> <span class="n">Sequence</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="reference internal" href="_modules/megnet/utils/general.html#reshape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.reshape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.general.reshape">
+<span class="sig-name descname"><span class="pre">reshape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="reference internal" href="_modules/megnet/utils/general.html#reshape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.general.reshape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take an array and reshape it according to shape. Here shape may contain
 None field at the end.</p>
 <p>if array shape is [3, 4] and shape is [3, 4, None], then array is shaped
@@ -131,12 +132,12 @@ to [3, 4, 1]. If the two shapes do not match then report an error</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="megnet.utils.general.to_list">
-<code class="sig-name descname">to_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>collections.abc.Iterable<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<a class="reference internal" href="_modules/megnet/utils/general.html#to_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.utils.general.to_list" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.utils.general.to_list">
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">collections.abc.Iterable</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="_modules/megnet/utils/general.html#to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.general.to_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>If x is not a list, convert it to list</p>
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -166,7 +167,7 @@ to [3, 4, 1]. If the two shapes do not match then report an error</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.graph.base &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../../../_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <title>megnet.layers.graph.base &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/flasky.css" />
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
     <script src="../../../../_static/doctools.js"></script>
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.layers.graph.base</a></li> 
       </ul>
@@ -64,7 +64,7 @@
 <span class="kn">from</span> <span class="nn">megnet.utils.typing</span> <span class="kn">import</span> <span class="n">OptStrOrCallable</span>
 
 
-<div class="viewcode-block" id="GraphNetworkLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer">[docs]</a><span class="k">class</span> <span class="nc">GraphNetworkLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphNetworkLayer"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer">[docs]</a><span class="k">class</span> <span class="nc">GraphNetworkLayer</span><span class="p">(</span><span class="n">Layer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Implementation of a graph network layer. Current implementation is based on</span>
 <span class="sd">    neural networks for each update function, and sum or mean for each</span>
@@ -127,7 +127,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">bias_constraint</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="GraphNetworkLayer.call"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.call"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.call">[docs]</a>    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Core logic of graph network</span>
 <span class="sd">        Args:</span>
@@ -145,7 +145,7 @@
         <span class="n">u_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">phi_u</span><span class="p">(</span><span class="n">b_e_p</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">v_p</span><span class="p">,</span> <span class="n">e_p</span><span class="p">,</span> <span class="n">u_p</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.phi_e"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.phi_e">[docs]</a>    <span class="k">def</span> <span class="nf">phi_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is for updating the edge attributes</span>
 <span class="sd">        ek&#39; = phi_e(ek, vrk, vsk, u)</span>
@@ -158,7 +158,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.rho_e_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.rho_e_v">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is for step 2, aggregate edge attributes per node</span>
 <span class="sd">        Ei&#39; = {(ek&#39;, rk, sk)} with rk =i, k=1:Ne</span>
@@ -171,7 +171,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">):</span>
+<div class="viewcode-block" id="GraphNetworkLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">):</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Step 3. Compute updated node attributes</span>
 <span class="sd">        v_i&#39; = phi_v(\bar e_i, vi, u)</span>
@@ -184,7 +184,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.rho_e_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.rho_e_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_e_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        let V&#39; = {v&#39;} i = 1:Nv</span>
 <span class="sd">        let E&#39; = {(e_k&#39;, rk, sk)} k = 1:Ne</span>
@@ -198,7 +198,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.rho_v_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.rho_v_u">[docs]</a>    <span class="k">def</span> <span class="nf">rho_v_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        \bar v&#39; = rho_v_u(V&#39;)</span>
 
@@ -210,7 +210,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.phi_u"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.phi_u">[docs]</a>    <span class="k">def</span> <span class="nf">phi_u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_e_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">b_v_p</span><span class="p">:</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
         <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        u&#39; = phi_u(\bar e&#39;, \bar v&#39;, u)</span>
 <span class="sd">        Args:</span>
@@ -222,7 +222,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-<div class="viewcode-block" id="GraphNetworkLayer.get_config"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.GraphNetworkLayer.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<div class="viewcode-block" id="GraphNetworkLayer.get_config"><a class="viewcode-back" href="../../../../megnet.layers.graph.base.html#megnet.layers.graph.GraphNetworkLayer.get_config">[docs]</a>    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Part of keras layer interface, where the signature is converted into a dict</span>
 <span class="sd">        Returns:</span>
@@ -260,7 +260,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

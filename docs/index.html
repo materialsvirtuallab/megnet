@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Introduction &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Introduction &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -35,7 +36,7 @@
         <li class="right" >
           <a href="megnet.html" title="megnet package"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="#">megnet 1.2.9 documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
       </ul>
     </div>  
@@ -45,7 +46,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="introduction">
+  <section id="introduction">
 <h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>This repository represents the efforts of the [Materials Virtual Lab](<a class="reference external" href="http://www.materialsvirtuallab.org">http://www.materialsvirtuallab.org</a>)
 in developing graph networks for machine learning in materials science. It is a
@@ -55,8 +56,8 @@ our code and data, all of which are publicly available. Any comments or
 suggestions are also welcome (please post on the Github Issues page.)</p>
 <p>A web app using our pre-trained MEGNet models for property prediction in
 crystals is available at <a class="reference external" href="http://megnet.crystals.ai">http://megnet.crystals.ai</a>.</p>
-</div>
-<div class="section" id="megnet-framework">
+</section>
+<section id="megnet-framework">
 <h1>MEGNet framework<a class="headerlink" href="#megnet-framework" title="Permalink to this headline">¶</a></h1>
 <p>The MatErials Graph Network (MEGNet) is an implementation of DeepMind’s graph
 networks[1] for universal machine learning in materials science. We have
@@ -77,8 +78,8 @@ predict a target property. In the final step, a <cite>set2set</cite> is used to 
 output to a scalar/vector property.</p>
 <p>![GraphModel architecture](resources/model_arch_small.jpg)
 &lt;div align=’center’&gt;&lt;strong&gt;Figure 2. Schematic of MatErials Graph Network.&lt;/strong&gt;&lt;/div&gt;</p>
-</div>
-<div class="section" id="installation">
+</section>
+<section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>Megnet can be installed via pip for the latest stable version:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">megnet</span>
@@ -88,13 +89,13 @@ output to a scalar/vector property.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">develop</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="usage">
+</section>
+<section id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>Our current implementation supports a variety of use cases for users with
 different requirements and experience with deep learning. Please also visit
 the [notebooks directory](notebooks) for Jupyter notebooks with more detailed code examples.</p>
-<div class="section" id="using-pre-built-models">
+<section id="using-pre-built-models">
 <h2>Using pre-built models<a class="headerlink" href="#using-pre-built-models" title="Permalink to this headline">¶</a></h2>
 <p>In our work, we have already built MEGNet models for the QM9 data set and
 Materials Project dataset. These models are provided as serialized HDF5+JSON
@@ -134,7 +135,7 @@ The following models are available:</p>
 </li>
 </ul>
 <p>The MAEs on the various models are given below:</p>
-<div class="section" id="performance-of-qm9-megnet-simple-models">
+<section id="performance-of-qm9-megnet-simple-models">
 <h3>Performance of QM9 MEGNet-Simple models<a class="headerlink" href="#performance-of-qm9-megnet-simple-models" title="Permalink to this headline">¶</a></h3>
 <div class="line-block">
 <div class="line">Property | Units      | MAE   |</div>
@@ -153,8 +154,8 @@ The following models are available:</p>
 | G        | eV         | 0.012 |
 | Cv       | cal/(molK) | 0.029 |
 | ω1       | cm^-1      | 1.18  |</p>
-</div>
-<div class="section" id="performance-of-mp-2018-6-1">
+</section>
+<section id="performance-of-mp-2018-6-1">
 <h3>Performance of MP-2018.6.1<a class="headerlink" href="#performance-of-mp-2018-6-1" title="Permalink to this headline">¶</a></h3>
 <div class="line-block">
 <div class="line">Property | Units      | MAE   |</div>
@@ -164,8 +165,8 @@ The following models are available:</p>
 | Eg       | eV         | 0.33  |
 | K_VRH    | log10(GPa) | 0.050 |
 | G_VRH    | log10(GPa) | 0.079 |</p>
-</div>
-<div class="section" id="performance-of-mp-2019-4-1">
+</section>
+<section id="performance-of-mp-2019-4-1">
 <h3>Performance of MP-2019.4.1<a class="headerlink" href="#performance-of-mp-2019-4-1" title="Permalink to this headline">¶</a></h3>
 <div class="line-block">
 <div class="line">Property | Units      | MAE   |</div>
@@ -215,9 +216,9 @@ limited.</p>
 <span class="n">model</span><span class="o">.</span><span class="n">predict_structure</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="training-a-new-megnetmodel-from-structures">
+</section>
+</section>
+<section id="training-a-new-megnetmodel-from-structures">
 <h2>Training a new MEGNetModel from structures<a class="headerlink" href="#training-a-new-megnetmodel-from-structures" title="Permalink to this headline">¶</a></h2>
 <p>For users who wish to build a new model from a set of crystal structures with
 corresponding properties, there is a convenient <cite>MEGNetModel</cite> class for setting
@@ -268,8 +269,8 @@ then one needs to use <cite>train_from_graphs</cite> method by training only on 
 </pre></div>
 </div>
 <p>For model details and benchmarks, please refer to [“Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals”](<a class="reference external" href="https://doi.org/10.1021/acs.chemmater.9b01294)[2">https://doi.org/10.1021/acs.chemmater.9b01294)[2</a>]</p>
-</div>
-<div class="section" id="pre-trained-elemental-embeddings">
+</section>
+<section id="pre-trained-elemental-embeddings">
 <h2>Pre-trained elemental embeddings<a class="headerlink" href="#pre-trained-elemental-embeddings" title="Permalink to this headline">¶</a></h2>
 <p>A key finding of our work is that element embeddings from trained formation
 energy models encode useful chemical information that can be transferred
@@ -284,8 +285,8 @@ embeddings have been made available via the following code:</p>
 </div>
 <p>An example of transfer learning using the elemental embedding from formation
 energy to other models, please check [notebooks/transfer_learning.ipynb](notebooks/transfer_learning.ipynb).</p>
-</div>
-<div class="section" id="customized-graph-network-models">
+</section>
+<section id="customized-graph-network-models">
 <h2>Customized Graph Network Models<a class="headerlink" href="#customized-graph-network-models" title="Permalink to this headline">¶</a></h2>
 <p>For users who are familiar with deep learning and Keras and wish to build
 customized graph network based models, the following example outlines how a
@@ -327,9 +328,9 @@ implementation of the graph network using neural networks:</p>
 </div>
 <p>With less than 20 lines of code, you have built a graph network model that is
 ready for materials property prediction!</p>
-</div>
-</div>
-<div class="section" id="implementation-details">
+</section>
+</section>
+<section id="implementation-details">
 <h1>Implementation details<a class="headerlink" href="#implementation-details" title="Permalink to this headline">¶</a></h1>
 <p>Graph networks[1] are a superclass of graph-based neural networks. There are a
 few innovations compared to conventional graph-based neural neworks.</p>
@@ -377,8 +378,8 @@ be 1 (1 giant graph) to comply the keras inputs requirements.</p>
 <p>In summary the inputs for the model is <strong>V</strong> (1*N’*Nv), <strong>E</strong> (1*M’*Nm),
 <strong>u</strong> (1*Ng*Nu), <cite>index1</cite> (1*M’), <cite>index2</cite> (1*M’), <cite>atom_ind</cite> (1*N’), and
 <cite>bond_ind</cite> (1*M’). For Z-only atomic features, <strong>V</strong> is a (1*N’) vector.</p>
-</div>
-<div class="section" id="data-sets">
+</section>
+<section id="data-sets">
 <h1>Data sets<a class="headerlink" href="#data-sets" title="Permalink to this headline">¶</a></h1>
 <p>To aid others in reproducing (and improving on) our results, we have provided
 our MP-crystals-2018.6.1 crystal data set via [figshare](<a class="reference external" href="https://figshare.com/articles/Graphs_of_materials_project/7451351)[4">https://figshare.com/articles/Graphs_of_materials_project/7451351)[4</a>].
@@ -393,8 +394,8 @@ do not have calculation warnings and will be used for elasticity models.</p>
 <p>The molecule data set used in this work is the QM9 data set 30 processed by
 Faber et al.[6] It contains the B3LYP/6-31G(2df,p)-level DFT calculation
 results on 130,462 small organic molecules containing up to 9 heavy atoms.</p>
-</div>
-<div class="section" id="computing-requirements">
+</section>
+<section id="computing-requirements">
 <h1>Computing requirements<a class="headerlink" href="#computing-requirements" title="Permalink to this headline">¶</a></h1>
 <p>Training: It should be noted that training MEGNet models, like other deep
 learning models, is fairly computationally intensive with large datasets. In
@@ -403,8 +404,8 @@ crystals/molecules. It is recommended that you do the same.</p>
 <p>Prediction: Once trained, prediction using MEGNet models are fairly cheap.
 For example, the <a class="reference external" href="http://megnet.crystals.ai">http://megnet.crystals.ai</a> web app runs on a single hobby dyno
 on Heroku and provides the prediction for any crystal within seconds.</p>
-</div>
-<div class="section" id="known-limitations">
+</section>
+<section id="known-limitations">
 <h1>Known limitations<a class="headerlink" href="#known-limitations" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><cite>isolated atoms</cite> error. This error occurs when using the given cutoff in the model (4A for</p></li>
@@ -414,8 +415,8 @@ no neighboring atoms are within the distance of <cite>cutoff</cite>. Most of the
 discard the structure, since we found that those structures tend to have a high energy above
 hull (less stable). If you think this error is an essential issue for a particular problem,
 please feel free to email us and we will consider releasing a new model with increased cutoff.</p>
-</div>
-<div class="section" id="contributors">
+</section>
+<section id="contributors">
 <h1>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h1>
 <ol class="arabic simple">
 <li><p>Chi Chen from the Materials Virtual Lab is the lead developer of MEGNet.</p></li>
@@ -424,8 +425,8 @@ of MEGNet and its applications.</p></li>
 <li><p>Logan Ward has made extensive contributions, especially to the development of molecular graph
 portions of MEGNet.</p></li>
 </ol>
-</div>
-<div class="section" id="references">
+</section>
+<section id="references">
 <h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
 <ol class="arabic simple">
 <li><p>Battaglia, P. W.; Hamrick, J. B.; Bapst, V.; Sanchez-Gonzalez, A.;
@@ -450,8 +451,8 @@ Prediction errors of molecular machine learning models lower than hybrid DFT
 error. Journal of Chemical Theory and Computation 2017, 13, 5255–5264.
 DOI: [10.1021/acs.jctc.7b00577](<a class="reference external" href="http://dx.doi.org/10.1021/acs.jctc.7b00577">http://dx.doi.org/10.1021/acs.jctc.7b00577</a>)</p></li>
 </ol>
-</div>
-<div class="section" id="api-docs">
+</section>
+<section id="api-docs">
 <h1>API docs<a class="headerlink" href="#api-docs" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
@@ -547,14 +548,14 @@ DOI: [10.1021/acs.jctc.7b00577](<a class="reference external" href="http://dx.do
 </li>
 </ul>
 </div>
-</div>
-<div class="section" id="contributing">
+</section>
+<section id="contributing">
 <h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h1>
 <p>Contributions to Monty are always welcome. Feel free to visit the <a class="reference external" href="https://github.com/materialsvirtuallab/megnet">Megnet
 Github repo</a> to fork the
 repo or to submit Issues.</p>
-</div>
-<div class="section" id="license">
+</section>
+<section id="license">
 <h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
 <p>Megnet is released under the BSD-3 Clause License. The terms of the license are as
 follows:</p>
@@ -587,15 +588,15 @@ follows:</p>
 <span class="n">OF</span> <span class="n">THIS</span> <span class="n">SOFTWARE</span><span class="p">,</span> <span class="n">EVEN</span> <span class="n">IF</span> <span class="n">ADVISED</span> <span class="n">OF</span> <span class="n">THE</span> <span class="n">POSSIBILITY</span> <span class="n">OF</span> <span class="n">SUCH</span> <span class="n">DAMAGE</span><span class="o">.</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="indices-and-tables">
+</section>
+<section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -649,7 +650,7 @@ follows:</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>

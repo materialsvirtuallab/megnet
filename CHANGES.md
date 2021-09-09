@@ -1,3 +1,8 @@
+# v1.2.9
+* Security fix of tensorflow
+* Docstring fix @a-ws-m
+* Minor format fixes
+
 # v1.2.8
 * Revert to use tf.gather with warnings for speed concerns
 

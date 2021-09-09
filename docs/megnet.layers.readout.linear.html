@@ -4,11 +4,12 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.readout.linear module &#8212; megnet 1.2.6 documentation</title>
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/flasky.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>megnet.layers.readout.linear module &#8212; megnet 1.2.9 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
@@ -39,7 +40,7 @@
         <li class="right" >
           <a href="megnet.layers.readout.html" title="megnet.layers.readout package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.6 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.layers.html" >megnet.layers package</a> &#187;</li>
           <li class="nav-item nav-item-3"><a href="megnet.layers.readout.html" accesskey="U">megnet.layers.readout package</a> &#187;</li>
@@ -52,12 +53,12 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-megnet.layers.readout.linear">
+  <section id="module-megnet.layers.readout.linear">
 <span id="megnet-layers-readout-linear-module"></span><h1>megnet.layers.readout.linear module<a class="headerlink" href="#module-megnet.layers.readout.linear" title="Permalink to this headline">¶</a></h1>
 <p>Linear readout layer includes stats calculated on the atom dimension</p>
 <dl class="py class">
-<dt id="megnet.layers.readout.linear.LinearWithIndex">
-<em class="property">class </em><code class="sig-name descname">LinearWithIndex</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.readout.linear.LinearWithIndex">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">LinearWithIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tensorflow.python.keras.engine.base_layer.Layer</span></code></p>
 <p>Sum or average the node/edge attributes to get a structure-level vector</p>
 <dl class="field-list simple">
@@ -69,16 +70,16 @@
 </dd>
 </dl>
 <dl class="py method">
-<dt id="megnet.layers.readout.linear.LinearWithIndex.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.build" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.readout.linear.LinearWithIndex.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build tensors
 :param input_shape: input shapes
 :type input_shape: sequence of tuple</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.readout.linear.LinearWithIndex.call">
-<code class="sig-name descname">call</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inputs</span></em>, <em class="sig-param"><span class="n">mask</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.call"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.call" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.readout.linear.LinearWithIndex.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.call" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main logic
 :param inputs: input tensors
 :type inputs: tuple of tensor
@@ -88,8 +89,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.readout.linear.LinearWithIndex.compute_output_shape">
-<code class="sig-name descname">compute_output_shape</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_shape</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.compute_output_shape"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.compute_output_shape" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.readout.linear.LinearWithIndex.compute_output_shape">
+<span class="sig-name descname"><span class="pre">compute_output_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.compute_output_shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.compute_output_shape" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute output shapes from input shapes
 :param input_shape: input shapes
 :type input_shape: sequence of tuple</p>
@@ -97,8 +98,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="megnet.layers.readout.linear.LinearWithIndex.get_config">
-<code class="sig-name descname">get_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.get_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.get_config" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="megnet.layers.readout.linear.LinearWithIndex.get_config">
+<span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/layers/readout/linear.html#LinearWithIndex.get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.layers.readout.linear.LinearWithIndex.get_config" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Part of keras layer interface, where the signature is converted into a dict</p>
 </div></blockquote>
@@ -111,7 +112,7 @@
 
 </dd></dl>
 
-</div>
+</section>
 
 
             <div class="clearer"></div>
@@ -143,7 +144,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
