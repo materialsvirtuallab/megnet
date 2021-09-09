@@ -7,4 +7,3 @@ mypy==0.812
 pydocstyle==6.1.1
 flake8-black==0.2.1
 types-tabulate==0.8.2
-pylint=2.10.2
