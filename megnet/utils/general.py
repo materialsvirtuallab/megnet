@@ -1,7 +1,7 @@
 """
 Operation utilities on lists and arrays
 """
-from collections import Iterable
+from collections.abc import Iterable
 from typing import Union, List, Sequence, Optional
 
 import numpy as np
