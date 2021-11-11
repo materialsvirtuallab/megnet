@@ -1,5 +1,5 @@
 pymatgen==2021.2.8.1
 pandas==1.2.4
 tensorflow==2.7.0
-numpy==1.19.5
+numpy==1.21.4
 monty==2021.8.17
