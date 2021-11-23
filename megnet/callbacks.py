@@ -134,7 +134,7 @@ class ModelCheckpointMAE(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            logger.info(f"\nEpoch {epoch+1:05d}: {self,monitor} did not improve from {self.best:.5f}")
+                            logger.info(f"\nEpoch {epoch+1:05d}: {self.monitor} did not improve from {self.best:.5f}")
             else:
                 logger.info(f"\nEpoch {epoch+1:05d}: saving model to {filepath}")
                 if self.save_weights_only:
