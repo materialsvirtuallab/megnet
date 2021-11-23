@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 # Copyright (c) Pymatgen Development Team.
 # Distributed under the terms of the MIT License.
 
@@ -40,7 +39,7 @@ def predict(args):
             sm = SequenceMatcher(None, prefix, mn)
             match = sm.find_longest_match(0, len(prefix), 0, len(mn))
             prefix = prefix[0 : match.size]
-        headers.append("%s (%s)" % (mn, str(model.metadata.get("unit", "")).strip("log10")))
+        headers.append("{} ({})".format(mn, str(model.metadata.get("unit", "")).strip("log10")))
     headers = [h.lstrip(prefix) for h in headers]
 
     for fn in args.structures:

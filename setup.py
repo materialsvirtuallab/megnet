@@ -16,7 +16,7 @@ with open('megnet/__init__.py', encoding='utf-8') as fd:
             item = item
             lines += item + '\n'
     except Exception as exc:
-        raise Exception('Caught exception {}'.format(exc))
+        raise Exception(f'Caught exception {exc}')
 
 
 version = re.search('__version__ = "(.*)"', lines).group(1)

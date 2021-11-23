@@ -47,7 +47,7 @@ class MolecularGraphTest(unittest.TestCase):
     @classmethod
     @unittest.skipIf(import_failed, "molecule package relies on openbabel")
     def setUpClass(cls):
-        with open(os.path.join(module_dir, "qm9", "000001.json"), "r") as f:
+        with open(os.path.join(module_dir, "qm9", "000001.json")) as f:
             cls.qm9_000001 = json.load(f)
         cls.mol = mol_from_smiles(cls.qm9_000001["smiles"])
 

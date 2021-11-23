@@ -257,7 +257,7 @@ class ReduceLRUponNan(Callback):
                         self._reduce_lr_and_load(last_file)
                         if self.verbose:
                             logger.info(
-                                "Loss shot up from %.3f to %.3f! Reducing lr " % (self.losses[-2], self.losses[-1])
+                                f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr "
                             )
                             logger.info("Now lr is %s." % float(kb.eval(self.model.optimizer.lr)))
 

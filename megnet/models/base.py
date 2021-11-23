@@ -175,7 +175,7 @@ class GraphModel:
         train_nb_atoms = [len(i["atom"]) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
         if (validation_graphs is not None) and (validation_targets is not None):
-            filepath = os.path.join(dirname, "%s_{epoch:05d}_{%s:.6f}.hdf5" % (monitor, monitor))
+            filepath = os.path.join(dirname, f"{monitor}_{{epoch:05d}}_{{{monitor}:.6f}}.hdf5")
             val_nb_atoms = [len(i["atom"]) for i in validation_graphs]
             validation_targets = [self.target_scaler.transform(i, j) for i, j in zip(validation_targets, val_nb_atoms)]
             val_inputs = self.graph_converter.get_flat_data(validation_graphs, validation_targets)

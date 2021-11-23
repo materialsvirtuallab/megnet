@@ -28,7 +28,7 @@ def make_doc(ctx):
                 newoutput = []
                 suboutput = []
                 subpackage = False
-                with open(f, 'r') as fid:
+                with open(f) as fid:
                     for line in fid:
                         clean = line.strip()
                         if clean == "Subpackages":

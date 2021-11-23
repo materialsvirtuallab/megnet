@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 
 
 # Author: Chi Chen
@@ -76,7 +75,7 @@ model = MEGNetModel(nfeat_edge=100, nfeat_global=None, ngvocal=len(TRAIN_FIDELIT
 if not os.path.isfile('mp.2019.04.01.json'):
     raise RuntimeError("Please download the data first! Use runall.sh in this directory if needed.")
 
-with open('mp.2019.04.01.json', 'r') as f:
+with open('mp.2019.04.01.json') as f:
     structure_data = {i['material_id']: i['structure'] for i in json.load(f)}
 print('All structures in mp.2019.04.01.json contain %d structures' % len(structure_data))
 
@@ -107,7 +106,7 @@ for fidelity_id, fidelity in enumerate(ALL_FIDELITIES):
         graphs.append(graph)
         targets.append(bandgap_data[fidelity][mp_id])
         # the new id is of the form mp-id_fidelity, e.g., mp-1234_pbe
-        material_ids.append('%s_%s' % (mp_id, fidelity))
+        material_ids.append(f'{mp_id}_{fidelity}')
         
 final_graphs = {i:j for i, j in zip(material_ids, graphs)}
 final_targets = {i:j for i, j in zip(material_ids, targets)}
@@ -198,6 +197,6 @@ for fidelity in TEST_FIDELITIES:
 
 ## Save errors
 with open('test_errors.txt', 'w') as f:
-    line = ['%s: %.3f eV\n' % (i, j) for i, j in zip(TEST_FIDELITIES, test_errors)]
+    line = [f'{i}: {j:.3f} eV\n' for i, j in zip(TEST_FIDELITIES, test_errors)]
     f.write(''.join(line))
 
