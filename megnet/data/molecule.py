@@ -151,11 +151,11 @@ class MolecularGraph(StructureGraph):
         # Check if all feature names are valid
         if any(i not in _ATOM_FEATURES for i in atom_features):
             bad_features = set(atom_features).difference(_ATOM_FEATURES)
-            raise ValueError("Unrecognized atom features: {}".format(", ".join(bad_features)))
+            raise ValueError(f"Unrecognized atom features: {', '.join(bad_features)}")
         self.atom_features = atom_features
         if any(i not in _BOND_FEATURES for i in bond_features):
             bad_features = set(bond_features).difference(_BOND_FEATURES)
-            raise ValueError("Unrecognized bond features: {}".format(", ".join(bad_features)))
+            raise ValueError(f"Unrecognized bond features: {', '.join(bad_features)}")
         self.bond_features = bond_features
         self.known_elements = known_elements
         self.distance_converter = distance_converter
