@@ -120,14 +120,12 @@ class ModelCheckpointMAE(Callback):
 
             if self.save_best_only:
                 if current is None:
-                    warnings.warn(
-                        "Can save best model only with %s available, " "skipping." % self.monitor, RuntimeWarning
-                    )
+                    warnings.warn(f"Can save best model only with {self.monitor} available, skipping.", RuntimeWarning)
                 else:
                     if self.monitor_op(current, self.best):
                         logger.info(
-                            "\nEpoch %05d: %s improved from %0.5f to %0.5f,"
-                            " saving model to %s" % (epoch + 1, self.monitor, self.best, current, filepath)
+                            f"\nEpoch {epoch+1:05d}: {self,monitor} improved from {self.best:.5f} to {current:.5f},"
+                            f" saving model to {filepath}"
                         )
                         self.best = current
                         if self.save_weights_only:
@@ -136,11 +134,9 @@ class ModelCheckpointMAE(Callback):
                             self.model.save(filepath, overwrite=True)
                     else:
                         if self.verbose > 0:
-                            logger.info(
-                                "\nEpoch %05d: %s did not improve from %0.5f" % (epoch + 1, self.monitor, self.best)
-                            )
+                            logger.info(f"\nEpoch {epoch+1:05d}: {self,monitor} did not improve from {self.best:.5f}")
             else:
-                logger.info("\nEpoch %05d: saving model to %s" % (epoch + 1, filepath))
+                logger.info(f"\nEpoch {epoch+1:05d}: saving model to {filepath}")
                 if self.save_weights_only:
                     self.model.save_weights(filepath, overwrite=True)
                 else:
@@ -241,7 +237,7 @@ class ReduceLRUponNan(Callback):
         if last_saved_epoch is not None:
             if last_saved_epoch + self.patience <= epoch:
                 self.model.stop_training = True
-                logger.info("%s does not improve after %d, stopping " "the fitting..." % (self.monitor, self.patience))
+                logger.info(f"{self.monitor} does not improve after {self.patience}, stopping the fitting...")
 
         if loss is not None:
             self.losses.append(loss)
@@ -250,7 +246,7 @@ class ReduceLRUponNan(Callback):
                     logger.info("Nan loss found!")
                 self._reduce_lr_and_load(last_file)
                 if self.verbose:
-                    logger.info("Now lr is %s." % float(kb.eval(self.model.optimizer.lr)))
+                    logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr))}.")
             else:
                 if len(self.losses) > 1:
                     if self.losses[-1] > (self.losses[-2] * 100):
@@ -259,7 +255,7 @@ class ReduceLRUponNan(Callback):
                             logger.info(
                                 f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr "
                             )
-                            logger.info("Now lr is %s." % float(kb.eval(self.model.optimizer.lr)))
+                            logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr))}.")
 
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.eval(self.model.optimizer.lr))
@@ -269,7 +265,7 @@ class ReduceLRUponNan(Callback):
         if last_file is not None:
             self.model.load_weights(last_file)
             if self.verbose:
-                logger.info("Load weights %s" % last_file)
+                logger.info(f"Load weights {last_file}")
         else:
             logger.info("No weights were loaded")
 

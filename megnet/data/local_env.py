@@ -203,4 +203,4 @@ def get(identifier: Union[str, Dict, NearNeighbors]) -> NearNeighbors:
     if isinstance(identifier, NearNeighbors):
         return identifier
 
-    raise ValueError("%s not identified" % str(identifier))
+    raise ValueError(f"{identifier} not identified")

@@ -111,7 +111,7 @@ class MEGNetLayer(GraphNetworkLayer):
                     self.add_weight(
                         shape=i,
                         initializer=self.kernel_initializer,
-                        name="weight_v_%d" % j,
+                        name=f"weight_v_{j}",
                         regularizer=self.kernel_regularizer,
                         constraint=self.kernel_constraint,
                     )
@@ -122,7 +122,7 @@ class MEGNetLayer(GraphNetworkLayer):
                         self.add_weight(
                             shape=(i[-1],),
                             initializer=self.bias_initializer,
-                            name="bias_v_%d" % j,
+                            name=f"bias_v_{j}",
                             regularizer=self.bias_regularizer,
                             constraint=self.bias_constraint,
                         )
@@ -138,7 +138,7 @@ class MEGNetLayer(GraphNetworkLayer):
                     self.add_weight(
                         shape=i,
                         initializer=self.kernel_initializer,
-                        name="weight_e_%d" % j,
+                        name=f"weight_e_{j}",
                         regularizer=self.kernel_regularizer,
                         constraint=self.kernel_constraint,
                     )
@@ -149,7 +149,7 @@ class MEGNetLayer(GraphNetworkLayer):
                         self.add_weight(
                             shape=(i[-1],),
                             initializer=self.bias_initializer,
-                            name="bias_e_%d" % j,
+                            name=f"bias_e_{j}",
                             regularizer=self.bias_regularizer,
                             constraint=self.bias_constraint,
                         )
@@ -165,7 +165,7 @@ class MEGNetLayer(GraphNetworkLayer):
                     self.add_weight(
                         shape=i,
                         initializer=self.kernel_initializer,
-                        name="weight_u_%d" % j,
+                        name=f"weight_u_{j}",
                         regularizer=self.kernel_regularizer,
                         constraint=self.kernel_constraint,
                     )
@@ -176,7 +176,7 @@ class MEGNetLayer(GraphNetworkLayer):
                         self.add_weight(
                             shape=(i[-1],),
                             initializer=self.bias_initializer,
-                            name="bias_u_%d" % j,
+                            name=f"bias_u_{j}",
                             regularizer=self.bias_regularizer,
                             constraint=self.bias_constraint,
                         )

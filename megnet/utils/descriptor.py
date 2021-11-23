@@ -35,7 +35,7 @@ class MEGNetDescriptor:
         elif isinstance(model_name, GraphModel):
             model = model_name
         else:
-            raise ValueError("model_name only support str " "or GraphModel object")
+            raise ValueError("model_name only support str or GraphModel object")
 
         layers = model.layers
         important_prefix = ["meg", "set", "concatenate"]
@@ -54,7 +54,7 @@ class MEGNetDescriptor:
         for i, j in zip(all_names, valid_outputs):
             if isinstance(j, list):
                 for k, l in enumerate(j):
-                    valid_names.append(i + "_%d" % k)
+                    valid_names.append(i + f"_{k}")
                     outputs.append(l)
             else:
                 valid_names.append(i)
@@ -86,12 +86,12 @@ class MEGNetDescriptor:
     def _get_features(self, structure: StructureOrMolecule, prefix: str, level: int, index: int = None) -> np.ndarray:
         name = prefix
         if level is not None:
-            name = prefix + "_%d" % level
+            name = f"{prefix}_{level}"
         if index is not None:
-            name += "_%d" % index
+            name += f"_{index}"
 
         if name not in self.valid_names:
-            raise ValueError("%s not in original megnet model" % name)
+            raise ValueError(f"{name} not in original megnet model")
         ind = self.valid_names.index(name)
         out_all = self._predict_feature(structure)
         return out_all[ind][0]

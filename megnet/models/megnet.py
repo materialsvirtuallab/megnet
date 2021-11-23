@@ -308,7 +308,7 @@ def make_megnet_model(
             pool_method="mean",
             activation=act,
             kernel_regularizer=reg,
-            name="megnet_%d" % block_index,
+            name=f"megnet_{block_index}",
         )([x1_, x2_, x3_, x4, x5, x6, x7])
 
         x1_temp = out[0]

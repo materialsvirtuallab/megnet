@@ -126,7 +126,7 @@ class StandardScaler(Scaler):
         return cls(mean, std, is_intensive)
 
     def __str__(self):
-        return "StandardScaler(mean=%.3f, std=%.3f, is_intensive=%d)" % (self.mean, self.std, self.is_intensive)
+        return f"StandardScaler(mean={self.mean:.3f}, std={self.std:.3f}, is_intensive={self.intensive})"
 
     def __repr__(self):
         return str(self)

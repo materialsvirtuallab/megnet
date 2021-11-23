@@ -34,7 +34,7 @@ MODEL_MAPPING = {
 qm9_models = glob(os.path.join(MODEL_PATH, "qm9-2018.6.1/*.hdf5"))
 
 MODEL_MAPPING.update(
-    {"QM9_%s_2018" % i: "qm9-2018.6.1/%s.hdf5" % i for i in [j.split("/")[-1].split(".")[0] for j in qm9_models]}
+    {f"QM9_{i}_2018": f"qm9-2018.6.1/{i}.hdf5" for i in [j.split("/")[-1].split(".")[0] for j in qm9_models]}
 )
 
 

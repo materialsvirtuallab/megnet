@@ -84,7 +84,7 @@ class CrystalGraphLayer(GraphNetworkLayer):
                     self.add_weight(
                         shape=i,
                         initializer=self.kernel_initializer,
-                        name="weight_v_%d" % j,
+                        name=f"weight_v_{j}",
                         regularizer=self.kernel_regularizer,
                         constraint=self.kernel_constraint,
                     )
@@ -95,7 +95,7 @@ class CrystalGraphLayer(GraphNetworkLayer):
                         self.add_weight(
                             shape=(i[-1],),
                             initializer=self.bias_initializer,
-                            name="bias_v_%d" % j,
+                            name=f"bias_v_{j}",
                             regularizer=self.bias_regularizer,
                             constraint=self.bias_constraint,
                         )
