@@ -267,10 +267,7 @@ class GraphModel:
         ):
             matched = _check_match(j, k)
             if not matched:
-                raise ValueError(
-                    "The data dimension for %s is %s and does not match model "
-                    "required shape of %s" % (i, str(j), str(k))
-                )
+                raise ValueError(f"The data dimension for {i} is {j} and does not match model required shape of {k}")
         return False
 
     def get_all_graphs_targets(
@@ -299,7 +296,7 @@ class GraphModel:
                 targets_valid.append(t)
             except Exception as e:
                 if scrub_failed_structures:
-                    warn("structure with index %d failed the graph computations" % i, UserWarning)
+                    warn(f"structure with index {i} failed the graph computations", UserWarning)
                     continue
                 raise RuntimeError(str(e))
         return graphs_valid, targets_valid

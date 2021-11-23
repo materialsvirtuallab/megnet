@@ -286,7 +286,7 @@ def make_megnet_model(
             name_prefix = "FF"
         out = x
         for k, i in enumerate(n_hiddens):
-            out = Dense(i, activation=act, kernel_regularizer=reg, name="%s_%d" % (name_prefix, k))(out)
+            out = Dense(i, activation=act, kernel_regularizer=reg, name=f"{name_prefix}_{k}")(out)
         return out
 
     # a block corresponds to two feedforward layers + one MEGNetLayer layer
@@ -294,9 +294,9 @@ def make_megnet_model(
     # it will be explicitly added before the block
     def one_block(a, b, c, has_ff=True, block_index=0):
         if has_ff:
-            x1_ = ff(a, name_prefix="block_%d_atom_ff" % block_index)
-            x2_ = ff(b, name_prefix="block_%d_bond_ff" % block_index)
-            x3_ = ff(c, name_prefix="block_%d_state_ff" % block_index)
+            x1_ = ff(a, name_prefix=f"block_{block_index}_atom_ff")
+            x2_ = ff(b, name_prefix=f"block_{block_index}_bond_ff")
+            x3_ = ff(c, name_prefix=f"block_{block_index}_state_ff")
         else:
             x1_ = a
             x2_ = b
@@ -315,9 +315,9 @@ def make_megnet_model(
         x2_temp = out[1]
         x3_temp = out[2]
         if dropout:
-            x1_temp = Dropout(dropout, name="dropout_atom_%d" % block_index)(x1_temp, training=dropout_training)
-            x2_temp = Dropout(dropout, name="dropout_bond_%d" % block_index)(x2_temp, training=dropout_training)
-            x3_temp = Dropout(dropout, name="dropout_state_%d" % block_index)(x3_temp, training=dropout_training)
+            x1_temp = Dropout(dropout, name=f"dropout_atom_{block_index}")(x1_temp, training=dropout_training)
+            x2_temp = Dropout(dropout, name=f"dropout_bond_{block_index}")(x2_temp, training=dropout_training)
+            x3_temp = Dropout(dropout, name=f"dropout_state_{block_index}")(x3_temp, training=dropout_training)
         return x1_temp, x2_temp, x3_temp
 
     x1_ = ff(x1_, name_prefix="preblock_atom")
@@ -333,9 +333,9 @@ def make_megnet_model(
         x3_1 = x3_
         x1_1, x2_1, x3_1 = one_block(x1_1, x2_1, x3_1, has_ff, block_index=i)
         # skip connection
-        x1_ = Add(name="block_%d_add_atom" % i)([x1_, x1_1])
-        x2_ = Add(name="block_%d_add_bond" % i)([x2_, x2_1])
-        x3_ = Add(name="block_%d_add_state" % i)([x3_, x3_1])
+        x1_ = Add(name=f"block_{i}_add_atom")([x1_, x1_1])
+        x2_ = Add(name=f"block_{i}_add_bond")([x2_, x2_1])
+        x3_ = Add(name=f"block_{i}_add_state")([x3_, x3_1])
 
     # print(Set2Set(T=npass, n_hidden=n3, kernel_regularizer=reg, name='set2set_atom'
     #             ).compute_output_shape([i.shape for i in [x1_, x6]]))
