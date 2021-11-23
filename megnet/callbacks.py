@@ -124,7 +124,7 @@ class ModelCheckpointMAE(Callback):
                 else:
                     if self.monitor_op(current, self.best):
                         logger.info(
-                            f"\nEpoch {epoch+1:05d}: {self,monitor} improved from {self.best:.5f} to {current:.5f},"
+                            f"\nEpoch {epoch+1:05d}: {self.monitor} improved from {self.best:.5f} to {current:.5f},"
                             f" saving model to {filepath}"
                         )
                         self.best = current
