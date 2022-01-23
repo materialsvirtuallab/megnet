@@ -459,7 +459,7 @@ class BaseGraphBatchGenerator(Sequence):
         for ind1, ind2, n_atom in zip(index1_temp, index2_temp, n_atoms):
             index1 += [i + offset_ind for i in ind1]
             index2 += [i + offset_ind for i in ind2]
-            #offset_ind += max(ind1) + 1
+            # offset_ind += max(ind1) + 1
             offset_ind += n_atom
 
         # Compile the inputs in needed order
