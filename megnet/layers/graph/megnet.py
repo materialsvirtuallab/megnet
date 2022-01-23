@@ -237,9 +237,7 @@ class MEGNetLayer(GraphNetworkLayer):
         """
         node, edges, u, index1, index2, gnode, gbond = inputs
         index1 = tf.reshape(index1, (-1,))
-        return tf.expand_dims(self.unsorted_seg_method(
-            tf.squeeze(e_p), index1, num_segments=tf.shape(node)[1]),
-                              axis=0)
+        return tf.expand_dims(self.unsorted_seg_method(tf.squeeze(e_p), index1, num_segments=tf.shape(node)[1]), axis=0)
 
     def phi_v(self, b_ei_p, inputs):
         """
@@ -268,8 +266,7 @@ class MEGNetLayer(GraphNetworkLayer):
         """
         nodes, edges, u, index1, index2, gnode, gbond = inputs
         gbond = tf.reshape(gbond, (-1,))
-        return tf.expand_dims(self.seg_method(tf.squeeze(e_p), gbond),
-                              axis=0)
+        return tf.expand_dims(self.seg_method(tf.squeeze(e_p), gbond), axis=0)
 
     def rho_v_u(self, v_p, inputs):
         """
