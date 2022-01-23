@@ -52,7 +52,7 @@ def repeat_with_index(x: tf.Tensor, index: tf.Tensor, axis: int = 1):
     """
     Given an tensor x (N*M*K), repeat the middle axis (axis=1)
     according to the index tensor index (G, )
-    for example, if axis=1 and n = Tensor([0, 0, 0, 1, 2, 2])
+    for example, if axis=1 and index = Tensor([0, 0, 0, 1, 2, 2])
     then M = 3 (3 unique values),
     and the final tensor would have the shape (N*6*3) with the
     first one in M repeated 3 times,

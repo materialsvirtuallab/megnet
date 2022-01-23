@@ -1,0 +1,54 @@
+@preamble{"%%% pybtex example file"}
+
+@article{ruckenstein-diffusion,
+    author = "Liu, Hongquin and Ruckenstein, Eli",
+    language = "english",
+    title = "Predicting the Diffusion Coefficient in Supercritical Fluids",
+    journal = "Ind. Eng. Chem. Res.",
+    volume = "36",
+    year = "1997",
+    pages = "888-895"
+}
+
+@book{viktorov-metodoj,
+    author = "Викторов, Михаил Маркович",
+    publisher = "Л.: <<Химия>>",
+    title = "Методы вычисления физико-химических величин и прикладные расчёты",
+    language = "russian",
+    year = "1977",
+    isbn = "000-0000000000",
+}
+
+@inbook{test-inbook,
+    author = "Jackson, P\'eter",
+    publisher = "Some Publisher",
+    language = "english",
+    title = "Some Title",
+    series = "Some series",
+    booktitle = "Some Good Book",
+    number = "3",
+    edition = "Second",
+    year = "1933",
+    pages = "44--59",
+    url = "https://example.com/Peter%20Jackson.html"
+}
+
+@INBOOK{inbook-editor,
+   editor = "Vladimir Ilyich Lenin",
+   title = "Lesbian Nurses",
+   publisher = "Yale University Press",
+   year = "1914",
+   chapter = "8",
+}
+
+
+@booklet{test-booklet,
+    author = "de Last, Jr., First Middle",
+    language = "english",
+    title = "Just a booklet",
+    year = "2006",
+    month = "January",
+    address = "Moscow",
+    howpublished = "Published by Foo"
+}
+

@@ -1,0 +1,548 @@
+\newcommand{\noopsort}[1]{} \newcommand{\printfirst}[2]{#1}
+  \newcommand{\singleletter}[1]{#1} \newcommand{\switchargs}[2]{#2#1}
+%
+% This bibliography was produced by using jurabib.bst
+%
+\begin{thebibliography}{}
+
+\bibitem[{Aamport\jbdy {1986}}%
+         {\mbox{G-Animal's} Journal\jbsy {1986}}%
+         {{1}{}{article}{1986\el {a}}{}{}{}{}%
+          {1986\el {a}}}%
+         {{The Gnats and Gnus Document Preparation System}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{article-minimal}
+ \jbbibargs {\bibnf {Aamport} {L[eslie]~A.} {L.~A.} {} {}} {L[eslie]~A.
+  Aamport} {au} {\bibapifont {The Gnats and Gnus Document Preparation
+  System}\bibatsep\ \bibJTsep \bibjtfont {\mbox{G-Animal's} Journal}
+  \artyearformat {1986\bibel {a}}} {\bibartperiodhowcited} \jbdoitem
+  {{Aamport}{L[eslie]~A.}{L.~A.}{}{}} {} {} \bibAnnoteFile {article-minimal}
+
+\bibitem[{Aamport\jbdy {1986}}%
+         {\mbox{G-Animal's} Journal 41  \peryearformat {1986}}%
+         {{1}{}{article}{1986\el {b}}{}{}{}{73+}%
+          {1986\el {b}}}%
+         {{The Gnats and Gnus Document Preparation System}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{article-full}
+ \jbbibargs {\bibnf {Aamport} {L[eslie]~A.} {L.~A.} {} {}} {L[eslie]~A.
+  Aamport} {au} {\bibapifont {The Gnats and Gnus Document Preparation
+  System}\bibatsep\ \bibJTsep \bibjtfont {\mbox{G-Animal's} Journal}\ajtsep\
+  \artvolumeformat {41}\ \julname\ \artyearformat {1986\bibel
+  {b}}\artnumberformat {7} \jbPages{73+} \jbnote {1} {This is a full ARTICLE
+  entry} } {\bibartperiodhowcited}  \jbendnote {This is a full ARTICLE entry}
+  \jbdoitem {{Aamport}{L[eslie]~A.}{L.~A.}{}{}} {} {} \bibAnnoteFile
+  {article-full}
+
+\bibitem[{Aamport\jbdy {1986}}%
+         {\mbox{G-Animal's} Journal 41  \peryearformat {1986}}%
+         {{1}{}{article}{1986\el {c}}{}{}{}{73+}%
+          {1986\el {c}}}%
+         {{The Gnats and Gnus Document Preparation System}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{article-crossref}
+ \jbbibargs {\bibnf {Aamport} {L[eslie]~A.} {L.~A.} {} {}} {L[eslie]~A.
+  Aamport} {au} {\bibapifont {The Gnats and Gnus Document Preparation
+  System}\bibatsep\ \bibJTsep\bibjtfont {\mbox{G-Animal's} Journal}\ajtsep\
+  1986 \protect\jbcrossrefchecked {whole-journal} \jbnote {1} {This is a
+  cross-referencing ARTICLE entry} } {\bibartperiodhowcited}  \jbendnote {This
+  is a cross-referencing ARTICLE entry} \jbdoitem
+  {{Aamport}{L[eslie]~A.}{L.~A.}{}{}} {} {} \bibAnnoteFile {article-crossref}
+
+\bibitem[{empty}%
+         {\mbox{G-Animal's} Journal 41  \peryearformat {1986}}%
+         {{0}{}{article}{1986}{}{}{}{}%
+          {1986}}%
+         {{}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{whole-journal}
+ \jbbibargs {} {empty} {} {\mbox{G-Animal's} Journal \artvolumeformat {41}\
+  \julname\ \artyearformat {1986}\artnumberformat {7} \jbnote {1} {The entire
+  issue is devoted to gnats and gnus (this entry is a cross-referenced ARTICLE
+  (journal))} } {\bibartperiodhowcited}  \jbendnote {The entire issue is
+  devoted to gnats and gnus (this entry is a cross-referenced ARTICLE
+  (journal))} \jbdoitem {} {} {} \bibAnnoteFile {whole-journal}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973a}}{\switchargs{--90}{1968}}}}%
+         {}%
+         {{1}{}{book}{{\noopsort{1973a}}{\switchargs{--90}{1968}}}{}{}{}{}%
+          {Addison-Wesley\bibbdsep {}
+  {\noopsort{1973a}}{\switchargs{--90}{1968}}}}%
+         {{The Art of Computer Programming}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{whole-set}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {\bibtfont {The Art of Computer Programming}\bibatsep\  \apyformat
+  {Addison-Wesley\bibbdsep {} {\noopsort{1973a}}{\switchargs{--90}{1968}}}
+  \numberandseries {}{Four volumes} \jbnote {1} {Seven volumes planned (this is
+  a cross-referenced set of BOOKs)} } {\bibhowcited}  \jbendnote {Seven volumes
+  planned (this is a cross-referenced set of BOOKs)} \jbdoitem
+  {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile {whole-set}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973b}}1973}}%
+         {}%
+         {{1}{}{inbook}{{\noopsort{1973b}}1973\el {a}}{}{}{}{}%
+          {Addison-Wesley\bibbdsep {} {\noopsort{1973b}}1973\el {a}}}%
+         {{Fundamental Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{inbook-minimal}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {\Bibchaptername{}~1.2 In \bibapifont {Fundamental Algorithms}\bibatsep\
+  \apyformat {Addison-Wesley\bibbdsep {} {\noopsort{1973b}}1973\bibel {a}} }
+  {\bibhowcited} \jbdoitem {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile
+  {inbook-minimal}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973b}}1973}}%
+         {}%
+         {{1}{}{inbook}{{\noopsort{1973b}}1973\el {b}}{2}{}{}{10--119}%
+          {Reading, Massachusetts\bpubaddr {} Addison-Wesley\bibbdsep {}
+  {\noopsort{1973b}}1973\el {b}}}%
+         {{Fundamental Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{inbook-full}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {Section~1.2 In \bibtfont {The Art of Computer Programming}\bibatsep\
+  \volumeformat {1} \bibapifont {Fundamental Algorithms}\bibatsep\ \jbedition
+  {\secondedname~\editionname {}\jbaensep}  \apyformat {Reading,
+  Massachusetts\bpubaddr {} Addison-Wesley\bibbdsep {} 10~\janname\ \jbssedbd
+  {2}{\noopsort{1973b}}1973\bibel {b}} \jbPages{10--119} \jbnote {1} {This is a
+  full INBOOK entry}  } {\bibhowcited}  \jbendnote {This is a full INBOOK
+  entry} \jbdoitem {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile
+  {inbook-full}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973b}}1973}}%
+         {}%
+         {{1}{}{inbook}{{\noopsort{1973b}}1973\el {c}}{2}{}{}{}%
+          {Addison-Wesley\bibbdsep {} {\noopsort{1973b}}1973\el {c}}}%
+         {{Fundamental Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{inbook-crossref}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {Section~1.2 \protect\jbcrossrefchecked[1]{whole-set}\unskip \jbnote {1}
+  {This is a cross-referencing INBOOK entry}  } {\bibhowcited}  \jbendnote
+  {This is a cross-referencing INBOOK entry} \jbdoitem
+  {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile {inbook-crossref}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973c}}1981}}%
+         {}%
+         {{1}{}{book}{{\noopsort{1973c}}1981\el {a}}{}{}{}{}%
+          {Addison-Wesley\bibbdsep {} {\noopsort{1973c}}1981\el {a}}}%
+         {{Seminumerical Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{book-minimal}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {\bibtfont {Seminumerical Algorithms}\bibatsep\  \apyformat
+  {Addison-Wesley\bibbdsep {} {\noopsort{1973c}}1981\bibel {a}}} {\bibhowcited}
+  \jbdoitem {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile {book-minimal}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973c}}1981}}%
+         {}%
+         {{1}{}{book}{{\noopsort{1973c}}1981\el {b}}{2}{}{}{}%
+          {Reading, Massachusetts\bpubaddr {} Addison-Wesley\bibbdsep {}
+  {\noopsort{1973c}}1981\el {b}}}%
+         {{Seminumerical Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{book-full}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {\bibtfont {Seminumerical Algorithms}\bibatsep\ \volumeformat {2} The Art of
+  Computer Programming\bibatsep\ \jbedition {\secondedname~\editionname
+  {}\jbaensep}  \apyformat {Reading, Massachusetts\bpubaddr {}
+  Addison-Wesley\bibbdsep {} 10~\janname\ \jbssedbd
+  {2}{\noopsort{1973c}}1981\bibel {b}} \jbnote {1} {This is a full BOOK entry}
+  } {\bibhowcited}  \jbendnote {This is a full BOOK entry} \jbdoitem
+  {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {} \bibAnnoteFile {book-full}
+
+\bibitem[{Knuth\jbdy {{\noopsort{1973c}}1981}}%
+         {}%
+         {{1}{}{book}{{\noopsort{1973c}}1981\el {c}}{2}{}{}{}%
+          {Addison-Wesley\bibbdsep {} {\noopsort{1973c}}1981\el {c}}}%
+         {{Seminumerical Algorithms}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{book-crossref}
+ \jbbibargs {\bibnf {Knuth} {Donald~E.} {D.~E.} {} {}} {Donald~E. Knuth} {au}
+  {\bibtfont {Seminumerical Algorithms}\bibatsep\ \jbedition
+  {\secondedname~\editionname {}\jbaensep}  \apyformat {Addison-Wesley\bibbdsep
+  {} \jbssedbd {2}{\noopsort{1973c}}1981\bibel {c}}
+  \protect\jbcrossrefchecked[2]{whole-set}\unskip \jbnote {1} {This is a
+  cross-referencing BOOK entry} } {\bibhowcited}  \jbendnote {This is a
+  cross-referencing BOOK entry} \jbdoitem {{Knuth}{Donald~E.}{D.~E.}{}{}} {} {}
+  \bibAnnoteFile {book-crossref}
+
+\bibitem[{empty}%
+         {}%
+         {{0}{}{booklet}{}{}{}{}{}%
+          {}}%
+         {{The Programming of Computer Art}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{booklet-minimal}
+ \jbbibargs {} {empty} {} {\bibtfont {The Programming of Computer
+  Art}\bibatsep\ } {\bibhowcited} \jbdoitem {} {} {} \bibAnnoteFile
+  {booklet-minimal}
+
+\bibitem[{Knvth\jbdy {1988}}%
+         {}%
+         {{0}{}{booklet}{1988}{}{}{}{}%
+          {Stanford, California\bibbdsep {} 1988}}%
+         {{The Programming of Computer Art}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{booklet-full}
+ \jbbibargs {\bibnf {Knvth} {Jill~C.} {J.~C.} {} {}} {Jill~C. Knvth} {au}
+  {\bibtfont {The Programming of Computer Art}\bibatsep\  \apyformat {Stanford,
+  California\bpubaddr {} Vernier Art Center\bibbdsep {} \febname\ 1988} \jbnote
+  {1} {This is a full BOOKLET entry} } {\bibhowcited}  \jbendnote {This is a
+  full BOOKLET entry} \jbdoitem {{Knvth}{Jill~C.}{J.~C.}{}{}} {} {}
+  \bibAnnoteFile {booklet-full}
+
+\bibitem[{Lincoll\jbdy {1977}}%
+         {}%
+         {{1}{}{incollection}{1977\el {a}}{}{}{}{}%
+          {Academic Press\bibbdsep {} 1977\el {a}}}%
+         {{Semigroups of Recurrences}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{incollection-minimal}
+ \jbbibargs {\bibnf {Lincoll} {Daniel~D.} {D.~D.} {} {}} {Daniel~D. Lincoll}
+  {au} {\bibapifont {Semigroups of Recurrences}\bibatsep\ \incolledformat
+  {}{}{\bibbtfont {High Speed Computer and Algorithm Organization}\bibatsep\
+  }{}{}  \apyformat {Academic Press\bibbdsep {} 1977\bibel {a}} }
+  {\bibhowcited} \jbdoitem {{Lincoll}{Daniel~D.}{D.~D.}{}{}} {} {}
+  \bibAnnoteFile {incollection-minimal}
+
+\bibitem[{Lincoll\jbdy {1977}}%
+         {}%
+         {{1}{}{incollection}{1977\el {b}}{3}{}{}{179--183}%
+          {New York\bpubaddr {} Academic Press\bibbdsep {} 1977\el {b}}}%
+         {{Semigroups of Recurrences}%
+          {}{}{1}{}{}{}{}{}}%
+        ]{incollection-full}
+ \jbbibargs {\bibnf {Lincoll} {Daniel~D.} {D.~D.} {} {}} {Daniel~D. Lincoll}
+  {au} {\bibapifont {Semigroups of Recurrences}\bibatsep\ \incolledformat
+  {\bibenf {Lipcoll} {David~J.} {D.~J.} {} {}\Bibbfsesep \bibenf {Lawrie}
+  {D.~H.} {D.~H.} {} {}\Bibbstesep \bibenf {Sameh} {A.~H.} {A.~H.} {}
+  {}}{\edfont {\editorsname}}{\bibbtfont {High Speed Computer and Algorithm
+  Organization}\bibatsep\ }{}{} \jbedition {\thirdedname~\editionname
+  {}\jbaensep}  \apyformat {New York\bpubaddr {} Academic Press\bibbdsep {}
+  \sepname\ \jbssedbd {3}1977\bibel {b}} \numberandseries {23}{Fast Computers}
+  \unskip.\,-- Part~3 \jbPages{179--183} \jbnote {1} {This is a full
+  INCOLLECTION entry} } {\bibhowcited}  \jbendnote {This is a full INCOLLECTION
+  entry} \jbdoitem {{Lincoll}{Daniel~D.}{D.~D.}{}{}}
+  {{Lipcoll}{David~J.}{D.~J.}{}{}; {Lawrie}{D.~H.}{D.~H.}{}{};
+  {Sameh}{A.~H.}{A.~H.}{}{}} {} \bibAnnoteFile {incollection-full}
+
+\bibitem[{Lincoll\jbdy {1977}}%
+         {}%
+         {{1}{}{incollection}{1977\el {c}}{3}{}{}{179--183}%
+          {New York\bpubaddr {} Academic Press\bibbdsep {} 1977\el {c}}}%
+         {{Semigroups of Recurrences}%
+          {}{}{1}{}{}{}{}{}}%
+        ]{incollection-crossref}
+ \jbbibargs {\bibnf {Lincoll} {Daniel~D.} {D.~D.} {} {}} {Daniel~D. Lincoll}
+  {au} {\bibapifont {Semigroups of Recurrences}\bibatsep\
+  \protect\jbincollcrossref {whole-collection}{1} \jbPages{179--183} \jbnote
+  {1} {This is a cross-referencing INCOLLECTION entry} } {\bibhowcited}
+  \jbendnote {This is a cross-referencing INCOLLECTION entry} \jbdoitem
+  {{Lincoll}{Daniel~D.}{D.~D.}{}{}} {{Lipcoll}{David~J.}{D.~J.}{}{};
+  {Lawrie}{D.~H.}{D.~H.}{}{}; {Sameh}{A.~H.}{A.~H.}{}{}} {} \bibAnnoteFile
+  {incollection-crossref}
+
+\bibitem[{Lipcoll\jbbfsesep Lawrie\jbbstesep Sameh\jbdy {1977}}%
+         {}%
+         {{0}{}{book}{1977}{3}{}{}{}%
+          {New York\bpubaddr {} Academic Press\bibbdsep {} 1977}}%
+         {{High Speed Computer and Algorithm Organization}%
+          {}{}{3}{}{}{}{}{}}%
+        ]{whole-collection}
+ \jbbibargs {\biblenf {Lipcoll} {David~J.} {D.~J.} {} {}\Bibbfsesep \biblenf
+  {Lawrie} {D.~H.} {D.~H.} {} {}\Bibbstesep \biblenf {Sameh} {A.~H.} {A.~H.} {}
+  {}\fsted {\editorsname}} {David~J. LipcollD.~H. LawrieA.~H. Sameh} {eds}
+  {\snded {\sndeditorsname}\bibtfont {High Speed Computer and Algorithm
+  Organization}\bibatsep\ \jbedition {\thirdedname~\editionname {}\jbaensep}
+  \apyformat {New York\bpubaddr {} Academic Press\bibbdsep {} \sepname\
+  \jbssedbd {3}1977} \numberandseries {23}{Fast Computers} \jbnote {1} {This is
+  a cross-referenced BOOK (collection) entry} } {\bibhowcited}  \jbendnote
+  {This is a cross-referenced BOOK (collection) entry} \jbdoitem {}
+  {{Lipcoll}{David~J.}{D.~J.}{}{}; {Lawrie}{D.~H.}{D.~H.}{}{};
+  {Sameh}{A.~H.}{A.~H.}{}{}} {} \bibAnnoteFile {whole-collection}
+
+\bibitem[{empty}%
+         {}%
+         {{0}{}{manual}{}{}{}{}{}%
+          {}}%
+         {{The Definitive Computer Manual}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{manual-minimal}
+ \jbbibargs {} {empty} {} {\bibtfont {The Definitive Computer Manual}\bibatsep\
+  } {\bibhowcited} \jbdoitem {} {} {} \bibAnnoteFile {manual-minimal}
+
+\bibitem[{Manmaker\jbdy {1986}}%
+         {}%
+         {{0}{}{manual}{1986}{Silver}{}{}{}%
+          {Silicon Valley\bibbdsep {} 1986}}%
+         {{The Definitive Computer Manual}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{manual-full}
+ \jbbibargs {\bibnf {Manmaker} {Larry} {L.} {} {}} {Larry Manmaker} {au}
+  {\bibtfont {The Definitive Computer Manual}\bibatsep\ \jbedition
+  {Silver~\editionname {}\jbaensep} Silicon Valley\bpubaddr {}
+  Chips-R-Us\bibbdsep {} \aprname\ -\mayname\ \jbssedbd {Silver}1986 \jbnote
+  {1} {This is a full MANUAL entry} } {\bibhowcited}  \jbendnote {This is a
+  full MANUAL entry} \jbdoitem {{Manmaker}{Larry}{L.}{}{}} {}
+  {{Chips-R-Us}{}{}{}{}} \bibAnnoteFile {manual-full}
+
+\bibitem[{Masterly\jbdy {1988}}%
+         {}%
+         {{1}{}{mastersthesis}{1988\el {a}}{}{}{}{}%
+          {1988\el {a}}}%
+         {{Mastering Thesis Writing}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{mastersthesis-minimal}
+ \jbbibargs {\bibnf {Masterly} {{\'{E}}douard} {{\'{E}}.} {} {}} {{\'{E}}douard
+  Masterly} {au} {\bibtfont {Mastering Thesis Writing}\bibatsep\
+  \mastersthesisname, \apyformat {Stanford University\bibbdsep {} 1988}}
+  {\bibhowcited} \jbdoitem {{Masterly}{{\'{E}}douard}{{\'{E}}.}{}{}} {} {}
+  \bibAnnoteFile {mastersthesis-minimal}
+
+\bibitem[{Masterly\jbdy {1988}}%
+         {}%
+         {{1}{}{mastersthesis}{1988\el {b}}{}{}{}{}%
+          {English Department\bibbdsep {} 1988\el {b}}}%
+         {{Mastering Thesis Writing}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{mastersthesis-full}
+ \jbbibargs {\bibnf {Masterly} {{\'{E}}douard} {{\'{E}}.} {} {}} {{\'{E}}douard
+  Masterly} {au} {\bibtfont {Mastering Thesis Writing}\bibatsep\ Master's
+  project \apyformat {Stanford University, English Department\bibbdsep {} 1988}
+  \jbnote {1} {This is a full MASTERSTHESIS entry} } {\bibhowcited}  \jbendnote
+  {This is a full MASTERSTHESIS entry} \jbdoitem
+  {{Masterly}{{\'{E}}douard}{{\'{E}}.}{}{}} {} {} \bibAnnoteFile
+  {mastersthesis-full}
+
+\bibitem[{empty}%
+         {}%
+         {{0}{}{misc}{}{}{}{}{}%
+          {}}%
+         {{}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{misc-minimal}
+ \jbbibargs {} {empty} {} { \jbnote {1} {This is a minimal MISC entry} }
+  {\bibhowcited}  \jbendnote {This is a minimal MISC entry} \jbdoitem {} {} {}
+  \bibAnnoteFile {misc-minimal}
+
+\bibitem[{Missilany\jbdy {1984}}%
+         {}%
+         {{0}{}{misc}{1984}{}{}{}{}%
+          {1984}}%
+         {{Handing out random pamphlets in airports}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{misc-full}
+ \jbbibargs {\bibnf {Missilany} {Joe-Bob} {J.-B.} {} {}} {Joe-Bob Missilany}
+  {au} {\bibtfont {Handing out random pamphlets in airports}\bibatsep\
+  \apyformat {Handed out at O'Hare\bibbdsep {} \octname\ 1984} \jbnote {1}
+  {This is a full MISC entry} } {\bibhowcited}  \jbendnote {This is a full MISC
+  entry} \jbdoitem {{Missilany}{Joe-Bob}{J.-B.}{}{}} {} {} \bibAnnoteFile
+  {misc-full}
+
+\bibitem[{Oaho\jbbfsasep Ullman\jbbstasep Yannakakis\jbdy {1983}}%
+         {}%
+         {{1}{}{inproceedings}{1983\el {a}}{}{}{}{}%
+          {1983\el {a}}}%
+         {{On Notions of Information Transfer in {VLSI} Circuits}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{inproceedings-minimal}
+ \jbbibargs {\bibnf {Oaho} {Alfred~V.} {A.~V.} {} {}\Bibbfsasep \bibnf {Ullman}
+  {Jeffrey~D.} {J.~D.} {} {}\Bibbstasep \bibnf {Yannakakis} {Mihalis} {M.} {}
+  {}} {Alfred~V. OahoJeffrey~D. UllmanMihalis Yannakakis} {aus} {\bibapifont
+  {On Notions of Information Transfer in {VLSI} Circuits}\bibatsep\
+  \incolledformat {}{}{\bibbtfont {Proc. Fifteenth Annual ACM Symposium on the
+  Theory of Computing}\bibatsep\ }{}{}   \apyformat {1983\bibel {a}} }
+  {\bibhowcited} \jbdoitem {{Oaho}{Alfred~V.}{A.~V.}{}{};
+  {Ullman}{Jeffrey~D.}{J.~D.}{}{}; {Yannakakis}{Mihalis}{M.}{}{}} {} {}
+  \bibAnnoteFile {inproceedings-minimal}
+
+\bibitem[{Oaho\jbbfsasep Ullman\jbbstasep Yannakakis\jbdy {1983}}%
+         {}%
+         {{1}{}{inproceedings}{1983\el {b}}{}{}{}{133--139}%
+          {Boston\bpubaddr {} Academic Press\bibbdsep {} 1983\el {b}}}%
+         {{On Notions of Information Transfer in {VLSI} Circuits}%
+          {}{}{1}{}{}{}{}{}}%
+        ]{inproceedings-full}
+ \jbbibargs {\bibnf {Oaho} {Alfred~V.} {A.~V.} {} {}\Bibbfsasep \bibnf {Ullman}
+  {Jeffrey~D.} {J.~D.} {} {}\Bibbstasep \bibnf {Yannakakis} {Mihalis} {M.} {}
+  {}} {Alfred~V. OahoJeffrey~D. UllmanMihalis Yannakakis} {aus} {\bibapifont
+  {On Notions of Information Transfer in {VLSI} Circuits}\bibatsep\
+  \incolledformat {\bibenf {Oz} {Wizard~V.} {W.~V.} {} {}\Bibbtesep \bibenf
+  {Yannakakis} {Mihalis} {M.} {} {}}{\edfont {\editorsname}}{\bibbtfont {Proc.
+  Fifteenth Annual ACM Symposium on the Theory of Computing}\bibatsep\ }{}{}
+  \apyformat {Boston\bpubaddr {} Academic Press\bibbdsep {} \marname\
+  1983\bibel {b}} \numberandseries {17}{All ACM Conferences} \jbnote {1} {This
+  is a full INPROCEDINGS entry}   \jbPages{133--139}} {\bibhowcited}
+  \jbendnote {This is a full INPROCEDINGS entry} \jbdoitem
+  {{Oaho}{Alfred~V.}{A.~V.}{}{}; {Ullman}{Jeffrey~D.}{J.~D.}{}{};
+  {Yannakakis}{Mihalis}{M.}{}{}} {{Oz}{Wizard~V.}{W.~V.}{}{};
+  {Yannakakis}{Mihalis}{M.}{}{}} {{The OX Association for Computing
+  Machinery}{}{}{}{}} \bibAnnoteFile {inproceedings-full}
+
+\bibitem[{Oaho\jbbfsasep Ullman\jbbstasep Yannakakis\jbdy {1983}}%
+         {}%
+         {{1}{}{inproceedings}{1983\el {c}}{}{}{}{133--139}%
+          {Boston\bibbdsep {} 1983\el {c}}}%
+         {{On Notions of Information Transfer in {VLSI} Circuits}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{inproceedings-crossref}
+ \jbbibargs {\bibnf {Oaho} {Alfred~V.} {A.~V.} {} {}\Bibbfsasep \bibnf {Ullman}
+  {Jeffrey~D.} {J.~D.} {} {}\Bibbstasep \bibnf {Yannakakis} {Mihalis} {M.} {}
+  {}} {Alfred~V. OahoJeffrey~D. UllmanMihalis Yannakakis} {aus} {\bibapifont
+  {On Notions of Information Transfer in {VLSI} Circuits}\bibatsep\
+  \protect\jbincollcrossref {whole-proceedings}{} \jbPages{133--139} \jbnote
+  {1} {This is a cross-referencing INPROCEEDINGS entry} } {\bibhowcited}
+  \jbendnote {This is a cross-referencing INPROCEEDINGS entry} \jbdoitem
+  {{Oaho}{Alfred~V.}{A.~V.}{}{}; {Ullman}{Jeffrey~D.}{J.~D.}{}{};
+  {Yannakakis}{Mihalis}{M.}{}{}} {} {} \bibAnnoteFile {inproceedings-crossref}
+
+\bibitem[{empty}%
+         {}%
+         {{0}{}{proceedings}{1983\el {a}}{}{}{}{}%
+          {1983\el {a}}}%
+         {{Proc. Fifteenth Annual Symposium on the Theory of Computing}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{proceedings-minimal}
+ \jbbibargs {} {empty} {} {\bibtfont {Proc. Fifteenth Annual Symposium on the
+  Theory of Computing}\bibatsep\  \apyformat {1983\bibel {a}}} {\bibhowcited}
+  \jbdoitem {} {} {} \bibAnnoteFile {proceedings-minimal}
+
+\bibitem[{The OX Association for Computing Machinery}%
+         {}%
+         {{0}{}{proceedings}{1983\el {b}}{}{}{}{}%
+          {Boston\bibbdsep {} 1983\el {b}}}%
+         {{Proc. Fifteenth Annual Symposium on the Theory of Computing}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{whole-proceedings}
+ \jbbibargs {\biblnfont {The OX Association for Computing Machinery
+  \organizationname}} {The OX Association for Computing Machinery} {org}
+  {\bibtfont {Proc. Fifteenth Annual Symposium on the Theory of
+  Computing}\bibatsep\  \apyformat {Boston\bibbdsep {} 1983\bibel {b}} \jbnote
+  {1} {This is a cross-referenced PROCEEDINGS} } {\bibhowcited}  \jbendnote
+  {This is a cross-referenced PROCEEDINGS} \jbdoitem {} {} {{The OX Association
+  for Computing Machinery}{}{}{}{}} \bibAnnoteFile {whole-proceedings}
+
+\bibitem[{Oz\jbbtesep Yannakakis\jbdy {1983}}%
+         {}%
+         {{0}{}{proceedings}{1983}{}{}{}{}%
+          {Boston\bpubaddr {} Academic Press\bibbdsep {} 1983}}%
+         {{Proc. Fifteenth Annual Symposium on the Theory of Computing}%
+          {}{}{3}{}{}{}{}{}}%
+        ]{proceedings-full}
+ \jbbibargs {\biblenf {Oz} {Wizard~V.} {W.~V.} {} {}\Bibbtesep \biblenf
+  {Yannakakis} {Mihalis} {M.} {} {}\fsted {\editorsname}} {Wizard~V. OzMihalis
+  Yannakakis} {eds} {\snded {\sndeditorsname}\bibtfont {Proc. Fifteenth Annual
+  Symposium on the Theory of Computing}\bibatsep\ The OX Association for
+  Computing Machinery \organizationname {} \numberandseries {17}{All ACM
+  Conferences} \apyformat {Boston\bpubaddr {} Academic Press\bibbdsep {}
+  \marname\ 1983} \jbnote {1} {This is a full PROCEEDINGS entry} }
+  {\bibhowcited}  \jbendnote {This is a full PROCEEDINGS entry} \jbdoitem {}
+  {{Oz}{Wizard~V.}{W.~V.}{}{}; {Yannakakis}{Mihalis}{M.}{}{}} {{The OX
+  Association for Computing Machinery}{}{}{}{}} \bibAnnoteFile
+  {proceedings-full}
+
+\bibitem[{Phony-Baloney\jbdy {1988}}%
+         {}%
+         {{1}{}{phdthesis}{1988\el {a}}{}{}{}{}%
+          {1988\el {a}}}%
+         {{Fighting Fire with Fire: Festooning {F}rench Phrases}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{phdthesis-minimal}
+ \jbbibargs {\bibnf {Phony-Baloney} {F.~Phidias} {F.~P.} {} {}} {F.~Phidias
+  Phony-Baloney} {au} {\bibtfont {Fighting Fire with Fire: Festooning {F}rench
+  Phrases}\bibatsep\ \phdthesisname, \apyformat {Fanstord University\bibbdsep
+  {} 1988}} {\bibhowcited} \jbdoitem {{Phony-Baloney}{F.~Phidias}{F.~P.}{}{}}
+  {} {} \bibAnnoteFile {phdthesis-minimal}
+
+\bibitem[{Phony-Baloney\jbdy {1988}}%
+         {}%
+         {{1}{}{phdthesis}{1988\el {b}}{}{}{}{}%
+          {Department of French\bibbdsep {} 1988\el {b}}}%
+         {{Fighting Fire with Fire: Festooning {F}rench Phrases}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{phdthesis-full}
+ \jbbibargs {\bibnf {Phony-Baloney} {F.~Phidias} {F.~P.} {} {}} {F.~Phidias
+  Phony-Baloney} {au} {\bibtfont {Fighting Fire with Fire: Festooning {F}rench
+  Phrases}\bibatsep\ {PhD} Dissertation \apyformat {Fanstord University,
+  Department of French\bibbdsep {} 1988} \jbnote {1} {This is a full PHDTHESIS
+  entry} } {\bibhowcited}  \jbendnote {This is a full PHDTHESIS entry}
+  \jbdoitem {{Phony-Baloney}{F.~Phidias}{F.~P.}{}{}} {} {} \bibAnnoteFile
+  {phdthesis-full}
+
+\bibitem[{Terrific\jbdy {1988}}%
+         {}%
+         {{0}{}{techreport}{1988}{}{}{}{}%
+          {1988}}%
+         {{An {$O(n \log n / \! \log\log n)$} Sorting Algorithm}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{techreport-minimal}
+ \jbbibargs {\bibnf {Terrific} {Tom} {T.} {} {}} {Tom Terrific} {au} {\bibtfont
+  {An {$O(n \log n / \! \log\log n)$} Sorting Algorithm}\bibatsep\  \apyformat
+  {Fanstord University\bibbdsep {} 1988} -- \technicalreportname {} }
+  {\bibhowcited} \jbdoitem {{Terrific}{Tom}{T.}{}{}} {} {} \bibAnnoteFile
+  {techreport-minimal}
+
+\bibitem[{T{\'{e}}rrific\jbdy {1988}}%
+         {}%
+         {{0}{}{techreport}{1988}{}{}{}{}%
+          {Computer Science Department, Fanstord, California\bibbdsep {}
+  1988}}%
+         {{An {$O(n \log n / \! \log\log n)$} Sorting Algorithm}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{techreport-full}
+ \jbbibargs {\bibnf {T{\'{e}}rrific} {Tom} {T.} {} {}} {Tom T{\'{e}}rrific}
+  {au} {\bibtfont {An {$O(n \log n / \! \log\log n)$} Sorting
+  Algorithm}\bibatsep\  \apyformat {Computer Science Department, Fanstord,
+  California\bibbdsep {} \octname\ 1988}~(7).\,-- Wishful Research Result
+  \jbnote {1} {This is a full TECHREPORT entry} } {\bibhowcited}  \jbendnote
+  {This is a full TECHREPORT entry} \jbdoitem {{T{\'{e}}rrific}{Tom}{T.}{}{}}
+  {} {} \bibAnnoteFile {techreport-full}
+
+\bibitem[{{\"{U}}nderwood\jbbfsasep {\~N}et\jbbstasep {\={P}}ot}%
+         {}%
+         {{1}{}{unpublished}{}{}{}{}{}%
+          {}}%
+         {{Lower Bounds for Wishful Research Results}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{unpublished-minimal}
+ \jbbibargs {\bibnf {{\"{U}}nderwood} {Ulrich} {U.} {} {}\Bibbfsasep \bibnf
+  {{\~N}et} {Ned} {N.} {} {}\Bibbstasep \bibnf {{\={P}}ot} {Paul} {P.} {} {}}
+  {Ulrich {\"{U}}nderwoodNed {\~N}etPaul {\={P}}ot} {aus} {\bibtfont {Lower
+  Bounds for Wishful Research Results}\bibatsep\  \jbnote {1} {Talk at Fanstord
+  University (this is a minimal UNPUBLISHED entry)} } {\bibhowcited}
+  \jbendnote {Talk at Fanstord University (this is a minimal UNPUBLISHED
+  entry)} \jbdoitem {{{\"{U}}nderwood}{Ulrich}{U.}{}{}; {{\~N}et}{Ned}{N.}{}{};
+  {{\={P}}ot}{Paul}{P.}{}{}} {} {} \bibAnnoteFile {unpublished-minimal}
+
+\bibitem[{{\"{U}}nderwood\jbbfsasep {\~N}et\jbbstasep {\={P}}ot\jbdy {1988}}%
+         {}%
+         {{1}{}{unpublished}{1988}{}{}{}{}%
+          {1988}}%
+         {{Lower Bounds for Wishful Research Results}%
+          {}{}{2}{}{}{}{}{}}%
+        ]{unpublished-full}
+ \jbbibargs {\bibnf {{\"{U}}nderwood} {Ulrich} {U.} {} {}\Bibbfsasep \bibnf
+  {{\~N}et} {Ned} {N.} {} {}\Bibbstasep \bibnf {{\={P}}ot} {Paul} {P.} {} {}}
+  {Ulrich {\"{U}}nderwoodNed {\~N}etPaul {\={P}}ot} {aus} {\bibtfont {Lower
+  Bounds for Wishful Research Results}\bibatsep\ \novname\ , \decname\ 1988
+  \jbnote {1} {Talk at Fanstord University (this is a full UNPUBLISHED entry)}
+  } {\bibhowcited}  \jbendnote {Talk at Fanstord University (this is a full
+  UNPUBLISHED entry)} \jbdoitem {{{\"{U}}nderwood}{Ulrich}{U.}{}{};
+  {{\~N}et}{Ned}{N.}{}{}; {{\={P}}ot}{Paul}{P.}{}{}} {} {} \bibAnnoteFile
+  {unpublished-full}
+
+\bibitem[{empty}%
+         {}%
+         {{0}{}{misc}{}{}{}{}{}%
+          {}}%
+         {{}%
+          {}{}{4}{}{}{}{}{}}%
+        ]{random-note-crossref}
+ \jbbibargs {} {empty} {} { \jbnote {1} {Volume~2 is listed under Knuth
+  \cite{book-full}} } {\bibhowcited}  \jbendnote {Volume~2 is listed under
+  Knuth \cite{book-full}} \jbdoitem {} {} {} \bibAnnoteFile
+  {random-note-crossref}
+
+\end{thebibliography}

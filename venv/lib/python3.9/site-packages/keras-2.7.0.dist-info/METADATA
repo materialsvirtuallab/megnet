@@ -1,0 +1,33 @@
+Metadata-Version: 2.1
+Name: keras
+Version: 2.7.0
+Summary: Deep learning for humans.
+Home-page: https://keras.io/
+Author: Keras team
+Author-email: keras-users@googlegroups.com
+License: Apache 2.0
+Download-URL: https://github.com/keras-team/keras/tags
+Keywords: keras,tensorflow,machine learning,deep learning
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Scientific/Engineering :: Mathematics
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+License-File: LICENSE
+
+TensorFlow Keras is an implementation of the Keras API that uses TensorFlow as
+a backend.
+
+

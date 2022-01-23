@@ -4,6 +4,7 @@ Most users will not need to interact with this module."""
 from abc import abstractmethod
 from inspect import signature
 from operator import itemgetter
+from logging import getLogger
 from typing import Union, Dict, List, Any
 
 import numpy as np
@@ -15,6 +16,8 @@ from pymatgen.analysis.local_env import NearNeighbors
 from megnet.data import local_env
 from megnet.utils.data import get_graphs_within_cutoff
 from megnet.utils.general import expand_1st, to_list
+
+logger = getLogger(__name__)
 
 
 class Converter(MSONable):
@@ -46,11 +49,11 @@ class StructureGraph(MSONable):
     """
 
     def __init__(
-        self,
-        nn_strategy: Union[str, NearNeighbors] = None,
-        atom_converter: Converter = None,
-        bond_converter: Converter = None,
-        **kwargs,
+            self,
+            nn_strategy: Union[str, NearNeighbors] = None,
+            atom_converter: Converter = None,
+            bond_converter: Converter = None,
+            **kwargs,
     ):
         """
 
@@ -80,7 +83,8 @@ class StructureGraph(MSONable):
         self.atom_converter = atom_converter or self._get_dummy_converter()
         self.bond_converter = bond_converter or self._get_dummy_converter()
 
-    def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
+    def convert(self, structure: Structure,
+                state_attributes: List = None) -> Dict:
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
@@ -94,23 +98,27 @@ class StructureGraph(MSONable):
             (dictionary)
         """
         state_attributes = (
-            state_attributes or getattr(structure, "state", None) or np.array([[0.0, 0.0]], dtype="float32")
+                state_attributes or getattr(structure, "state",
+                                            None) or np.array([[0.0, 0.0]],
+                                                              dtype="float32")
         )
         index1 = []
         index2 = []
         bonds = []
         if self.nn_strategy is None:
             raise RuntimeError("NearNeighbor strategy is not provided!")
-        for n, neighbors in enumerate(self.nn_strategy.get_all_nn_info(structure)):
+        for n, neighbors in enumerate(
+                self.nn_strategy.get_all_nn_info(structure)):
             index1.extend([n] * len(neighbors))
             for neighbor in neighbors:
                 index2.append(neighbor["site_index"])
                 bonds.append(neighbor["weight"])
         atoms = self.get_atom_features(structure)
         if np.size(np.unique(index1)) < len(atoms):
-            raise RuntimeError("Isolated atoms found in the structure")
+            logger.warning("Isolated atoms found in the structure")
 
-        return {"atom": atoms, "bond": bonds, "state": state_attributes, "index1": index1, "index2": index2}
+        return {"atom": atoms, "bond": bonds, "state": state_attributes,
+                "index1": index1, "index2": index2}
 
     @staticmethod
     def get_atom_features(structure) -> List[Any]:
@@ -121,7 +129,8 @@ class StructureGraph(MSONable):
         Returns:
             List of atomic numbers
         """
-        return np.array([i.specie.Z for i in structure], dtype="int32").tolist()
+        return np.array([i.specie.Z for i in structure],
+                        dtype="int32").tolist()
 
     def __call__(self, structure: Structure) -> Dict:
         """
@@ -226,7 +235,8 @@ class StructureGraphFixedRadius(StructureGraph):
     pymatgen. It is orders of magnitude faster than previous implementations
     """
 
-    def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
+    def convert(self, structure: Structure,
+                state_attributes: List = None) -> Dict:
         """
         Take a pymatgen structure and convert it to a index-type graph representation
         The graph will have node, distance, index1, index2, where node is a vector of Z number
@@ -240,17 +250,28 @@ class StructureGraphFixedRadius(StructureGraph):
             (dictionary)
         """
         state_attributes = (
-            state_attributes or getattr(structure, "state", None) or np.array([[0.0, 0.0]], dtype="float32")
+                state_attributes or getattr(structure, "state",
+                                            None) or np.array([[0.0, 0.0]],
+                                                              dtype="float32")
         )
         atoms = self.get_atom_features(structure)
-        index1, index2, _, bonds = get_graphs_within_cutoff(structure, self.nn_strategy.cutoff)
+        index1, index2, _, bonds = get_graphs_within_cutoff(structure,
+                                                            self.nn_strategy.cutoff)
+
+        if len(index1) == 0:
+            raise RuntimeError("The cutoff is too small, resulting in "
+                               "material graph with no bonds")
 
         if np.size(np.unique(index1)) < len(atoms):
-            raise RuntimeError("Isolated atoms found in the structure")
-        return {"atom": atoms, "bond": bonds, "state": state_attributes, "index1": index1, "index2": index2}
+            logger.warning("Isolated atoms found in the structure. The "
+                           "cutoff radius might be small")
+
+        return {"atom": atoms, "bond": bonds, "state": state_attributes,
+                "index1": index1, "index2": index2}
 
     @classmethod
-    def from_structure_graph(cls, structure_graph: StructureGraph) -> "StructureGraphFixedRadius":
+    def from_structure_graph(cls,
+                             structure_graph: StructureGraph) -> "StructureGraphFixedRadius":
         """
         Initialize from pymatgen StructureGraph
         Args:
@@ -311,7 +332,8 @@ class GaussianDistance(Converter):
     Expand distance with Gaussian basis sit at centers and with width 0.5.
     """
 
-    def __init__(self, centers: np.ndarray = np.linspace(0, 5, 100), width=0.5):
+    def __init__(self, centers: np.ndarray = np.linspace(0, 5, 100),
+                 width=0.5):
         """
 
         Args:
@@ -330,7 +352,8 @@ class GaussianDistance(Converter):
             (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
-        return np.exp(-((d[:, None] - self.centers[None, :]) ** 2) / self.width ** 2)
+        return np.exp(
+            -((d[:, None] - self.centers[None, :]) ** 2) / self.width ** 2)
 
 
 class BaseGraphBatchGenerator(Sequence):
@@ -343,12 +366,12 @@ class BaseGraphBatchGenerator(Sequence):
     """
 
     def __init__(
-        self,
-        dataset_size: int,
-        targets: np.ndarray,
-        sample_weights: np.ndarray = None,
-        batch_size: int = 128,
-        is_shuffle: bool = True,
+            self,
+            dataset_size: int,
+            targets: np.ndarray,
+            sample_weights: np.ndarray = None,
+            batch_size: int = 128,
+            is_shuffle: bool = True,
     ):
         """
         Args:
@@ -380,12 +403,12 @@ class BaseGraphBatchGenerator(Sequence):
         return self.max_step
 
     def _combine_graph_data(
-        self,
-        feature_list_temp: List[np.ndarray],
-        connection_list_temp: List[np.ndarray],
-        global_list_temp: List[np.ndarray],
-        index1_temp: List[np.ndarray],
-        index2_temp: List[np.ndarray],
+            self,
+            feature_list_temp: List[np.ndarray],
+            connection_list_temp: List[np.ndarray],
+            global_list_temp: List[np.ndarray],
+            index1_temp: List[np.ndarray],
+            index2_temp: List[np.ndarray],
     ) -> tuple:
         """Compile the matrices describing each graph into single matrices for the entire graph
         Beyond concatenating the graph descriptions, this operation updates the indices of each
@@ -417,6 +440,7 @@ class BaseGraphBatchGenerator(Sequence):
             gbond += [i] * len(j)
 
         # assemble atom features together
+        n_atoms = [len(i) for i in feature_list_temp]
         feature_list_temp = np.concatenate(feature_list_temp, axis=0)
         feature_list_temp = self.process_atom_feature(feature_list_temp)
 
@@ -432,10 +456,12 @@ class BaseGraphBatchGenerator(Sequence):
         index1 = []
         index2 = []
         offset_ind = 0
-        for ind1, ind2 in zip(index1_temp, index2_temp):
+        for ind1, ind2, n_atom in zip(index1_temp, index2_temp, n_atoms):
             index1 += [i + offset_ind for i in ind1]
             index2 += [i + offset_ind for i in ind2]
-            offset_ind += max(ind1) + 1
+            #offset_ind += max(ind1) + 1
+            offset_ind += n_atom
+
         # Compile the inputs in needed order
         inputs = (
             expand_1st(feature_list_temp),
@@ -490,7 +516,8 @@ class BaseGraphBatchGenerator(Sequence):
 
     def __getitem__(self, index: int) -> tuple:
         # Get the indices for this batch
-        batch_index = self.mol_index[index * self.batch_size : (index + 1) * self.batch_size]
+        batch_index = self.mol_index[
+                      index * self.batch_size: (index + 1) * self.batch_size]
 
         # Get the inputs for each batch
         inputs = self._generate_inputs(batch_index)
@@ -533,16 +560,16 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
     """
 
     def __init__(
-        self,
-        atom_features: List[np.ndarray],
-        bond_features: List[np.ndarray],
-        state_features: List[np.ndarray],
-        index1_list: List[int],
-        index2_list: List[int],
-        targets: np.ndarray = None,
-        sample_weights: np.ndarray = None,
-        batch_size: int = 128,
-        is_shuffle: bool = True,
+            self,
+            atom_features: List[np.ndarray],
+            bond_features: List[np.ndarray],
+            state_features: List[np.ndarray],
+            index1_list: List[int],
+            index2_list: List[int],
+            targets: np.ndarray = None,
+            sample_weights: np.ndarray = None,
+            batch_size: int = 128,
+            is_shuffle: bool = True,
     ):
         """
         Args:
@@ -560,7 +587,8 @@ class GraphBatchGenerator(BaseGraphBatchGenerator):
             batch_size: (int) number of samples in a batch
         """
         super().__init__(
-            len(atom_features), targets, sample_weights=sample_weights, batch_size=batch_size, is_shuffle=is_shuffle
+            len(atom_features), targets, sample_weights=sample_weights,
+            batch_size=batch_size, is_shuffle=is_shuffle
         )
         self.atom_features = atom_features
         self.bond_features = bond_features
@@ -597,17 +625,17 @@ class GraphBatchDistanceConvert(GraphBatchGenerator):
     """
 
     def __init__(
-        self,
-        atom_features: List[np.ndarray],
-        bond_features: List[np.ndarray],
-        state_features: List[np.ndarray],
-        index1_list: List[int],
-        index2_list: List[int],
-        targets: np.ndarray = None,
-        sample_weights: np.ndarray = None,
-        batch_size: int = 128,
-        is_shuffle: bool = True,
-        distance_converter: Converter = None,
+            self,
+            atom_features: List[np.ndarray],
+            bond_features: List[np.ndarray],
+            state_features: List[np.ndarray],
+            index1_list: List[int],
+            index2_list: List[int],
+            targets: np.ndarray = None,
+            sample_weights: np.ndarray = None,
+            batch_size: int = 128,
+            is_shuffle: bool = True,
+            distance_converter: Converter = None,
     ):
         """
 

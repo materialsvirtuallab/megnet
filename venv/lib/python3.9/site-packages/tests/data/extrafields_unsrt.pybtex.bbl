@@ -1,0 +1,9 @@
+\begin{thebibliography}{1}
+
+\bibitem[1]{scikit-image}
+{S}téfan van~der Walt, {J}ohannes~{L}. {S}chönberger, {J}uan {Nunez-Iglesias}, {F}ran{ç}ois {B}oulogne, {J}oshua~{D}. {W}arner, {N}eil {Y}ager, {E}mmanuelle {G}ouillart, {T}ony {Y}u, and the~scikit-image contributors.
+\newblock {s}cikit-image: image processing in {P}ython.
+\newblock \emph{PeerJ}, 2:e453, 6 2014.
+\newblock URL: \url{http://scikit-image.org/}, \href{https://doi.org/10.7717/peerj.453}{doi:10.7717/peerj.453}.
+
+\end{thebibliography}

@@ -155,7 +155,6 @@ class Set2Set(Layer):
             mask (tensor): mask tensor
 
         Returns: output tensor
-
         """
         features, feature_graph_index = inputs
         feature_graph_index = feature_graph_index[0]
@@ -172,7 +171,8 @@ class Set2Set(Layer):
         for i in range(self.T):
             self.h, c = self._lstm(q_star, self.c)
             e_i_t = tf.reduce_sum(input_tensor=m * tf.repeat(self.h, repeats=counts, axis=1), axis=-1)
-            maxes = tf.math.segment_max(e_i_t[0], feature_graph_index)
+            maxes = tf.math.segment_max(e_i_t[0],
+                                        feature_graph_index)
             maxes = tf.repeat(maxes, repeats=counts)
             e_i_t -= tf.expand_dims(maxes, axis=0)
             # e_i_t -= tf.expand_dims(tf.gather(maxes, feature_graph_index,
