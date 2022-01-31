@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.layers.graph.megnet &#8212; megnet 1.2.9 documentation</title>
+    <title>megnet.layers.graph.megnet &#8212; megnet 1.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/flasky.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.2.9 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">megnet 1.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.layers.graph.megnet</a></li> 
       </ul>
@@ -130,10 +130,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pool_method</span> <span class="o">=</span> <span class="n">pool_method</span>
         <span class="k">if</span> <span class="n">pool_method</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reduce_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_mean</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unsorted_seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">unsorted_segment_mean</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_mean</span>
         <span class="k">elif</span> <span class="n">pool_method</span> <span class="o">==</span> <span class="s2">&quot;sum&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reduce_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reduce_sum</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">segment_sum</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unsorted_seg_method</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">unsorted_segment_sum</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Pool method: &quot;</span> <span class="o">+</span> <span class="n">pool_method</span> <span class="o">+</span> <span class="s2">&quot; not understood!&quot;</span><span class="p">)</span>
 
@@ -156,7 +158,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                         <span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
-                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight_v_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;weight_v_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -167,7 +169,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
                             <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
-                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bias_v_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;bias_v_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
                             <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -183,7 +185,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                         <span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
-                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight_e_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;weight_e_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -194,7 +196,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
                             <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
-                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bias_e_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;bias_e_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
                             <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -210,7 +212,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                         <span class="n">shape</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
                         <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_initializer</span><span class="p">,</span>
-                        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;weight_u_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                        <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;weight_u_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                         <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_regularizer</span><span class="p">,</span>
                         <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">kernel_constraint</span><span class="p">,</span>
                     <span class="p">)</span>
@@ -221,7 +223,7 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span>
                             <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],),</span>
                             <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
-                            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bias_u_</span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">j</span><span class="p">,</span>
+                            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;bias_u_</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                             <span class="n">regularizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_regularizer</span><span class="p">,</span>
                             <span class="n">constraint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_constraint</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -280,7 +282,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">node</span><span class="p">,</span> <span class="n">edges</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">gnode</span><span class="p">,</span> <span class="n">gbond</span> <span class="o">=</span> <span class="n">inputs</span>
         <span class="n">index1</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">index1</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,))</span>
-        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">index1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unsorted_seg_method</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">e_p</span><span class="p">),</span> <span class="n">index1</span><span class="p">,</span> <span class="n">num_segments</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">node</span><span class="p">)[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MEGNetLayer.phi_v"><a class="viewcode-back" href="../../../../megnet.layers.graph.megnet.html#megnet.layers.MEGNetLayer.phi_v">[docs]</a>    <span class="k">def</span> <span class="nf">phi_v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">b_ei_p</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

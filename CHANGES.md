@@ -1,3 +1,6 @@
+# v1.3.0
+* Enable isolated atom calculations
+
 # v1.2.9
 * Security fix of tensorflow
 * Docstring fix @a-ws-m

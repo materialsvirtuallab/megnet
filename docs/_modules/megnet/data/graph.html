@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>megnet.data.graph &#8212; megnet 1.2.9 documentation</title>
+    <title>megnet.data.graph &#8212; megnet 1.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/flasky.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
@@ -31,7 +31,7 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.2.9 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">megnet 1.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.data.graph</a></li> 
       </ul>
@@ -49,6 +49,7 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -60,6 +61,8 @@
 <span class="kn">from</span> <span class="nn">megnet.data</span> <span class="kn">import</span> <span class="n">local_env</span>
 <span class="kn">from</span> <span class="nn">megnet.utils.data</span> <span class="kn">import</span> <span class="n">get_graphs_within_cutoff</span>
 <span class="kn">from</span> <span class="nn">megnet.utils.general</span> <span class="kn">import</span> <span class="n">expand_1st</span><span class="p">,</span> <span class="n">to_list</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Converter"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.Converter">[docs]</a><span class="k">class</span> <span class="nc">Converter</span><span class="p">(</span><span class="n">MSONable</span><span class="p">):</span>
@@ -153,7 +156,7 @@
                 <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">neighbor</span><span class="p">[</span><span class="s2">&quot;weight&quot;</span><span class="p">])</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">index1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;atom&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span> <span class="s2">&quot;index1&quot;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span> <span class="s2">&quot;index2&quot;</span><span class="p">:</span> <span class="n">index2</span><span class="p">}</span></div>
 
@@ -290,8 +293,12 @@
         <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom_features</span><span class="p">(</span><span class="n">structure</span><span class="p">)</span>
         <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">bonds</span> <span class="o">=</span> <span class="n">get_graphs_within_cutoff</span><span class="p">(</span><span class="n">structure</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nn_strategy</span><span class="o">.</span><span class="n">cutoff</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">index1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;The cutoff is too small, resulting in &quot;</span> <span class="s2">&quot;material graph with no bonds&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">index1</span><span class="p">))</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Isolated atoms found in the structure. The &quot;</span> <span class="s2">&quot;cutoff radius might be small&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;atom&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">:</span> <span class="n">bonds</span><span class="p">,</span> <span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="n">state_attributes</span><span class="p">,</span> <span class="s2">&quot;index1&quot;</span><span class="p">:</span> <span class="n">index1</span><span class="p">,</span> <span class="s2">&quot;index2&quot;</span><span class="p">:</span> <span class="n">index2</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="StructureGraphFixedRadius.from_structure_graph"><a class="viewcode-back" href="../../../megnet.data.graph.html#megnet.data.graph.StructureGraphFixedRadius.from_structure_graph">[docs]</a>    <span class="nd">@classmethod</span>
@@ -462,6 +469,7 @@
             <span class="n">gbond</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
 
         <span class="c1"># assemble atom features together</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">feature_list_temp</span><span class="p">]</span>
         <span class="n">feature_list_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">feature_list_temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">feature_list_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_atom_feature</span><span class="p">(</span><span class="n">feature_list_temp</span><span class="p">)</span>
 
@@ -477,10 +485,12 @@
         <span class="n">index1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">index2</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">offset_ind</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">index1_temp</span><span class="p">,</span> <span class="n">index2_temp</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ind1</span><span class="p">,</span> <span class="n">ind2</span><span class="p">,</span> <span class="n">n_atom</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">index1_temp</span><span class="p">,</span> <span class="n">index2_temp</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">):</span>
             <span class="n">index1</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset_ind</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind1</span><span class="p">]</span>
             <span class="n">index2</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">offset_ind</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind2</span><span class="p">]</span>
-            <span class="n">offset_ind</span> <span class="o">+=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ind1</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="c1"># offset_ind += max(ind1) + 1</span>
+            <span class="n">offset_ind</span> <span class="o">+=</span> <span class="n">n_atom</span>
+
         <span class="c1"># Compile the inputs in needed order</span>
         <span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">expand_1st</span><span class="p">(</span><span class="n">feature_list_temp</span><span class="p">),</span>

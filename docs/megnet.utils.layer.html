@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>megnet.utils.layer module &#8212; megnet 1.2.9 documentation</title>
+    <title>megnet.utils.layer module &#8212; megnet 1.3.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/flasky.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="megnet.utils.general.html" title="megnet.utils.general module"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.2.9 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">megnet 1.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="megnet.html" >megnet package</a> &#187;</li>
           <li class="nav-item nav-item-2"><a href="megnet.utils.html" accesskey="U">megnet.utils package</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">megnet.utils.layer module</a></li> 
@@ -74,7 +74,7 @@
 <span class="sig-name descname"><span class="pre">repeat_with_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tensorflow.python.framework.ops.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/megnet/utils/layer.html#repeat_with_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#megnet.utils.layer.repeat_with_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an tensor x (N*M*K), repeat the middle axis (axis=1)
 according to the index tensor index (G, )
-for example, if axis=1 and n = Tensor([0, 0, 0, 1, 2, 2])
+for example, if axis=1 and index = Tensor([0, 0, 0, 1, 2, 2])
 then M = 3 (3 unique values),
 and the final tensor would have the shape (N*6*3) with the
 first one in M repeated 3 times,
