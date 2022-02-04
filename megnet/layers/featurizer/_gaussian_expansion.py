@@ -41,7 +41,7 @@ class GaussianExpansion(Layer):
             inputs (tf.Tensor): input distance tensor, with shape [None, n]
             masks (tf.Tensor): bool tensor, not used here
         """
-        return tf.math.exp(-((inputs[:, :, None] - self.centers[None, None, :]) ** 2) / self.width ** 2)
+        return tf.math.exp(-((inputs[:, :, None] - self.centers[None, None, :]) ** 2) / self.width**2)
 
     def compute_output_shape(self, input_shape):
         """

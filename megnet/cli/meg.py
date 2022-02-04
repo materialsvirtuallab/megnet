@@ -48,7 +48,7 @@ def predict(args):
         for model in models:
             val = model.predict_structure(structure).ravel()
             if "log10" in str(model.metadata.get("unit", "")):
-                val = 10 ** val
+                val = 10**val
             row.append(val)
         output.append(row)
     print(tabulate(output, headers=headers))

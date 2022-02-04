@@ -337,7 +337,7 @@ class GaussianDistance(Converter):
             (matrix) N*M matrix with N the length of d and M the length of centers
         """
         d = np.array(d)
-        return np.exp(-((d[:, None] - self.centers[None, :]) ** 2) / self.width ** 2)
+        return np.exp(-((d[:, None] - self.centers[None, :]) ** 2) / self.width**2)
 
 
 class BaseGraphBatchGenerator(Sequence):
