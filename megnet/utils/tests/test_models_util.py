@@ -1,8 +1,9 @@
-import tensorflow as tf
 import unittest
 
-from megnet.utils.models import load_model
+import tensorflow as tf
+
 from megnet.models import GraphModel
+from megnet.utils.models import load_model
 
 
 class TestLoadModel(unittest.TestCase):

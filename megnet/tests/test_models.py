@@ -1,18 +1,19 @@
-import tensorflow as tf
-import unittest
-import numpy as np
-
-from megnet.models import MEGNetModel, GraphModel
-from megnet.callbacks import ModelCheckpointMAE, ManualStop
-from megnet.data.graph import GaussianDistance
-from megnet.data.crystal import CrystalGraph
-from glob import glob
 import os
-from pymatgen.core import Structure, Lattice
 import shutil
+import unittest
+from glob import glob
+
+import numpy as np
+import tensorflow as tf
 from monty.tempfile import ScratchDir
-from tensorflow.keras.utils import Sequence
+from pymatgen.core import Lattice, Structure
 from pymatgen.util.testing import PymatgenTest
+from tensorflow.keras.utils import Sequence
+
+from megnet.callbacks import ManualStop, ModelCheckpointMAE
+from megnet.data.crystal import CrystalGraph
+from megnet.data.graph import GaussianDistance
+from megnet.models import GraphModel, MEGNetModel
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 

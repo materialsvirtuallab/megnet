@@ -2,7 +2,6 @@
 import numpy as np
 import tensorflow as tf
 
-
 DTYPES = {
     "float32": {"numpy": np.float32, "tf": tf.float32},
     "float16": {"numpy": np.float16, "tf": tf.float16},

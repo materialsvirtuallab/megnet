@@ -7,8 +7,8 @@ from monty.dev import requires
 from pymatgen.core import Molecule
 
 try:
-    from openbabel import pybel as pb  # type: ignore
     from openbabel import openbabel as ob  # type: ignore
+    from openbabel import pybel as pb  # type: ignore
 except ImportError:
     logging.warning(
         "Openbabel is needed for molecule models, " "try 'conda install -c openbabel openbabel' " "to install it"

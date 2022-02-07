@@ -6,7 +6,7 @@ import os
 from glob import glob
 from zipfile import ZipFile
 
-from megnet.models import MEGNetModel, GraphModel
+from megnet.models import GraphModel, MEGNetModel
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

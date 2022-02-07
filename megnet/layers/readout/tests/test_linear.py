@@ -1,9 +1,11 @@
-import tensorflow as tf
-from megnet.layers import LinearWithIndex
+import unittest
+
 import numpy as np
+import tensorflow as tf
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
-import unittest
+
+from megnet.layers import LinearWithIndex
 
 
 class TestLayer(unittest.TestCase):

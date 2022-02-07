@@ -1,11 +1,12 @@
 """
 Activation functions used in neural networks
 """
-from typing import Callable, Any
+from typing import Any, Callable
 
 import tensorflow.keras.backend as kb
-from tensorflow.keras.activations import deserialize, serialize  # noqa
+from tensorflow.keras.activations import deserialize  # noqa
 from tensorflow.keras.activations import get as keras_get
+from tensorflow.keras.activations import serialize  # noqa
 
 from megnet.utils.typing import OptStrOrCallable
 

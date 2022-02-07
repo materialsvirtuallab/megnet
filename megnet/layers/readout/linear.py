@@ -1,9 +1,8 @@
 """
 Linear readout layer includes stats calculated on the atom dimension
 """
-from tensorflow.keras.layers import Layer
-
 import tensorflow as tf
+from tensorflow.keras.layers import Layer
 
 MAPPING = {
     "mean": tf.math.segment_mean,

@@ -4,7 +4,7 @@ Data utitlities
 from typing import Tuple
 
 import numpy as np
-from pymatgen.core import Structure, Molecule
+from pymatgen.core import Molecule, Structure
 from pymatgen.optimization.neighbors import find_points_in_spheres
 
 from megnet.config import DataType

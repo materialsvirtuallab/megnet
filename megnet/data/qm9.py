@@ -3,7 +3,6 @@ Simple qm9 utils, kept here for historical reasons
 """
 from monty.json import MSONable
 
-
 ATOMNUM2TYPE = {"1": 1, "6": 2, "7": 4, "8": 6, "9": 8}
 
 

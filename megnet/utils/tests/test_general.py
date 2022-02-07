@@ -1,7 +1,8 @@
 import unittest
+
 import numpy as np
 
-from megnet.utils.general import expand_1st, to_list, check_shape, reshape, fast_label_binarize
+from megnet.utils.general import check_shape, expand_1st, fast_label_binarize, reshape, to_list
 
 
 class TestGeneralUtils(unittest.TestCase):

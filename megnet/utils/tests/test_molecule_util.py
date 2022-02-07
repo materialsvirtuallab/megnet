@@ -1,11 +1,11 @@
-import tensorflow as tf
 import os
 import unittest
+
+import tensorflow as tf
 from pymatgen.core import Molecule
 
-from megnet.utils.molecule import get_pmg_mol_from_smiles, pb
 from megnet.models import MEGNetModel
-
+from megnet.utils.molecule import get_pmg_mol_from_smiles, pb
 
 CWD = os.path.dirname(os.path.abspath(__file__))
 

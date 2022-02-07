@@ -2,7 +2,7 @@
 Operation utilities on lists and arrays
 """
 from collections.abc import Iterable
-from typing import Union, List, Sequence, Optional
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 

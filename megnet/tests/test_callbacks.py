@@ -1,16 +1,15 @@
-import tensorflow as tf
 import os
 import unittest
 
 import numpy as np
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Dense
+import tensorflow as tf
 import tensorflow.keras.backend as kb
+from monty.tempfile import ScratchDir
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.models import Model
 from tensorflow.keras.utils import Sequence
 
-from monty.tempfile import ScratchDir
-
-from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
+from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
 from megnet.layers import MEGNetLayer
 
 

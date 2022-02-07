@@ -1,7 +1,6 @@
 """
 Test the data types
 """
-import tensorflow as tf
 import unittest
 
 import numpy as np
