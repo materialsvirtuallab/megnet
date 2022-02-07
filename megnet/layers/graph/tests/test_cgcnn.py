@@ -1,11 +1,11 @@
-import tensorflow as tf
 import unittest
 
 import numpy as np
-
-from megnet.layers import CrystalGraphLayer
+import tensorflow as tf
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
+
+from megnet.layers import CrystalGraphLayer
 
 
 class TestLayer(unittest.TestCase):

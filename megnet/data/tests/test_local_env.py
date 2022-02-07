@@ -1,7 +1,10 @@
-import unittest
-from megnet.data.local_env import MinimumDistanceNNAll, AllAtomPairs, serialize, deserialize, get
-from pymatgen.core import Structure, Molecule
 import os
+import unittest
+
+from pymatgen.core import Molecule, Structure
+
+from megnet.data.local_env import (AllAtomPairs, MinimumDistanceNNAll,
+                                   deserialize, get, serialize)
 
 MODULE_DIR = os.path.dirname(os.path.abspath(__file__))
 

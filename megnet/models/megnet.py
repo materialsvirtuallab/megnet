@@ -2,10 +2,11 @@
 Implements megnet models.
 """
 
-from typing import Dict, List, Callable
+from typing import Callable, Dict, List
 
 import numpy as np
-from tensorflow.keras.layers import Dense, Input, Concatenate, Add, Embedding, Dropout
+from tensorflow.keras.layers import (Add, Concatenate, Dense, Dropout,
+                                     Embedding, Input)
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
@@ -14,8 +15,9 @@ from megnet.activations import softplus2
 from megnet.config import DataType
 from megnet.data.crystal import CrystalGraph
 from megnet.data.graph import GaussianDistance, StructureGraph
-from megnet.layers import MEGNetLayer, Set2Set, GaussianExpansion
+from megnet.layers import GaussianExpansion, MEGNetLayer, Set2Set
 from megnet.utils.preprocessing import DummyScaler, Scaler
+
 from .base import GraphModel
 
 

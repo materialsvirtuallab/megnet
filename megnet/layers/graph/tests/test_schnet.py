@@ -1,11 +1,11 @@
-import tensorflow as tf
 import unittest
 
 import numpy as np
-
-from megnet.layers import InteractionLayer
+import tensorflow as tf
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
+
+from megnet.layers import InteractionLayer
 
 
 class TestLayer(unittest.TestCase):

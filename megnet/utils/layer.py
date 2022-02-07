@@ -3,6 +3,7 @@ Tensorflow layer utilities
 """
 import numpy as np  # noqa
 import tensorflow as tf
+
 from megnet.config import DataType
 
 

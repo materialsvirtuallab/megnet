@@ -13,25 +13,14 @@ construction
 from inspect import getfullargspec
 from typing import Dict, List, Union
 
-from pymatgen.core import Structure, Molecule
 from pymatgen.analysis import local_env
-from pymatgen.analysis.local_env import (
-    NearNeighbors,
-    VoronoiNN,
-    JmolNN,
-    MinimumDistanceNN,
-    OpenBabelNN,
-    CovalentBondNN,
-    MinimumVIRENN,
-    MinimumOKeeffeNN,
-    BrunnerNN_reciprocal,
-    BrunnerNN_real,
-    BrunnerNN_relative,
-    EconNN,
-    CrystalNN,
-    CutOffDictNN,
-    Critic2NN,
-)
+from pymatgen.analysis.local_env import (BrunnerNN_real, BrunnerNN_reciprocal,
+                                         BrunnerNN_relative, CovalentBondNN,
+                                         Critic2NN, CrystalNN, CutOffDictNN,
+                                         EconNN, JmolNN, MinimumDistanceNN,
+                                         MinimumOKeeffeNN, MinimumVIRENN,
+                                         NearNeighbors, OpenBabelNN, VoronoiNN)
+from pymatgen.core import Molecule, Structure
 
 
 class MinimumDistanceNNAll(NearNeighbors):

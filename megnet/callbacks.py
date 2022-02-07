@@ -14,7 +14,7 @@ import tensorflow.keras.backend as kb
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.utils import Sequence
 
-from megnet.utils.metrics import mae, accuracy
+from megnet.utils.metrics import accuracy, mae
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
 logging.basicConfig()

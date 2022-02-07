@@ -8,13 +8,14 @@ from warnings import warn
 
 import numpy as np
 from monty.serialization import dumpfn, loadfn
+from pymatgen.core import Structure
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
-from pymatgen.core import Structure
 
-from megnet.callbacks import ModelCheckpointMAE, ManualStop, ReduceLRUponNan
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph
+from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
+from megnet.data.graph import (GraphBatchDistanceConvert, GraphBatchGenerator,
+                               StructureGraph)
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
 
@@ -400,6 +401,7 @@ class GraphModel:
         """
         configs = loadfn(filename + ".json")
         from tensorflow.keras.models import load_model
+
         from megnet.layers import _CUSTOM_OBJECTS
 
         model = load_model(filename, custom_objects=_CUSTOM_OBJECTS)

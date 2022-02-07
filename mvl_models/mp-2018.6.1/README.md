@@ -15,4 +15,4 @@ The data file is shared here [https://figshare.com/articles/Graphs_of_materials_
 | Metal classifier | - | 78.9% | 69,239     |
 | Non-Metal classifier | - | 90.6% | 69,239     |
 
-The model for Ef was trained using 60,000 as training and the rest was splitted evenly as validation and test. All other models use 0.8/0.1/0.1 splits for train/validation/test. 
+The model for Ef was trained using 60,000 as training and the rest was splitted evenly as validation and test. All other models use 0.8/0.1/0.1 splits for train/validation/test.

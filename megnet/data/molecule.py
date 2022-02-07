@@ -8,15 +8,18 @@ import sys
 from collections import deque
 from functools import partial
 from multiprocessing import Pool
-from typing import Dict, Union, List
+from typing import Dict, List, Union
 
 import numpy as np
-from pymatgen.core import Molecule, Element
 from pymatgen.analysis.local_env import NearNeighbors
+from pymatgen.core import Element, Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 
-from megnet.data.graph import StructureGraph, GaussianDistance, BaseGraphBatchGenerator, GraphBatchGenerator, Converter
+from megnet.data.graph import (BaseGraphBatchGenerator, Converter,
+                               GaussianDistance, GraphBatchGenerator,
+                               StructureGraph)
 from megnet.utils.general import fast_label_binarize
+
 from .qm9 import ring_to_vector
 
 try:

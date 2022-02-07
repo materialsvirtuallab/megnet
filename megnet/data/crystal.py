@@ -3,16 +3,15 @@ Crystal graph related
 """
 from copy import deepcopy
 from pathlib import Path
-from typing import Union, List, Dict
+from typing import Dict, List, Union
 
 import numpy as np
 from monty.serialization import loadfn
-from pymatgen.core import Element
-from pymatgen.core import Structure
 from pymatgen.analysis.local_env import NearNeighbors
+from pymatgen.core import Element, Structure
 
-from megnet.data.graph import Converter
-from megnet.data.graph import StructureGraph, StructureGraphFixedRadius
+from megnet.data.graph import (Converter, StructureGraph,
+                               StructureGraphFixedRadius)
 
 MODULE_DIR = Path(__file__).parent.absolute()
 

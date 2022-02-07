@@ -1,16 +1,15 @@
-import tensorflow as tf
+import os
 import unittest
+
+import numpy as np
+import tensorflow as tf
+from pymatgen.core import Structure
+
+from megnet.data.crystal import (CrystalGraph, CrystalGraphDisordered,
+                                 CrystalGraphWithBondTypes,
+                                 get_elemental_embeddings)
 from megnet.data.graph import GaussianDistance
 from megnet.utils.general import to_list
-from megnet.data.crystal import (
-    CrystalGraph,
-    get_elemental_embeddings,
-    CrystalGraphWithBondTypes,
-    CrystalGraphDisordered,
-)
-from pymatgen.core import Structure
-import os
-import numpy as np
 
 module_dir = os.path.dirname(os.path.abspath(__file__))
 

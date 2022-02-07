@@ -1,7 +1,10 @@
-import tensorflow as tf
 import unittest
-from megnet.data.graph import GaussianDistance, GraphBatchGenerator, GraphBatchDistanceConvert, EmbeddingMap
+
 import numpy as np
+import tensorflow as tf
+
+from megnet.data.graph import (EmbeddingMap, GaussianDistance,
+                               GraphBatchDistanceConvert, GraphBatchGenerator)
 
 
 class TestGraph(unittest.TestCase):

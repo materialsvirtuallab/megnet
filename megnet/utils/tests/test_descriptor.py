@@ -1,9 +1,10 @@
-import tensorflow as tf
 import unittest
-from pymatgen.core import Structure, Lattice
 
-from megnet.utils.descriptor import MEGNetDescriptor, DEFAULT_MODEL
+import tensorflow as tf
+from pymatgen.core import Lattice, Structure
 from tensorflow.keras.models import Model
+
+from megnet.utils.descriptor import DEFAULT_MODEL, MEGNetDescriptor
 
 
 class TestGeneralUtils(unittest.TestCase):

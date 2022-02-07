@@ -4,12 +4,12 @@ pretrained megnet model
 """
 
 import os
-from typing import Union, Dict
+from typing import Dict, Union
 
 import numpy as np
 from tensorflow.keras.models import Model
 
-from megnet.models import MEGNetModel, GraphModel
+from megnet.models import GraphModel, MEGNetModel
 from megnet.utils.typing import StructureOrMolecule
 
 DEFAULT_MODEL = os.path.join(os.path.dirname(__file__), "../../mvl_models/mp-2019.4.1/formation_energy.hdf5")
