@@ -10,7 +10,8 @@ from monty.serialization import loadfn
 from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Element, Structure
 
-from megnet.data.graph import Converter, StructureGraph, StructureGraphFixedRadius
+from megnet.data.graph import (Converter, StructureGraph,
+                               StructureGraphFixedRadius)
 
 MODULE_DIR = Path(__file__).parent.absolute()
 
