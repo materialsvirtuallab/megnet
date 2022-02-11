@@ -37,9 +37,9 @@
 * Bug fix
 
 # v1.1.9
-* Add multi-fidelity model examples 
+* Add multi-fidelity model examples
 * Add sample weights for model training
-* Add default optimizer gradient norm clip 
+* Add default optimizer gradient norm clip
 
 # v1.1.8
 * Bug fix of megnet descriptors
@@ -71,14 +71,14 @@
 # v1.0.3
 * Fix bug brought by migrating to tensorflow 2.0
 * New elasticity models trained on 2019 MP data base
-* Add meg command line tools 
+* Add meg command line tools
 
 # v1.0.2
 * Add mypy typing hint for non-tensorflow codes
 * Update keras to 2.3.1 to fix thread-safety issues
 
 # v1.0.1
-* New find_points_in_spheres algorithm in pymatgen for graph construction 
+* New find_points_in_spheres algorithm in pymatgen for graph construction
 
 # v1.0.0
 * Tensorflow 2.0 version.
@@ -88,7 +88,7 @@
 * Improve `ReduceLRUponNan` callback function
 * @WardLT major contributions to the `MolecularGraph` class
 * Add serialization methods for `local_env` classes
-* delete `data/mp.py`  
+* delete `data/mp.py`
 
 # v0.3.3
 * GraphModel and MEGNetModel now supports a metadata tag, which is included in
