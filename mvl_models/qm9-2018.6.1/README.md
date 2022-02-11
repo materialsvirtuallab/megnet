@@ -20,11 +20,11 @@ The details of this model and benchmarks are provided in our publication
 | Cv       | cal/(molK) | 0.029|
 | ω1       | cm^-1   | 1.18 |
 
-It should be noted that for QM9 models, we do not expect transferability to 
-other molecules, since the QM9 dataset is limited in scope. Therefore please 
-only use it for testing QM9. Out of the 13 targets, we set `HOMO`, `LUMO`, 
-`gap`, and `omega1` to be intrinsic quantities and the models for them are 
-fitted on their scaled values. For other targets, however, the models are 
+It should be noted that for QM9 models, we do not expect transferability to
+other molecules, since the QM9 dataset is limited in scope. Therefore please
+only use it for testing QM9. Out of the 13 targets, we set `HOMO`, `LUMO`,
+`gap`, and `omega1` to be intrinsic quantities and the models for them are
+fitted on their scaled values. For other targets, however, the models are
 fitted on `per_atom` quantities. We have a `scaler.json` file for the QM9
-models that specifies the scaling factors. Please see `notebooks/qm9_pretrained.ipynb` 
+models that specifies the scaling factors. Please see `notebooks/qm9_pretrained.ipynb`
 as examples of how to use it properly.

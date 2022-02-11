@@ -30,15 +30,15 @@ The model construction has already been included in the recent `megnet v1.1.8` r
 <a name="overview"></a>
 ### Overview
 
-In recent years, machine learning has attracted considerable interests from the materials science community due to its powerfulness in modeling accurately the structure-property relationships, by-passing the time consuming experimental measurements or expensive first-principles calculations.  Among the structure-property relationship models, graph-based models, in particular MatErials Graph Network (`megnet`), have achieved remarkable accuracy in various property prediction tasks. However, the main drawbacks of such models lie in the requirements of sufficiently large and high-quality materials data, which are not available in most cases. The developments of multi-fidelity models solve this dilemma by fusing information from large, inaccurate data to the small, accurate materials data. 
+In recent years, machine learning has attracted considerable interests from the materials science community due to its powerfulness in modeling accurately the structure-property relationships, by-passing the time consuming experimental measurements or expensive first-principles calculations.  Among the structure-property relationship models, graph-based models, in particular MatErials Graph Network (`megnet`), have achieved remarkable accuracy in various property prediction tasks. However, the main drawbacks of such models lie in the requirements of sufficiently large and high-quality materials data, which are not available in most cases. The developments of multi-fidelity models solve this dilemma by fusing information from large, inaccurate data to the small, accurate materials data.
 
-The current repository leverages the existing `megnet` package developed by the same authors and extends the `megnet` capability to the modeling of multi-fidelity data sets. This repository will share the multi-fidelity band gap data used in the publication and show examples to run the model fitting for mult-fidelity data sets. 
+The current repository leverages the existing `megnet` package developed by the same authors and extends the `megnet` capability to the modeling of multi-fidelity data sets. This repository will share the multi-fidelity band gap data used in the publication and show examples to run the model fitting for mult-fidelity data sets.
 
 <a name="install"></a>
 ### Installation guide
 
 
-The following dependencies are needed. 
+The following dependencies are needed.
 
 ```
 pymatgen>=2020.7.18
@@ -89,7 +89,7 @@ We will show the data used in the multi-fidelity graph network paper and also th
 
 <a name="data"></a>
 #### Multi-fidelity band gap data
-The full band gap data used in the paper is located at `data_no_structs.json.gz`. Users can use the following code to extract it. 
+The full band gap data used in the paper is located at `data_no_structs.json.gz`. Users can use the following code to extract it.
 
 ```
 import gzip
@@ -127,9 +127,9 @@ with gzip.open("data_no_structs.json.gz", "rb") as f:
 		- Exp band gap
 	- ...
 ```
-where `mp_id` is the Materials Project materials ID for the material, and `icsd_id` is the ICSD materials ID. For example, the PBE band gap of NaCl (mp-22862, band gap 5.003 eV) can be accessed by `data['pbe']['mp-22862']`. Note that the Materials Project database is evolving with time and it is possible that certain ID is removed in latest release and there may also be some band gap value change for the same material. 
+where `mp_id` is the Materials Project materials ID for the material, and `icsd_id` is the ICSD materials ID. For example, the PBE band gap of NaCl (mp-22862, band gap 5.003 eV) can be accessed by `data['pbe']['mp-22862']`. Note that the Materials Project database is evolving with time and it is possible that certain ID is removed in latest release and there may also be some band gap value change for the same material.
 
-To get the structure that corresponds to the specific material id in Materials Project, users can use the `pymatgen` REST API. 
+To get the structure that corresponds to the specific material id in Materials Project, users can use the `pymatgen` REST API.
 
 1. Register at Materials Project [https://www.materialsproject.org](https://www.materialsproject.org) and get an `API` key.
 2. In python, do the following to get the corresponding computational structure.
@@ -139,7 +139,7 @@ To get the structure that corresponds to the specific material id in Materials P
 	mpr = MPRester(#Your API Key)
 	structure = mpr.get_structure_by_material_id(#mp_id)
 	```
-A dump of all the material ids and structures for 2019.04.01 MP version is provided here: [https://ndownloader.figshare.com/files/15108200](https://ndownloader.figshare.com/files/15108200). Users can download the file and extract the `material_id` and `structure` from this file for all materials. The `structure` in this case is a `cif` file. Users can use again `pymatgen` to read the cif string and get the structure. 
+A dump of all the material ids and structures for 2019.04.01 MP version is provided here: [https://ndownloader.figshare.com/files/15108200](https://ndownloader.figshare.com/files/15108200). Users can download the file and extract the `material_id` and `structure` from this file for all materials. The `structure` in this case is a `cif` file. Users can use again `pymatgen` to read the cif string and get the structure.
 
 ```
 from pymatgen.core import Structure
@@ -151,7 +151,7 @@ For the ICSD structures, the users are required to have commercial ICSD access. 
 <a name="train"></a>
 #### Model training
 
-A example training script is provided as `train.py` for the four-fidelity model (PBE/GLLB-SC/HSE/SCAN). The users can run `bash runall.sh` to download the data and run `train.py` automatically. 
+A example training script is provided as `train.py` for the four-fidelity model (PBE/GLLB-SC/HSE/SCAN). The users can run `bash runall.sh` to download the data and run `train.py` automatically.
 
 The outcome of the fitting is an optimized model `best_model.hdf5`, with the configurations `best_model.hdf5.json`. The test errors are written in `test_errors.txt` and the fitting log will be saved in `log.txt`.
 
@@ -170,4 +170,4 @@ This project is covered under the BSD 3-clause License.
 
 1. For fitting models that include the experimental data, the model requires experimental structures. We take them from the ICSD commercial database. The users are required to have access to ICSD to repeat the fitting. The models however use the same principle as shown in the example script `train.py`.
 
-2. On some systems, you may find errors like `SystemError: google/protobuf/pyext/...`. These seem to be bugs related to tensorflow. A workaround is by putting `import tensorflow as tf` at the beginning of your training script. 
+2. On some systems, you may find errors like `SystemError: google/protobuf/pyext/...`. These seem to be bugs related to tensorflow. A workaround is by putting `import tensorflow as tf` at the beginning of your training script.
