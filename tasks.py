@@ -5,16 +5,17 @@ Author: Shyue Ping Ong
 """
 
 
-from invoke import task
-import os
+import glob
 import json
-import requests
+import os
 import re
 import subprocess
-import megnet
-import glob
+
+import requests
+from invoke import task
 from monty.os import cd
 
+import megnet
 
 NEW_VER = megnet.__version__
 
@@ -24,7 +25,7 @@ def make_doc(ctx):
     with cd("docs_rst"):
         ctx.run("sphinx-apidoc --separate -d 6 -o . -f ../megnet")
         for f in glob.glob("*.rst"):
-            if f.startswith('megnet') and f.endswith('rst'):
+            if f.startswith("megnet") and f.endswith("rst"):
                 newoutput = []
                 suboutput = []
                 subpackage = False
@@ -38,13 +39,12 @@ def make_doc(ctx):
                         else:
                             if not clean.endswith("tests"):
                                 suboutput.append(line)
-                            if clean.startswith(
-                                    "megnet") and not clean.endswith("tests"):
+                            if clean.startswith("megnet") and not clean.endswith("tests"):
                                 newoutput.extend(suboutput)
                                 subpackage = False
                                 suboutput = []
 
-                with open(f, 'w') as fid:
+                with open(f, "w") as fid:
                     fid.write("".join(newoutput))
         ctx.run("make html")
 
@@ -81,19 +81,19 @@ def release_github(ctx):
         "name": "v" + NEW_VER,
         "body": desc,
         "draft": False,
-        "prerelease": False
+        "prerelease": False,
     }
     response = requests.post(
         "https://api.github.com/repos/materialsvirtuallab/megnet/releases",
         data=json.dumps(payload),
-        headers={"Authorization": "token " + os.environ["GITHUB_RELEASES_TOKEN"]})
+        headers={"Authorization": "token " + os.environ["GITHUB_RELEASES_TOKEN"]},
+    )
     print(response.text)
 
 
 @task
 def update_changelog(ctx):
-    output = subprocess.check_output(["git", "log", "--pretty=format:%s",
-                                      "v%s..HEAD" % CURRENT_VER])
+    output = subprocess.check_output(["git", "log", "--pretty=format:%s", "v%s..HEAD" % CURRENT_VER])
     lines = ["* " + l for l in output.decode("utf-8").strip().split("\n")]
     with open("CHANGES.rst") as f:
         contents = f.read()
