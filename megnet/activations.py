@@ -5,8 +5,8 @@ from typing import Any, Callable
 
 import tensorflow.keras.backend as kb
 from tensorflow.keras.activations import deserialize  # noqa
-from tensorflow.keras.activations import get as keras_get
 from tensorflow.keras.activations import serialize  # noqa
+from tensorflow.keras.activations import get as keras_get
 
 from megnet.utils.typing import OptStrOrCallable
 
