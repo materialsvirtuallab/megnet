@@ -5,8 +5,7 @@ Implements megnet models.
 from typing import Callable, Dict, List
 
 import numpy as np
-from tensorflow.keras.layers import (Add, Concatenate, Dense, Dropout,
-                                     Embedding, Input)
+from tensorflow.keras.layers import Add, Concatenate, Dense, Dropout, Embedding, Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
