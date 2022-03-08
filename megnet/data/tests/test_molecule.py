@@ -7,9 +7,14 @@ import tensorflow as tf
 from pymatgen.core import Molecule
 
 from megnet.data.graph import DummyConverter
-from megnet.data.molecule import (MolecularGraph, MolecularGraphBatchGenerator,
-                                  SimpleMolGraph, mol_from_smiles, pybel,
-                                  ring_to_vector)
+from megnet.data.molecule import (
+    MolecularGraph,
+    MolecularGraphBatchGenerator,
+    SimpleMolGraph,
+    mol_from_smiles,
+    pybel,
+    ring_to_vector,
+)
 from megnet.utils.general import to_list
 
 if pybel is None:
