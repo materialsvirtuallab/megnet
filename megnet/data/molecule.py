@@ -15,9 +15,7 @@ from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Element, Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 
-from megnet.data.graph import (BaseGraphBatchGenerator, Converter,
-                               GaussianDistance, GraphBatchGenerator,
-                               StructureGraph)
+from megnet.data.graph import BaseGraphBatchGenerator, Converter, GaussianDistance, GraphBatchGenerator, StructureGraph
 from megnet.utils.general import fast_label_binarize
 
 from .qm9 import ring_to_vector
