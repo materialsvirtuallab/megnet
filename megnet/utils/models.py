@@ -8,9 +8,7 @@ from zipfile import ZipFile
 
 from megnet.models import GraphModel, MEGNetModel
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))

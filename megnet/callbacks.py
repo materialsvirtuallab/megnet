@@ -17,9 +17,7 @@ from tensorflow.keras.utils import Sequence
 from megnet.utils.metrics import accuracy, mae
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class ModelCheckpointMAE(Callback):
