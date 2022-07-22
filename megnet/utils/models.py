@@ -36,7 +36,7 @@ MODEL_MAPPING.update(
 )
 
 
-AVAILABLE_MODELS = list(MODEL_MAPPING.keys())
+AVAILABLE_MODELS = list(MODEL_MAPPING.keys())  # type: ignore
 
 
 def load_model(model_name: str) -> GraphModel:

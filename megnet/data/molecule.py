@@ -153,7 +153,7 @@ class MolecularGraph(StructureGraph):
         if any(i not in _ATOM_FEATURES for i in atom_features):
             bad_features = set(atom_features).difference(_ATOM_FEATURES)
             raise ValueError(f"Unrecognized atom features: {', '.join(bad_features)}")
-        self.atom_features = atom_features
+        self.atom_features = atom_features  # type: ignore
         if any(i not in _BOND_FEATURES for i in bond_features):
             bad_features = set(bond_features).difference(_BOND_FEATURES)
             raise ValueError(f"Unrecognized bond features: {', '.join(bad_features)}")
@@ -503,7 +503,7 @@ def mol_from_file(file_path: str, file_format: str = "xyz"):
         file_path(str)
         file_format(str): allow formats that open babel supports
     """
-    mol = list(pybel.readfile(format=file_format, filename=file_path))[0]
+    mol = list(pybel.readfile(format=file_format, filename=file_path))[0]  # type: ignore
     return mol
 
 
