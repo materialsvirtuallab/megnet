@@ -121,7 +121,7 @@ def serialize(identifier: Union[str, NearNeighbors]):
             if arg == "self":
                 continue
             try:
-                a = identifier.__getattribute__(arg)
+                a = getattr(identifier, arg)
                 d[arg] = a
             except AttributeError:
                 raise ValueError("Cannot find the argument")
