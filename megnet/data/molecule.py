@@ -15,7 +15,13 @@ from pymatgen.analysis.local_env import NearNeighbors
 from pymatgen.core import Element, Molecule
 from pymatgen.io.babel import BabelMolAdaptor
 
-from megnet.data.graph import BaseGraphBatchGenerator, Converter, GaussianDistance, GraphBatchGenerator, StructureGraph
+from megnet.data.graph import (
+    BaseGraphBatchGenerator,
+    Converter,
+    GaussianDistance,
+    GraphBatchGenerator,
+    StructureGraph,
+)
 from megnet.utils.general import fast_label_binarize
 
 from .qm9 import ring_to_vector
@@ -151,7 +157,7 @@ class MolecularGraph(StructureGraph):
 
         # Check if all feature names are valid
         if any(i not in _ATOM_FEATURES for i in atom_features):
-            bad_features = set(atom_features).difference(_ATOM_FEATURES)
+            bad_features = set(atom_features).difference(_ATOM_FEATURES)  # type: ignore
             raise ValueError(f"Unrecognized atom features: {', '.join(bad_features)}")
         self.atom_features = atom_features  # type: ignore
         if any(i not in _BOND_FEATURES for i in bond_features):
