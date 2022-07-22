@@ -156,7 +156,7 @@ Below is an example of crystal model usage:
 
 ```python
 from megnet.utils.models import load_model
-from pymatgen import Structure, Lattice
+from pymatgen.core import Structure, Lattice
 
 # load a model in megnet.utils.models.AVAILABLE_MODELS
 model = load_model("logK_MP_2018")
@@ -168,9 +168,8 @@ structure = Structure(Lattice.cubic(3.167),
 
 # Use the model to predict bulk modulus K. Note that the model is trained on
 # log10 K. So a conversion is necessary.
-predicted_K = 10 ** model.predict_structure(structure).ravel()
-print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
-
+predicted_K = 10 ** model.predict_structure(structure).ravel()[0]
+print(f'The predicted K for {structure.composition.reduced_formula} is {predicted_K:.0f} GPa.')
 ```
 A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb).
 
