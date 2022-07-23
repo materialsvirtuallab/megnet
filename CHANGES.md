@@ -1,3 +1,6 @@
+# v1.3.1
+* Disable notifications.
+
 # v1.3.0
 * Enable isolated atom calculations
 
