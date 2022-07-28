@@ -339,7 +339,7 @@ class GraphModel:
 
         """
         inp = self.graph_converter.graph_to_input(graph)
-        pred = self.predict(inp)  # direct prediction, shape [1, 1, m]
+        pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
     def predict_graphs(self, graphs: List[Dict]) -> np.ndarray:
@@ -358,7 +358,7 @@ class GraphModel:
         pred_gen = self._create_generator(*inputs, is_shuffle=False)
         predicted = []
         for i in pred_gen:
-            predicted.append(self.predict(i))
+            predicted.append(self.predict(i, verbose=False))
         pred_targets = np.concatenate(predicted, axis=1)[0]
         return np.array([self.target_scaler.inverse_transform(i, j) for i, j in zip(pred_targets, n_atoms)])
 
