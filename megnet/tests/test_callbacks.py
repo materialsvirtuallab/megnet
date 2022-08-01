@@ -2,7 +2,6 @@ import os
 import unittest
 
 import numpy as np
-import tensorflow as tf
 import tensorflow.keras.backend as kb
 from monty.tempfile import ScratchDir
 from tensorflow.keras.layers import Dense, Input

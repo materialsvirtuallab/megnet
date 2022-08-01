@@ -533,7 +533,6 @@ class BaseGraphBatchGenerator(Sequence):
                 - [ndarray]: List of indices for the start of each bond
                 - [ndarray]: List of indices for the end of each bond
         """
-        pass
 
 
 class GraphBatchGenerator(BaseGraphBatchGenerator):
