@@ -14,7 +14,11 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
 
 from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
-from megnet.data.graph import GraphBatchDistanceConvert, GraphBatchGenerator, StructureGraph
+from megnet.data.graph import (
+    GraphBatchDistanceConvert,
+    GraphBatchGenerator,
+    StructureGraph,
+)
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
 

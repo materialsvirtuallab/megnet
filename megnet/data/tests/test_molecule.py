@@ -3,7 +3,6 @@ import os
 import unittest
 
 import numpy as np
-import tensorflow as tf
 from pymatgen.core import Molecule
 
 from megnet.data.graph import DummyConverter

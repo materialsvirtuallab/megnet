@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.layers import Input
 from tensorflow.keras.models import Model
 

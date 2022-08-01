@@ -2,7 +2,6 @@ import os
 import unittest
 
 import numpy as np
-import tensorflow as tf
 from pymatgen.core import Structure
 
 from megnet.data.crystal import (

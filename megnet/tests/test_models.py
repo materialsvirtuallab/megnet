@@ -4,7 +4,6 @@ import unittest
 from glob import glob
 
 import numpy as np
-import tensorflow as tf
 from monty.tempfile import ScratchDir
 from pymatgen.core import Lattice, Structure
 from pymatgen.util.testing import PymatgenTest

@@ -1,7 +1,5 @@
 import unittest
 
-import tensorflow as tf
-
 from megnet.models import GraphModel
 from megnet.utils.models import load_model
 
