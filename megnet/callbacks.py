@@ -247,11 +247,12 @@ class ReduceLRUponNan(Callback):
                     logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr))}.")
             else:
                 if len(self.losses) > 1:
-                    if self.losses[-1] > (self.losses[-2] * 100):
+                    max_loss_ratio = 100
+                    if (self.losses[-1] / self.losses[-2]) > max_loss_ratio:
                         self._reduce_lr_and_load(last_file)
                         if self.verbose:
                             logger.info(
-                                f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr "
+                                f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr..."
                             )
                             logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr)):.2E}.")
 
