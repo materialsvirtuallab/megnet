@@ -253,7 +253,7 @@ class ReduceLRUponNan(Callback):
                             logger.info(
                                 f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr "
                             )
-                            logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr))}.")
+                            logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr)):.2E}.")
 
     def _reduce_lr_and_load(self, last_file):
         old_value = float(kb.eval(self.model.optimizer.lr))
