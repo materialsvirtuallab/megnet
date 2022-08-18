@@ -12,6 +12,7 @@ from pymatgen.core import Structure
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
+from tqdm import tqdm
 
 from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
 from megnet.data.graph import (
@@ -318,7 +319,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_structures(self, structures: List[Structure]) -> np.ndarray:
+    def predict_structures(self, structures: List[Structure], pbar: bool = False) -> np.ndarray:
         """
         Predict properties of structure list
 
@@ -329,7 +330,7 @@ class GraphModel:
             predicted target values
         """
         graphs = [self.graph_converter.convert(structure) for structure in structures]
-        return self.predict_graphs(graphs)
+        return self.predict_graphs(graphs, pbar=pbar)
 
     def predict_graph(self, graph: Dict) -> np.ndarray:
         """
@@ -346,7 +347,7 @@ class GraphModel:
         pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
-    def predict_graphs(self, graphs: List[Dict]) -> np.ndarray:
+    def predict_graphs(self, graphs: List[Dict], pbar: bool = False) -> np.ndarray:
         """
         Predict properties from graphs
 
@@ -361,6 +362,8 @@ class GraphModel:
         n_atoms = [len(graph["atom"]) for graph in graphs]
         pred_gen = self._create_generator(*inputs, is_shuffle=False)
         predicted = []
+        if pbar:
+            pred_gen = tqdm(pred_gen, total=len(pred_gen))
         for i in pred_gen:
             predicted.append(self.predict(i, verbose=False))
         pred_targets = np.concatenate(predicted, axis=1)[0]
