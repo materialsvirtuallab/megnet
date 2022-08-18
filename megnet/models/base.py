@@ -319,7 +319,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_structures(self, structures: List[Structure], pbar: bool=False) -> np.ndarray:
+    def predict_structures(self, structures: List[Structure], pbar: bool = False) -> np.ndarray:
         """
         Predict properties of structure list
 
@@ -347,7 +347,7 @@ class GraphModel:
         pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
-    def predict_graphs(self, graphs: List[Dict], pbar: bool=False) -> np.ndarray:
+    def predict_graphs(self, graphs: List[Dict], pbar: bool = False) -> np.ndarray:
         """
         Predict properties from graphs
 
