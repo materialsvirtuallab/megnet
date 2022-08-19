@@ -319,7 +319,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_structures(self, structures: List[Structure], pbar: bool = False) -> np.ndarray:
+    def predict_structures(self, structures: List[Structure], batch_size: int = 128, pbar: bool=False) -> np.ndarray:
         """
         Predict properties of structure list
 
@@ -330,7 +330,7 @@ class GraphModel:
             predicted target values
         """
         graphs = [self.graph_converter.convert(structure) for structure in structures]
-        return self.predict_graphs(graphs, pbar=pbar)
+        return self.predict_graphs(graphs, batch_size=batch_size, pbar=pbar)
 
     def predict_graph(self, graph: Dict) -> np.ndarray:
         """
@@ -347,7 +347,7 @@ class GraphModel:
         pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
-    def predict_graphs(self, graphs: List[Dict], pbar: bool = False) -> np.ndarray:
+    def predict_graphs(self, graphs: List[Dict], batch_size: int = 128, pbar: bool=False) -> np.ndarray:
         """
         Predict properties from graphs
 
@@ -360,7 +360,7 @@ class GraphModel:
         """
         inputs = self.graph_converter.get_flat_data(graphs)
         n_atoms = [len(graph["atom"]) for graph in graphs]
-        pred_gen = self._create_generator(*inputs, is_shuffle=False)
+        pred_gen = self._create_generator(*inputs, batch_size=batch_size, is_shuffle=False)
         predicted = []
         if pbar:
             pred_gen = tqdm(pred_gen, total=len(pred_gen))
