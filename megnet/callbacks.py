@@ -10,7 +10,6 @@ from glob import glob
 from typing import Dict
 
 import numpy as np
-import tensorflow.keras.backend as kb
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.utils import Sequence
 
