@@ -1,14 +1,22 @@
+import csv
 import os
 import unittest
 
 import numpy as np
 import tensorflow.keras.backend as kb
 from monty.tempfile import ScratchDir
+from tensorflow.keras.callbacks import CSVLogger
 from tensorflow.keras.layers import Dense, Input
 from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import Sequence
 
-from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
+from megnet.callbacks import (
+    EarlyStopping,
+    ManualStop,
+    ModelCheckpointMAE,
+    ReduceLRUponNan,
+)
 from megnet.layers import MEGNetLayer
 
 
@@ -77,6 +85,58 @@ class TestCallBack(unittest.TestCase):
                     epoch_count += 1
             self.assertEqual(epoch_count, 4)
             os.remove("STOP")
+
+    def test_early_stopping(self):
+        patience = 1
+        with ScratchDir("."):
+            inp = [
+                Input(shape=(None, self.n_feature)),
+                Input(shape=(None, self.n_bond_features)),
+                Input(shape=(None, self.n_global_features)),
+                Input(shape=(None,), dtype="int32"),
+                Input(shape=(None,), dtype="int32"),
+                Input(shape=(None,), dtype="int32"),
+                Input(shape=(None,), dtype="int32"),
+            ]
+
+            units_v = [2, 2]
+            units_e = [2, 2]
+            units_u = [
+                2,
+            ]
+
+            layer = MEGNetLayer(units_v, units_e, units_u)
+            out = layer(inp)
+            out = Dense(1)(out[2])
+            model = Model(inputs=inp, outputs=out)
+            # Learning rate to 0 so model doesn't actually optimize
+            model.compile(loss="mse", optimizer=Adam(learning_rate=0))
+            x = [
+                np.random.normal(size=(1, 4, self.n_feature)),
+                np.random.normal(size=(1, 6, self.n_bond_features)),
+                np.random.normal(size=(1, 2, self.n_global_features)),
+                np.array([[0, 0, 1, 1, 2, 3]]),
+                np.array([[1, 1, 0, 0, 3, 2]]),
+                np.array([[0, 0, 1, 1]]),
+                np.array([[0, 0, 0, 0, 1, 1]]),
+            ]
+            y = np.random.normal(size=(1, 2, 1))
+            train_gen = Generator(x, y)
+
+            fpath = "./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5"
+            callbacks = [
+                ModelCheckpointMAE(filepath=fpath, val_gen=train_gen, steps_per_val=1),
+                EarlyStopping(filepath=fpath, patience=patience),
+                CSVLogger("history.csv", append=True),
+            ]
+
+            max_epochs = 1000
+            model.fit(train_gen, steps_per_epoch=1, epochs=max_epochs, callbacks=callbacks, verbose=1)
+
+            with open("history.csv") as fr:
+                history = list(csv.DictReader(fr))
+
+            self.assertTrue(len(history) < max_epochs)
 
     def test_reduce_lr_upon_nan(self):
         with ScratchDir("."):
