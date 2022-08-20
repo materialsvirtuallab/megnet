@@ -175,8 +175,9 @@ class GraphModel:
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
-            # with this call back you can stop the model training by `touch STOP`
-            callbacks = [ManualStop()]
+            callbacks = []
+        # with this call back you can stop the model training by `touch STOP`
+        callbacks.append(ManualStop())
         train_nb_atoms = [len(i["atom"]) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
         if (validation_graphs is not None) and (validation_targets is not None):
