@@ -214,144 +214,19 @@ class EarlyStopping(Callback):
         Returns: None
 
         """
-        last_saved_epoch, last_metric, last_file = self._get_checkpoints()
-        if last_saved_epoch is not None:
-            if last_saved_epoch + self.patience <= epoch:
-                self.model.stop_training = True
-                logger.info(f"{self.monitor} does not improve after {self.patience}, stopping the fitting...")
-
-    def _get_checkpoints(self):
-        file_pattern = re.sub(r"{(.+?)}", r"([0-9\.]+)", self.filepath)
-        glob_pattern = re.sub(r"{(.+?)}", r"*", self.filepath)
-        all_check_points = glob(glob_pattern)
-
-        if len(all_check_points) > 0:
-            metric_index = self.variable_names.index(self.monitor)
-            epoch_index = self.variable_names.index("epoch")
-            metric_values = []
-            epochs = []
-            for i in all_check_points:
-                metrics = re.findall(file_pattern, i)[0]
-                metric_values.append(float(metrics[metric_index]))
-                epochs.append(int(metrics[epoch_index]))
-            ind = self.monitor_op(metric_values)
-            return epochs[ind], metric_values[ind], all_check_points[ind]
-        return None, None, None
-
-
-class ReduceLRUponNan(Callback):
-    """
-    This callback function solves a problem that when doing regression,
-    an nan loss may occur, or the loss suddenly shoot up.
-    If such things happen, the model will reduce the learning rate
-    and load the last best model during the training process.
-    It has an extra function that patience for early stopping.
-    This will move to indepedent callback in the future.
-
-    """
-
-    def __init__(
-        self,
-        filepath: str = "./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5",
-        factor: float = 0.5,
-        verbose: bool = True,
-        patience: int = 500,
-        monitor: str = "val_mae",
-        mode: str = "auto",
-        has_sample_weights: bool = False,
-    ):
-        """
-        Args:
-            filepath (str): filepath for saved model checkpoint, should be consistent with
-                checkpoint callback
-            factor (float): a value < 1 for scaling the learning rate
-            verbose (bool): whether to show the loading event
-            patience (int): number of steps that the val mae does not change.
-                It is a criteria for early stopping
-            monitor (str): target metric to monitor
-            mode (str): min, max or auto
-            has_sample_weights (bool): whether the data has sample weights
-        """
-        self.filepath = filepath
-        self.verbose = verbose
-        self.factor = factor
-        self.losses: deque = deque([], maxlen=10)
-        self.patience = patience
-        self.monitor = monitor
-        super().__init__()
-
-        if mode == "min":
-            self.monitor_op = np.argmin
-        elif mode == "max":
-            self.monitor_op = np.argmax
-        else:
-            if "acc" in self.monitor:
-                self.monitor_op = np.argmax
-            else:
-                self.monitor_op = np.argmin
-
-        # get variable name
-        variable_name_pattern = r"{(.+?)}"
-        self.variable_names = re.findall(variable_name_pattern, filepath)
-        self.variable_names = [i.split(":")[0] for i in self.variable_names]
-        self.has_sample_weights = has_sample_weights
-        if self.monitor not in self.variable_names:
-            raise ValueError("The monitored metric should be in the name pattern")
-
-    def on_epoch_end(self, epoch: int, logs: Dict = None):
-        """
-        Check the loss value at the end of an epoch
-        Args:
-            epoch (int): epoch id
-            logs (dict): log history
-
-        Returns: None
-
-        """
         logs = logs or {}
         loss = logs.get("loss")
-        last_saved_epoch, last_metric, last_file = self._get_checkpoints()
-        if last_saved_epoch is not None:
-            if last_saved_epoch + self.patience <= epoch:
-                self.model.stop_training = True
-                logger.info(f"{self.monitor} does not improve after {self.patience}, stopping the fitting...")
-
         if loss is not None:
             self.losses.append(loss)
             if np.isnan(loss) or np.isinf(loss):
-                if self.verbose:
-                    logger.info("Nan loss found!")
-                self._reduce_lr_and_load(last_file)
-                if self.verbose:
-                    logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr))}.")
-            else:
-                if len(self.losses) > 1:
-                    max_loss_ratio = 100
-                    if (self.losses[-1] / self.losses[-2]) > max_loss_ratio:
-                        self._reduce_lr_and_load(last_file)
-                        if self.verbose:
-                            logger.info(
-                                f"Loss shot up from {self.losses[-2]:.3f} to {self.losses[-1]:.3f}! Reducing lr..."
-                            )
-                            logger.info(f"Now lr is {float(kb.eval(self.model.optimizer.lr)):.2E}.")
+                logger.info("Nan loss found!")
+                self.model.stop_training = True
 
-    def _reduce_lr_and_load(self, last_file):
-        old_value = float(kb.eval(self.model.optimizer.lr))
-        self.model.reset_states()
-        self.model.optimizer.lr = old_value * self.factor
-
-        if last_file is not None:
-            self.model.load_weights(last_file)
-            if self.verbose:
-                logger.info(f"Load weights {last_file}")
-        else:
-            logger.info("No weights were loaded")
-
-        opt_dict = self.model.optimizer.get_config()
-        sample_weight_model = "temporal" if self.has_sample_weights else None
-        self.model.compile(
-            self.model.optimizer.__class__(**opt_dict), self.model.loss, sample_weight_mode=sample_weight_model
-        )
+        last_saved_epoch, last_metric, last_file = self._get_checkpoints()
+        if last_saved_epoch is not None:
+            if last_saved_epoch + self.patience <= epoch:
+                self.model.stop_training = True
+                logger.info(f"{self.monitor} does not improve after {self.patience}, stopping the fitting...")
 
     def _get_checkpoints(self):
         file_pattern = re.sub(r"{(.+?)}", r"([0-9\.]+)", self.filepath)
