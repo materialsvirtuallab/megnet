@@ -160,6 +160,85 @@ class ManualStop(Callback):
             self.model.stop_training = True
 
 
+class EarlyStopping(Callback):
+    """
+    Implements EarlyStopping callback using saved model files
+    """
+
+    def __init__(
+        self,
+        filepath: str = "./callback/val_mae_{epoch:05d}_{val_mae:.6f}.hdf5",
+        patience: int = 500,
+        monitor: str = "val_mae",
+        mode: str = "auto",
+    ):
+        """
+        Args:
+            filepath (str): filepath for saved model checkpoint, should be consistent with
+                checkpoint callback
+            patience (int): number of steps that the val mae does not change.
+                It is a criteria for early stopping
+            monitor (str): target metric to monitor
+            mode (str): min, max or auto
+        """
+        self.filepath = filepath
+        self.losses: deque = deque([], maxlen=10)
+        self.patience = patience
+        self.monitor = monitor
+        super().__init__()
+
+        if mode == "min":
+            self.monitor_op = np.argmin
+        elif mode == "max":
+            self.monitor_op = np.argmax
+        else:
+            if "acc" in self.monitor:
+                self.monitor_op = np.argmax
+            else:
+                self.monitor_op = np.argmin
+
+        # get variable name
+        variable_name_pattern = r"{(.+?)}"
+        self.variable_names = re.findall(variable_name_pattern, filepath)
+        self.variable_names = [i.split(":")[0] for i in self.variable_names]
+        if self.monitor not in self.variable_names:
+            raise ValueError("The monitored metric should be in the name pattern")
+
+    def on_epoch_end(self, epoch: int, logs: Dict = None):
+        """
+        Check the loss value at the end of an epoch for early stopping
+        Args:
+            epoch (int): epoch id
+            logs (dict): log history
+
+        Returns: None
+
+        """
+        last_saved_epoch, last_metric, last_file = self._get_checkpoints()
+        if last_saved_epoch is not None:
+            if last_saved_epoch + self.patience <= epoch:
+                self.model.stop_training = True
+                logger.info(f"{self.monitor} does not improve after {self.patience}, stopping the fitting...")
+
+    def _get_checkpoints(self):
+        file_pattern = re.sub(r"{(.+?)}", r"([0-9\.]+)", self.filepath)
+        glob_pattern = re.sub(r"{(.+?)}", r"*", self.filepath)
+        all_check_points = glob(glob_pattern)
+
+        if len(all_check_points) > 0:
+            metric_index = self.variable_names.index(self.monitor)
+            epoch_index = self.variable_names.index("epoch")
+            metric_values = []
+            epochs = []
+            for i in all_check_points:
+                metrics = re.findall(file_pattern, i)[0]
+                metric_values.append(float(metrics[metric_index]))
+                epochs.append(int(metrics[epoch_index]))
+            ind = self.monitor_op(metric_values)
+            return epochs[ind], metric_values[ind], all_check_points[ind]
+        return None, None, None
+
+
 class ReduceLRUponNan(Callback):
     """
     This callback function solves a problem that when doing regression,
