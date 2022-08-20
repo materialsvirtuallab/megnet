@@ -14,12 +14,7 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 
-from megnet.callbacks import (
-    EarlyStopping,
-    ManualStop,
-    ModelCheckpointMAE,
-    ReduceLRUponNan,
-)
+from megnet.callbacks import EarlyStopping, ManualStop, ModelCheckpointMAE
 from megnet.data.graph import (
     GraphBatchDistanceConvert,
     GraphBatchGenerator,
@@ -76,8 +71,6 @@ class GraphModel:
         scrub_failed_structures: bool = False,
         prev_model: str = None,
         save_checkpoint: bool = True,
-        automatic_correction: bool = False,
-        lr_scaling_factor: float = 0.5,
         patience: int = 500,
         dirname: str = "callback",
         **kwargs,
@@ -96,8 +89,6 @@ class GraphModel:
             scrub_failed_structures: (bool) whether to scrub structures with failed graph computation
             prev_model: (str) file name for previously saved model
             save_checkpoint: (bool) whether to save checkpoint
-            automatic_correction: (bool) correct nan errors
-            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
             dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
@@ -123,10 +114,8 @@ class GraphModel:
             verbose=verbose,
             callbacks=callbacks,
             prev_model=prev_model,
-            lr_scaling_factor=lr_scaling_factor,
             patience=patience,
             save_checkpoint=save_checkpoint,
-            automatic_correction=automatic_correction,
             dirname=dirname,
             **kwargs,
         )
@@ -144,10 +133,8 @@ class GraphModel:
         verbose: int = 1,
         callbacks: List[Callback] = None,
         prev_model: str = None,
-        lr_scaling_factor: float = 0.5,
         patience: int = 500,
         save_checkpoint: bool = True,
-        automatic_correction: bool = False,
         dirname: str = "callback",
         **kwargs,
     ) -> "GraphModel":
@@ -163,10 +150,8 @@ class GraphModel:
             verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
             callbacks: (list) megnet or keras callback functions for training
             prev_model: (str) file name for previously saved model
-            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
             save_checkpoint: (bool) whether to save checkpoint
-            automatic_correction: (bool) correct nan errors
             dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
         """
@@ -176,7 +161,6 @@ class GraphModel:
         is_classification = "entropy" in str(self.model.loss)
         monitor = "val_acc" if is_classification else "val_mae"
         mode = "max" if is_classification else "min"
-        has_sample_weights = sample_weights is not None
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
@@ -214,18 +198,6 @@ class GraphModel:
                             monitor=monitor,
                             mode=mode,
                             patience=patience,
-                        )
-                    )
-
-                if automatic_correction:
-                    callbacks.append(
-                        ReduceLRUponNan(
-                            filepath=filepath,
-                            monitor=monitor,
-                            mode=mode,
-                            factor=lr_scaling_factor,
-                            patience=patience,
-                            has_sample_weights=has_sample_weights,
                         )
                     )
         else:
