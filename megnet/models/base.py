@@ -14,7 +14,12 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
 from tqdm import tqdm
 
-from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
+from megnet.callbacks import (
+    EarlyStopping,
+    ManualStop,
+    ModelCheckpointMAE,
+    ReduceLRUponNan,
+)
 from megnet.data.graph import (
     GraphBatchDistanceConvert,
     GraphBatchGenerator,
@@ -189,27 +194,31 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs, batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
             if save_checkpoint:
-                callbacks.extend(
-                    [
-                        ModelCheckpointMAE(
+                callbacks.append(
+                    ModelCheckpointMAE(
+                        filepath=filepath,
+                        monitor=monitor,
+                        mode=mode,
+                        save_best_only=True,
+                        save_weights_only=False,
+                        val_gen=val_generator,
+                        steps_per_val=steps_per_val,
+                        target_scaler=self.target_scaler,
+                    )
+                )
+
+                if patience is not None:
+                    callbacks.append(
+                        EarlyStopping(
                             filepath=filepath,
                             monitor=monitor,
                             mode=mode,
-                            save_best_only=True,
-                            save_weights_only=False,
-                            val_gen=val_generator,
-                            steps_per_val=steps_per_val,
-                            target_scaler=self.target_scaler,
+                            patience=patience,
                         )
-                    ]
-                )
-                # avoid running validation twice in an epoch
-                val_generator = None  # type: ignore
-                steps_per_val = None  # type: ignore
+                    )
 
-            if automatic_correction:
-                callbacks.extend(
-                    [
+                if automatic_correction:
+                    callbacks.append(
                         ReduceLRUponNan(
                             filepath=filepath,
                             monitor=monitor,
@@ -218,8 +227,7 @@ class GraphModel:
                             patience=patience,
                             has_sample_weights=has_sample_weights,
                         )
-                    ]
-                )
+                    )
         else:
             val_generator = None  # type: ignore
             steps_per_val = None  # type: ignore
