@@ -11,12 +11,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.utils import Sequence
 
-from megnet.callbacks import (
-    EarlyStopping,
-    ManualStop,
-    ModelCheckpointMAE,
-    ReduceLRUponNan,
-)
+from megnet.callbacks import EarlyStopping, ManualStop, ModelCheckpointMAE
 from megnet.layers import MEGNetLayer
 
 
@@ -137,63 +132,6 @@ class TestCallBack(unittest.TestCase):
                 history = list(csv.DictReader(fr))
 
             self.assertTrue(len(history) < max_epochs)
-
-    def test_reduce_lr_upon_nan(self):
-        with ScratchDir("."):
-            callbacks = [ReduceLRUponNan(patience=100)]
-            self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 1e-3)
-            gen = Generator(self.x, np.array([1, np.nan]).reshape((1, 2, 1)))
-            self.model.fit(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=0)
-            self.assertAlmostEqual(float(kb.get_value(self.model.optimizer.lr)), 0.5e-3)
-
-            inp = [
-                Input(shape=(None, self.n_feature)),
-                Input(shape=(None, self.n_bond_features)),
-                Input(shape=(None, self.n_global_features)),
-                Input(shape=(None,), dtype="int32"),
-                Input(shape=(None,), dtype="int32"),
-                Input(shape=(None,), dtype="int32"),
-                Input(shape=(None,), dtype="int32"),
-            ]
-
-            units_v = [2, 2]
-            units_e = [2, 2]
-            units_u = [
-                2,
-            ]
-
-            layer = MEGNetLayer(units_v, units_e, units_u)
-            out = layer(inp)
-            out = Dense(1)(out[2])
-            model = Model(inputs=inp, outputs=out)
-            model.compile(loss="mse", optimizer="adam")
-            x = [
-                np.random.normal(size=(1, 4, self.n_feature)),
-                np.random.normal(size=(1, 6, self.n_bond_features)),
-                np.random.normal(size=(1, 2, self.n_global_features)),
-                np.array([[0, 0, 1, 1, 2, 3]]),
-                np.array([[1, 1, 0, 0, 3, 2]]),
-                np.array([[0, 0, 1, 1]]),
-                np.array([[0, 0, 0, 0, 1, 1]]),
-            ]
-            y = np.random.normal(size=(1, 2, 1))
-            train_gen = Generator(x, y)
-
-            callbacks = [
-                ReduceLRUponNan(filepath="./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5", patience=100),
-                ModelCheckpointMAE(
-                    filepath="./val_mae_{epoch:05d}_{val_mae:.6f}.hdf5", val_gen=train_gen, steps_per_val=1
-                ),
-            ]
-            # 1. involve training and saving
-            model.fit(train_gen, steps_per_epoch=1, epochs=2, callbacks=callbacks, verbose=1)
-            # 2. throw nan loss, trigger ReduceLRUponNan
-            model.fit(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=1)
-            model.fit(gen, steps_per_epoch=1, epochs=1, callbacks=callbacks, verbose=1)
-            # 3. Normal training, recover saved model from 1
-            model.fit(train_gen, steps_per_epoch=1, epochs=2, callbacks=callbacks, verbose=1)
-
-            self.assertAlmostEqual(float(kb.get_value(model.optimizer.lr)), 0.25e-3)
 
 
 if __name__ == "__main__":
