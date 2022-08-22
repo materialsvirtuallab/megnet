@@ -190,6 +190,8 @@ class GraphModel:
                         target_scaler=self.target_scaler,
                     )
                 )
+                val_generator = None  # type: ignore
+                steps_per_val = None  # type: ignore
 
                 if patience is not None:
                     callbacks.append(
