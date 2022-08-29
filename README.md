@@ -33,6 +33,10 @@ suggestions are also welcome (please post on the Github Issues page.)
 A web app using our pre-trained MEGNet models for property prediction in
 crystals is available at [http://megnet.crystals.ai](http://megnet.crystals.ai). For tutorials, please visit `notebooks` in this repo. We have also established an online simulation tool and a tutorial lecture at nanoHUB ([https://nanohub.org/resources/megnet](https://nanohub.org/resources/megnet)).
 
+Note: A [DGL implementation of MEGNet](https://github.com/materialsvirtuallab/m3gnet-dgl) is now available. For users
+trying to build their own MEGNet models, it is highly recommended you check this version out, which may be easier to
+work with and extend in future.
+
 <a name="megnet-framework"></a>
 # MEGNet framework
 
