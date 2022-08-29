@@ -32,7 +32,7 @@ setup(
     author_email="chc273@eng.ucsd.edu",
     download_url="https://github.com/materialsvirtuallab/megnet",
     license="BSD",
-    install_requires=["numpy", "scikit-learn", "pymatgen>=2019.10.4", "monty"],
+    install_requires=["numpy", "scikit-learn", "pymatgen>=2019.10.4", "monty", "tqdm"],
     extras_require={
         "model_saving": ["h5py"],
         "molecules": ["openbabel", "rdkit"],

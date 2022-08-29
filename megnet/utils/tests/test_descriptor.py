@@ -1,6 +1,5 @@
 import unittest
 
-import tensorflow as tf
 from pymatgen.core import Lattice, Structure
 from tensorflow.keras.models import Model
 

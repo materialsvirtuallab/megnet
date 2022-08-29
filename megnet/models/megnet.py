@@ -123,7 +123,7 @@ class MEGNetModel(GraphModel):
         # Compile the model with the optimizer
         loss = "binary_crossentropy" if is_classification else loss
 
-        opt_params = {"lr": lr}
+        opt_params = {"learning_rate": lr}
         if optimizer_kwargs is not None:
             opt_params.update(optimizer_kwargs)
         model.compile(Adam(**opt_params), loss, metrics=metrics, sample_weight_mode=sample_weight_mode)

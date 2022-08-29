@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-import tensorflow as tf
 
 from megnet.layers.featurizer import GaussianExpansion
 
