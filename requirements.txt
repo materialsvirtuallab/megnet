@@ -3,4 +3,4 @@ pandas==1.4.3
 tensorflow==2.9.0
 numpy==1.23.2
 monty==2022.4.26
-tqdm==4.64.0
+tqdm==4.64.1
