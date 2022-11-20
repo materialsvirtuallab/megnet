@@ -1,7 +1,6 @@
 import unittest
 
 import numpy as np
-import tensorflow as tf
 
 from megnet.activations import softplus2, swish
 

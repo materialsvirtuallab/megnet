@@ -12,6 +12,8 @@ jobs:
         python-version: [3.8, 3.9]
 
     runs-on: ${{ matrix.os }}
+    env:
+      PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION: "python"
 
     steps:
     - uses: actions/checkout@v2

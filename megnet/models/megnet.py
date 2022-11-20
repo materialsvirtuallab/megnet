@@ -1,12 +1,11 @@
 """
 Implements megnet models.
 """
-
-from typing import Callable, Dict, List
+from __future__ import annotations
+from typing import Callable
 
 import numpy as np
-from tensorflow.keras.layers import (Add, Concatenate, Dense, Dropout,
-                                     Embedding, Input)
+from tensorflow.keras.layers import Add, Concatenate, Dense, Dropout, Embedding, Input
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l2
@@ -30,9 +29,9 @@ class MEGNetModel(GraphModel):
 
     def __init__(
         self,
-        nfeat_edge: int = None,
-        nfeat_global: int = None,
-        nfeat_node: int = None,
+        nfeat_edge: int | None = None,
+        nfeat_global: int | None = None,
+        nfeat_node: int | None = None,
         nblocks: int = 3,
         lr: float = 1e-3,
         n1: int = 64,
@@ -40,23 +39,23 @@ class MEGNetModel(GraphModel):
         n3: int = 16,
         nvocal: int = 95,
         embedding_dim: int = 16,
-        nbvocal: int = None,
-        bond_embedding_dim: int = None,
-        ngvocal: int = None,
-        global_embedding_dim: int = None,
+        nbvocal: int | None = None,
+        bond_embedding_dim: int | None = None,
+        ngvocal: int | None = None,
+        global_embedding_dim: int | None = None,
         npass: int = 3,
         ntarget: int = 1,
         act: Callable = softplus2,
         is_classification: bool = False,
         loss: str = "mse",
-        metrics: List[str] = None,
-        l2_coef: float = None,
-        dropout: float = None,
-        graph_converter: StructureGraph = None,
+        metrics: list[str] | None = None,
+        l2_coef: float | None = None,
+        dropout: float | None = None,
+        graph_converter: StructureGraph | None = None,
         target_scaler: Scaler = DummyScaler(),
-        optimizer_kwargs: Dict = {"clipnorm": 3},
+        optimizer_kwargs: dict = {"clipnorm": 3},
         dropout_on_predict: bool = False,
-        sample_weight_mode: str = None,
+        sample_weight_mode: str | None = None,
         **kwargs,
     ):
         """
@@ -81,7 +80,7 @@ class MEGNetModel(GraphModel):
             l2_coef: (float or None) l2 regularization parameter
             is_classification: (bool) whether it is a classification task
             loss: (object or str) loss function
-            metrics: (list or dict) List or dictionary of Keras metrics to be evaluated by the model during training
+            metrics: (list or dict) list or dictionary of Keras metrics to be evaluated by the model during training
                 and testing
             dropout: (float) dropout rate
             graph_converter: (object) object that exposes a "convert" method for structure to graph conversion
@@ -124,7 +123,7 @@ class MEGNetModel(GraphModel):
         # Compile the model with the optimizer
         loss = "binary_crossentropy" if is_classification else loss
 
-        opt_params = {"lr": lr}
+        opt_params = {"learning_rate": lr}
         if optimizer_kwargs is not None:
             opt_params.update(optimizer_kwargs)
         model.compile(Adam(**opt_params), loss, metrics=metrics, sample_weight_mode=sample_weight_mode)
@@ -169,25 +168,25 @@ class MEGNetModel(GraphModel):
 
 
 def make_megnet_model(
-    nfeat_edge: int = None,
-    nfeat_global: int = None,
-    nfeat_node: int = None,
+    nfeat_edge: int | None = None,
+    nfeat_global: int | None = None,
+    nfeat_node: int | None = None,
     nblocks: int = 3,
     n1: int = 64,
     n2: int = 32,
     n3: int = 16,
     nvocal: int = 95,
     embedding_dim: int = 16,
-    nbvocal: int = None,
-    bond_embedding_dim: int = None,
-    ngvocal: int = None,
-    global_embedding_dim: int = None,
+    nbvocal: int | None = None,
+    bond_embedding_dim: int | None = None,
+    ngvocal: int | None = None,
+    global_embedding_dim: int | None = None,
     npass: int = 3,
     ntarget: int = 1,
     act: Callable = softplus2,
     is_classification: bool = False,
-    l2_coef: float = None,
-    dropout: float = None,
+    l2_coef: float | None = None,
+    dropout: float | None = None,
     dropout_on_predict: bool = False,
     **kwargs,
 ) -> Model:

@@ -8,9 +8,7 @@ from zipfile import ZipFile
 
 from megnet.models import GraphModel, MEGNetModel
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 CWD = os.path.dirname(os.path.abspath(__file__))
@@ -38,7 +36,7 @@ MODEL_MAPPING.update(
 )
 
 
-AVAILABLE_MODELS = list(MODEL_MAPPING.keys())
+AVAILABLE_MODELS = list(MODEL_MAPPING.keys())  # type: ignore
 
 
 def load_model(model_name: str) -> GraphModel:

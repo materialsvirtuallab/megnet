@@ -1,7 +1,6 @@
 import os
 import unittest
 
-import tensorflow as tf
 from pymatgen.core import Molecule
 
 from megnet.models import MEGNetModel

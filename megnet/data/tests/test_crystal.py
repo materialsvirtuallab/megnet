@@ -2,12 +2,14 @@ import os
 import unittest
 
 import numpy as np
-import tensorflow as tf
 from pymatgen.core import Structure
 
-from megnet.data.crystal import (CrystalGraph, CrystalGraphDisordered,
-                                 CrystalGraphWithBondTypes,
-                                 get_elemental_embeddings)
+from megnet.data.crystal import (
+    CrystalGraph,
+    CrystalGraphDisordered,
+    CrystalGraphWithBondTypes,
+    get_elemental_embeddings,
+)
 from megnet.data.graph import GaussianDistance
 from megnet.utils.general import to_list
 

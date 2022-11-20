@@ -2,9 +2,8 @@
 This module implements atom/bond/structure-wise descriptor calculated from
 pretrained megnet model
 """
-
+from __future__ import annotations
 import os
-from typing import Dict, Union
 
 import numpy as np
 from tensorflow.keras.models import Model
@@ -22,7 +21,7 @@ class MEGNetDescriptor:
 
     """
 
-    def __init__(self, model_name: Union[str, GraphModel, MEGNetModel] = DEFAULT_MODEL, use_cache: bool = True):
+    def __init__(self, model_name: str | GraphModel | MEGNetModel = DEFAULT_MODEL, use_cache: bool = True):
         """
         Args:
             model_name (str or MEGNetModel): trained model. If it is
@@ -64,7 +63,7 @@ class MEGNetDescriptor:
         model.model = full_model
         self.model = model
         self.valid_names = valid_names
-        self._cache: Dict[str, float] = {}
+        self._cache: dict[str, float] = {}
         self.use_cache = use_cache
 
     def _predict_structure(self, structure: StructureOrMolecule) -> np.ndarray:
@@ -83,7 +82,9 @@ class MEGNetDescriptor:
         self._cache[s] = result
         return result
 
-    def _get_features(self, structure: StructureOrMolecule, prefix: str, level: int, index: int = None) -> np.ndarray:
+    def _get_features(
+        self, structure: StructureOrMolecule, prefix: str, level: int, index: int | None = None
+    ) -> np.ndarray:
         name = prefix
         if level is not None:
             name = f"{prefix}_{level}"

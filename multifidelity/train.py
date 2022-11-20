@@ -34,10 +34,8 @@ GPU_INDEX = "0"
 import gzip
 import json
 import os
-import pickle
 from copy import deepcopy
 from glob import glob
-from itertools import chain
 
 import numpy as np
 import tensorflow as tf

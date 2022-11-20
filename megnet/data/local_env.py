@@ -14,12 +14,23 @@ from inspect import getfullargspec
 from typing import Dict, List, Union
 
 from pymatgen.analysis import local_env
-from pymatgen.analysis.local_env import (BrunnerNN_real, BrunnerNN_reciprocal,
-                                         BrunnerNN_relative, CovalentBondNN,
-                                         Critic2NN, CrystalNN, CutOffDictNN,
-                                         EconNN, JmolNN, MinimumDistanceNN,
-                                         MinimumOKeeffeNN, MinimumVIRENN,
-                                         NearNeighbors, OpenBabelNN, VoronoiNN)
+from pymatgen.analysis.local_env import (
+    BrunnerNN_real,
+    BrunnerNN_reciprocal,
+    BrunnerNN_relative,
+    CovalentBondNN,
+    Critic2NN,
+    CrystalNN,
+    CutOffDictNN,
+    EconNN,
+    JmolNN,
+    MinimumDistanceNN,
+    MinimumOKeeffeNN,
+    MinimumVIRENN,
+    NearNeighbors,
+    OpenBabelNN,
+    VoronoiNN,
+)
 from pymatgen.core import Molecule, Structure
 
 
@@ -110,7 +121,7 @@ def serialize(identifier: Union[str, NearNeighbors]):
             if arg == "self":
                 continue
             try:
-                a = identifier.__getattribute__(arg)
+                a = getattr(identifier, arg)
                 d[arg] = a
             except AttributeError:
                 raise ValueError("Cannot find the argument")

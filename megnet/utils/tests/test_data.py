@@ -1,6 +1,5 @@
 import unittest
 
-import tensorflow as tf
 from pymatgen.core import Lattice, Structure
 
 from megnet.utils.data import get_graphs_within_cutoff

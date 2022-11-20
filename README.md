@@ -33,6 +33,10 @@ suggestions are also welcome (please post on the Github Issues page.)
 A web app using our pre-trained MEGNet models for property prediction in
 crystals is available at [http://megnet.crystals.ai](http://megnet.crystals.ai). For tutorials, please visit `notebooks` in this repo. We have also established an online simulation tool and a tutorial lecture at nanoHUB ([https://nanohub.org/resources/megnet](https://nanohub.org/resources/megnet)).
 
+Note: A [DGL implementation of MEGNet](https://github.com/materialsvirtuallab/m3gnet-dgl) is now available. For users
+trying to build their own MEGNet models, it is highly recommended you check this version out, which may be easier to
+work with and extend in future.
+
 <a name="megnet-framework"></a>
 # MEGNet framework
 
@@ -156,7 +160,7 @@ Below is an example of crystal model usage:
 
 ```python
 from megnet.utils.models import load_model
-from pymatgen import Structure, Lattice
+from pymatgen.core import Structure, Lattice
 
 # load a model in megnet.utils.models.AVAILABLE_MODELS
 model = load_model("logK_MP_2018")
@@ -168,9 +172,8 @@ structure = Structure(Lattice.cubic(3.167),
 
 # Use the model to predict bulk modulus K. Note that the model is trained on
 # log10 K. So a conversion is necessary.
-predicted_K = 10 ** model.predict_structure(structure).ravel()
-print('The predicted K for {} is {} GPa'.format(structure.formula, predicted_K[0]))
-
+predicted_K = 10 ** model.predict_structure(structure).ravel()[0]
+print(f'The predicted K for {structure.composition.reduced_formula} is {predicted_K:.0f} GPa.')
 ```
 A full example is in [notebooks/crystal_example.ipynb](notebooks/crystal_example.ipynb).
 

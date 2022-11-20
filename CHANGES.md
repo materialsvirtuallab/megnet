@@ -1,3 +1,9 @@
+# v1.3.2
+* Disable progress bar for readability.
+
+# v1.3.1
+* Disable notifications.
+
 # v1.3.0
 * Enable isolated atom calculations
 

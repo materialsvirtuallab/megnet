@@ -1,9 +1,8 @@
 """
 Implements basic GraphModels.
 """
-
+from __future__ import annotations
 import os
-from typing import Dict, List, Union
 from warnings import warn
 
 import numpy as np
@@ -12,10 +11,14 @@ from pymatgen.core import Structure
 from tensorflow.keras.backend import int_shape
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import Model
+from tqdm import tqdm
 
-from megnet.callbacks import ManualStop, ModelCheckpointMAE, ReduceLRUponNan
-from megnet.data.graph import (GraphBatchDistanceConvert, GraphBatchGenerator,
-                               StructureGraph)
+from megnet.callbacks import EarlyStopping, ManualStop, ModelCheckpointMAE
+from megnet.data.graph import (
+    GraphBatchDistanceConvert,
+    GraphBatchGenerator,
+    StructureGraph,
+)
 from megnet.utils.preprocessing import DummyScaler, Scaler
 
 
@@ -31,7 +34,7 @@ class GraphModel:
         model: Model,
         graph_converter: StructureGraph,
         target_scaler: Scaler = DummyScaler(),
-        metadata: Dict = None,
+        metadata: dict | None = None,
         **kwargs,
     ):
         """
@@ -55,20 +58,18 @@ class GraphModel:
 
     def train(
         self,
-        train_structures: List[Structure],
-        train_targets: List[float],
-        validation_structures: List[Structure] = None,
-        validation_targets: List[float] = None,
-        sample_weights: List[float] = None,
+        train_structures: list[Structure],
+        train_targets: list[float],
+        validation_structures: list[Structure] | None = None,
+        validation_targets: list[float] | None = None,
+        sample_weights: list[float] | None = None,
         epochs: int = 1000,
         batch_size: int = 128,
         verbose: int = 1,
-        callbacks: List[Callback] = None,
+        callbacks: list[Callback] | None = None,
         scrub_failed_structures: bool = False,
-        prev_model: str = None,
+        prev_model: str | None = None,
         save_checkpoint: bool = True,
-        automatic_correction: bool = False,
-        lr_scaling_factor: float = 0.5,
         patience: int = 500,
         dirname: str = "callback",
         **kwargs,
@@ -87,8 +88,6 @@ class GraphModel:
             scrub_failed_structures: (bool) whether to scrub structures with failed graph computation
             prev_model: (str) file name for previously saved model
             save_checkpoint: (bool) whether to save checkpoint
-            automatic_correction: (bool) correct nan errors
-            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
             dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
@@ -114,10 +113,8 @@ class GraphModel:
             verbose=verbose,
             callbacks=callbacks,
             prev_model=prev_model,
-            lr_scaling_factor=lr_scaling_factor,
             patience=patience,
             save_checkpoint=save_checkpoint,
-            automatic_correction=automatic_correction,
             dirname=dirname,
             **kwargs,
         )
@@ -125,20 +122,18 @@ class GraphModel:
 
     def train_from_graphs(
         self,
-        train_graphs: List[Dict],
-        train_targets: List[float],
-        validation_graphs: List[Dict] = None,
-        validation_targets: List[float] = None,
-        sample_weights: List[float] = None,
+        train_graphs: list[dict],
+        train_targets: list[float],
+        validation_graphs: list[dict] | None = None,
+        validation_targets: list[float] | None = None,
+        sample_weights: list[float] | None = None,
         epochs: int = 1000,
         batch_size: int = 128,
         verbose: int = 1,
-        callbacks: List[Callback] = None,
-        prev_model: str = None,
-        lr_scaling_factor: float = 0.5,
+        callbacks: list[Callback] | None = None,
+        prev_model: str | None = None,
         patience: int = 500,
         save_checkpoint: bool = True,
-        automatic_correction: bool = False,
         dirname: str = "callback",
         **kwargs,
     ) -> "GraphModel":
@@ -154,10 +149,8 @@ class GraphModel:
             verbose: (int) keras fit verbose, 0 no progress bar, 1 only at the epoch end and 2 every batch
             callbacks: (list) megnet or keras callback functions for training
             prev_model: (str) file name for previously saved model
-            lr_scaling_factor: (float, less than 1) scale the learning rate down when nan loss encountered
             patience: (int) patience for early stopping
             save_checkpoint: (bool) whether to save checkpoint
-            automatic_correction: (bool) correct nan errors
             dirname: (str) the directory in which to save checkpoints, if `save_checkpoint=True`
             **kwargs:
         """
@@ -167,12 +160,12 @@ class GraphModel:
         is_classification = "entropy" in str(self.model.loss)
         monitor = "val_acc" if is_classification else "val_mae"
         mode = "max" if is_classification else "min"
-        has_sample_weights = sample_weights is not None
         if not os.path.isdir(dirname):
             os.makedirs(dirname)
         if callbacks is None:
-            # with this call back you can stop the model training by `touch STOP`
-            callbacks = [ManualStop()]
+            callbacks = []
+        # with this call back you can stop the model training by `touch STOP`
+        callbacks.append(ManualStop())
         train_nb_atoms = [len(i["atom"]) for i in train_graphs]
         train_targets = [self.target_scaler.transform(i, j) for i, j in zip(train_targets, train_nb_atoms)]
         if (validation_graphs is not None) and (validation_targets is not None):
@@ -184,37 +177,30 @@ class GraphModel:
             val_generator = self._create_generator(*val_inputs, batch_size=batch_size)
             steps_per_val = int(np.ceil(len(validation_graphs) / batch_size))
             if save_checkpoint:
-                callbacks.extend(
-                    [
-                        ModelCheckpointMAE(
-                            filepath=filepath,
-                            monitor=monitor,
-                            mode=mode,
-                            save_best_only=True,
-                            save_weights_only=False,
-                            val_gen=val_generator,
-                            steps_per_val=steps_per_val,
-                            target_scaler=self.target_scaler,
-                        )
-                    ]
+                callbacks.append(
+                    ModelCheckpointMAE(
+                        filepath=filepath,
+                        monitor=monitor,
+                        mode=mode,
+                        save_best_only=True,
+                        save_weights_only=False,
+                        val_gen=val_generator,
+                        steps_per_val=steps_per_val,
+                        target_scaler=self.target_scaler,
+                    )
                 )
-                # avoid running validation twice in an epoch
                 val_generator = None  # type: ignore
                 steps_per_val = None  # type: ignore
 
-            if automatic_correction:
-                callbacks.extend(
-                    [
-                        ReduceLRUponNan(
+                if patience is not None:
+                    callbacks.append(
+                        EarlyStopping(
                             filepath=filepath,
                             monitor=monitor,
                             mode=mode,
-                            factor=lr_scaling_factor,
                             patience=patience,
-                            has_sample_weights=has_sample_weights,
                         )
-                    ]
-                )
+                    )
         else:
             val_generator = None  # type: ignore
             steps_per_val = None  # type: ignore
@@ -236,7 +222,7 @@ class GraphModel:
         )
         return self
 
-    def check_dimension(self, graph: Dict) -> bool:
+    def check_dimension(self, graph: dict) -> bool:
         """
         Check the model dimension against the graph converter dimension
         Args:
@@ -272,7 +258,7 @@ class GraphModel:
         return False
 
     def get_all_graphs_targets(
-        self, structures: List[Structure], targets: List[float], scrub_failed_structures: bool = False
+        self, structures: list[Structure], targets: list[float], scrub_failed_structures: bool = False
     ) -> tuple:
         """
         Compute the graphs from structures and spit out (graphs, targets) with options to
@@ -315,7 +301,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_structures(self, structures: List[Structure]) -> np.ndarray:
+    def predict_structures(self, structures: list[Structure], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
         """
         Predict properties of structure list
 
@@ -326,9 +312,9 @@ class GraphModel:
             predicted target values
         """
         graphs = [self.graph_converter.convert(structure) for structure in structures]
-        return self.predict_graphs(graphs)
+        return self.predict_graphs(graphs, batch_size=batch_size, pbar=pbar)
 
-    def predict_graph(self, graph: Dict) -> np.ndarray:
+    def predict_graph(self, graph: dict) -> np.ndarray:
         """
         Predict property from graph
 
@@ -340,10 +326,10 @@ class GraphModel:
 
         """
         inp = self.graph_converter.graph_to_input(graph)
-        pred = self.predict(inp)  # direct prediction, shape [1, 1, m]
+        pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
-    def predict_graphs(self, graphs: List[Dict]) -> np.ndarray:
+    def predict_graphs(self, graphs: list[dict], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
         """
         Predict properties from graphs
 
@@ -356,14 +342,16 @@ class GraphModel:
         """
         inputs = self.graph_converter.get_flat_data(graphs)
         n_atoms = [len(graph["atom"]) for graph in graphs]
-        pred_gen = self._create_generator(*inputs, is_shuffle=False)
+        pred_gen = self._create_generator(*inputs, batch_size=batch_size, is_shuffle=False)
         predicted = []
+        if pbar:
+            pred_gen = tqdm(pred_gen, total=len(pred_gen))
         for i in pred_gen:
-            predicted.append(self.predict(i))
+            predicted.append(self.predict(i, verbose=False))
         pred_targets = np.concatenate(predicted, axis=1)[0]
         return np.array([self.target_scaler.inverse_transform(i, j) for i, j in zip(pred_targets, n_atoms)])
 
-    def _create_generator(self, *args, **kwargs) -> Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
+    def _create_generator(self, *args, **kwargs) -> GraphBatchDistanceConvert | GraphBatchGenerator:
         if hasattr(self.graph_converter, "bond_converter"):
             kwargs.update({"distance_converter": self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)
