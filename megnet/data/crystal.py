@@ -1,9 +1,10 @@
 """
 Crystal graph related
 """
+from __future__ import annotations
+
 from copy import deepcopy
 from pathlib import Path
-from typing import Dict, List, Union
 
 import numpy as np
 from monty.serialization import loadfn
@@ -15,7 +16,7 @@ from megnet.data.graph import Converter, StructureGraph, StructureGraphFixedRadi
 MODULE_DIR = Path(__file__).parent.absolute()
 
 
-def get_elemental_embeddings() -> Dict:
+def get_elemental_embeddings() -> dict:
     """
     Provides the pre-trained elemental embeddings using formation energies,
     which can be used to speed up the training of other models. The embeddings
@@ -25,7 +26,7 @@ def get_elemental_embeddings() -> Dict:
     "Graph Networks as a Universal Machine Learning Framework for Molecules
     and Crystals", https://arxiv.org/abs/1812.05055
 
-    :return: Dict of elemental embeddings as {symbol: length 16 string}
+    :return: dict of elemental embeddings as {symbol: length 16 string}
     """
     return loadfn(MODULE_DIR / "resources" / "elemental_embedding_1MEGNet_layer.json")
 
@@ -38,9 +39,9 @@ class CrystalGraph(StructureGraphFixedRadius):
 
     def __init__(
         self,
-        nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
-        atom_converter: Converter = None,
-        bond_converter: Converter = None,
+        nn_strategy: str | NearNeighbors = "MinimumDistanceNNAll",
+        atom_converter: Converter | None = None,
+        bond_converter: Converter | None = None,
         cutoff: float = 5.0,
     ):
         """
@@ -68,9 +69,9 @@ class CrystalGraphWithBondTypes(StructureGraph):
 
     def __init__(
         self,
-        nn_strategy: Union[str, NearNeighbors] = "VoronoiNN",
-        atom_converter: Converter = None,
-        bond_converter: Converter = None,
+        nn_strategy: str | NearNeighbors = "VoronoiNN",
+        atom_converter: Converter | None = None,
+        bond_converter: Converter | None = None,
     ):
         """
 
@@ -81,7 +82,7 @@ class CrystalGraphWithBondTypes(StructureGraph):
         """
         super().__init__(nn_strategy=nn_strategy, atom_converter=atom_converter, bond_converter=bond_converter)
 
-    def convert(self, structure: Structure, state_attributes: List = None) -> Dict:
+    def convert(self, structure: Structure, state_attributes: list | None = None) -> dict:
         """
         Convert structure into graph
         Args:
@@ -95,7 +96,7 @@ class CrystalGraphWithBondTypes(StructureGraph):
         return self._get_bond_type(graph)
 
     @staticmethod
-    def _get_bond_type(graph) -> Dict:
+    def _get_bond_type(graph) -> dict:
         new_graph = deepcopy(graph)
         elements = [Element.from_Z(i) for i in graph["atom"]]
         for k, (i, j) in enumerate(zip(graph["index1"], graph["index2"])):
@@ -108,7 +109,7 @@ class _AtomEmbeddingMap(Converter):
     Fixed Atom embedding map, used with CrystalGraphDisordered
     """
 
-    def __init__(self, embedding_dict: dict = None):
+    def __init__(self, embedding_dict: dict | None = None):
         """
         Args:
             embedding_dict (dict): element to element vector dictionary
@@ -137,9 +138,9 @@ class CrystalGraphDisordered(StructureGraphFixedRadius):
 
     def __init__(
         self,
-        nn_strategy: Union[str, NearNeighbors] = "MinimumDistanceNNAll",
+        nn_strategy: str | NearNeighbors = "MinimumDistanceNNAll",
         atom_converter: Converter = _AtomEmbeddingMap(),
-        bond_converter: Converter = None,
+        bond_converter: Converter | None = None,
         cutoff: float = 5.0,
     ):
         """
@@ -156,7 +157,7 @@ class CrystalGraphDisordered(StructureGraphFixedRadius):
         )
 
     @staticmethod
-    def get_atom_features(structure) -> List[dict]:
+    def get_atom_features(structure) -> list[dict]:
         """
         For a structure return the list of dictionary for the site occupancy
         for example, Fe0.5Ni0.5 site will be returned as {"Fe": 0.5, "Ni": 0.5}

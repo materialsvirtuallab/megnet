@@ -1,9 +1,8 @@
 """
 Implements basic GraphModels.
 """
-
+from __future__ import annotations
 import os
-from typing import Dict, List, Union
 from warnings import warn
 
 import numpy as np
@@ -35,7 +34,7 @@ class GraphModel:
         model: Model,
         graph_converter: StructureGraph,
         target_scaler: Scaler = DummyScaler(),
-        metadata: Dict = None,
+        metadata: dict | None = None,
         **kwargs,
     ):
         """
@@ -59,17 +58,17 @@ class GraphModel:
 
     def train(
         self,
-        train_structures: List[Structure],
-        train_targets: List[float],
-        validation_structures: List[Structure] = None,
-        validation_targets: List[float] = None,
-        sample_weights: List[float] = None,
+        train_structures: list[Structure],
+        train_targets: list[float],
+        validation_structures: list[Structure] | None = None,
+        validation_targets: list[float] | None = None,
+        sample_weights: list[float] | None = None,
         epochs: int = 1000,
         batch_size: int = 128,
         verbose: int = 1,
-        callbacks: List[Callback] = None,
+        callbacks: list[Callback] | None = None,
         scrub_failed_structures: bool = False,
-        prev_model: str = None,
+        prev_model: str | None = None,
         save_checkpoint: bool = True,
         patience: int = 500,
         dirname: str = "callback",
@@ -123,16 +122,16 @@ class GraphModel:
 
     def train_from_graphs(
         self,
-        train_graphs: List[Dict],
-        train_targets: List[float],
-        validation_graphs: List[Dict] = None,
-        validation_targets: List[float] = None,
-        sample_weights: List[float] = None,
+        train_graphs: list[dict],
+        train_targets: list[float],
+        validation_graphs: list[dict] | None = None,
+        validation_targets: list[float] | None = None,
+        sample_weights: list[float] | None = None,
         epochs: int = 1000,
         batch_size: int = 128,
         verbose: int = 1,
-        callbacks: List[Callback] = None,
-        prev_model: str = None,
+        callbacks: list[Callback] | None = None,
+        prev_model: str | None = None,
         patience: int = 500,
         save_checkpoint: bool = True,
         dirname: str = "callback",
@@ -223,7 +222,7 @@ class GraphModel:
         )
         return self
 
-    def check_dimension(self, graph: Dict) -> bool:
+    def check_dimension(self, graph: dict) -> bool:
         """
         Check the model dimension against the graph converter dimension
         Args:
@@ -259,7 +258,7 @@ class GraphModel:
         return False
 
     def get_all_graphs_targets(
-        self, structures: List[Structure], targets: List[float], scrub_failed_structures: bool = False
+        self, structures: list[Structure], targets: list[float], scrub_failed_structures: bool = False
     ) -> tuple:
         """
         Compute the graphs from structures and spit out (graphs, targets) with options to
@@ -302,7 +301,7 @@ class GraphModel:
         graph = self.graph_converter.convert(structure)
         return self.predict_graph(graph)
 
-    def predict_structures(self, structures: List[Structure], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
+    def predict_structures(self, structures: list[Structure], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
         """
         Predict properties of structure list
 
@@ -315,7 +314,7 @@ class GraphModel:
         graphs = [self.graph_converter.convert(structure) for structure in structures]
         return self.predict_graphs(graphs, batch_size=batch_size, pbar=pbar)
 
-    def predict_graph(self, graph: Dict) -> np.ndarray:
+    def predict_graph(self, graph: dict) -> np.ndarray:
         """
         Predict property from graph
 
@@ -330,7 +329,7 @@ class GraphModel:
         pred = self.predict(inp, verbose=False)  # direct prediction, shape [1, 1, m]
         return self.target_scaler.inverse_transform(pred[0, 0], len(graph["atom"]))
 
-    def predict_graphs(self, graphs: List[Dict], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
+    def predict_graphs(self, graphs: list[dict], batch_size: int = 128, pbar: bool = False) -> np.ndarray:
         """
         Predict properties from graphs
 
@@ -352,7 +351,7 @@ class GraphModel:
         pred_targets = np.concatenate(predicted, axis=1)[0]
         return np.array([self.target_scaler.inverse_transform(i, j) for i, j in zip(pred_targets, n_atoms)])
 
-    def _create_generator(self, *args, **kwargs) -> Union[GraphBatchDistanceConvert, GraphBatchGenerator]:
+    def _create_generator(self, *args, **kwargs) -> GraphBatchDistanceConvert | GraphBatchGenerator:
         if hasattr(self.graph_converter, "bond_converter"):
             kwargs.update({"distance_converter": self.graph_converter.bond_converter})
             return GraphBatchDistanceConvert(*args, **kwargs)

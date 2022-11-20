@@ -1,13 +1,14 @@
 """
 callbacks functions used in training process
 """
+from __future__ import annotations
+
 import logging
 import os
 import re
 import warnings
 from collections import deque
 from glob import glob
-from typing import Dict
 
 import numpy as np
 from tensorflow.keras.callbacks import Callback
@@ -32,8 +33,8 @@ class ModelCheckpointMAE(Callback):
         save_best_only: bool = True,
         save_weights_only: bool = False,
         val_gen: Sequence = None,
-        steps_per_val: int = None,
-        target_scaler: Scaler = None,
+        steps_per_val: int | None = None,
+        target_scaler: Scaler | None = None,
         period: int = 1,
         mode: str = "auto",
     ):
@@ -89,7 +90,7 @@ class ModelCheckpointMAE(Callback):
                 self.monitor_op = np.less
                 self.best = np.Inf
 
-    def on_epoch_end(self, epoch: int, logs: Dict = None) -> None:
+    def on_epoch_end(self, epoch: int, logs: dict | None = None) -> None:
         """
         Codes called by the callback at the end of epoch
         Args:
@@ -145,12 +146,12 @@ class ManualStop(Callback):
     Stop the training manually by putting a "STOP" file in the directory
     """
 
-    def on_batch_end(self, epoch: int, logs: Dict = None) -> None:
+    def on_batch_end(self, epoch: int, logs: dict | None = None) -> None:
         """
         Codes called at the end of a batch
         Args:
             epoch (int): epoch id
-            logs (Dict): log dict
+            logs (dict): log dict
 
         Returns: None
 
@@ -203,7 +204,7 @@ class EarlyStopping(Callback):
         if self.monitor not in self.variable_names:
             raise ValueError("The monitored metric should be in the name pattern")
 
-    def on_epoch_end(self, epoch: int, logs: Dict = None):
+    def on_epoch_end(self, epoch: int, logs: dict | None = None):
         """
         Check the loss value at the end of an epoch for early stopping
         Args:
