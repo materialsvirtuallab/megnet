@@ -1,0 +1,110 @@
+body {
+    font-family: "Arial","sans-serif";
+    font-size: 1.1em;
+}
+
+p.message {
+    color: #335E79;
+    padding: 10px;
+    background: #CADEEB;
+}
+
+p.error {
+    color: #783232;
+    padding: 10px;
+    background: #EBCACA;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+
+#navbar{
+    position: fixed;
+    margin: -10px -10px 0px -10px;
+    background-color: #fefefe;
+    /* Safari 4-5, Chrome 1-9 */
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#eee), to(#efefef));
+    /* Safari 5.1, Chrome 10+ */
+    background: -webkit-linear-gradient(top, #eee, #efefef);
+    /* Firefox 3.6+ */
+    background: -moz-linear-gradient(top, #eee, #efefef);
+
+    /* IE 10 */
+    background: -ms-linear-gradient(top, #eee, #efefef);
+
+    /* Opera 11.10+ */
+    background: -o-linear-gradient(top, #eee, #efefef);
+
+    z-index: 1030;
+    width: 100%;
+    -webkit-box-shadow: 0 1px 5px rgba(0,0,0,.1);
+    -moz-box-shadow: 0 1px 5px rgba(0,0,0,.1);
+    box-shadow: 0 1px 5px rgba(0,0,0,.1);
+}
+
+#navbar-inner{
+    border: 0 solid #ddd;
+    border-bottom-width: 1px;
+}
+
+#menu {
+    width: 80%;
+    height: 40px;
+    margin: 0 auto;
+}
+
+#menu ul {
+    margin: 0;
+    padding: 5px 0px;
+    list-style: none;
+    line-height: normal;
+}
+
+#menu li {
+    display: inline;
+    text-align: center;
+}
+
+#main-link-img{
+    padding: 0;
+    margin: 0;
+}
+
+#menu a {
+    display: block;
+    float: left;
+    margin-top: -3px;
+    margin-right: 3px;
+    padding: 8px 10px 5px 10px;
+    text-decoration: none;
+    text-align: center;
+    font-size: 1em;
+    color: #222;
+}
+
+#menu img{
+    float: left;
+    width: 26px;
+    padding: 7px 10px 7px 20px;
+}
+
+#menu a:hover, #menu .active a {
+    color: #990000;
+}
+
+
+#content{
+    min-width: 1024px;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 40px;
+    font-size: 1.1em;
+}
+
+.tagline {
+    font-size: 1.2em;
+    text-align: center;
+}

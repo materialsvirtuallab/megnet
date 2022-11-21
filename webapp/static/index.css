@@ -1,0 +1,62 @@
+#gConnect{
+    text-align: center;
+    font-size: 1.5em;
+}
+
+#navigation{
+    text-align: center;
+}
+
+#navigation p{
+    font-size: 1.5em;
+}
+
+#profile{
+    text-align: center;
+    font-size: 1.5em;   
+}
+
+input{
+	margin: auto;
+}
+
+
+select{
+    width: 300px;
+}
+
+.query {
+	text-align: center;
+}
+
+.help-p{
+	font-size: 0.8em;
+}
+
+ul {
+    font-size: 0.8em;
+}
+
+#header-img {
+    display: block;
+    margin: auto;
+    width: 60%
+}
+
+.table-results th, td {
+    padding: 5px;
+    font-size: 1.2em;
+    border: 1px solid black;
+}
+
+
+table {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+textarea{
+    font-size: 0.8em;
+    margin: auto;
+}

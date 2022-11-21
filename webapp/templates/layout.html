@@ -1,0 +1,68 @@
+<html>
+<head>
+    <title>{% block title %}Garnet DNN{% endblock %}</title>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            var sPath = window.location.pathname;
+            var sPage = sPath.substring(sPath.lastIndexOf('/') + 1);
+
+            if (sPage == "") {
+                $("#li-home").addClass("active");
+            }
+            else {
+                $("#li-" + sPage).addClass("active");
+            }
+
+        });
+
+
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-140300831-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-140300831-1');
+    </script>
+
+    {% block top_javascript %}
+    {% endblock %}
+    <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css"/>
+    <link rel=stylesheet type=text/css
+          href="{{ url_for('static', filename='style.css') }}">
+
+    {% block css %}
+    {% endblock %}
+
+</head>
+<body>
+
+<div id="navbar">
+    <div id="navbar-inner">
+        <div id="menu">
+            <ul>
+                <li id="li-home">
+                    <a href="http://crystals.ai">Crystals.ai</a>
+                    <a href="http://megnet.crystals.ai">MEGNet</a>
+                    <a href="http://dnn.crystals.ai/garnet">Garnet DNN</a>
+                    <a href="http://dnn.crystals.ai/perovskite">Perovskite DNN</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div id="content">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+</html>
