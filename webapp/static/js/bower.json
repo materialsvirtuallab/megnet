@@ -1,0 +1,26 @@
+{
+  "name": "renderjson",
+  "main": "renderjson.js",
+  "version": "1.2.1",
+  "homepage": "https://caldwell.github.io/renderjson/",
+  "authors": [
+    "David Caldwell <david@porkrind.org>"
+  ],
+  "description": "Render JSON into collapsible HTML",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "json",
+    "html"
+  ],
+  "license": "ISC",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

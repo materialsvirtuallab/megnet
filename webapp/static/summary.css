@@ -1,0 +1,48 @@
+h1, h2 {
+    text-align: center;
+}
+
+#summary-p{
+    text-align: center;
+    font-size: 1.5em;
+}
+
+p {
+    text-align: center;
+}
+
+img{
+    display:block;
+    margin: auto;
+}
+
+#structure-div{
+    margin: auto;
+    text-align: center;
+}
+
+textarea {
+    font-size: 1.1em;
+}
+
+table {
+    margin: auto;
+}
+
+#arr-img {
+    width: 800px;
+}
+
+.msdt-img{
+    width: 400px;
+}
+
+#structure-table td{
+    border: none;
+    vertical-align: top;
+}
+
+#msdt-table td{
+    background-color: #FFF;
+    border: none;
+}

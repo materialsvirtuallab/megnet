@@ -1,0 +1,214 @@
+{% extends "layout.html" %}
+
+{% block title %}MEGNet{% endblock %}
+
+{% block top_javascript %}
+
+<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
+<script src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+    $( "#tabs" ).tabs();
+    $('input[type=submit]').button();
+    $("#select-fmt").selectmenu();
+    $('#results-table').DataTable({
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+  });
+
+</script>
+{% endblock %}
+
+{%  block css %}
+<link rel=stylesheet type=text/css
+      href="{{ url_for('static', filename='index.css') }}">
+<link rel=stylesheet type=text/css
+      href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+<link rel=stylesheet type=text/css
+      href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
+
+
+{% endblock %}
+
+
+{% block content %}
+
+<h1>MEGNet</h1>
+<img id="header-img" src="{{ url_for('static', filename='images/model_diagram.png') }}"/>
+<p class="tagline">Predict crystal properties using MatErials Graph Network (MEGNet) models.</p>
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Materials Project ID</a></li>
+    <li><a href="#tabs-2">CIF/POSCAR</a></li>
+  </ul>
+  <div id="tabs-1">
+    <form action="/query" method="get" name="query">
+    <p class="query">
+        <label>MP id: </label><input type="text" name="mp_id" placeholder="E.g., mp-1143" value="{{mp_id}}" size="20">
+    </p>
+    <p class="query">
+        <input type="submit" name="submit" value="Predict">
+    </p>
+    </form>
+  </div>
+  <div id="tabs-2">
+    <form action="/query_structure" method="post" name="query_structure">
+    <p>
+        <textarea id="drop_zone" name="structure_string" rows="10" cols="70"
+                  placeholder="Drop a CIF or POSCAR file here... (format will be auto-detected)">{{structure_string}}</textarea>
+    </p>
+    <p class="query">
+        <input type="submit" name="submit" value="Predict">
+    </p>
+    </form>
+  </div>
+</div>
+
+<script>
+  function handleFileSelect(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    var files = evt.dataTransfer.files; // FileList object.
+
+    if (files.length = 1){
+        // files is a FileList of File objects. List some properties.
+        var output = '';
+        var reader = new FileReader();
+        reader.onloadend = function(evt) {
+          if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+            document.getElementById('drop_zone').value = evt.target.result;
+          }
+        };
+        reader.readAsText(files[0]);
+    }
+    else
+    {
+        alert("Please drop only one file");
+    }
+  }
+
+  function handleDragOver(evt) {
+    evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+  }
+
+  // Setup the dnd listeners.
+  var dropZone = document.getElementById('drop_zone');
+  dropZone.addEventListener('dragover', handleDragOver, false);
+  dropZone.addEventListener('drop', handleFileSelect, false);
+</script>
+
+{% if message %}<h2>{{message}}</h2>{% endif %}
+
+{% if mp_results %}
+<h2>Results for {{ formula|safe }} (MP ID: {{ mp_id }})</h2>
+<table class="table-results">
+    <tr>
+        <th>Property</th>
+        <th>Units</th>
+        <th>MEGNet</th>
+        <th>MP</th>
+    </tr>
+    <tr>
+        <td>Formation Energy E<sub>f</sub></td>
+        <td>eV/atom</td>
+        <td>{{"%.3f"|format(mp_results["formation_energy"])}}</td>
+        <td>{{"%.3f"|format(mp_results["mp_formation_energy"])}}</td>
+    </tr>
+    <tr>
+        <td>PBE Band Gap E<sub>g</sub></td>
+        <td>eV</td>
+        <td>{{"%.3f"|format(mp_results["band_gap"])}}</td>
+        <td>{{"%.3f"|format(mp_results["mp_band_gap"])}}</td>
+    </tr>
+<!---    <tr>
+        <td>Fermi Energy</td>
+        <td>eV</td>
+        <td>{{"%.3f"|format(mp_results["efermi"])}}</td>
+        <td>{{"%.3f"|format(mp_results["mp_efermi"])}}</td>
+    </tr>
+-->
+    <tr>
+        <td>Bulk modulus K</td>
+        <td>GPa</td>
+        <td>{{"%.0f"|format(mp_results["K"])}}</td>
+        <td>
+            {% if mp_results["mp_K"] %}
+                {{"%.0f"|format(mp_results["mp_K"])}}
+            {% else %}
+                --
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td>Shear modulus G</td>
+        <td>GPa</td>
+        <td>{{"%.0f"|format(mp_results["G"])}}</td>
+        <td>
+            {% if mp_results["mp_G"] %}
+                {{"%.0f"|format(mp_results["mp_G"])}}
+            {% else %}
+                --
+            {% endif %}
+        </td>
+    </tr>
+</table>
+{% endif %}
+
+{% if structure_results %}
+<h2>Results for {{ formula | safe }}</h2>
+<table class="table-results">
+    <tr>
+        <th>Property</th>
+        <th>Units</th>
+        <th>MEGNet</th>
+    </tr>
+    <tr>
+        <td>Formation Energy E<sub>f</sub></td>
+        <td>eV/atom</td>
+        <td>{{"%.3f"|format(structure_results["formation_energy"])}}</td>
+    </tr>
+    <tr>
+        <td>PBE Band Gap E<sub>g</sub></td>
+        <td>eV</td>
+        <td>{{"%.3f"|format(structure_results["band_gap"])}}</td>
+    </tr>
+<!--    <tr>
+        <td>Fermi Energy</td>
+        <td>eV</td>
+        <td>{{"%.3f"|format(structure_results["efermi"])}}</td>
+    </tr>
+-->
+    <tr>
+        <td>Bulk modulus K</td>
+        <td>GPa</td>
+        <td>{{"%.0f"|format(structure_results["K"])}}</td>
+    </tr>
+    <tr>
+        <td>Shear modulus G</td>
+        <td>GPa</td>
+        <td>{{"%.0f"|format(structure_results["G"])}}</td>
+    </tr>
+</table>
+{% endif %}
+
+<p class="help-p">
+    <b>Background:</b>MEGNet, or MatErials Graph Network is an implementation of graph networks for materials science by the <a href="http://materialsvirtuallab.org">Materials Virtual Lab<a>. These models are trained on data from the <a href="https://www.materialsproject.org">Materials Project</a>. Please refer to the <a href="https://github.com/materialsvirtuallab/megnet">open-source repo</a> and the following work for implementation details and benchmarks: Chen, C.; Ye, W.; Zuo, Y.; Zheng, C.; Ong, S. P. <i>Graph Networks as a Universal Machine Learning Framework for Molecules and Crystals.</i> Chemistry of Materials 2019, acs.chemmater.9b01294. <a href="http://dx.doi.org/10.1021/acs.chemmater.9b01294">doi:10.1021/acs.chemmater.9b01294</a>.</p>
+<p class="help-p">
+    Because the MEGNet models are trained on Materials Project (MP)-relaxed structures, predicting using MP ids will likely be more accurate. If using uploaded crystals, you should ideally use the relaxed structures from DFT-PBE calculations. Nevertheless, our preliminary tests find that the MEGNet prediction error using experimental structures, while substantially larger, are still reasonably well-controlled.
+</p>
+
+
+{% endblock %}
