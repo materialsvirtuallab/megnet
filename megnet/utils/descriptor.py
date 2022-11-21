@@ -3,6 +3,7 @@ This module implements atom/bond/structure-wise descriptor calculated from
 pretrained megnet model
 """
 from __future__ import annotations
+
 import os
 
 import numpy as np
