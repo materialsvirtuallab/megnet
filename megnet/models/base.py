@@ -2,6 +2,7 @@
 Implements basic GraphModels.
 """
 from __future__ import annotations
+
 import os
 from warnings import warn
 
@@ -73,7 +74,7 @@ class GraphModel:
         patience: int = 500,
         dirname: str = "callback",
         **kwargs,
-    ) -> "GraphModel":
+    ) -> GraphModel:
         """
         Args:
             train_structures: (list) list of pymatgen structures
@@ -136,7 +137,7 @@ class GraphModel:
         save_checkpoint: bool = True,
         dirname: str = "callback",
         **kwargs,
-    ) -> "GraphModel":
+    ) -> GraphModel:
         """
         Args:
             train_graphs: (list) list of graph dictionaries
@@ -375,7 +376,7 @@ class GraphModel:
         )
 
     @classmethod
-    def from_file(cls, filename: str) -> "GraphModel":
+    def from_file(cls, filename: str) -> GraphModel:
         """
         Class method to load model from
             filename for keras model

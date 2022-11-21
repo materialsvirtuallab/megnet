@@ -192,7 +192,7 @@ class StructureGraph(MSONable):
         return tuple(output)
 
     @staticmethod
-    def _get_dummy_converter() -> "DummyConverter":
+    def _get_dummy_converter() -> DummyConverter:
         return DummyConverter()
 
     def as_dict(self) -> dict:
@@ -207,7 +207,7 @@ class StructureGraph(MSONable):
         return all_dict
 
     @classmethod
-    def from_dict(cls, d: dict) -> "StructureGraph":
+    def from_dict(cls, d: dict) -> StructureGraph:
         """
         Initialization from dictionary
         Args:
@@ -258,7 +258,7 @@ class StructureGraphFixedRadius(StructureGraph):
         return {"atom": atoms, "bond": bonds, "state": state_attributes, "index1": index1, "index2": index2}
 
     @classmethod
-    def from_structure_graph(cls, structure_graph: StructureGraph) -> "StructureGraphFixedRadius":
+    def from_structure_graph(cls, structure_graph: StructureGraph) -> StructureGraphFixedRadius:
         """
         Initialize from pymatgen StructureGraph
         Args:
