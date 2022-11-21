@@ -1,6 +1,6 @@
 pymatgen==2022.11.7
 pandas==1.5.1
 tensorflow==2.9.0
-numpy==1.23.2
+numpy==1.23.5
 monty==2022.9.9
 tqdm==4.64.1
