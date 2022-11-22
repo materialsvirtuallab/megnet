@@ -3,5 +3,5 @@ tensorflow==1.13.1
 keras==2.2.4
 megnet==0.3.5
 gunicorn==19.9.0
-Flask==1.1.1
+Flask==2.0.3
 h5py==2.10.0
