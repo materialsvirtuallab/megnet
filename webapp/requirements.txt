@@ -1,5 +1,5 @@
 pymatgen==2019.7.30
-tensorflow==1.13.1
+tensorflow==2.8.4
 keras==2.10.0
 megnet==0.3.5
 gunicorn==20.1.0
