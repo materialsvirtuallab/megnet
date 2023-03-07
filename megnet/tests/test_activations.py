@@ -19,7 +19,6 @@ class TestSP(unittest.TestCase):
         self.assertAlmostEqual(softplus2(x).numpy(), softplus_np(x), places=5)
 
     def test_swish(self):
-
         self.assertAlmostEqual(swish(10.0).numpy(), swish_np(10.0), places=5)
 
 

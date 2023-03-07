@@ -175,7 +175,6 @@ def predict_mp(model_name, mp_id):
 
 
 def main():
-
     import argparse
 
     parser = argparse.ArgumentParser(
