@@ -1,4 +1,4 @@
-pymatgen==2019.7.30
+pymatgen==2021.2.13
 tensorflow==2.8.4
 keras==2.10.0
 megnet==0.3.5
