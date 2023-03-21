@@ -105,7 +105,6 @@ class InteractionLayer(GraphNetworkLayer):
 
         with kb.name_scope(self.name):
             with kb.name_scope("phi_v"):
-
                 v_shapes = [[vdim, vdim]] + [[vdim, vdim]] * 2
                 self.phi_v_weights = [
                     self.add_weight(
