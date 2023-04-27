@@ -8,6 +8,12 @@
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/materialsvirtuallab/megnet/master)
 
+# Deprecation
+
+This repository has been deprecated in favor of a new PyTorch + Deep Graph Library implementation in the
+[matgl repository](https://github.com/materialsvirtuallab/matgl). It will no longer be updated and is retained
+purely as a reference implementation in the original Tensorflow.
+
 # Table of Contents
 * [Introduction](#introduction)
 * [MEGNet Framework](#megnet-framework)
